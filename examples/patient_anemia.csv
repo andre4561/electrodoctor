@@ -1,0 +1,7 @@
+code,value,unit,date,source
+SEX,F,,day0,паспорт
+AGE,48,лет,day0,паспорт
+C_FATIGUE,1,да/нет,day0,опрос
+HGB,95,г/л,day0,анализ
+FERRITIN,6,нг/мл,day0,анализ
+MCV,78,фл,day0,анализ

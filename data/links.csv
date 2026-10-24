@@ -1,0 +1,11 @@
+diagnosis,param,expected,weight,penalty,source
+D50,HGB,down,2.0,-1.5,условно
+D50,FERRITIN,down,3.0,-2.5,условно
+D50,MCV,down,1.5,-0.5,условно
+D51,HGB,down,2.0,-1.5,условно
+D51,MCV,up,2.0,-1.0,условно
+I20,PAIN_CHEST_PRESSING,up,2.0,-1.0,условно
+I20,PAIN_CHEST_EXERTION,up,2.0,-1.5,условно
+I20,PAIN_CHEST_IRRAD_LARM,up,1.5,-0.3,условно
+I20,PAIN_CHEST_RELIEF_REST,up,1.5,-0.5,условно
+I20,PAIN_CHEST_STABBING,up,-1.5,0,условно — признак против: отрицательный вес

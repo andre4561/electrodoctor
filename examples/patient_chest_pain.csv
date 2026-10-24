@@ -1,0 +1,11 @@
+code,value,unit,date,source
+SEX,M,,day0,паспорт
+AGE,58,лет,day0,паспорт
+PAIN_CHEST,1,да/нет,day0,опрос
+PAIN_CHEST_PRESSING,1,да/нет,day0,опрос
+PAIN_CHEST_STABBING,0,да/нет,day0,опрос
+PAIN_CHEST_IRRAD_LARM,1,да/нет,day0,опрос
+PAIN_CHEST_EXERTION,1,да/нет,day0,опрос
+PAIN_CHEST_RELIEF_REST,1,да/нет,day0,опрос
+PAIN_CHEST_NRS,6,баллы 0–10,day0,опрос
+BP_SYS,150,мм рт. ст.,day0,осмотр
