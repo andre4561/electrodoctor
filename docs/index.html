@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Электродоктор — демо</title>
+<meta name="description" content="Открытый объяснимый калькулятор дифференциальной диагностики: анализы и жалобы на входе, вероятности диагнозов и вклад каждого показателя на выходе.">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --ink: #1b1f24; --muted: #5d6673; --line: #e2e5ea;
+    --accent: #2563c9; --accent-soft: #e6eefb; --plus: #1f8a4c; --minus: #c23b32;
+    --warn-bg: #fdecea; --warn-ink: #8f2a22; --note-bg: #fff7e0; --note-ink: #6b4e00;
+    --bar: #d6dbe3; --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151a; --card: #1b2028; --ink: #e8ebef; --muted: #9aa4b2; --line: #2c333d;
+      --accent: #6aa0ff; --accent-soft: #1d2a40; --plus: #4cc184; --minus: #ff7b70;
+      --warn-bg: #3a1d1b; --warn-ink: #ffb4ad; --note-bg: #332a12; --note-ink: #f1d58a;
+      --bar: #2f3742;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 48px; }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  header p { margin: 6px 0 0; color: var(--muted); max-width: 760px; }
+  header .links { margin-top: 10px; font-size: 14px; }
+  a { color: var(--accent); }
+  .note { margin: 16px 0 20px; padding: 10px 14px; border-radius: var(--radius);
+    background: var(--note-bg); color: var(--note-ink); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .card + .card { margin-top: 16px; }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 18px 0 8px; }
+  h3:first-of-type { margin-top: 4px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+  button { font: inherit; cursor: pointer; }
+  .btn { border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 6px 12px; border-radius: 999px; font-size: 14px; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center;
+    padding: 7px 0; border-top: 1px solid var(--line); }
+  .row:first-of-type { border-top: 0; }
+  .lbl { font-size: 14px; }
+  .lbl small { display: block; color: var(--muted); font-size: 12px; }
+  .ctl { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  input[type=number] { width: 92px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--ink); font: inherit; text-align: right; }
+  select { padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; }
+  .unit { color: var(--muted); font-size: 12px; min-width: 64px; }
+  .dev { font-size: 12px; min-width: 64px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .dev.down, .dev.up { color: var(--minus); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .seg button { border: 0; background: transparent; color: var(--muted); padding: 4px 11px; font-size: 13px; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .flags { padding: 10px 14px; border-radius: var(--radius); background: var(--warn-bg); color: var(--warn-ink); margin-bottom: 14px; font-size: 14px; }
+  .flags[hidden] { display: none; }
+  .dx { border-top: 1px solid var(--line); padding: 12px 0; }
+  .dx:first-of-type { border-top: 0; padding-top: 2px; }
+  .dx-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .dx-name { font-weight: 600; }
+  .dx-name .code { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 4px; }
+  .pct { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .dx.low .pct, .dx.low .dx-name { color: var(--muted); }
+  .bar { height: 6px; background: var(--bar); border-radius: 3px; margin: 6px 0 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  .dx.low .bar i { background: var(--muted); }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); margin-left: 6px; vertical-align: 2px; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  td, th { padding: 5px 6px; border-top: 1px solid var(--line); text-align: left; }
+  th { color: var(--muted); font-weight: 500; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .plus { color: var(--plus); } .minus { color: var(--minus); }
+  .missing { margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .formula { font-size: 13px; color: var(--muted); margin-top: 12px; }
+  .status { color: var(--muted); font-size: 14px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Электродоктор — демо</h1>
+    <p>Объяснимый калькулятор дифференциальной диагностики. Введите показатели — и увидите вероятности диагнозов и вклад каждого показателя. Расчёт идёт прямо в вашем браузере: данные никуда не отправляются.</p>
+    <div class="links"><a href="https://github.com/andre4561/electrodoctor">Репозиторий на GitHub</a> · <a href="https://github.com/andre4561/electrodoctor/blob/main/docs/concept.md">Как это считается</a> · <a href="https://github.com/andre4561/electrodoctor/blob/main/README.md">English</a></div>
+  </header>
+
+  <div class="note">Исследовательский проект, не медицинское изделие. Не для самодиагностики. Все коэффициенты пока условные и подобраны для демонстрации.</div>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="in-title">
+      <h2 id="in-title">Данные пациента</h2>
+      <div class="presets">
+        <button class="btn" data-preset="patient_anemia">Пример: анемия</button>
+        <button class="btn" data-preset="patient_chest_pain">Пример: боль в груди</button>
+        <button class="btn" id="clear">Очистить</button>
+      </div>
+      <div id="inputs"><p class="status">Загружаю справочники…</p></div>
+    </section>
+
+    <section aria-labelledby="out-title">
+      <div class="card">
+        <h2 id="out-title">Вероятные диагнозы</h2>
+        <div class="flags" id="flags" hidden></div>
+        <div id="results"><p class="status">Введите хотя бы один показатель.</p></div>
+        <p class="formula">Балл = logit(исходная частота) + сумма вкладов; вероятность = 1 / (1 + e<sup>−балл</sup>). Порог выдачи — <span id="thr"></span>. Пустое поле означает «не измеряли / не спрашивали» и не влияет на расчёт, а попадает в список «что уточнить».</p>
+      </div>
+    </section>
+  </div>
+
+  <footer>Код — GNU AGPL v3, данные — CC BY-SA 4.0. Справочники загружаются из папки <code>data/</code> репозитория, поэтому демо всегда использует их актуальную версию.</footer>
+</div>
+
+<script src="engine.js"></script>
+<script>
+(function () {
+  "use strict";
+  const E = window.Electrodoctor;
+  const THRESHOLD = 0.10;
+  const REPO_RAW = "https://raw.githubusercontent.com/andre4561/electrodoctor/main/";
+  const LOCAL = "../";
+  const $ = s => document.querySelector(s);
+  const fmt = (x, d) => x.toLocaleString("ru-RU", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pct = p => fmt(p * 100, 1) + "%";
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  let ref = null;
+  const state = {};   // code -> number
+
+  async function getText(path) {
+    for (const base of [LOCAL, REPO_RAW]) {
+      try {
+        const r = await fetch(base + path, { cache: "no-cache" });
+        if (r.ok) return await r.text();
+      } catch (e) { /* пробуем следующий источник */ }
+    }
+    throw new Error("Не удалось загрузить " + path);
+  }
+
+  async function load() {
+    const names = ["parameters", "diagnoses", "links", "directions"];
+    const texts = await Promise.all(names.map(n => getText("data/" + n + ".csv")));
+    const csv = {}; names.forEach((n, i) => csv[n] = texts[i]);
+    ref = E.buildReference(csv);
+    $("#thr").textContent = pct(THRESHOLD);
+    renderInputs();
+    render();
+  }
+
+  const GROUPS = [
+    ["continuous", "Анализы и измерения"],
+    ["binary", "Жалобы и признаки"],
+    ["ordinal", "Шкалы"]
+  ];
+
+  function renderInputs() {
+    let html = "";
+    for (const [type, title] of GROUPS) {
+      const ps = Object.values(ref.parameters).filter(p => p.type === type);
+      if (!ps.length) continue;
+      html += `<h3>${title}</h3>`;
+      for (const p of ps) {
+        html += `<div class="row"><div class="lbl">${esc(p.name)}<small>${esc(p.code)}</small></div><div class="ctl">`;
+        if (type === "continuous") {
+          html += `<input type="number" step="any" inputmode="decimal" data-code="${p.code}" placeholder="${fmt(p.x0, 0)}" aria-label="${esc(p.name)}"><span class="unit">${esc(p.unit)}</span><span class="dev" id="dev-${p.code}"></span>`;
+        } else if (type === "binary") {
+          html += `<span class="seg" data-code="${p.code}" role="group" aria-label="${esc(p.name)}"><button data-v="" class="on" title="не спрашивали">?</button><button data-v="1">да</button><button data-v="0">нет</button></span>`;
+        } else {
+          let opts = `<option value="">—</option>`;
+          for (let i = 0; i <= p.max; i++) opts += `<option value="${i}">${i}</option>`;
+          html += `<select data-code="${p.code}" aria-label="${esc(p.name)}">${opts}</select><span class="unit">из ${fmt(p.max, 0)}</span>`;
+        }
+        html += `</div></div>`;
+      }
+    }
+    $("#inputs").innerHTML = html;
+
+    document.querySelectorAll("#inputs input, #inputs select").forEach(el => {
+      el.addEventListener("input", () => { setValue(el.dataset.code, el.value); render(); });
+    });
+    document.querySelectorAll("#inputs .seg").forEach(seg => {
+      seg.addEventListener("click", ev => {
+        const b = ev.target.closest("button"); if (!b) return;
+        setValue(seg.dataset.code, b.dataset.v); syncControl(seg.dataset.code); render();
+      });
+    });
+  }
+
+  function setValue(code, v) {
+    if (v === "" || v == null || Number.isNaN(Number(v))) delete state[code];
+    else state[code] = Number(v);
+  }
+
+  function syncControl(code) {
+    const v = state[code];
+    const el = document.querySelector(`[data-code="${code}"]`);
+    if (!el) return;
+    if (el.classList.contains("seg")) {
+      el.querySelectorAll("button").forEach(b => b.classList.toggle("on", (v === undefined ? "" : String(v)) === b.dataset.v));
+    } else el.value = v === undefined ? "" : v;
+  }
+
+  function render() {
+    const { deviations, redFlags, ranked } = E.evaluate(state, ref);
+
+    for (const p of Object.values(ref.parameters)) {
+      if (p.type !== "continuous") continue;
+      const el = $("#dev-" + p.code), d = deviations[p.code];
+      if (!el) continue;
+      el.className = "dev" + (d ? " " + d.direction : "");
+      el.textContent = !d ? "" : d.direction === "normal" ? "норма" : (d.direction === "down" ? "↓ " : "↑ ") + "k " + fmt(d.k, 2);
+    }
+
+    const fl = $("#flags");
+    if (redFlags.length) {
+      fl.hidden = false;
+      fl.innerHTML = "<strong>Красные флаги:</strong> " + redFlags.map(d => esc(ref.parameters[d.code].name) + " (k = " + fmt(d.k, 2) + ")").join(", ") + ". Сильное отклонение — повод обратиться к врачу без промедления.";
+    } else fl.hidden = true;
+
+    if (!Object.keys(state).length) { $("#results").innerHTML = '<p class="status">Введите хотя бы один показатель или выберите пример.</p>'; return; }
+
+    $("#results").innerHTML = ranked.map(r => {
+      const shown = r.probability >= THRESHOLD;
+      const rows = r.contributions.map(c => {
+        const p = ref.parameters[c.param];
+        const why = c.dev.direction === "normal" ? "в норме / нет признака" :
+          c.dev.direction === c.link.expected ? (c.link.weight >= 0 ? "в ожидаемую сторону" : "признак против") : "в обратную сторону";
+        const cls = c.value > 0 ? "plus" : c.value < 0 ? "minus" : "";
+        return `<tr><td>${esc(p.name)}</td><td>${esc(why)}</td><td class="num ${cls}">${c.value > 0 ? "+" : ""}${fmt(c.value, 2)}</td></tr>`;
+      }).join("");
+      const miss = r.missing.length ? `<div class="missing">Что уточнить: ${r.missing.map(c => esc(ref.parameters[c] ? ref.parameters[c].name : c)).join("; ")}</div>` : "";
+      return `<div class="dx${shown ? "" : " low"}">
+        <div class="dx-head"><div class="dx-name">${esc(r.name)}<span class="code">${esc(r.code)}</span>${shown ? '<span class="tag">выше порога</span>' : ""}</div><div class="pct">${pct(r.probability)}</div></div>
+        <div class="bar"><i style="width:${Math.max(0.5, r.probability * 100)}%"></i></div>
+        <details${shown ? " open" : ""}><summary>Почему: исходная частота ${pct(r.prior)}, сумма вкладов ${r.contributions.length ? fmt(r.contributions.reduce((s, c) => s + c.value, 0), 2) : "0"}</summary>
+          ${rows ? `<table><thead><tr><th>Показатель</th><th>Отклонение</th><th class="num">Вклад</th></tr></thead><tbody>${rows}</tbody></table>` : ""}
+          ${miss}
+        </details></div>`;
+    }).join("");
+  }
+
+  async function loadPreset(name) {
+    const rows = E.parseCSV(await getText("examples/" + name + ".csv"));
+    for (const k of Object.keys(state)) delete state[k];
+    for (const r of rows) if (ref.parameters[r.code]) setValue(r.code, r.value);
+    Object.keys(ref.parameters).forEach(syncControl);
+    render();
+  }
+
+  document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => loadPreset(b.dataset.preset)));
+  $("#clear").addEventListener("click", () => { for (const k of Object.keys(state)) delete state[k]; Object.keys(ref.parameters).forEach(syncControl); render(); });
+
+  load().catch(err => { $("#inputs").innerHTML = '<p class="status">' + esc(err.message) + "</p>"; });
+})();
+</script>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 **English** | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
+**▶ [Try the live demo](https://andre4561.github.io/electrodoctor/)** — enter lab values and complaints, see the probabilities and every contribution. Runs in your browser; nothing is sent anywhere.
+
 An open differential-diagnosis calculator: lab results, complaints and physical-exam findings go in, 3–4 likely diagnoses with probabilities come out.
 
 There is no neural network at the core. Every step is an explicit formula, and for each diagnosis you can see how much each finding added to or subtracted from its probability.
