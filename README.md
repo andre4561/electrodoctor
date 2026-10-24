@@ -1,30 +1,36 @@
-# Электродоктор
+# Electrodoctor
 
-Открытый вычислитель дифференциальной диагностики: анализы, жалобы и данные осмотра на входе, 3–4 вероятных диагноза с процентами на выходе.
+**English** | [Русский](README.ru.md)
 
-В ядре нет нейросети. Каждый шаг расчёта — явная формула, и для каждого диагноза видно, какой показатель сколько добавил к вероятности.
+An open differential-diagnosis calculator: lab results, complaints and physical-exam findings go in, 3–4 likely diagnoses with probabilities come out.
 
-> ⚠️ Исследовательский проект. Не медицинское изделие, не для самодиагностики и не для лечебных решений. Все коэффициенты в репозитории пока условные. См. [DISCLAIMER.md](DISCLAIMER.md).
+There is no neural network at the core. Every step is an explicit formula, and for each diagnosis you can see how much each finding added to or subtracted from its probability.
 
-## Как это работает
+> ⚠️ Research project. Not a medical device, not for self-diagnosis and not for treatment decisions. All coefficients in this repository are illustrative placeholders. See [DISCLAIMER.md](DISCLAIMER.md).
 
-1. **Таблица пациента.** Всё приводится к строкам «код — значение — дата»: анализы, жалобы, осмотр, измерения.
-2. **Нормализация.** Для каждого показателя считается отклонение со знаком `d = ln(x / x0)`, сила отклонения и критичность `k` (парабола от логарифма).
-3. **Красные флаги.** Показатели с критичностью `k ≥ 1` помечаются как срочные.
-4. **Вклады.** Для каждой пары «диагноз–показатель» из справочника: отклонение в ожидаемую сторону даёт `+вес × сила`, в обратную `−вес × сила`, норма — штраф, отсутствие данных — 0 и подсказку «что досдать».
-5. **Вероятность.** `балл = logit(исходная частота) + сумма вкладов`, `P = 1 / (1 + e^−балл)`. Выдаются диагнозы выше порога.
+> 🌐 The detailed documentation in `docs/` and the reference data labels are currently in Russian. Translations are welcome.
 
-Подробно: [docs/concept.md](docs/concept.md). Формат данных: [docs/data-format.md](docs/data-format.md).
+## How it works
 
-## Быстрый старт
+1. **Patient table.** Everything is reduced to rows of "code — value — date": lab results, complaints, exam findings, vital signs.
+2. **Normalization.** For each finding the engine computes the signed deviation `d = ln(x / x0)`, the deviation strength, and a criticality score `k` (a parabola of the log-ratio).
+3. **Red flags.** Findings with `k ≥ 1` are marked as urgent.
+4. **Contributions.** For each diagnosis–finding pair in the reference: a deviation in the expected direction adds `+weight × strength`, in the opposite direction `−weight × strength`, a normal value adds a penalty, and a missing value adds 0 and becomes a "what to test next" hint.
+5. **Probability.** `score = logit(prior) + Σ contributions`, `P = 1 / (1 + e^−score)`. Diagnoses above a threshold are reported.
 
-Нужен только Python 3.9+, без внешних библиотек.
+Complaints and exam findings use the same table: yes/no findings become 1/0 (with "not asked" kept distinct from "absent"), graded findings use validated scales (pain 0–10, edema 0–3+), and each category such as the character of pain becomes its own yes/no parameter.
+
+Details (in Russian): [docs/concept.md](docs/concept.md). Data formats: [docs/data-format.md](docs/data-format.md).
+
+## Quick start
+
+Python 3.9+ only, no external libraries.
 
 ```bash
 python engine/electrodoctor.py examples/patient_anemia.csv
 ```
 
-Ожидаемый результат для примера:
+Expected output for the example:
 
 ```
 Красные флаги: FERRITIN (k=1.04)
@@ -33,50 +39,53 @@ I20  Стенокардия                    2.0%   не хватает пар
 D51  B12-дефицитная анемия          2.0%
 ```
 
-Второй пример — боль в груди: `examples/patient_chest_pain.csv` даёт стенокардию 95.7%.
+(Red flag: ferritin. Iron-deficiency anemia 92.5% — reported; angina 2.0% — 5 parameters missing; B12-deficiency anemia 2.0%.)
 
-Тесты:
+The second example, chest pain (`examples/patient_chest_pain.csv`), gives angina at 95.7%.
+
+Tests:
 
 ```bash
 python -m unittest discover tests
 ```
 
-## Структура
+## Repository layout
 
 ```
 electrodoctor/
-├── README.md              этот файл
-├── DISCLAIMER.md          ограничения и предупреждения
-├── CONTRIBUTING.md        как предлагать веса, диагнозы, код
-├── LICENSE                GNU AGPL v3 (код)
-├── LICENSE-DATA           CC BY-SA 4.0 (данные и документация)
-├── LICENSE.md             что под какой лицензией
+├── README.md              this file (English)
+├── README.ru.md           Russian version
+├── DISCLAIMER.md          limitations and warnings
+├── CONTRIBUTING.md        how to propose weights, diagnoses, code
+├── LICENSE                GNU AGPL v3 (code)
+├── LICENSE-DATA           CC BY-SA 4.0 (data and documentation)
+├── LICENSE.md             what is licensed how
 ├── docs/
-│   ├── concept.md         идея и математика
-│   ├── data-format.md     форматы всех таблиц
-│   └── roadmap.md         что дальше
-├── data/                  справочники (открытые данные)
-│   ├── parameters.csv     показатели: анализы, жалобы, осмотр
-│   ├── diagnoses.csv      диагнозы и исходные частоты
-│   ├── links.csv          веса «диагноз–показатель»
-│   └── directions.csv     направления («врачи поликлиники»)
+│   ├── concept.md         idea and math
+│   ├── data-format.md     formats of all tables
+│   └── roadmap.md         what's next
+├── data/                  reference tables (open data)
+│   ├── parameters.csv     findings: labs, complaints, exam
+│   ├── diagnoses.csv      diagnoses and prior frequencies
+│   ├── links.csv          diagnosis–finding weights
+│   └── directions.csv     specialties ("which doctor to see")
 ├── engine/
-│   └── electrodoctor.py   эталонная реализация расчёта
-├── examples/              обезличенные учебные пациенты
-└── tests/                 проверка расчёта на примерах
+│   └── electrodoctor.py   reference implementation
+├── examples/              fictional training patients
+└── tests/                 checks of the calculation
 ```
 
-## Чем можно помочь
+## How you can help
 
-Самое ценное в проекте — не код, а справочник весов. Если вы врач, студент-медик или исследователь, можно:
+The most valuable part of the project is not the code but the table of weights. If you are a physician, a medical student or a researcher, you can:
 
-- предложить веса для пары «диагноз–показатель» со ссылкой на источник;
-- добавить диагноз своей специальности;
-- указать на ошибку в логике или примерах;
-- подсказать открытые наборы данных для калибровки.
+- propose weights for a diagnosis–finding pair, with a source;
+- add diagnoses from your specialty;
+- point out errors in the logic or examples;
+- suggest open datasets for calibration.
 
-Как это сделать — в [CONTRIBUTING.md](CONTRIBUTING.md). Открытые вопросы — в [docs/roadmap.md](docs/roadmap.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Open questions are in [docs/roadmap.md](docs/roadmap.md). Issues and pull requests in English or Russian are both welcome.
 
-## Лицензия
+## License
 
-Код — [GNU AGPL v3](LICENSE), данные и документация — [CC BY-SA 4.0](LICENSE-DATA). Подробнее в [LICENSE.md](LICENSE.md).
+Code — [GNU AGPL v3](LICENSE), data and documentation — [CC BY-SA 4.0](LICENSE-DATA). Details in [LICENSE.md](LICENSE.md).
