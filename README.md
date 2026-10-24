@@ -1,6 +1,6 @@
 # Electrodoctor
 
-**English** | [Русский](README.ru.md)
+**English** | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 An open differential-diagnosis calculator: lab results, complaints and physical-exam findings go in, 3–4 likely diagnoses with probabilities come out.
 
@@ -55,6 +55,7 @@ python -m unittest discover tests
 electrodoctor/
 ├── README.md              this file (English)
 ├── README.ru.md           Russian version
+├── README.zh-CN.md        Chinese (Simplified) version
 ├── DISCLAIMER.md          limitations and warnings
 ├── CONTRIBUTING.md        how to propose weights, diagnoses, code
 ├── LICENSE                GNU AGPL v3 (code)
@@ -84,7 +85,7 @@ The most valuable part of the project is not the code but the table of weights. 
 - point out errors in the logic or examples;
 - suggest open datasets for calibration.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Open questions are in [docs/roadmap.md](docs/roadmap.md). Issues and pull requests in English or Russian are both welcome.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Open questions are in [docs/roadmap.md](docs/roadmap.md). Issues and pull requests in English, Russian or Chinese are welcome.
 
 ## License
 

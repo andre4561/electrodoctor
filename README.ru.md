@@ -1,6 +1,6 @@
 # Электродоктор
 
-[English](README.md) | **Русский**
+[English](README.md) | **Русский** | [简体中文](README.zh-CN.md)
 
 Открытый вычислитель дифференциальной диагностики: анализы, жалобы и данные осмотра на входе, 3–4 вероятных диагноза с процентами на выходе.
 
@@ -49,6 +49,7 @@ python -m unittest discover tests
 electrodoctor/
 ├── README.md              описание на английском
 ├── README.ru.md           этот файл (русский)
+├── README.zh-CN.md        описание на китайском
 ├── DISCLAIMER.md          ограничения и предупреждения
 ├── CONTRIBUTING.md        как предлагать веса, диагнозы, код
 ├── LICENSE                GNU AGPL v3 (код)
