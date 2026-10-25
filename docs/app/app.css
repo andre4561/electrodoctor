@@ -133,3 +133,25 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
 .fold.warn > summary .fold-status { color: var(--danger); }
 .fold-body { padding: 14px 16px 16px; }
 @media (prefers-reduced-motion: reduce) { .fold-chev { transition: none; } }
+
+/* перенос анализов через ИИ */
+.ai { display: grid; gap: 10px; }
+.ai-lead { margin: 0; font-size: 14px; color: var(--muted); }
+.ai-steps { margin: 0; padding-left: 22px; display: grid; gap: 12px; font-size: 14px; }
+.ai-steps li > div + .grp, .ai-steps li > textarea, .ai-steps li > textarea + .grp { margin-top: 8px; }
+.ai-steps .grp { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-steps textarea { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; min-height: 90px; }
+.ai-msg { font-size: 13px; }
+.ai-msg:empty { display: none; }
+.ai-msg.ok { color: var(--ok); }
+.ai-msg.err { color: var(--danger); }
+.ai-preview { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 8px; }
+.ai-preview h3 { margin: 0; font-size: 15px; }
+.ai-preview p { margin: 0; font-size: 13px; }
+.ai-preview .grp { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-table td, .ai-table th { padding: 6px; font-size: 13px; }
+.ai-table td small { display: block; }
+.ai-table .num { text-align: right; white-space: nowrap; }
+.ai-table .ai-note { color: var(--muted); }
+.ai-table tr.st-unit .ai-note, .ai-table tr.st-uncertain .ai-note, .ai-table tr.st-option .ai-note { color: var(--danger); }
+.hidden-note { margin: 12px 0 0; font-size: 13px; }

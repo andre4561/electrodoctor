@@ -49,8 +49,12 @@ export const STEPS = [
     {
         id: "labs", title: "Анализы",
         sections: [
-            { title: "Фото и файлы анализов", fields: [
-                    { code: "LAB_FILES", label: "Фото и файлы анализов", type: "files",
+            { id: "ai", title: "Загрузить анализы через ИИ", fold: true, fields: [
+                    { code: "AI_IMPORT", label: "Загрузить анализы через ИИ", type: "aiimport" }
+                ] },
+            { title: "", fields: [
+                    // Загрузка фото на свой сервер пока выключена: распознаёт ИИ, которого выбирает сам человек.
+                    { code: "LAB_FILES", label: "Фото и файлы анализов", type: "files", hidden: true,
                         hint: "Распознавание пока не подключено: файлы сохраняются, значения вносятся вручную" }
                 ] },
             { id: "blood_cbc", title: "Кровь — общий анализ", fold: true, fields: [
