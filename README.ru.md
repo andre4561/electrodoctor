@@ -45,6 +45,18 @@ D51  B12-дефицитная анемия          2.0%
 python -m unittest discover tests
 ```
 
+### Сайт и кабинет (TypeScript)
+
+Расчёт в браузере, демо-страница и кабинет написаны на TypeScript (папка `src/`) и собираются в JavaScript в папку `docs/`, которую показывает GitHub Pages. Нужен Node.js 20+.
+
+```bash
+npm install
+npm run build   # src/*.ts → docs/*.js
+npm test        # сборка, сверка TypeScript с Python на примерах и 500 случайных пациентах, тесты Python
+```
+
+Python-версия остаётся эталоном. Тест `tests/parity.test.js` следит, чтобы обе реализации давали одинаковые цифры.
+
 ## Структура
 
 ```
@@ -57,7 +69,11 @@ electrodoctor/
 ├── LICENSE                GNU AGPL v3 (код)
 ├── LICENSE-DATA           CC BY-SA 4.0 (данные и документация)
 ├── LICENSE.md             что под какой лицензией
-├── docs/
+├── src/                   исходники на TypeScript
+│   ├── engine.ts          расчёт для браузера и будущих приложений
+│   ├── demo.ts            демо-страница
+│   └── app/               кабинет: клиенты и анкета по этапам
+├── docs/                  сайт (GitHub Pages); *.js собираются из src/, руками не править
 │   ├── concept.md         идея и математика
 │   ├── data-format.md     форматы всех таблиц
 │   └── roadmap.md         что дальше
@@ -69,7 +85,7 @@ electrodoctor/
 ├── engine/
 │   └── electrodoctor.py   эталонная реализация расчёта
 ├── examples/              обезличенные учебные пациенты
-└── tests/                 проверка расчёта на примерах
+└── tests/                 проверка расчёта и сверка TypeScript с Python
 ```
 
 ## Чем можно помочь
