@@ -4,6 +4,7 @@
 // (см. folder.ts); есть выгрузка в CSV, Markdown и JSON.
 import { STEPS } from "./fields.js";
 import * as FS from "./folder.js";
+import { fold } from "./ui.js";
 import type { Client, Field, Step, Store, TableRow, Value } from "./types.js";
 
 const KEY = "electrodoctor.clients.v1";
@@ -151,7 +152,7 @@ function renderClients(): void {
   view.innerHTML = `
     <h1>Клиенты</h1>
     ${storageOk ? "" : '<div class="note">Браузер не даёт сохранять данные (приватный режим?). Записи пропадут после закрытия вкладки — выгрузите их в файл.</div>'}
-    <div class="card store" id="store"></div>
+    <div class="store" id="store"></div>
     <div class="bar">
       <input class="search" id="q" type="search" placeholder="Поиск по имени" aria-label="Поиск">
       <div class="grp">
@@ -200,7 +201,7 @@ function renderClients(): void {
 function drawStore(): void {
   const box = $("#store"); if (!box) return;
   const st = FS.state;
-  let html = `<h2>Где хранятся данные</h2>`;
+  let html = "";
   if (FS.ready()) {
     html += `<p>Клиенты сохраняются в папку <b>«${esc(st.name)}»</b> на этом компьютере: у каждого клиента своя подпапка с файлами <code>анкета.md</code>, <code>данные.csv</code> и <code>client.json</code>. Копия остаётся и в браузере.</p>
       <div class="grp"><button class="btn" id="pick">Выбрать другую папку</button><button class="btn" id="unpick">Не сохранять в папку</button></div>`;
@@ -215,7 +216,9 @@ function drawStore(): void {
       <p class="muted">Сохранять в выбранную папку умеют Chrome, Edge, Яндекс.Браузер и Opera на компьютере. В этом браузере такой возможности нет.</p>`;
   }
   if (folderErr) html += `<p class="err">Не удалось записать в папку: ${esc(folderErr)}</p>`;
-  box.innerHTML = html;
+  const status = FS.ready() ? `в папке «${esc(st.name)}»` : st.handle ? "нужно разрешить доступ к папке" : "в этом браузере";
+  // Раскрываем сами, если от человека что-то нужно: подтвердить доступ или разобраться с ошибкой.
+  box.innerHTML = fold("store", "Где хранятся данные", status, html, { open: !!folderErr || (!!st.handle && !FS.ready()), warn: !!folderErr || (!!st.handle && !FS.ready()) });
   const after = () => syncFolder().then(() => renderClients()).catch(e => { folderError(e); drawStore(); });
   const pick = $("#pick"), allow = $("#allow"), unpick = $("#unpick");
   if (pick) pick.onclick = async () => {
