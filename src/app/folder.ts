@@ -6,27 +6,16 @@
 //                        /анкета.md    — для чтения
 //                        /данные.csv   — для расчёта (engine/electrodoctor.py)
 import type { Client } from "./types.js";
+import { tx } from "./db.js";
 
 type Dir = FileSystemDirectoryHandle;
 
 export const supported = typeof window.showDirectoryPicker === "function" && typeof indexedDB !== "undefined";
-const DB = "electrodoctor", STORE = "kv", HKEY = "folder";
+const HKEY = "folder";
 
 export const state: { handle: Dir | null; name: string; granted: boolean } = { handle: null, name: "", granted: false };
 
-function idb<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const open = indexedDB.open(DB, 1);
-    open.onupgradeneeded = () => open.result.createObjectStore(STORE);
-    open.onerror = () => reject(open.error);
-    open.onsuccess = () => {
-      const tx = open.result.transaction(STORE, mode);
-      const req = fn(tx.objectStore(STORE));
-      tx.oncomplete = () => { resolve(req.result); open.result.close(); };
-      tx.onerror = () => { reject(tx.error); open.result.close(); };
-    };
-  });
-}
+const idb = <T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>) => tx<T>("kv", mode, fn);
 
 async function permission(handle: Dir, ask: boolean): Promise<boolean> {
   if (!handle.queryPermission) return true;
@@ -126,4 +115,37 @@ export async function readAll(): Promise<Client[]> {
     if (c && c.id && c.values) { c.folder = name; out.push(c); }
   }
   return out;
+}
+
+// Файлы анализов клиента: <папка>/<клиент>/файлы анализов/<имя файла>
+const ATTACH_DIR = "файлы анализов";
+
+async function attachDir(c: Client, create: boolean): Promise<Dir | null> {
+  if (!ready()) return null;
+  c.folder = await folderFor(c);
+  const dir = create ? await state.handle!.getDirectoryHandle(c.folder, { create: true }) : (await subfolders()).get(c.folder.toLowerCase());
+  if (!dir) return null;
+  if (create) return dir.getDirectoryHandle(ATTACH_DIR, { create: true });
+  for await (const [name, h] of dir.entries()) if (h.kind === "directory" && name === ATTACH_DIR) return h as Dir;
+  return null;
+}
+
+// Возвращает имя, под которым файл записан (при совпадении добавляется « (2)»), или null, если папка не выбрана.
+export async function writeAttachment(c: Client, name: string, blob: Blob): Promise<string | null> {
+  const dir = await attachDir(c, true);
+  if (!dir) return null;
+  const taken = new Set<string>();
+  for await (const [n] of dir.entries()) taken.add(n.toLowerCase());
+  const clean = safeName(name.replace(/\.[^.]*$/, "")), ext = (name.match(/\.[^.]*$/) || [""])[0].slice(0, 10);
+  let fileName = clean + ext;
+  for (let i = 2; taken.has(fileName.toLowerCase()); i++) fileName = `${clean} (${i})${ext}`;
+  const w = await (await dir.getFileHandle(fileName, { create: true })).createWritable();
+  await w.write(blob);
+  await w.close();
+  return fileName;
+}
+
+export async function removeAttachment(c: Client, fileName: string): Promise<void> {
+  const dir = await attachDir(c, false);
+  if (dir) await dir.removeEntry(fileName).catch(() => undefined);
 }

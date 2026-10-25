@@ -49,18 +49,85 @@ export const STEPS = [
     {
         id: "labs", title: "Анализы",
         sections: [
-            { title: "Основные", fields: [
-                    { code: "HGB", label: "Гемоглобин", type: "number", unit: "г/л", step: "any" },
-                    { code: "FERRITIN", label: "Ферритин", type: "number", unit: "нг/мл", step: "any" },
-                    { code: "MCV", label: "Средний объём эритроцита", type: "number", unit: "фл", step: "any" }
+            { title: "Фото и файлы анализов", fields: [
+                    { code: "LAB_FILES", label: "Фото и файлы анализов", type: "files",
+                        hint: "Распознавание пока не подключено: файлы сохраняются, значения вносятся вручную" }
                 ] },
-            { title: "Другие анализы", fields: [
-                    { code: "LABS_OTHER", label: "Другие анализы", type: "table", columns: [
+            { id: "blood_cbc", title: "Кровь — общий анализ", fold: true, fields: [
+                    { code: "HGB", label: "Гемоглобин", type: "number", unit: "г/л", step: "any" },
+                    { code: "RBC", label: "Эритроциты", type: "number", unit: "×10¹²/л", step: "any" },
+                    { code: "HCT", label: "Гематокрит", type: "number", unit: "%", step: "any" },
+                    { code: "MCV", label: "Средний объём эритроцита (MCV)", type: "number", unit: "фл", step: "any" },
+                    { code: "MCH", label: "Среднее содержание гемоглобина в эритроците (MCH)", type: "number", unit: "пг", step: "any" },
+                    { code: "MCHC", label: "Средняя концентрация гемоглобина в эритроците (MCHC)", type: "number", unit: "г/л", step: "any" },
+                    { code: "RDW", label: "Ширина распределения эритроцитов (RDW)", type: "number", unit: "%", step: "any" },
+                    { code: "RETIC", label: "Ретикулоциты", type: "number", unit: "%", step: "any" },
+                    { code: "WBC", label: "Лейкоциты", type: "number", unit: "×10⁹/л", step: "any" },
+                    { code: "NEUT_PCT", label: "Нейтрофилы", type: "number", unit: "%", step: "any" },
+                    { code: "LYMPH_PCT", label: "Лимфоциты", type: "number", unit: "%", step: "any" },
+                    { code: "MONO_PCT", label: "Моноциты", type: "number", unit: "%", step: "any" },
+                    { code: "EOS_PCT", label: "Эозинофилы", type: "number", unit: "%", step: "any" },
+                    { code: "BASO_PCT", label: "Базофилы", type: "number", unit: "%", step: "any" },
+                    { code: "PLT", label: "Тромбоциты", type: "number", unit: "×10⁹/л", step: "any" },
+                    { code: "ESR", label: "СОЭ", type: "number", unit: "мм/ч", step: "any" }
+                ] },
+            { id: "blood_bio", title: "Кровь — биохимия", fold: true, fields: [
+                    { code: "GLU", label: "Глюкоза", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "HBA1C", label: "Гликированный гемоглобин (HbA1c)", type: "number", unit: "%", step: "any" },
+                    { code: "CHOL", label: "Холестерин общий", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "LDL", label: "Холестерин ЛПНП", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "HDL", label: "Холестерин ЛПВП", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "TG", label: "Триглицериды", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "ALT", label: "АЛТ", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "AST", label: "АСТ", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "GGT", label: "ГГТ", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "ALP", label: "Щелочная фосфатаза", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "TBIL", label: "Билирубин общий", type: "number", unit: "мкмоль/л", step: "any" },
+                    { code: "DBIL", label: "Билирубин прямой", type: "number", unit: "мкмоль/л", step: "any" },
+                    { code: "TP", label: "Общий белок", type: "number", unit: "г/л", step: "any" },
+                    { code: "ALB", label: "Альбумин", type: "number", unit: "г/л", step: "any" },
+                    { code: "CREA", label: "Креатинин", type: "number", unit: "мкмоль/л", step: "any" },
+                    { code: "UREA", label: "Мочевина", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "UA", label: "Мочевая кислота", type: "number", unit: "мкмоль/л", step: "any" },
+                    { code: "CRP", label: "С-реактивный белок", type: "number", unit: "мг/л", step: "any" },
+                    { code: "FE", label: "Железо сывороточное", type: "number", unit: "мкмоль/л", step: "any" },
+                    { code: "FERRITIN", label: "Ферритин", type: "number", unit: "нг/мл", step: "any" },
+                    { code: "K", label: "Калий", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "NA", label: "Натрий", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "CA", label: "Кальций общий", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "MG", label: "Магний", type: "number", unit: "ммоль/л", step: "any" }
+                ] },
+            { id: "blood_other", title: "Кровь — прочее: гормоны, витамины", fold: true, fields: [
+                    { code: "TSH", label: "ТТГ", type: "number", unit: "мЕд/л", step: "any" },
+                    { code: "FT4", label: "Т4 свободный", type: "number", unit: "пмоль/л", step: "any" },
+                    { code: "FT3", label: "Т3 свободный", type: "number", unit: "пмоль/л", step: "any" },
+                    { code: "VITD", label: "Витамин D (25-OH)", type: "number", unit: "нг/мл", step: "any" },
+                    { code: "B12", label: "Витамин B12", type: "number", unit: "пг/мл", step: "any" },
+                    { code: "FOLATE", label: "Фолиевая кислота", type: "number", unit: "нг/мл", step: "any" },
+                    { code: "INSULIN", label: "Инсулин", type: "number", unit: "мкЕд/мл", step: "any" },
+                    { code: "CORTISOL", label: "Кортизол", type: "number", unit: "нмоль/л", step: "any" },
+                    { code: "LABS_OTHER", label: "Другие показатели", type: "table", columns: [
                             { key: "name", label: "Показатель", type: "text" },
                             { key: "value", label: "Значение", type: "text" },
                             { key: "unit", label: "Ед.", type: "text" },
                             { key: "date", label: "День", type: "text", placeholder: "day0" }
                         ] }
+                ] },
+            { id: "urine", title: "Моча — общий анализ", fold: true, fields: [
+                    { code: "U_COLOR", label: "Цвет", type: "select", options: [["соломенно-жёлтый", "соломенно-жёлтый"], ["светло-жёлтый", "светло-жёлтый"], ["тёмно-жёлтый", "тёмно-жёлтый"], ["красноватый", "красноватый"], ["другой", "другой"]] },
+                    { code: "U_CLARITY", label: "Прозрачность", type: "select", options: [["прозрачная", "прозрачная"], ["слегка мутная", "слегка мутная"], ["мутная", "мутная"]] },
+                    { code: "U_SG", label: "Удельный вес (плотность)", type: "number", unit: "", step: "any" },
+                    { code: "U_PH", label: "pH", type: "number", unit: "", step: "any" },
+                    { code: "U_PROTEIN", label: "Белок", type: "number", unit: "г/л", step: "any" },
+                    { code: "U_GLU", label: "Глюкоза", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "U_KET", label: "Кетоновые тела", type: "select", options: [["нет", "нет"], ["следы", "следы"], ["+", "+"], ["++", "++"], ["+++", "+++"]] },
+                    { code: "U_BIL", label: "Билирубин", type: "select", options: [["нет", "нет"], ["есть", "есть"]] },
+                    { code: "U_WBC", label: "Лейкоциты", type: "number", unit: "в п/зр", step: "any" },
+                    { code: "U_RBC", label: "Эритроциты", type: "number", unit: "в п/зр", step: "any" },
+                    { code: "U_EPI", label: "Плоский эпителий", type: "number", unit: "в п/зр", step: "any" },
+                    { code: "U_CASTS", label: "Цилиндры", type: "select", options: [["нет", "нет"], ["есть", "есть"]] },
+                    { code: "U_BACT", label: "Бактерии", type: "select", options: [["нет", "нет"], ["единичные", "единичные"], ["много", "много"]] },
+                    { code: "U_MUCUS", label: "Слизь", type: "select", options: [["нет", "нет"], ["немного", "немного"], ["много", "много"]] }
                 ] }
         ]
     },
@@ -79,6 +146,21 @@ export const STEPS = [
                 ] }
         ]
     },
-    { id: "step5", title: "5", sections: [] },
+    {
+        id: "genetics", title: "Генетика",
+        sections: [
+            { title: "Генетические исследования", fields: [
+                    { code: "GEN_TESTS", label: "Результаты", type: "table", columns: [
+                            { key: "test", label: "Ген / маркер", type: "text", placeholder: "MTHFR C677T" },
+                            { key: "result", label: "Результат (генотип)", type: "text" },
+                            { key: "meaning", label: "Значение", type: "text" },
+                            { key: "lab", label: "Лаборатория", type: "text" }
+                        ] }
+                ] },
+            { title: "Заметки", fields: [
+                    { code: "GEN_NOTES", label: "Заметки по генетике", type: "textarea" }
+                ] }
+        ]
+    },
     { id: "step6", title: "6", sections: [] }
 ];

@@ -5,6 +5,7 @@
 import { STEPS } from "./fields.js";
 import * as FS from "./folder.js";
 import { fold } from "./ui.js";
+import * as Files from "./files.js";
 const KEY = "electrodoctor.clients.v1";
 const $ = (s) => document.querySelector(s);
 const btn = (s) => $(s);
@@ -49,6 +50,7 @@ function deleteClient(id) {
     saveAll(data);
     if (c)
         queue = queue.then(() => FS.removeClient(c)).catch(folderError);
+    Files.removeAll(id).catch(e => console.error(e));
 }
 const newId = () => "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 // ---------- папка на компьютере ----------
@@ -95,14 +97,12 @@ async function syncFolder() {
         await toFolder(c);
     return changed;
 }
-const whereText = (c) => FS.ready()
-    ? `Сохраняется в папку: <b>${esc(FS.state.name)}/${esc(c.folder || "…")}</b>`
-    : `Сохраняется в этом браузере. <a href="#/clients">Выбрать папку на компьютере</a>`;
 // ---------- поля ----------
 const fieldsOf = (step) => step.sections.flatMap(s => s.fields);
-const isFilled = (f, v) => f && f.type === "table"
-    ? Array.isArray(v) && v.some(r => Object.values(r).some(x => String(x).trim() !== ""))
-    : v !== undefined && v !== null && String(v).trim() !== "";
+const isFilled = (f, v) => f && f.type === "files" ? Array.isArray(v) && v.length > 0
+    : f && f.type === "table"
+        ? Array.isArray(v) && v.some(r => Object.values(r).some(x => String(x).trim() !== ""))
+        : v !== undefined && v !== null && String(v).trim() !== "";
 function progress(c, step) {
     const fs = fieldsOf(step).filter(f => !f.computed);
     const filled = fs.filter(f => isFilled(f, c.values[f.code])).length;
@@ -327,7 +327,7 @@ function renderClient(id, stepId) {
     const isNew = !getClient(id);
     view.innerHTML = `
     <div class="head">
-      <div><a href="#/clients">← Клиенты</a><h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1><div class="where" id="where">${whereText(c)}</div></div>
+      <div><a href="#/clients">← Клиенты</a><h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1></div>
       <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : "Сохранено"}</span>
         <button class="btn" id="csv" ${isNew ? "disabled" : ""}>CSV</button>
@@ -338,12 +338,10 @@ function renderClient(id, stepId) {
     <div class="steps" role="tablist">${STEPS.map((s, i) => {
         const p = progress(c, s);
         const full = p.total && p.filled === p.total;
-        const label = /^\d+$/.test(s.title) ? "" : esc(s.title);
-        return `<a class="step${i === si ? " on" : ""}${full && i !== si ? " full" : ""}" role="tab" aria-selected="${i === si}" href="#/client/${esc(id)}/${s.id}" style="text-decoration:none"><span class="n">${i + 1}</span>${label}</a>`;
+        return `<a class="step${i === si ? " on" : ""}${full && i !== si ? " full" : ""}" role="tab" aria-selected="${i === si}" href="#/client/${esc(id)}/${s.id}"${full ? ' title="всё заполнено"' : ""}>${esc(s.title)}</a>`;
     }).join("")}</div>
-    <div class="card" id="form">${step.sections.length ? step.sections.map(sec => `
-      <div class="sec"><h2>${esc(sec.title)}</h2>${sec.fields.map(f => fieldHtml(f, c.values[f.code])).join("")}</div>`).join("")
-        : `<div class="empty">Этап ${si + 1}: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
+    <div class="card" id="form">${step.sections.length ? step.sections.map(sec => sectionHtml(step, sec, c)).join("")
+        : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
     </div>
     <div class="nav2">
       ${si > 0 ? `<a class="btn" href="#/client/${esc(id)}/${STEPS[si - 1].id}">← ${esc(stepName(si - 1))}</a>` : "<span></span>"}
@@ -368,10 +366,8 @@ function renderClient(id, stepId) {
         written.then(folder => {
             if (!$("#saved"))
                 return;
-            if (folder) {
+            if (folder)
                 $("#saved").textContent = "Сохранено " + time + " · в папку";
-                $("#where").innerHTML = whereText(c);
-            }
             else if (FS.ready() && folderErr)
                 $("#saved").textContent = "В папку не записалось: " + folderErr;
         });
@@ -379,6 +375,11 @@ function renderClient(id, stepId) {
             const p = progress(c, STEPS[i]);
             el.classList.toggle("full", !!p.total && p.filled === p.total && i !== si);
         });
+        for (const sec of step.sections) { // «заполнено N из M» на свёрнутых блоках
+            const st = sec.fold && sec.id ? document.querySelector(`[data-fold="${step.id}.${sec.id}"] .fold-status`) : null;
+            if (st)
+                st.textContent = foldStatus(sec, c);
+        }
     };
     const set = (code, v) => {
         if (v === "" || v == null)
@@ -438,6 +439,105 @@ function renderClient(id, stepId) {
         });
         set(f.code, rows.length ? rows : "");
     }
+    // ---- фото и файлы анализов ----
+    const filesField = fieldsOf(step).find(f => f.type === "files");
+    const fileList = () => (filesField && Array.isArray(c.values[filesField.code]) ? c.values[filesField.code] : []);
+    const redrawFiles = () => {
+        const box = filesField && document.querySelector(`[data-files="${filesField.code}"] .files-list`);
+        if (box)
+            box.innerHTML = filesListHtml(fileList());
+    };
+    async function addFiles(list) {
+        if (!filesField)
+            return;
+        if (!getClient(id)) {
+            alert("Сначала укажите имя клиента на вкладке «Общее» — после этого можно добавлять файлы.");
+            return;
+        }
+        const all = [...list];
+        const bad = all.filter(f => !Files.accepted(f) || f.size > Files.MAX_SIZE);
+        const status = document.querySelector(`[data-files="${filesField.code}"] .files-msg`);
+        if (status)
+            status.textContent = all.length > bad.length ? "Сохраняю…" : "";
+        const refs = [...fileList()];
+        for (const f of all) {
+            if (bad.includes(f))
+                continue;
+            try {
+                const ref = await Files.add(id, f);
+                refs.push(ref);
+                set(filesField.code, [...refs]);
+                redrawFiles();
+                FS.writeAttachment(c, ref.name, f)
+                    .then(saved => { if (saved) {
+                    ref.savedAs = saved;
+                    set(filesField.code, [...fileList()]);
+                    redrawFiles();
+                } })
+                    .catch(folderError);
+            }
+            catch (e) {
+                folderError(e);
+                alert("Не удалось сохранить файл «" + f.name + "»: " + ((e instanceof Error && e.message) || e));
+            }
+        }
+        if (status)
+            status.textContent = bad.length
+                ? "Не добавлено: " + bad.map(f => f.name || "картинка").join(", ") + " — подходят фото и PDF до " + Files.sizeText(Files.MAX_SIZE) + "."
+                : "";
+    }
+    if (filesField) {
+        const zone = document.querySelector(`[data-files="${filesField.code}"]`);
+        const input = zone.querySelector("input[type=file]");
+        input.addEventListener("change", () => { if (input.files)
+            addFiles(input.files).finally(() => { input.value = ""; }); });
+        zone.addEventListener("dragover", ev => { ev.preventDefault(); zone.classList.add("drag"); });
+        zone.addEventListener("dragleave", () => zone.classList.remove("drag"));
+        zone.addEventListener("drop", ev => { ev.preventDefault(); zone.classList.remove("drag"); if (ev.dataTransfer)
+            addFiles(ev.dataTransfer.files); });
+        zone.addEventListener("click", ev => {
+            const t = ev.target;
+            const rm = t.closest("[data-rmfile]"), open = t.closest("[data-openfile]");
+            if (rm) {
+                const ref = fileList().find(r => r.id === rm.dataset.rmfile);
+                if (!ref)
+                    return;
+                if (!confirm("Удалить файл «" + ref.name + "»?"))
+                    return;
+                Files.remove(id, ref.id).catch(e => console.error(e));
+                if (ref.savedAs)
+                    FS.removeAttachment(c, ref.savedAs).catch(folderError);
+                const rest = fileList().filter(r => r.id !== ref.id);
+                set(filesField.code, rest.length ? rest : "");
+                redrawFiles();
+            }
+            else if (open) {
+                ev.preventDefault();
+                Files.get(id, open.dataset.openfile).then(blob => {
+                    if (!blob) {
+                        alert("Этого файла нет в браузере" + (FS.ready() ? " — посмотрите в папке клиента, подпапка «файлы анализов»." : "."));
+                        return;
+                    }
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, "_blank", "noopener");
+                    setTimeout(() => URL.revokeObjectURL(url), 60000);
+                });
+            }
+        });
+        // Вставка картинки из буфера обмена (Ctrl+V), пока открыта эта вкладка
+        const onPaste = (ev) => {
+            if (!document.body.contains(zone)) {
+                document.removeEventListener("paste", onPaste);
+                return;
+            }
+            const files = [...(ev.clipboardData?.files || [])];
+            if (files.length) {
+                ev.preventDefault();
+                addFiles(files);
+            }
+        };
+        document.addEventListener("paste", onPaste);
+    }
     $("#csv").onclick = () => download(fileBase(c) + ".csv", toCSV(c), "text/csv");
     $("#md").onclick = () => download(fileBase(c) + ".md", toMarkdown(c), "text/markdown");
     $("#del").onclick = () => {
@@ -450,6 +550,22 @@ function renderClient(id, stepId) {
     const first = form.querySelector("input, textarea, select");
     if (first && si === 0 && !c.values.NAME)
         first.focus();
+}
+function foldStatus(sec, c) {
+    const fs = sec.fields.filter(f => !f.computed);
+    const n = fs.filter(f => isFilled(f, c.values[f.code])).length;
+    return n ? `заполнено ${n} из ${fs.length}` : "не заполнено";
+}
+function sectionHtml(step, sec, c) {
+    const fields = sec.fields.map(f => fieldHtml(f, c.values[f.code])).join("");
+    if (sec.fold && sec.id)
+        return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, esc(foldStatus(sec, c)), fields)}</div>`;
+    return `<div class="sec"><h2>${esc(sec.title)}</h2>${fields}</div>`;
+}
+function filesListHtml(refs) {
+    if (!refs.length)
+        return `<p class="muted files-empty">Файлов пока нет.</p>`;
+    return `<ul class="files">${refs.map(r => `<li><a href="#" data-openfile="${esc(r.id)}" title="открыть">${esc(r.name)}</a><span class="muted">${Files.sizeText(r.size)} · ${fmtDate(r.addedAt)}${r.savedAs ? " · в папке" : ""}</span><button type="button" class="btn danger" data-rmfile="${esc(r.id)}" title="удалить файл" aria-label="удалить файл ${esc(r.name)}">×</button></li>`).join("")}</ul>`;
 }
 function fieldHtml(f, v) {
     const lbl = `${esc(f.label)}${f.required ? ' <span class="req">*</span>' : ""}${f.hint ? `<small>${esc(f.hint)}</small>` : ""}`;
@@ -481,6 +597,16 @@ function fieldHtml(f, v) {
             ctl = `<span class="scale" data-choice="${f.code}" role="group" aria-label="${esc(f.label)}">${b}<button type="button" data-v="" class="clr" title="очистить">—</button></span>`;
             break;
         }
+        case "files": {
+            const refs = Array.isArray(v) ? v : [];
+            return `<div class="field wide"><div class="dropzone" data-files="${f.code}">
+        <div class="dz-row"><label class="btn primary dz-pick">Добавить фото или файлы<input type="file" multiple accept="${Files.ACCEPT}" hidden></label>
+        <span class="muted">или перетащите сюда, или вставьте картинку (Ctrl+V)</span></div>
+        ${f.hint ? `<small class="muted">${esc(f.hint)}</small>` : ""}
+        <div class="files-msg err" aria-live="polite"></div>
+        <div class="files-list">${filesListHtml(refs)}</div>
+      </div></div>`;
+        }
         case "table": {
             const rows = Array.isArray(v) && v.length ? v : [{}];
             return `<div class="field wide"><label>${lbl}</label><div class="tblwrap" data-table="${f.code}"><table class="rows"><thead><tr>${(f.columns || []).map(col => `<th>${esc(col.label)}</th>`).join("")}<th></th></tr></thead><tbody>${rows.map(r => rowHtml(f, r)).join("")}</tbody></table><button type="button" class="btn" data-act="add" style="margin-top:6px">+ строка</button></div></div>`;
@@ -501,7 +627,7 @@ function toCSV(c) {
     for (const step of STEPS)
         for (const f of fieldsOf(step)) {
             const v = c.values[f.code];
-            if (!isFilled(f, v) || f.code === "NAME")
+            if (!isFilled(f, v) || f.code === "NAME" || f.type === "files")
                 continue; // имя в CSV не пишем: файл обезличен
             const src = SOURCE[step.id] || step.id;
             if (f.type === "table") {
@@ -528,7 +654,10 @@ function toMarkdown(c) {
         if (!fs.length)
             return;
         out += `\n## ${i + 1}. ${mdCell(step.title)}\n\n`;
-        const simple = fs.filter(f => f.type !== "table");
+        const simple = fs.filter(f => f.type !== "table" && f.type !== "files");
+        for (const f of fs.filter(f => f.type === "files")) {
+            out += `### ${mdCell(f.label)}\n\n` + c.values[f.code].map(r => `- ${mdCell(r.savedAs ? "файлы анализов/" + r.savedAs : r.name)}`).join("\n") + "\n\n";
+        }
         if (simple.length) {
             out += "| Поле | Код | Значение |\n|---|---|---|\n";
             for (const f of simple)
