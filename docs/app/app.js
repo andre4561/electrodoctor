@@ -6,6 +6,7 @@ import { STEPS } from "./fields.js";
 import * as FS from "./folder.js";
 import { fold } from "./ui.js";
 import * as Files from "./files.js";
+import * as AI from "./aiimport.js";
 const KEY = "electrodoctor.clients.v1";
 const $ = (s) => document.querySelector(s);
 const btn = (s) => $(s);
@@ -103,8 +104,9 @@ const isFilled = (f, v) => f && f.type === "files" ? Array.isArray(v) && v.lengt
     : f && f.type === "table"
         ? Array.isArray(v) && v.some(r => Object.values(r).some(x => String(x).trim() !== ""))
         : v !== undefined && v !== null && String(v).trim() !== "";
+const counts = (f) => !f.computed && !f.hidden && f.type !== "aiimport"; // участвует в «заполнено N из M»
 function progress(c, step) {
-    const fs = fieldsOf(step).filter(f => !f.computed);
+    const fs = fieldsOf(step).filter(counts);
     const filled = fs.filter(f => isFilled(f, c.values[f.code])).length;
     return { filled, total: fs.length };
 }
@@ -440,7 +442,7 @@ function renderClient(id, stepId) {
         set(f.code, rows.length ? rows : "");
     }
     // ---- фото и файлы анализов ----
-    const filesField = fieldsOf(step).find(f => f.type === "files");
+    const filesField = fieldsOf(step).find(f => f.type === "files" && !f.hidden);
     const fileList = () => (filesField && Array.isArray(c.values[filesField.code]) ? c.values[filesField.code] : []);
     const redrawFiles = () => {
         const box = filesField && document.querySelector(`[data-files="${filesField.code}"] .files-list`);
@@ -538,6 +540,97 @@ function renderClient(id, stepId) {
         };
         document.addEventListener("paste", onPaste);
     }
+    // ---- перенос анализов из ответа ИИ ----
+    const ai = document.querySelector("[data-ai]");
+    if (ai) {
+        const text = ai.querySelector("[data-ai-text]");
+        const msg = ai.querySelector("[data-ai-msg]");
+        const preview = ai.querySelector("[data-ai-preview]");
+        const fileInput = ai.querySelector("[data-ai-file]");
+        let parsed = null, rows = [];
+        if (aiFlash) {
+            msg.className = "ai-msg ok";
+            msg.textContent = aiFlash;
+            aiFlash = "";
+        }
+        const say = (t, ok = false) => { msg.className = "ai-msg " + (ok ? "ok" : "err"); msg.textContent = t; };
+        const run = (src) => {
+            preview.innerHTML = "";
+            say("");
+            try {
+                parsed = AI.parse(src);
+                rows = AI.match(parsed, STEPS);
+            }
+            catch (e) {
+                parsed = null;
+                say((e instanceof Error && e.message) || String(e));
+                return;
+            }
+            preview.innerHTML = aiPreviewHtml(parsed, rows, c);
+        };
+        ai.addEventListener("click", ev => {
+            const t = ev.target.closest("[data-ai-act]");
+            if (!t)
+                return;
+            const act = t.dataset.aiAct;
+            if (act === "copy") {
+                const prompt = AI.buildPrompt(STEPS);
+                (navigator.clipboard ? navigator.clipboard.writeText(prompt) : Promise.reject(new Error("нет доступа к буферу")))
+                    .then(() => say("Промпт скопирован — вставьте его в ИИ вместе с фото анализов.", true))
+                    .catch(() => { download("промпт-анализы.txt", prompt, "text/plain"); say("Скопировать не получилось — промпт скачан файлом.", true); });
+            }
+            else if (act === "download")
+                download("промпт-анализы.txt", AI.buildPrompt(STEPS), "text/plain");
+            else if (act === "parse")
+                run(text.value);
+            else if (act === "cancel") {
+                preview.innerHTML = "";
+                parsed = null;
+            }
+            else if (act === "apply" && parsed) {
+                if (!getClient(id) && !isFilled(null, c.values.NAME)) {
+                    alert("Сначала укажите имя клиента на вкладке «Общее».");
+                    return;
+                }
+                const boxes = preview.querySelectorAll("input[data-ai-row]");
+                const chosen = rows.filter((_, i) => boxes[i] && boxes[i].checked);
+                if (!chosen.length) {
+                    say("Ничего не отмечено.");
+                    return;
+                }
+                const other = Array.isArray(c.values[AI.OTHER_CODE]) ? [...c.values[AI.OTHER_CODE]].filter(r => Object.values(r).some(x => String(x).trim())) : [];
+                for (const row of chosen) {
+                    if (row.field)
+                        c.values[row.field.code] = row.value;
+                    else {
+                        const r = AI.otherRow(row, parsed.date);
+                        if (!other.some(o => o.name === r.name && o.value === r.value))
+                            other.push(r);
+                    }
+                }
+                if (other.length)
+                    c.values[AI.OTHER_CODE] = other;
+                clearTimeout(timer);
+                save();
+                aiFlash = `Перенесено показателей: ${chosen.length}.` + (parsed.date ? ` Дата анализов: ${parsed.date}.` : "");
+                renderClient(id, step.id);
+            }
+        });
+        fileInput.addEventListener("change", async () => {
+            const f = fileInput.files && fileInput.files[0];
+            if (!f)
+                return;
+            text.value = await f.text();
+            fileInput.value = "";
+            run(text.value);
+        });
+        preview.addEventListener("change", () => {
+            const n = preview.querySelectorAll("input[data-ai-row]:checked").length;
+            const b = preview.querySelector('[data-ai-act="apply"]');
+            if (b)
+                b.textContent = `Перенести отмеченные (${n})`;
+        });
+    }
     $("#csv").onclick = () => download(fileBase(c) + ".csv", toCSV(c), "text/csv");
     $("#md").onclick = () => download(fileBase(c) + ".md", toMarkdown(c), "text/markdown");
     $("#del").onclick = () => {
@@ -551,8 +644,42 @@ function renderClient(id, stepId) {
     if (first && si === 0 && !c.values.NAME)
         first.focus();
 }
+let aiFlash = ""; // сообщение после переноса, показывается на перерисованной странице
+function aiImportHtml() {
+    return `<div class="ai" data-ai>
+    <p class="ai-lead">Распознавание делает любой ИИ, который вы выберете: ChatGPT, DeepSeek, Claude, Gemini… Фото уходят только туда, куда вы их отправите сами.</p>
+    <ol class="ai-steps">
+      <li><div>Скопируйте промпт — в нём список всех полей анкеты и формат ответа.</div>
+        <div class="grp"><button type="button" class="btn primary" data-ai-act="copy">Скопировать промпт</button><button type="button" class="btn" data-ai-act="download">Скачать .txt</button></div></li>
+      <li><div>Откройте ИИ, вставьте промпт и приложите фото или PDF анализов.</div></li>
+      <li><div>Вставьте ответ ИИ сюда или загрузите сохранённый .json.</div>
+        <textarea data-ai-text rows="4" spellcheck="false" placeholder='{ "format": "electrodoctor-labs", "version": 1, "results": [ … ] }' aria-label="Ответ ИИ"></textarea>
+        <div class="grp"><button type="button" class="btn primary" data-ai-act="parse">Разобрать ответ</button><label class="btn">Загрузить .json<input type="file" data-ai-file accept=".json,.txt,application/json,text/plain" hidden></label></div></li>
+    </ol>
+    <div class="ai-msg" data-ai-msg aria-live="polite"></div>
+    <div data-ai-preview></div>
+  </div>`;
+}
+function aiPreviewHtml(p, rows, c) {
+    const unitOf = (r) => r.field ? (r.field.unit || "") : (r.result.unit || "");
+    const now = (r) => r.field && isFilled(r.field, c.values[r.field.code]) ? String(c.values[r.field.code]) : "";
+    const n = rows.filter(r => r.apply).length;
+    return `<div class="ai-preview">
+    <h3>Найдено показателей: ${rows.length}${p.date ? ` · дата: ${esc(p.date)}` : ""}${p.lab ? ` · ${esc(p.lab)}` : ""}</h3>
+    <p class="muted">Проверьте значения со своим бланком. Отмеченное перенесётся в анкету; то, чему нет своего поля, — в таблицу «Другие показатели».</p>
+    <div class="tblwrap"><table class="ai-table"><thead><tr><th></th><th>Показатель</th><th class="num">Значение</th><th class="num">Сейчас</th><th>Примечание</th></tr></thead><tbody>${rows.map((r, i) => `
+      <tr class="st-${r.status}"><td><input type="checkbox" data-ai-row="${i}"${r.apply ? " checked" : ""} aria-label="перенести"></td>
+      <td>${esc(r.field ? r.field.label : (r.result.name || r.result.code || "—"))}${r.result.ref ? `<small class="muted">норма ${esc(r.result.ref)}</small>` : ""}</td>
+      <td class="num">${esc(r.value)} <span class="muted">${esc(r.status === "unit" ? r.result.unit : unitOf(r))}</span></td>
+      <td class="num muted">${esc(now(r))}</td>
+      <td class="ai-note">${esc(r.note)}</td></tr>`).join("")}</tbody></table></div>
+    <div class="grp"><button type="button" class="btn primary" data-ai-act="apply">Перенести отмеченные (${n})</button><button type="button" class="btn" data-ai-act="cancel">Отмена</button></div>
+  </div>`;
+}
 function foldStatus(sec, c) {
-    const fs = sec.fields.filter(f => !f.computed);
+    const fs = sec.fields.filter(counts);
+    if (!fs.length)
+        return "";
     const n = fs.filter(f => isFilled(f, c.values[f.code])).length;
     return n ? `заполнено ${n} из ${fs.length}` : "не заполнено";
 }
@@ -560,7 +687,7 @@ function sectionHtml(step, sec, c) {
     const fields = sec.fields.map(f => fieldHtml(f, c.values[f.code])).join("");
     if (sec.fold && sec.id)
         return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, esc(foldStatus(sec, c)), fields)}</div>`;
-    return `<div class="sec"><h2>${esc(sec.title)}</h2>${fields}</div>`;
+    return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${fields}</div>`;
 }
 function filesListHtml(refs) {
     if (!refs.length)
@@ -568,6 +695,10 @@ function filesListHtml(refs) {
     return `<ul class="files">${refs.map(r => `<li><a href="#" data-openfile="${esc(r.id)}" title="открыть">${esc(r.name)}</a><span class="muted">${Files.sizeText(r.size)} · ${fmtDate(r.addedAt)}${r.savedAs ? " · в папке" : ""}</span><button type="button" class="btn danger" data-rmfile="${esc(r.id)}" title="удалить файл" aria-label="удалить файл ${esc(r.name)}">×</button></li>`).join("")}</ul>`;
 }
 function fieldHtml(f, v) {
+    if (f.hidden)
+        return `<p class="muted hidden-note">${esc(f.label)}: добавление скрыто.</p>`;
+    if (f.type === "aiimport")
+        return aiImportHtml();
     const lbl = `${esc(f.label)}${f.required ? ' <span class="req">*</span>' : ""}${f.hint ? `<small>${esc(f.hint)}</small>` : ""}`;
     const id = "f_" + f.code;
     const s = v === undefined || v === null || v === "" ? "" : String(v);
