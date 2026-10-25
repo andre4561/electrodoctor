@@ -108,7 +108,17 @@ export const STEPS: Step[] = [
         { code: "CA", label: "Кальций общий", type: "number", unit: "ммоль/л", step: "any" },
         { code: "MG", label: "Магний", type: "number", unit: "ммоль/л", step: "any" }
       ]},
-      { id: "blood_other", title: "Кровь — прочее: гормоны, витамины", fold: true, fields: [
+      { id: "blood_coag", title: "Кровь — коагулограмма", fold: true, fields: [
+        { code: "PT_SEC", label: "Протромбиновое время", type: "number", unit: "с", step: "any" },
+        { code: "PT_QUICK", label: "Протромбин по Квику", type: "number", unit: "%", step: "any" },
+        { code: "INR", label: "МНО", type: "number", unit: "", step: "any" },
+        { code: "APTT", label: "АЧТВ", type: "number", unit: "с", step: "any" },
+        { code: "FIBRINOGEN", label: "Фибриноген", type: "number", unit: "г/л", step: "any" },
+        { code: "TT", label: "Тромбиновое время", type: "number", unit: "с", step: "any" },
+        { code: "DDIMER", label: "D-димер", type: "number", unit: "нг/мл FEU", step: "any" },
+        { code: "ANTITHROMBIN", label: "Антитромбин III", type: "number", unit: "%", step: "any" }
+      ]},
+      { id: "blood_other", title: "Кровь — щитовидная железа, витамины, прочее", fold: true, fields: [
         { code: "TSH", label: "ТТГ", type: "number", unit: "мЕд/л", step: "any" },
         { code: "FT4", label: "Т4 свободный", type: "number", unit: "пмоль/л", step: "any" },
         { code: "FT3", label: "Т3 свободный", type: "number", unit: "пмоль/л", step: "any" },
@@ -122,6 +132,65 @@ export const STEPS: Step[] = [
           { key: "value", label: "Значение", type: "text" },
           { key: "unit", label: "Ед.", type: "text" },
           { key: "date", label: "День", type: "text", placeholder: "day0" }
+        ]}
+      ]},
+      { id: "blood_sex", title: "Кровь — половые гормоны", fold: true, fields: [
+        { code: "LH", label: "ЛГ", type: "number", unit: "мЕд/мл", step: "any" },
+        { code: "FSH", label: "ФСГ", type: "number", unit: "мЕд/мл", step: "any" },
+        { code: "PRL", label: "Пролактин", type: "number", unit: "мЕд/л", step: "any" },
+        { code: "E2", label: "Эстрадиол", type: "number", unit: "пмоль/л", step: "any" },
+        { code: "PROG", label: "Прогестерон", type: "number", unit: "нмоль/л", step: "any" },
+        { code: "TESTO", label: "Тестостерон общий", type: "number", unit: "нмоль/л", step: "any" },
+        { code: "TESTO_FREE", label: "Тестостерон свободный", type: "number", unit: "пг/мл", step: "any" },
+        { code: "SHBG", label: "ГСПГ (SHBG)", type: "number", unit: "нмоль/л", step: "any" },
+        { code: "DHEAS", label: "ДГЭА-сульфат", type: "number", unit: "мкмоль/л", step: "any" },
+        { code: "AMH", label: "Антимюллеров гормон", type: "number", unit: "нг/мл", step: "any" },
+        { code: "HCG", label: "ХГЧ", type: "number", unit: "мЕд/мл", step: "any" }
+      ]},
+      { id: "blood_micro", title: "Кровь — микроэлементы", fold: true, fields: [
+        { code: "CA_ION", label: "Кальций ионизированный", type: "number", unit: "ммоль/л", step: "any" },
+        { code: "P", label: "Фосфор неорганический", type: "number", unit: "ммоль/л", step: "any" },
+        { code: "CL", label: "Хлор", type: "number", unit: "ммоль/л", step: "any" },
+        { code: "ZN", label: "Цинк", type: "number", unit: "мкмоль/л", step: "any" },
+        { code: "CU", label: "Медь", type: "number", unit: "мкмоль/л", step: "any" },
+        { code: "SE", label: "Селен", type: "number", unit: "мкг/л", step: "any" },
+        { code: "IODINE", label: "Йод", type: "number", unit: "мкг/л", step: "any" }
+      ]},
+      { id: "blood_immuno", title: "Кровь — инфекции и иммунология", fold: true, fields: [
+        { code: "HBSAG", label: "Гепатит B: HBsAg", type: "select", options: [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]] },
+        { code: "ANTI_HCV", label: "Гепатит C: антитела (anti-HCV)", type: "select", options: [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]] },
+        { code: "HIV", label: "ВИЧ: антиген и антитела", type: "select", options: [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]] },
+        { code: "SYPHILIS", label: "Сифилис: антитела к Treponema pallidum", type: "select", options: [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]] },
+        { code: "HPYLORI", label: "Helicobacter pylori: антитела IgG", type: "select", options: [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]] },
+        { code: "IGA", label: "Иммуноглобулин A", type: "number", unit: "г/л", step: "any" },
+        { code: "IGM", label: "Иммуноглобулин M", type: "number", unit: "г/л", step: "any" },
+        { code: "IGG", label: "Иммуноглобулин G", type: "number", unit: "г/л", step: "any" },
+        { code: "RF", label: "Ревматоидный фактор", type: "number", unit: "МЕ/мл", step: "any" },
+        { code: "ASLO", label: "Антистрептолизин-О (АСЛО)", type: "number", unit: "МЕ/мл", step: "any" },
+        { code: "ANA", label: "Антинуклеарный фактор (АНФ)", type: "select", options: [["не обнаружен", "не обнаружен"], ["обнаружен", "обнаружен"]] },
+        { code: "INF_OTHER", label: "Другие инфекции и антитела", type: "table", columns: [
+          { key: "name", label: "Исследование", type: "text", placeholder: "ВПГ IgG" },
+          { key: "value", label: "Результат", type: "text" },
+          { key: "unit", label: "Ед.", type: "text" },
+          { key: "date", label: "День", type: "text", placeholder: "day0" }
+        ]}
+      ]},
+      { id: "blood_onco", title: "Кровь — онкомаркеры", fold: true, fields: [
+        { code: "PSA", label: "ПСА общий", type: "number", unit: "нг/мл", step: "any" },
+        { code: "PSA_FREE", label: "ПСА свободный", type: "number", unit: "нг/мл", step: "any" },
+        { code: "CEA", label: "РЭА", type: "number", unit: "нг/мл", step: "any" },
+        { code: "CA125", label: "CA-125", type: "number", unit: "Ед/мл", step: "any" },
+        { code: "CA153", label: "CA 15-3", type: "number", unit: "Ед/мл", step: "any" },
+        { code: "CA199", label: "CA 19-9", type: "number", unit: "Ед/мл", step: "any" },
+        { code: "AFP", label: "Альфа-фетопротеин (АФП)", type: "number", unit: "МЕ/мл", step: "any" },
+        { code: "HE4", label: "HE4", type: "number", unit: "пмоль/л", step: "any" }
+      ]},
+      { id: "blood_allergy", title: "Кровь — аллергология", fold: true, fields: [
+        { code: "IGE", label: "IgE общий", type: "number", unit: "МЕ/мл", step: "any" },
+        { code: "ALLERGENS", label: "Специфические IgE (аллергены)", type: "table", columns: [
+          { key: "name", label: "Аллерген", type: "text", placeholder: "берёза" },
+          { key: "value", label: "Значение", type: "text", placeholder: "кЕдА/л" },
+          { key: "class", label: "Класс", type: "text", placeholder: "0–6" }
         ]}
       ]},
       { id: "urine", title: "Моча — общий анализ", fold: true, fields: [
@@ -139,6 +208,26 @@ export const STEPS: Step[] = [
         { code: "U_CASTS", label: "Цилиндры", type: "select", options: [["нет", "нет"], ["есть", "есть"]] },
         { code: "U_BACT", label: "Бактерии", type: "select", options: [["нет", "нет"], ["единичные", "единичные"], ["много", "много"]] },
         { code: "U_MUCUS", label: "Слизь", type: "select", options: [["нет", "нет"], ["немного", "немного"], ["много", "много"]] }
+      ]},
+      { id: "urine_more", title: "Моча — по Нечипоренко и суточная", fold: true, fields: [
+        { code: "UN_WBC", label: "По Нечипоренко: лейкоциты", type: "number", unit: "в 1 мл", step: "any" },
+        { code: "UN_RBC", label: "По Нечипоренко: эритроциты", type: "number", unit: "в 1 мл", step: "any" },
+        { code: "UN_CASTS", label: "По Нечипоренко: цилиндры", type: "number", unit: "в 1 мл", step: "any" },
+        { code: "U24_VOL", label: "Суточный объём мочи", type: "number", unit: "мл", step: "any" },
+        { code: "U24_PROTEIN", label: "Белок в суточной моче", type: "number", unit: "г/сут", step: "any" },
+        { code: "U24_CREA", label: "Креатинин в суточной моче", type: "number", unit: "ммоль/сут", step: "any" },
+        { code: "U_ALB_CREA", label: "Альбумин/креатинин в моче", type: "number", unit: "мг/ммоль", step: "any" }
+      ]},
+      { id: "stool", title: "Кал — копрограмма и другие", fold: true, fields: [
+        { code: "STOOL_CONSIST", label: "Консистенция", type: "select", options: [["оформленный", "оформленный"], ["кашицеобразный", "кашицеобразный"], ["жидкий", "жидкий"], ["твёрдый", "твёрдый"]] },
+        { code: "STOOL_COLOR", label: "Цвет", type: "select", options: [["коричневый", "коричневый"], ["светлый", "светлый"], ["тёмный", "тёмный"], ["чёрный", "чёрный"], ["другой", "другой"]] },
+        { code: "STOOL_FIBERS", label: "Мышечные волокна", type: "select", options: [["нет", "нет"], ["немного", "немного"], ["много", "много"]] },
+        { code: "STOOL_FAT", label: "Нейтральный жир", type: "select", options: [["нет", "нет"], ["немного", "немного"], ["много", "много"]] },
+        { code: "STOOL_STARCH", label: "Крахмал", type: "select", options: [["нет", "нет"], ["немного", "немного"], ["много", "много"]] },
+        { code: "STOOL_WBC", label: "Лейкоциты", type: "number", unit: "в п/зр", step: "any" },
+        { code: "STOOL_OCCULT", label: "Скрытая кровь", type: "select", options: [["не обнаружена", "не обнаружена"], ["обнаружена", "обнаружена"]] },
+        { code: "CALPROTECTIN", label: "Кальпротектин", type: "number", unit: "мкг/г", step: "any" },
+        { code: "STOOL_PARASITES", label: "Яйца гельминтов, простейшие", type: "select", options: [["не обнаружены", "не обнаружены"], ["обнаружены", "обнаружены"]] }
       ]}
     ]
   },
