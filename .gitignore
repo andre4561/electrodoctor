@@ -5,3 +5,4 @@ __pycache__/
 # никогда не коммитить реальные данные пациентов
 private/
 *.real.csv
+node_modules/

@@ -51,6 +51,18 @@ Tests:
 python -m unittest discover tests
 ```
 
+### Website and cabinet (TypeScript)
+
+The in-browser engine, the demo page and the client cabinet are written in TypeScript (`src/`) and compiled to JavaScript in `docs/`, which GitHub Pages serves. Requires Node.js 20+.
+
+```bash
+npm install
+npm run build   # src/*.ts → docs/*.js
+npm test        # build, TypeScript-vs-Python parity on the examples and 500 random patients, Python tests
+```
+
+The Python version stays the reference; `tests/parity.test.js` makes sure both give the same numbers.
+
 ## Repository layout
 
 ```
@@ -63,7 +75,11 @@ electrodoctor/
 ├── LICENSE                GNU AGPL v3 (code)
 ├── LICENSE-DATA           CC BY-SA 4.0 (data and documentation)
 ├── LICENSE.md             what is licensed how
-├── docs/
+├── src/                   TypeScript sources
+│   ├── engine.ts          engine for the browser and future apps
+│   ├── demo.ts            demo page
+│   └── app/               cabinet: clients and step-by-step questionnaire
+├── docs/                  website (GitHub Pages); *.js are built from src/, do not edit
 │   ├── concept.md         idea and math
 │   ├── data-format.md     formats of all tables
 │   └── roadmap.md         what's next
@@ -75,7 +91,7 @@ electrodoctor/
 ├── engine/
 │   └── electrodoctor.py   reference implementation
 ├── examples/              fictional training patients
-└── tests/                 checks of the calculation
+└── tests/                 checks of the calculation, TypeScript-vs-Python parity
 ```
 
 ## How you can help

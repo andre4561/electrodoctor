@@ -1,0 +1,19 @@
+{
+  // Исходники на TypeScript лежат в src/, готовый JavaScript — в docs/ (его отдаёт GitHub Pages).
+  // Сборка: npm run build. Файлы *.js в docs/ руками не править.
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "rootDir": "src",
+    "outDir": "docs",
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "removeComments": false,
+    "newLine": "lf",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
+}
