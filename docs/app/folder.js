@@ -1,19 +1,8 @@
+import { tx } from "./db.js";
 export const supported = typeof window.showDirectoryPicker === "function" && typeof indexedDB !== "undefined";
-const DB = "electrodoctor", STORE = "kv", HKEY = "folder";
+const HKEY = "folder";
 export const state = { handle: null, name: "", granted: false };
-function idb(mode, fn) {
-    return new Promise((resolve, reject) => {
-        const open = indexedDB.open(DB, 1);
-        open.onupgradeneeded = () => open.result.createObjectStore(STORE);
-        open.onerror = () => reject(open.error);
-        open.onsuccess = () => {
-            const tx = open.result.transaction(STORE, mode);
-            const req = fn(tx.objectStore(STORE));
-            tx.oncomplete = () => { resolve(req.result); open.result.close(); };
-            tx.onerror = () => { reject(tx.error); open.result.close(); };
-        };
-    });
-}
+const idb = (mode, fn) => tx("kv", mode, fn);
 async function permission(handle, ask) {
     if (!handle.queryPermission)
         return true;
@@ -129,4 +118,42 @@ export async function readAll() {
         }
     }
     return out;
+}
+// Файлы анализов клиента: <папка>/<клиент>/файлы анализов/<имя файла>
+const ATTACH_DIR = "файлы анализов";
+async function attachDir(c, create) {
+    if (!ready())
+        return null;
+    c.folder = await folderFor(c);
+    const dir = create ? await state.handle.getDirectoryHandle(c.folder, { create: true }) : (await subfolders()).get(c.folder.toLowerCase());
+    if (!dir)
+        return null;
+    if (create)
+        return dir.getDirectoryHandle(ATTACH_DIR, { create: true });
+    for await (const [name, h] of dir.entries())
+        if (h.kind === "directory" && name === ATTACH_DIR)
+            return h;
+    return null;
+}
+// Возвращает имя, под которым файл записан (при совпадении добавляется « (2)»), или null, если папка не выбрана.
+export async function writeAttachment(c, name, blob) {
+    const dir = await attachDir(c, true);
+    if (!dir)
+        return null;
+    const taken = new Set();
+    for await (const [n] of dir.entries())
+        taken.add(n.toLowerCase());
+    const clean = safeName(name.replace(/\.[^.]*$/, "")), ext = (name.match(/\.[^.]*$/) || [""])[0].slice(0, 10);
+    let fileName = clean + ext;
+    for (let i = 2; taken.has(fileName.toLowerCase()); i++)
+        fileName = `${clean} (${i})${ext}`;
+    const w = await (await dir.getFileHandle(fileName, { create: true })).createWritable();
+    await w.write(blob);
+    await w.close();
+    return fileName;
+}
+export async function removeAttachment(c, fileName) {
+    const dir = await attachDir(c, false);
+    if (dir)
+        await dir.removeEntry(fileName).catch(() => undefined);
 }
