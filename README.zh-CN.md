@@ -66,7 +66,10 @@ electrodoctor/
 ├── docs/
 │   ├── concept.md         思路与数学原理
 │   ├── data-format.md     所有数据表的格式
-│   └── roadmap.md         后续计划
+│   ├── roadmap.md         后续计划
+│   └── articles/          俄文文章（Markdown，可用 Obsidian 阅读）
+│       ├── diagnoses/     诊断
+│       └── education/     科普主题
 ├── data/                  参考表（开放数据）
 │   ├── parameters.csv     检查项：化验、主诉、体格检查
 │   ├── diagnoses.csv      诊断及先验概率

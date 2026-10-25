@@ -82,7 +82,10 @@ electrodoctor/
 ├── docs/                  website (GitHub Pages); *.js are built from src/, do not edit
 │   ├── concept.md         idea and math
 │   ├── data-format.md     formats of all tables
-│   └── roadmap.md         what's next
+│   ├── roadmap.md         what's next
+│   └── articles/          articles in Russian (Markdown, Obsidian-readable)
+│       ├── diagnoses/     diagnoses
+│       └── education/     general topics
 ├── data/                  reference tables (open data)
 │   ├── parameters.csv     findings: labs, complaints, exam
 │   ├── diagnoses.csv      diagnoses and prior frequencies

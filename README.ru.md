@@ -76,7 +76,10 @@ electrodoctor/
 ├── docs/                  сайт (GitHub Pages); *.js собираются из src/, руками не править
 │   ├── concept.md         идея и математика
 │   ├── data-format.md     форматы всех таблиц
-│   └── roadmap.md         что дальше
+│   ├── roadmap.md         что дальше
+│   └── articles/          статьи (Markdown, читаются в Obsidian)
+│       ├── diagnoses/     диагнозы
+│       └── education/     образование (общие темы)
 ├── data/                  справочники (открытые данные)
 │   ├── parameters.csv     показатели: анализы, жалобы, осмотр
 │   ├── diagnoses.csv      диагнозы и исходные частоты
