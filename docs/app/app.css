@@ -96,3 +96,10 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
   .field { grid-template-columns: 1fr; gap: 6px; }
   .hide-sm { display: none; }
 }
+
+/* хранение */
+.store { margin: 14px 0; }
+.store p { margin: 0 0 10px; font-size: 14px; }
+.store .grp { display: flex; flex-wrap: wrap; gap: 8px; }
+.store code, .where b { font-size: 13px; }
+.where { font-size: 13px; color: var(--muted); margin-top: 2px; }

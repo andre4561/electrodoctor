@@ -14,7 +14,7 @@
       sections: [
         { title: "Клиент", fields: [
           { code: "NAME", label: "Имя или псевдоним", type: "text", required: true,
-            hint: "Лучше псевдоним или инициалы — данные хранятся только в этом браузере" },
+            hint: "Лучше псевдоним или инициалы — данные хранятся только на этом компьютере" },
           { code: "SEX", label: "Пол", type: "select", options: [["F", "женский"], ["M", "мужской"]] },
           { code: "AGE", label: "Возраст", type: "number", unit: "лет", min: 0, max: 120, step: 1 },
           { code: "VISIT_REASON", label: "Повод обращения", type: "textarea" }

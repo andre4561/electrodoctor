@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Электродоктор — кабинет: вход, список клиентов, анкета по этапам.
-// Данные хранятся в localStorage этого браузера; есть выгрузка в CSV, Markdown и JSON.
+// Данные хранятся в localStorage этого браузера и, если выбрана папка, ещё и в ней
+// (см. folder.js); есть выгрузка в CSV, Markdown и JSON.
 (function () {
   "use strict";
 
   const STEPS = window.ED_STEPS;
+  const FS = window.EDFolder;
   const KEY = "electrodoctor.clients.v1";
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -31,12 +33,53 @@
     c.updatedAt = new Date().toISOString();
     data.clients[c.id] = c;
     saveAll(data);
+    return toFolder(c);
   }
   function deleteClient(id) {
     const data = loadAll();
+    const c = data.clients[id];
     delete data.clients[id];
     saveAll(data);
+    if (c) queue = queue.then(() => FS.removeClient(c)).catch(folderError);
   }
+
+  // ---------- папка на компьютере ----------
+  let queue = Promise.resolve();   // записи в папку идут по очереди
+  let folderErr = "";
+  function folderError(e) { folderErr = (e && e.message) || String(e); console.error(e); }
+  function toFolder(c) {
+    if (!FS.ready()) return Promise.resolve(null);
+    const job = queue.then(async () => {
+      const files = { "анкета.md": toMarkdown(c), "данные.csv": toCSV(c) };
+      const had = c.folder;
+      const folder = await FS.writeClient(c, files);
+      folderErr = "";
+      if (folder && folder !== had) {         // запоминаем подпапку, не трогая дату изменения
+        const data = loadAll();
+        if (data.clients[c.id]) { data.clients[c.id].folder = folder; saveAll(data); }
+      }
+      return folder;
+    });
+    queue = job.catch(folderError);
+    return job.catch(e => { folderError(e); return null; });
+  }
+  // Сверка браузера и папки: берём более свежую версию каждого клиента.
+  async function syncFolder() {
+    if (!FS.ready()) return 0;
+    const data = loadAll();
+    let changed = 0;
+    for (const c of await FS.readAll()) {
+      const mine = data.clients[c.id];
+      if (!mine || (c.updatedAt || "") > (mine.updatedAt || "")) { data.clients[c.id] = c; changed++; }
+      else if (mine && !mine.folder) mine.folder = c.folder;
+    }
+    saveAll(data);
+    for (const c of Object.values(data.clients)) await toFolder(c);
+    return changed;
+  }
+  const whereText = c => FS.ready()
+    ? `Сохраняется в папку: <b>${esc(FS.state.name)}/${esc(c.folder || "…")}</b>`
+    : `Сохраняется в этом браузере. <a href="#/clients">Выбрать папку на компьютере</a>`;
   const newId = () => "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
   // ---------- поля ----------
@@ -105,6 +148,7 @@
     view.innerHTML = `
       <h1>Клиенты</h1>
       ${storageOk ? "" : '<div class="note">Браузер не даёт сохранять данные (приватный режим?). Записи пропадут после закрытия вкладки — выгрузите их в файл.</div>'}
+      <div class="card store" id="store"></div>
       <div class="bar">
         <input class="search" id="q" type="search" placeholder="Поиск по имени" aria-label="Поиск">
         <div class="grp">
@@ -127,6 +171,8 @@
     };
     $("#q").oninput = draw;
     draw();
+    drawStore();
+    if (FS.ready()) syncFolder().then(n => { if (n && location.hash === "#/clients") renderClients(); else drawStore(); }).catch(e => { folderError(e); drawStore(); });
     $("#exp").onclick = () => download("electrodoctor-clients.json", JSON.stringify(loadAll(), null, 2), "application/json");
     $("#imp").onclick = () => $("#impfile").click();
     $("#impfile").onchange = async ev => {
@@ -141,6 +187,42 @@
         alert("Загружено клиентов: " + n);
         renderClients();
       } catch (e) { alert("Не получилось прочитать файл. Нужен JSON, выгруженный кнопкой «Выгрузить всех»."); }
+    };
+  }
+  function drawStore() {
+    const box = $("#store"); if (!box) return;
+    const st = FS.state;
+    let html = `<h2>Где хранятся данные</h2>`;
+    if (FS.ready()) {
+      html += `<p>Клиенты сохраняются в папку <b>«${esc(st.name)}»</b> на этом компьютере: у каждого клиента своя подпапка с файлами <code>анкета.md</code>, <code>данные.csv</code> и <code>client.json</code>. Копия остаётся и в браузере.</p>
+        <div class="grp"><button class="btn" id="pick">Выбрать другую папку</button><button class="btn" id="unpick">Не сохранять в папку</button></div>`;
+    } else if (st.handle) {
+      html += `<p>Выбрана папка <b>«${esc(st.name)}»</b>, но браузер просит заново подтвердить доступ к ней. Пока данные сохраняются только в браузере.</p>
+        <div class="grp"><button class="btn primary" id="allow">Разрешить доступ к папке</button><button class="btn" id="pick">Выбрать другую папку</button><button class="btn" id="unpick">Не сохранять в папку</button></div>`;
+    } else if (FS.supported) {
+      html += `<p>По умолчанию данные сохраняются внутри этого браузера, на этом компьютере. Это служебное место браузера: найти эти файлы вручную нельзя, а при очистке истории браузера они удалятся. Вы можете выбрать папку на компьютере — тогда у каждого клиента там будет своя подпапка с файлами.</p>
+        <div class="grp"><button class="btn primary" id="pick">Выбрать папку</button></div>`;
+    } else {
+      html += `<p>По умолчанию данные сохраняются внутри этого браузера, на этом компьютере. При очистке истории браузера они удалятся — время от времени нажимайте «Выгрузить всех».</p>
+        <p class="muted">Сохранять в выбранную папку умеют Chrome, Edge, Яндекс.Браузер и Opera на компьютере. В этом браузере такой возможности нет.</p>`;
+    }
+    if (folderErr) html += `<p class="err">Не удалось записать в папку: ${esc(folderErr)}</p>`;
+    box.innerHTML = html;
+    const after = () => syncFolder().then(() => renderClients()).catch(e => { folderError(e); drawStore(); });
+    const pick = $("#pick"), allow = $("#allow"), unpick = $("#unpick");
+    if (pick) pick.onclick = async () => {
+      try {
+        await FS.choose();
+        const data = loadAll();                       // в новой папке подпапки создаются заново
+        for (const c of Object.values(data.clients)) delete c.folder;
+        saveAll(data);
+        after();
+      } catch (e) { if (e.name !== "AbortError") { folderError(e); drawStore(); } }
+    };
+    if (allow) allow.onclick = async () => { if (await FS.requestAccess()) after(); else drawStore(); };
+    if (unpick) unpick.onclick = async () => {
+      if (!confirm("Перестать сохранять в папку «" + st.name + "»? Файлы в ней останутся, данные продолжат храниться в браузере.")) return;
+      await FS.disconnect(); renderClients();
     };
   }
   function dots(c) {
@@ -162,7 +244,7 @@
 
     view.innerHTML = `
       <div class="head">
-        <div><a href="#/clients">← Клиенты</a><h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1></div>
+        <div><a href="#/clients">← Клиенты</a><h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1><div class="where" id="where">${whereText(c)}</div></div>
         <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : "Сохранено"}</span>
           <button class="btn" id="csv" ${isNew ? "disabled" : ""}>CSV</button>
@@ -193,11 +275,17 @@
         $("#saved").textContent = "Заполните имя, чтобы сохранить";
         return;
       }
-      putClient(c);
+      const written = putClient(c);
       delete drafts[id];
       $("#title").textContent = displayName(c);
       ["csv", "md", "del"].forEach(b => $("#" + b).disabled = false);
-      $("#saved").textContent = storageOk ? "Сохранено " + new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }) : "Не сохраняется в браузере — выгрузите файл";
+      const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+      $("#saved").textContent = storageOk ? "Сохранено " + time : "Не сохраняется в браузере — выгрузите файл";
+      written.then(folder => {
+        if (!$("#saved")) return;
+        if (folder) { $("#saved").textContent = "Сохранено " + time + " · в папку"; $("#where").innerHTML = whereText(c); }
+        else if (FS.ready() && folderErr) $("#saved").textContent = "В папку не записалось: " + folderErr;
+      });
       document.querySelectorAll(".step").forEach((el, i) => {
         const p = progress(c, STEPS[i]);
         el.classList.toggle("full", !!p.total && p.filled === p.total && i !== si);
@@ -248,7 +336,8 @@
     $("#csv").onclick = () => download(fileBase(c) + ".csv", toCSV(c), "text/csv");
     $("#md").onclick = () => download(fileBase(c) + ".md", toMarkdown(c), "text/markdown");
     $("#del").onclick = () => {
-      if (!confirm("Удалить клиента «" + displayName(c) + "» и все его данные?")) return;
+      const inFolder = FS.ready() && c.folder ? " Подпапка «" + c.folder + "» в папке «" + FS.state.name + "» тоже будет удалена." : "";
+      if (!confirm("Удалить клиента «" + displayName(c) + "» и все его данные?" + inFolder)) return;
       deleteClient(id); location.hash = "#/clients";
     };
     const first = form.querySelector("input, textarea, select");
@@ -345,5 +434,5 @@
   }
 
   window.addEventListener("hashchange", route);
-  route();
+  FS.init().catch(folderError).finally(route);
 })();
