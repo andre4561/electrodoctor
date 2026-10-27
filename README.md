@@ -86,6 +86,7 @@ electrodoctor/
 │   └── articles/          articles in Russian (Markdown, Obsidian-readable)
 │       ├── diagnoses/     diagnoses
 │       ├── lab-tests/     lab tests
+│       ├── supplements/   supplements
 │       └── education/     general topics
 ├── data/                  reference tables (open data)
 │   ├── parameters.csv     findings: labs, complaints, exam
