@@ -83,6 +83,7 @@ electrodoctor/
 │       ├── supplements/   БАДы
 │       ├── peptides/      пептиды
 │       ├── probiotics/    пробиотики
+│       ├── drugs/         лекарства
 │       └── education/     образование (общие темы)
 ├── data/                  справочники (открытые данные)
 │   ├── parameters.csv     показатели: анализы, жалобы, осмотр

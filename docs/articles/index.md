@@ -9,6 +9,7 @@ title: Статьи — Электродоктор
 - [БАДы](#бады) — 152
 - [Пептиды](#пептиды) — 513
 - [Пробиотики](#пробиотики) — 165
+- [Лекарства](#лекарства) — 19
 - [Образование](#образование) — 30
 
 ## Анализы
@@ -1257,6 +1258,66 @@ title: Статьи — Электродоктор
 
 - [Weissella cibaria CMU](probiotics/Weissella%20cibaria%20CMU.html)
 - [Weissella confusa](probiotics/Weissella%20confusa.html)
+
+## Лекарства
+
+### A
+
+- [Armour Thyroid](drugs/Armour%20Thyroid.html)
+
+### E
+
+- [EGCG (эпигаллокатехин-3-галлат)](drugs/EGCG%20%28%D1%8D%D0%BF%D0%B8%D0%B3%D0%B0%D0%BB%D0%BB%D0%BE%D0%BA%D0%B0%D1%82%D0%B5%D1%85%D0%B8%D0%BD-3-%D0%B3%D0%B0%D0%BB%D0%BB%D0%B0%D1%82%29.html)
+
+### T
+
+- [Tadalafil](drugs/Tadalafil.html)
+
+### А
+
+- [Акарбоза](drugs/%D0%90%D0%BA%D0%B0%D1%80%D0%B1%D0%BE%D0%B7%D0%B0.html)
+
+### Г
+
+- [Гидроксихлорохин](drugs/%D0%93%D0%B8%D0%B4%D1%80%D0%BE%D0%BA%D1%81%D0%B8%D1%85%D0%BB%D0%BE%D1%80%D0%BE%D1%85%D0%B8%D0%BD.html)
+
+### Д
+
+- [Диметилсульфоксид](drugs/%D0%94%D0%B8%D0%BC%D0%B5%D1%82%D0%B8%D0%BB%D1%81%D1%83%D0%BB%D1%8C%D1%84%D0%BE%D0%BA%D1%81%D0%B8%D0%B4.html)
+
+### И
+
+- [Ивермектин](drugs/%D0%98%D0%B2%D0%B5%D1%80%D0%BC%D0%B5%D0%BA%D1%82%D0%B8%D0%BD.html)
+
+### К
+
+- [Кандесартан (Candesartan)](drugs/%D0%9A%D0%B0%D0%BD%D0%B4%D0%B5%D1%81%D0%B0%D1%80%D1%82%D0%B0%D0%BD%20%28Candesartan%29.html)
+- [Кверцетин](drugs/%D0%9A%D0%B2%D0%B5%D1%80%D1%86%D0%B5%D1%82%D0%B8%D0%BD.html)
+
+### Л
+
+- [Левотироксин](drugs/%D0%9B%D0%B5%D0%B2%D0%BE%D1%82%D0%B8%D1%80%D0%BE%D0%BA%D1%81%D0%B8%D0%BD.html)
+- [Лоратадин](drugs/%D0%9B%D0%BE%D1%80%D0%B0%D1%82%D0%B0%D0%B4%D0%B8%D0%BD.html)
+
+### М
+
+- [Мебендазол](drugs/%D0%9C%D0%B5%D0%B1%D0%B5%D0%BD%D0%B4%D0%B0%D0%B7%D0%BE%D0%BB.html)
+- [Миноксидил](drugs/%D0%9C%D0%B8%D0%BD%D0%BE%D0%BA%D1%81%D0%B8%D0%B4%D0%B8%D0%BB.html)
+- [МЦП (модифицированный цитрусовый пектин)](drugs/%D0%9C%D0%A6%D0%9F%20%28%D0%BC%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D1%86%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%86%D0%B8%D1%82%D1%80%D1%83%D1%81%D0%BE%D0%B2%D1%8B%D0%B9%20%D0%BF%D0%B5%D0%BA%D1%82%D0%B8%D0%BD%29.html)
+
+### Р
+
+- [Рапамицин](drugs/%D0%A0%D0%B0%D0%BF%D0%B0%D0%BC%D0%B8%D1%86%D0%B8%D0%BD.html)
+
+### Ф
+
+- [Фамотидин](drugs/%D0%A4%D0%B0%D0%BC%D0%BE%D1%82%D0%B8%D0%B4%D0%B8%D0%BD.html)
+- [Фенбендазол](drugs/%D0%A4%D0%B5%D0%BD%D0%B1%D0%B5%D0%BD%D0%B4%D0%B0%D0%B7%D0%BE%D0%BB.html)
+
+### Э
+
+- [Эволокумаб](drugs/%D0%AD%D0%B2%D0%BE%D0%BB%D0%BE%D0%BA%D1%83%D0%BC%D0%B0%D0%B1.html)
+- [Эмпаглифлозин (Empagliflozinum)](drugs/%D0%AD%D0%BC%D0%BF%D0%B0%D0%B3%D0%BB%D0%B8%D1%84%D0%BB%D0%BE%D0%B7%D0%B8%D0%BD%20%28Empagliflozinum%29.html)
 
 ## Образование
 
