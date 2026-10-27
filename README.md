@@ -92,6 +92,7 @@ electrodoctor/
 │       ├── drugs/         drugs
 │       ├── general/       general articles
 │       ├── therapy/       therapies
+│       ├── practices/     philosophy and practices
 │       └── education/     general topics
 ├── data/                  reference tables (open data)
 │   ├── parameters.csv     findings: labs, complaints, exam
