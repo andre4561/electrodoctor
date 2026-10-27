@@ -85,6 +85,7 @@ electrodoctor/
 │   ├── roadmap.md         what's next
 │   └── articles/          articles in Russian (Markdown, Obsidian-readable)
 │       ├── diagnoses/     diagnoses
+│       ├── lab-tests/     lab tests
 │       └── education/     general topics
 ├── data/                  reference tables (open data)
 │   ├── parameters.csv     findings: labs, complaints, exam

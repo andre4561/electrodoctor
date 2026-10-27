@@ -69,6 +69,7 @@ electrodoctor/
 │   ├── roadmap.md         后续计划
 │   └── articles/          俄文文章（Markdown，可用 Obsidian 阅读）
 │       ├── diagnoses/     诊断
+│       ├── lab-tests/     化验项目
 │       └── education/     科普主题
 ├── data/                  参考表（开放数据）
 │   ├── parameters.csv     检查项：化验、主诉、体格检查

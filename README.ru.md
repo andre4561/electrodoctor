@@ -79,6 +79,7 @@ electrodoctor/
 │   ├── roadmap.md         что дальше
 │   └── articles/          статьи (Markdown, читаются в Obsidian)
 │       ├── diagnoses/     диагнозы
+│       ├── lab-tests/     анализы
 │       └── education/     образование (общие темы)
 ├── data/                  справочники (открытые данные)
 │   ├── parameters.csv     показатели: анализы, жалобы, осмотр
