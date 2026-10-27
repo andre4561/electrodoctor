@@ -75,6 +75,7 @@ electrodoctor/
 │       ├── probiotics/    益生菌
 │       ├── drugs/         药物
 │       ├── general/       综合文章
+│       ├── therapy/       疗法
 │       └── education/     科普主题
 ├── data/                  参考表（开放数据）
 │   ├── parameters.csv     检查项：化验、主诉、体格检查

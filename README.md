@@ -91,6 +91,7 @@ electrodoctor/
 │       ├── probiotics/    probiotics
 │       ├── drugs/         drugs
 │       ├── general/       general articles
+│       ├── therapy/       therapies
 │       └── education/     general topics
 ├── data/                  reference tables (open data)
 │   ├── parameters.csv     findings: labs, complaints, exam
