@@ -72,6 +72,7 @@ electrodoctor/
 │       ├── lab-tests/     化验项目
 │       ├── supplements/   膳食补充剂
 │       ├── peptides/      肽类
+│       ├── probiotics/    益生菌
 │       └── education/     科普主题
 ├── data/                  参考表（开放数据）
 │   ├── parameters.csv     检查项：化验、主诉、体格检查

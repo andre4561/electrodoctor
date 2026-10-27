@@ -88,6 +88,7 @@ electrodoctor/
 │       ├── lab-tests/     lab tests
 │       ├── supplements/   supplements
 │       ├── peptides/      peptides
+│       ├── probiotics/    probiotics
 │       └── education/     general topics
 ├── data/                  reference tables (open data)
 │   ├── parameters.csv     findings: labs, complaints, exam

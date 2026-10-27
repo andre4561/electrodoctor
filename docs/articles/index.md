@@ -8,6 +8,7 @@ title: Статьи — Электродоктор
 - [Анализы](#анализы) — 97
 - [БАДы](#бады) — 152
 - [Пептиды](#пептиды) — 513
+- [Пробиотики](#пробиотики) — 165
 - [Образование](#образование) — 30
 
 ## Анализы
@@ -1056,6 +1057,206 @@ title: Статьи — Электродоктор
 ### Э
 
 - [Эпиталон и N-Acetyl Epitalon Amidate](peptides/%D0%AD%D0%BF%D0%B8%D1%82%D0%B0%D0%BB%D0%BE%D0%BD%20%D0%B8%20N-Acetyl%20Epitalon%20Amidate.html)
+
+## Пробиотики
+
+### A
+
+- [Agathobacter rectalis](probiotics/Agathobacter%20rectalis.html)
+- [Akkermansia muciniphila ATCC BAA-835](probiotics/Akkermansia%20muciniphila%20ATCC%20BAA-835.html)
+- [Akkermansia muciniphila CIP 107961](probiotics/Akkermansia%20muciniphila%20CIP%20107961.html)
+- [Alistipes putredinis](probiotics/Alistipes%20putredinis.html)
+- [Anaerobutyricum soehngenii](probiotics/Anaerobutyricum%20soehngenii.html)
+- [Apilactobacillus kunkeei](probiotics/Apilactobacillus%20kunkeei.html)
+- [Aspergillus oryzae (пробиотический гриб, используемый в ферментации)](probiotics/Aspergillus%20oryzae%20%28%D0%BF%D1%80%D0%BE%D0%B1%D0%B8%D0%BE%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9%20%D0%B3%D1%80%D0%B8%D0%B1%2C%20%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B5%D0%BC%D1%8B%D0%B9%20%D0%B2%20%D1%84%D0%B5%D1%80%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D0%B8%29.html)
+
+### B
+
+- [Bacillus clausii](probiotics/Bacillus%20clausii.html)
+- [Bacillus coagulans GBI-30, 6086](probiotics/Bacillus%20coagulans%20GBI-30%2C%206086.html)
+- [Bacillus coagulans Unique IS-2](probiotics/Bacillus%20coagulans%20Unique%20IS-2.html)
+- [Bacillus licheniformis](probiotics/Bacillus%20licheniformis.html)
+- [Bacillus subtilis CU1](probiotics/Bacillus%20subtilis%20CU1.html)
+- [Bacillus subtilis DE111](probiotics/Bacillus%20subtilis%20DE111.html)
+- [Bacillus subtilis natto](probiotics/Bacillus%20subtilis%20natto.html)
+- [Bifidobacterium adolescentis SBT2020](probiotics/Bifidobacterium%20adolescentis%20SBT2020.html)
+- [Bifidobacterium angulatum](probiotics/Bifidobacterium%20angulatum.html)
+- [Bifidobacterium animalis subsp. lactis CECT 4543](probiotics/Bifidobacterium%20animalis%20subsp.%20lactis%20CECT%204543.html)
+- [Bifidobacterium animalis subsp. lactis CECT 8145](probiotics/Bifidobacterium%20animalis%20subsp.%20lactis%20CECT%208145.html)
+- [Bifidobacterium asteroides](probiotics/Bifidobacterium%20asteroides.html)
+- [Bifidobacterium bifidum Bb-02](probiotics/Bifidobacterium%20bifidum%20Bb-02.html)
+- [Bifidobacterium bifidum Bb-02®](probiotics/Bifidobacterium%20bifidum%20Bb-02%C2%AE.html)
+- [Bifidobacterium bombi](probiotics/Bifidobacterium%20bombi.html)
+- [Bifidobacterium boum](probiotics/Bifidobacterium%20boum.html)
+- [Bifidobacterium breve Bb-03](probiotics/Bifidobacterium%20breve%20Bb-03.html)
+- [Bifidobacterium breve M-16V](probiotics/Bifidobacterium%20breve%20M-16V.html)
+- [Bifidobacterium breve Yakult](probiotics/Bifidobacterium%20breve%20Yakult.html)
+- [Bifidobacterium catenulatum YIT 1032](probiotics/Bifidobacterium%20catenulatum%20YIT%201032.html)
+- [Bifidobacterium cuniculi](probiotics/Bifidobacterium%20cuniculi.html)
+- [Bifidobacterium dentium](probiotics/Bifidobacterium%20dentium.html)
+- [Bifidobacterium gallicum](probiotics/Bifidobacterium%20gallicum.html)
+- [Bifidobacterium indicum](probiotics/Bifidobacterium%20indicum.html)
+- [Bifidobacterium lactis Bb-12](probiotics/Bifidobacterium%20lactis%20Bb-12.html)
+- [Bifidobacterium lactis BI-04®](probiotics/Bifidobacterium%20lactis%20BI-04%C2%AE.html)
+- [Bifidobacterium lactis Bi-07](probiotics/Bifidobacterium%20lactis%20Bi-07.html)
+- [Bifidobacterium lactis Bl-04](probiotics/Bifidobacterium%20lactis%20Bl-04.html)
+- [Bifidobacterium lactis HN019](probiotics/Bifidobacterium%20lactis%20HN019.html)
+- [Bifidobacterium lactis HN019™](probiotics/Bifidobacterium%20lactis%20HN019%E2%84%A2.html)
+- [Bifidobacterium longum 35624 (ранее B. infantis 35624)](probiotics/Bifidobacterium%20longum%2035624%20%28%D1%80%D0%B0%D0%BD%D0%B5%D0%B5%20B.%20infantis%2035624%29.html)
+- [Bifidobacterium longum APC1472 (штамм с доказанным влиянием на ось «кишечник-мозг»)](probiotics/Bifidobacterium%20longum%20APC1472%20%28%D1%88%D1%82%D0%B0%D0%BC%D0%BC%20%D1%81%20%D0%B4%D0%BE%D0%BA%D0%B0%D0%B7%D0%B0%D0%BD%D0%BD%D1%8B%D0%BC%20%D0%B2%D0%BB%D0%B8%D1%8F%D0%BD%D0%B8%D0%B5%D0%BC%20%D0%BD%D0%B0%20%D0%BE%D1%81%D1%8C%20%C2%AB%D0%BA%D0%B8%D1%88%D0%B5%D1%87%D0%BD%D0%B8%D0%BA-%D0%BC%D0%BE%D0%B7%D0%B3%C2%BB%29.html)
+- [Bifidobacterium longum BB536](probiotics/Bifidobacterium%20longum%20BB536.html)
+- [Bifidobacterium longum BL03](probiotics/Bifidobacterium%20longum%20BL03.html)
+- [Bifidobacterium longum subsp. infantis EVC001](probiotics/Bifidobacterium%20longum%20subsp.%20infantis%20EVC001.html)
+- [Bifidobacterium pseudocatenulatum CECT 7765](probiotics/Bifidobacterium%20pseudocatenulatum%20CECT%207765.html)
+- [Bifidobacterium pseudolongum (перспективный штамм для метаболических нарушений)](probiotics/Bifidobacterium%20pseudolongum%20%28%D0%BF%D0%B5%D1%80%D1%81%D0%BF%D0%B5%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B9%20%D1%88%D1%82%D0%B0%D0%BC%D0%BC%20%D0%B4%D0%BB%D1%8F%20%D0%BC%D0%B5%D1%82%D0%B0%D0%B1%D0%BE%D0%BB%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%BD%D0%B0%D1%80%D1%83%D1%88%D0%B5%D0%BD%D0%B8%D0%B9%29.html)
+- [Bifidobacterium pullorum](probiotics/Bifidobacterium%20pullorum.html)
+- [Blautia obeum](probiotics/Blautia%20obeum.html)
+- [Butyricicoccus pullicaecorum](probiotics/Butyricicoccus%20pullicaecorum.html)
+
+### C
+
+- [Christensenella minuta ATCC 29799](probiotics/Christensenella%20minuta%20ATCC%2029799.html)
+- [Clostridium butyricum MIYAIRI 588](probiotics/Clostridium%20butyricum%20MIYAIRI%20588.html)
+- [Clostridium butyricum TO-A](probiotics/Clostridium%20butyricum%20TO-A.html)
+- [Clostridium tyrobutyricum](probiotics/Clostridium%20tyrobutyricum.html)
+- [Collinsella aerofaciens](probiotics/Collinsella%20aerofaciens.html)
+
+### E
+
+- [Enterococcus faecium CECT 410](probiotics/Enterococcus%20faecium%20CECT%20410.html)
+- [Enterococcus faecium SF68](probiotics/Enterococcus%20faecium%20SF68.html)
+- [Escherichia coli Nissle 1917 (Mutaflor)](probiotics/Escherichia%20coli%20Nissle%201917%20%28Mutaflor%29.html)
+- [Escherichia coli O83:K24:H31 (экспериментальный иммуномодулирующий штамм)](probiotics/Escherichia%20coli%20O83K24H31%20%28%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D1%80%D0%B8%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D0%B8%D0%BC%D0%BC%D1%83%D0%BD%D0%BE%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D0%B8%D1%80%D1%83%D1%8E%D1%89%D0%B8%D0%B9%20%D1%88%D1%82%D0%B0%D0%BC%D0%BC%29.html)
+- [Eubacterium hallii](probiotics/Eubacterium%20hallii.html)
+- [Eubacterium limosum](probiotics/Eubacterium%20limosum.html)
+- [Eubacterium rectale](probiotics/Eubacterium%20rectale.html)
+
+### F
+
+- [Faecalibacterium prausnitzii A2-165](probiotics/Faecalibacterium%20prausnitzii%20A2-165.html)
+- [Faecalibacterium prausnitzii HTF-F](probiotics/Faecalibacterium%20prausnitzii%20HTF-F.html)
+- [Fructobacillus fructosus](probiotics/Fructobacillus%20fructosus.html)
+
+### L
+
+- [Lactobacillus acidophilus LA-14](probiotics/Lactobacillus%20acidophilus%20LA-14.html)
+- [Lactobacillus acidophilus La-14®](probiotics/Lactobacillus%20acidophilus%20La-14%C2%AE.html)
+- [Lactobacillus acidophilus NCFM](probiotics/Lactobacillus%20acidophilus%20NCFM.html)
+- [Lactobacillus acidophilus NCFM®](probiotics/Lactobacillus%20acidophilus%20NCFM%C2%AE.html)
+- [Lactobacillus amylovorus DSM 16698](probiotics/Lactobacillus%20amylovorus%20DSM%2016698.html)
+- [Lactobacillus antris](probiotics/Lactobacillus%20antris.html)
+- [Lactobacillus apinorum](probiotics/Lactobacillus%20apinorum.html)
+- [Lactobacillus apis](probiotics/Lactobacillus%20apis.html)
+- [Lactobacillus avium](probiotics/Lactobacillus%20avium.html)
+- [Lactobacillus bombicola](probiotics/Lactobacillus%20bombicola.html)
+- [Lactobacillus brevis CD2](probiotics/Lactobacillus%20brevis%20CD2.html)
+- [Lactobacillus casei LC-11](probiotics/Lactobacillus%20casei%20LC-11.html)
+- [Lactobacillus casei Shirota](probiotics/Lactobacillus%20casei%20Shirota.html)
+- [Lactobacillus casei subsp. alactosus](probiotics/Lactobacillus%20casei%20subsp.%20alactosus.html)
+- [Lactobacillus casei subsp. casei](probiotics/Lactobacillus%20casei%20subsp.%20casei.html)
+- [Lactobacillus casei subsp. pseudoplantarum](probiotics/Lactobacillus%20casei%20subsp.%20pseudoplantarum.html)
+- [Lactobacillus casei subsp. rhamnosus](probiotics/Lactobacillus%20casei%20subsp.%20rhamnosus.html)
+- [Lactobacillus casei subsp. shirota](probiotics/Lactobacillus%20casei%20subsp.%20shirota.html)
+- [Lactobacillus casei subsp. tolerans](probiotics/Lactobacillus%20casei%20subsp.%20tolerans.html)
+- [Lactobacillus crispatus CTV-05](probiotics/Lactobacillus%20crispatus%20CTV-05.html)
+- [Lactobacillus crispatus CTV-05 (вагинальный пробиотик нового поколения)](probiotics/Lactobacillus%20crispatus%20CTV-05%20%28%D0%B2%D0%B0%D0%B3%D0%B8%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D0%BF%D1%80%D0%BE%D0%B1%D0%B8%D0%BE%D1%82%D0%B8%D0%BA%20%D0%BD%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE%20%D0%BF%D0%BE%D0%BA%D0%BE%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F%29.html)
+- [Lactobacillus delbrueckii subsp. indicus](probiotics/Lactobacillus%20delbrueckii%20subsp.%20indicus.html)
+- [Lactobacillus equi](probiotics/Lactobacillus%20equi.html)
+- [Lactobacillus equigenerosi](probiotics/Lactobacillus%20equigenerosi.html)
+- [Lactobacillus fermentum LF16](probiotics/Lactobacillus%20fermentum%20LF16.html)
+- [Lactobacillus fermentum ME-3](probiotics/Lactobacillus%20fermentum%20ME-3.html)
+- [Lactobacillus gasseri BNR17](probiotics/Lactobacillus%20gasseri%20BNR17.html)
+- [Lactobacillus gasseri Lg-36](probiotics/Lactobacillus%20gasseri%20Lg-36.html)
+- [Lactobacillus gasseri SBT2055](probiotics/Lactobacillus%20gasseri%20SBT2055.html)
+- [Lactobacillus hayakitensis](probiotics/Lactobacillus%20hayakitensis.html)
+- [Lactobacillus helsingborgensis](probiotics/Lactobacillus%20helsingborgensis.html)
+- [Lactobacillus helveticus R0052](probiotics/Lactobacillus%20helveticus%20R0052.html)
+- [Lactobacillus iners (штаммы с усиленной адгезией)](probiotics/Lactobacillus%20iners%20%28%D1%88%D1%82%D0%B0%D0%BC%D0%BC%D1%8B%20%D1%81%20%D1%83%D1%81%D0%B8%D0%BB%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9%20%D0%B0%D0%B4%D0%B3%D0%B5%D0%B7%D0%B8%D0%B5%D0%B9%29.html)
+- [Lactobacillus ingluviei](probiotics/Lactobacillus%20ingluviei.html)
+- [Lactobacillus jensenii CTV-05](probiotics/Lactobacillus%20jensenii%20CTV-05.html)
+- [Lactobacillus johnsonii La1](probiotics/Lactobacillus%20johnsonii%20La1.html)
+- [Lactobacillus kefiranofaciens M1](probiotics/Lactobacillus%20kefiranofaciens%20M1.html)
+- [Lactobacillus kimchiensis](probiotics/Lactobacillus%20kimchiensis.html)
+- [Lactobacillus kimchii](probiotics/Lactobacillus%20kimchii.html)
+- [Lactobacillus kunkeei](probiotics/Lactobacillus%20kunkeei.html)
+- [Lactobacillus mali](probiotics/Lactobacillus%20mali.html)
+- [Lactobacillus mellifer](probiotics/Lactobacillus%20mellifer.html)
+- [Lactobacillus mellis](probiotics/Lactobacillus%20mellis.html)
+- [Lactobacillus nantensis](probiotics/Lactobacillus%20nantensis.html)
+- [Lactobacillus oris](probiotics/Lactobacillus%20oris.html)
+- [Lactobacillus otakiensis](probiotics/Lactobacillus%20otakiensis.html)
+- [Lactobacillus parabrevis](probiotics/Lactobacillus%20parabrevis.html)
+- [Lactobacillus parabuchneri](probiotics/Lactobacillus%20parabuchneri.html)
+- [Lactobacillus paracasei 8700:2](probiotics/Lactobacillus%20paracasei%2087002.html)
+- [Lactobacillus paracasei DG (CNCM I-1572)](probiotics/Lactobacillus%20paracasei%20DG%20%28CNCM%20I-1572%29.html)
+- [Lactobacillus paracasei LPC-37](probiotics/Lactobacillus%20paracasei%20LPC-37.html)
+- [Lactobacillus paracasei Lpc-37™](probiotics/Lactobacillus%20paracasei%20Lpc-37%E2%84%A2.html)
+- [Lactobacillus paracasei subsp. paracasei](probiotics/Lactobacillus%20paracasei%20subsp.%20paracasei.html)
+- [Lactobacillus paracasei subsp. tolerans](probiotics/Lactobacillus%20paracasei%20subsp.%20tolerans.html)
+- [Lactobacillus paracollinoides](probiotics/Lactobacillus%20paracollinoides.html)
+- [Lactobacillus parafarraginis](probiotics/Lactobacillus%20parafarraginis.html)
+- [Lactobacillus paragasseri OLL2809](probiotics/Lactobacillus%20paragasseri%20OLL2809.html)
+- [Lactobacillus parakefiri](probiotics/Lactobacillus%20parakefiri.html)
+- [Lactobacillus paralimentarius](probiotics/Lactobacillus%20paralimentarius.html)
+- [Lactobacillus paraplantarum](probiotics/Lactobacillus%20paraplantarum.html)
+- [Lactobacillus paucivorans](probiotics/Lactobacillus%20paucivorans.html)
+- [Lactobacillus plantarum 299v](probiotics/Lactobacillus%20plantarum%20299v.html)
+- [Lactobacillus plantarum HEAL9](probiotics/Lactobacillus%20plantarum%20HEAL9.html)
+- [Lactobacillus plantarum Lp-115](probiotics/Lactobacillus%20plantarum%20Lp-115.html)
+- [Lactobacillus plantarum WCFS1](probiotics/Lactobacillus%20plantarum%20WCFS1.html)
+- [Lactobacillus poonae](probiotics/Lactobacillus%20poonae.html)
+- [Lactobacillus reuteri ATCC PTA 6475](probiotics/Lactobacillus%20reuteri%20ATCC%20PTA%206475.html)
+- [Lactobacillus reuteri DSM 17938](probiotics/Lactobacillus%20reuteri%20DSM%2017938.html)
+- [Lactobacillus reuteri ProTerra](probiotics/Lactobacillus%20reuteri%20ProTerra.html)
+- [Lactobacillus reuteri RC-14](probiotics/Lactobacillus%20reuteri%20RC-14.html)
+- [Lactobacillus rhamnosus GR-1](probiotics/Lactobacillus%20rhamnosus%20GR-1.html)
+- [Lactobacillus rhamnosus HN001](probiotics/Lactobacillus%20rhamnosus%20HN001.html)
+- [Lactobacillus rhamnosus LR-22](probiotics/Lactobacillus%20rhamnosus%20LR-22.html)
+- [Lactobacillus rhamnosus PB01 (DSM 14870)](probiotics/Lactobacillus%20rhamnosus%20PB01%20%28DSM%2014870%29.html)
+- [Lactobacillus rodentium](probiotics/Lactobacillus%20rodentium.html)
+- [Lactobacillus salivarius Ls-33](probiotics/Lactobacillus%20salivarius%20Ls-33.html)
+- [Lactobacillus salivarius UCC118](probiotics/Lactobacillus%20salivarius%20UCC118.html)
+- [Lactobacillus satsumensis](probiotics/Lactobacillus%20satsumensis.html)
+- [Lactobacillus vaginalis](probiotics/Lactobacillus%20vaginalis.html)
+- [Lactobacillus zymae](probiotics/Lactobacillus%20zymae.html)
+- [Lactococcus lactis LL-23](probiotics/Lactococcus%20lactis%20LL-23.html)
+- [Lactococcus lactis Ll-23™](probiotics/Lactococcus%20lactis%20Ll-23%E2%84%A2.html)
+- [Lactococcus lactis NZ3900 (инженерный штамм для доставки терапевтических белков)](probiotics/Lactococcus%20lactis%20NZ3900%20%28%D0%B8%D0%BD%D0%B6%D0%B5%D0%BD%D0%B5%D1%80%D0%BD%D1%8B%D0%B9%20%D1%88%D1%82%D0%B0%D0%BC%D0%BC%20%D0%B4%D0%BB%D1%8F%20%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B8%20%D1%82%D0%B5%D1%80%D0%B0%D0%BF%D0%B5%D0%B2%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D1%85%20%D0%B1%D0%B5%D0%BB%D0%BA%D0%BE%D0%B2%29.html)
+- [Leuconostoc citreum KM20](probiotics/Leuconostoc%20citreum%20KM20.html)
+- [Leuconostoc mesenteroides subsp. cremoris](probiotics/Leuconostoc%20mesenteroides%20subsp.%20cremoris.html)
+
+### O
+
+- [Odoribacter splanchnicus](probiotics/Odoribacter%20splanchnicus.html)
+
+### P
+
+- [Parabacteroides goldsteinii](probiotics/Parabacteroides%20goldsteinii.html)
+- [Pediococcus acidilactici DSM 16243](probiotics/Pediococcus%20acidilactici%20DSM%2016243.html)
+- [Pediococcus pentosaceus](probiotics/Pediococcus%20pentosaceus.html)
+- [Pediococcus pentosaceus LP28](probiotics/Pediococcus%20pentosaceus%20LP28.html)
+- [Propionibacterium freudenreichii subsp. shermanii](probiotics/Propionibacterium%20freudenreichii%20subsp.%20shermanii.html)
+- [Propionibacterium freudenreichii subsp. shermanii JS](probiotics/Propionibacterium%20freudenreichii%20subsp.%20shermanii%20JS.html)
+
+### R
+
+- [Roseburia hominis](probiotics/Roseburia%20hominis.html)
+- [Roseburia intestinalis L1-82](probiotics/Roseburia%20intestinalis%20L1-82.html)
+- [Ruminococcus bromii](probiotics/Ruminococcus%20bromii.html)
+
+### S
+
+- [Saccharomyces boulardii CNCM I-745 (пробиотические дрожжи)](probiotics/Saccharomyces%20boulardii%20CNCM%20I-745%20%28%D0%BF%D1%80%D0%BE%D0%B1%D0%B8%D0%BE%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B5%20%D0%B4%D1%80%D0%BE%D0%B6%D0%B6%D0%B8%29.html)
+- [Saccharomyces cerevisiae CNCM I-3856](probiotics/Saccharomyces%20cerevisiae%20CNCM%20I-3856.html)
+- [Streptococcus salivarius K12](probiotics/Streptococcus%20salivarius%20K12.html)
+- [Streptococcus salivarius M18](probiotics/Streptococcus%20salivarius%20M18.html)
+- [Streptococcus thermophilus St-21](probiotics/Streptococcus%20thermophilus%20St-21.html)
+- [Streptococcus thermophilus St-21™](probiotics/Streptococcus%20thermophilus%20St-21%E2%84%A2.html)
+
+### W
+
+- [Weissella cibaria CMU](probiotics/Weissella%20cibaria%20CMU.html)
+- [Weissella confusa](probiotics/Weissella%20confusa.html)
 
 ## Образование
 
