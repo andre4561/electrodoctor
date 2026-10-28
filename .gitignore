@@ -6,3 +6,10 @@ __pycache__/
 private/
 *.real.csv
 node_modules/
+
+# ключи для скриптов (Яндекс и др.) — не в GitHub
+.secrets/
+secrets/
+
+# intermediate outputs of tools/ runs
+tools/out/

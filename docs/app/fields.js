@@ -43,6 +43,15 @@ export const STEPS = [
                 ] },
             { title: "Осмотр", fields: [
                     { code: "EDEMA_LEGS", label: "Отёки ног", type: "scale", max: 3 }
+                ] },
+            { title: "Генетика", fields: [
+                    { code: "GEN_TESTS", label: "Результаты", type: "table", columns: [
+                            { key: "test", label: "Ген / маркер", type: "text", placeholder: "MTHFR C677T" },
+                            { key: "result", label: "Результат (генотип)", type: "text" },
+                            { key: "meaning", label: "Значение", type: "text" },
+                            { key: "lab", label: "Лаборатория", type: "text" }
+                        ] },
+                    { code: "GEN_NOTES", label: "Заметки по генетике", type: "textarea" }
                 ] }
         ]
     },
@@ -99,7 +108,24 @@ export const STEPS = [
                     { code: "K", label: "Калий", type: "number", unit: "ммоль/л", step: "any" },
                     { code: "NA", label: "Натрий", type: "number", unit: "ммоль/л", step: "any" },
                     { code: "CA", label: "Кальций общий", type: "number", unit: "ммоль/л", step: "any" },
-                    { code: "MG", label: "Магний", type: "number", unit: "ммоль/л", step: "any" }
+                    { code: "MG", label: "Магний", type: "number", unit: "ммоль/л", step: "any" },
+                    { code: "LIPASE", label: "Липаза", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "AMYLASE_P", label: "Амилаза панкреатическая", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "CYSC", label: "Цистатин C", type: "number", unit: "мг/л", step: "any" }
+                ] },
+            { id: "blood_cardio", title: "Кровь — сердце и сосуды", fold: true, fields: [
+                    { code: "TROPONIN", label: "Тропонин I (высокочувствительный)", type: "number", unit: "нг/л", step: "any" },
+                    { code: "NT_PROBNP", label: "NT-proBNP", type: "number", unit: "пг/мл", step: "any" },
+                    { code: "BNP", label: "BNP (натрийуретический пептид)", type: "number", unit: "пг/мл", step: "any" },
+                    { code: "CK", label: "Креатинкиназа (КФК) общая", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "CK_MB", label: "КФК-МВ", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "MYOGLOBIN", label: "Миоглобин", type: "number", unit: "нг/мл", step: "any" },
+                    { code: "LPA", label: "Липопротеин(a)", type: "number", unit: "мг/дл", step: "any" },
+                    { code: "APOB", label: "Аполипопротеин B", type: "number", unit: "г/л", step: "any" },
+                    { code: "APOA1", label: "Аполипопротеин A1", type: "number", unit: "г/л", step: "any" },
+                    { code: "HCY", label: "Гомоцистеин", type: "number", unit: "мкмоль/л", step: "any" },
+                    { code: "LDH", label: "Лактатдегидрогеназа (ЛДГ)", type: "number", unit: "Ед/л", step: "any" },
+                    { code: "LACTATE", label: "Лактат", type: "number", unit: "ммоль/л", step: "any" }
                 ] },
             { id: "blood_coag", title: "Кровь — коагулограмма", fold: true, fields: [
                     { code: "PT_SEC", label: "Протромбиновое время", type: "number", unit: "с", step: "any" },
@@ -120,6 +146,9 @@ export const STEPS = [
                     { code: "FOLATE", label: "Фолиевая кислота", type: "number", unit: "нг/мл", step: "any" },
                     { code: "INSULIN", label: "Инсулин", type: "number", unit: "мкЕд/мл", step: "any" },
                     { code: "CORTISOL", label: "Кортизол", type: "number", unit: "нмоль/л", step: "any" },
+                    { code: "CPEP", label: "С-пептид", type: "number", unit: "нг/мл", step: "any" },
+                    { code: "HOMA", label: "Индекс HOMA-IR", type: "number", unit: "", step: "any" },
+                    { code: "ACTH", label: "АКТГ", type: "number", unit: "пг/мл", step: "any" },
                     { code: "LABS_OTHER", label: "Другие показатели", type: "table", columns: [
                             { key: "name", label: "Показатель", type: "text" },
                             { key: "value", label: "Значение", type: "text" },
@@ -161,6 +190,9 @@ export const STEPS = [
                     { code: "RF", label: "Ревматоидный фактор", type: "number", unit: "МЕ/мл", step: "any" },
                     { code: "ASLO", label: "Антистрептолизин-О (АСЛО)", type: "number", unit: "МЕ/мл", step: "any" },
                     { code: "ANA", label: "Антинуклеарный фактор (АНФ)", type: "select", options: [["не обнаружен", "не обнаружен"], ["обнаружен", "обнаружен"]] },
+                    { code: "PCT", label: "Прокальцитонин", type: "number", unit: "нг/мл", step: "any" },
+                    { code: "C3", label: "Комплемент C3", type: "number", unit: "г/л", step: "any" },
+                    { code: "C4", label: "Комплемент C4", type: "number", unit: "г/л", step: "any" },
                     { code: "INF_OTHER", label: "Другие инфекции и антитела", type: "table", columns: [
                             { key: "name", label: "Исследование", type: "text", placeholder: "ВПГ IgG" },
                             { key: "value", label: "Результат", type: "text" },
@@ -239,21 +271,6 @@ export const STEPS = [
                 ] }
         ]
     },
-    {
-        id: "genetics", title: "Генетика",
-        sections: [
-            { title: "Генетические исследования", fields: [
-                    { code: "GEN_TESTS", label: "Результаты", type: "table", columns: [
-                            { key: "test", label: "Ген / маркер", type: "text", placeholder: "MTHFR C677T" },
-                            { key: "result", label: "Результат (генотип)", type: "text" },
-                            { key: "meaning", label: "Значение", type: "text" },
-                            { key: "lab", label: "Лаборатория", type: "text" }
-                        ] }
-                ] },
-            { title: "Заметки", fields: [
-                    { code: "GEN_NOTES", label: "Заметки по генетике", type: "textarea" }
-                ] }
-        ]
-    },
+    { id: "diagnoses", title: "Диагнозы", sections: [] },
     { id: "step6", title: "6", sections: [] }
 ];

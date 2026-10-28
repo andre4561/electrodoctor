@@ -41,6 +41,13 @@ export interface Client {
   updatedAt?: string;
   folder?: string;               // подпапка в выбранной папке на компьютере
   values: Record<string, Value | undefined>;
+  norms?: Record<string, number>;   // нормы, изменённые у этого клиента (по умолчанию — из настроек «Нормы и веса»)
+  curves?: Record<string, { L: number; R: number; pts: [number, number][]; linear?: boolean }>;   // свои кривые критичности клиента
+  labs?: LabSet[];               // сохранённые анализы по датам
+  labSel?: string;               // какой набор сейчас открыт на вкладке «Анализы»; "" — новый, ещё не сохранённый
+  labMeta?: { date: string; time?: string };   // дата и время в строке «Сохранить» для открытого бланка
 }
+// Анализы одной сдачи: дата, время и значения полей вкладки «Анализы»
+export interface LabSet { id: string; date: string; time?: string; values: Record<string, Value>; savedAt: string }
 
 export interface Store { version: 1; clients: Record<string, Client> }

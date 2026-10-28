@@ -1,0 +1,69 @@
+<title>Пилот признаков: кардиология</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Лист сверки: сводка по моделям сверху, ниже по диагнозу — три колонки, по колонке на модель; анализы по убыванию важности */
+:root {
+  --bg: #f4f6f7; --card: #ffffff; --ink: #16212a; --muted: #5d6c76; --line: #dce3e7;
+  --accent: #0f6e78; --accent-soft: #e2f0f1; --risk: #8a5a00; --risk-bg: #fbf0d9; --low: #6b3fa0; --low-bg: #efe7f8;
+  --sans: "Golos Text", "Segoe UI", Roboto, Arial, sans-serif; --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101619; --card: #172126; --ink: #e5ecef; --muted: #93a4ad; --line: #27343b;
+  --accent: #5cc3cc; --accent-soft: #15353a; --risk: #f2c46b; --risk-bg: #3a2d12; --low: #c4a2f0; --low-bg: #2c2140; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #101619; --card: #172126; --ink: #e5ecef; --muted: #93a4ad; --line: #27343b;
+  --accent: #5cc3cc; --accent-soft: #15353a; --risk: #f2c46b; --risk-bg: #3a2d12; --low: #c4a2f0; --low-bg: #2c2140; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 20px; max-width: 72ch; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 26px 0 10px; }
+.tbl { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; font-size: 14px; }
+thead th { font-size: 12px; font-weight: 600; color: var(--muted); }
+tbody th, thead th:first-child { text-align: left; font-family: var(--mono); font-size: 13px; }
+tbody tr:last-child > * { border-bottom: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dx { margin-top: 18px; }
+.dx h3 { font-size: 18px; margin: 0 0 8px; }
+.cols { display: grid; grid-template-columns: repeat({{M}}, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+.col { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.col h4 { margin: 0 0 8px; font: 600 13px var(--mono); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.meta { color: var(--muted); font-weight: 500; }
+ul { list-style: none; margin: 0; padding: 0; }
+.labs li { display: flex; align-items: baseline; gap: 7px; padding: 3px 0; font-size: 14px; flex-wrap: wrap; }
+.nm { min-width: 0; }
+.dir { font-weight: 700; color: var(--accent); }
+.w { flex: none; width: 24px; text-align: center; font: 700 12px/20px var(--mono); border-radius: 5px; background: var(--accent-soft); color: var(--accent); }
+.w7, .w8 { background: color-mix(in srgb, var(--accent) 45%, var(--card)); color: var(--card); }
+.w9, .w10 { background: var(--accent); color: var(--card); }
+.t { font-size: 11px; font-weight: 600; padding: 0 6px; border-radius: 999px; line-height: 18px; }
+.t.risk { background: var(--risk-bg); color: var(--risk); }
+.t.low { background: var(--low-bg); color: var(--low); }
+.t.kn { background: var(--accent-soft); color: var(--muted); }
+.nl { font-size: 13px; margin: 8px 0 0; padding: 6px 8px; border-radius: 8px; background: var(--risk-bg); }
+.none { color: var(--muted); font-size: 14px; margin: 0; }
+details { margin-top: 8px; font-size: 13px; }
+summary { cursor: pointer; color: var(--muted); }
+summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sub { margin: 8px 0 2px; font-weight: 600; }
+.tx li { display: flex; gap: 6px; padding: 2px 0; }
+.w0 { flex: none; width: 20px; font: 700 11px var(--mono); color: var(--accent); }
+</style>
+<div class="wrap">
+  <h1>Пилот признаков: кардиология</h1>
+  <p class="lead">{{LEAD}}</p>
+  <h2>Сводка по моделям</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>модель</th><th>статей</th><th>время на статью</th><th>токенов на статью</th><th>анализов в среднем</th><th>помечено «риск»</th><th>«в норме — снижает»</th><th>нет в анкете, в среднем</th><th>указана распространённость</th></tr></thead>
+    <tbody>{{SUMMARY}}</tbody>
+  </table></div>
+  <div class="legend"><span><span class="w w9">9</span> важность</span><span><span class="t risk">риск</span> фактор риска, а не признак (важность не выше 3)</span><span><span class="t low">норма ↓вер.</span> нормальный анализ говорит против диагноза</span><span><span class="t kn">не из статьи</span> из общих медицинских знаний</span></div>
+  <h2>По диагнозам</h2>
+  {{CARDS}}
+</div>

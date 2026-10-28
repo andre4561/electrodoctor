@@ -1,3 +1,4 @@
+import * as Labs from "./labs.js";
 export const FORMAT = "electrodoctor-labs";
 export const OTHER_CODE = "LABS_OTHER"; // сюда попадает всё, чему нет своего поля
 const importable = (f) => f.type === "number" || f.type === "select";
@@ -105,14 +106,33 @@ export function match(parsed, steps) {
     const fields = new Map(labFields(steps).map(f => [f.code, f]));
     const rows = [];
     for (const r of parsed.results) {
-        const f = r.code ? fields.get(r.code) || null : null;
+        let f = r.code ? fields.get(r.code) || null : null;
         const raw = str(r.value);
+        let fromCat = false;
+        if (!f) { // нет в бланке — ищем в справочнике: добавится в «Дополнительные анализы»
+            const code = Labs.findByName(r.name || "", r.code);
+            const cf = code && !fields.has(code) ? Labs.fieldFor(code) : null;
+            if (cf) {
+                f = cf;
+                fromCat = true;
+            }
+        }
         if (!f) {
             rows.push({ result: r, field: null, value: raw, status: "other", note: r.code ? `кода ${r.code} нет в анкете — пойдёт в «Другие показатели»` : "пойдёт в «Другие показатели»", apply: true });
             continue;
         }
+        const catNote = fromCat ? "из справочника — добавится в «Дополнительные анализы»" : "";
+        if (f.type === "text") {
+            rows.push({ result: r, field: f, value: raw, status: "ok", note: catNote, apply: true });
+            continue;
+        }
         if (f.type === "select") {
-            const opt = (f.options || []).find(o => o[0].toLowerCase() === raw.toLowerCase() || o[1].toLowerCase() === raw.toLowerCase());
+            const q = (f.options || []).some(o => o[0] === "обнаружено") ? Labs.normQual(raw) : null; // «положительно», «+», «detected» → «обнаружено»
+            const opt = (f.options || []).find(o => o[0].toLowerCase() === (q || raw).toLowerCase() || o[1].toLowerCase() === raw.toLowerCase());
+            if (opt && fromCat) {
+                rows.push({ result: r, field: f, value: opt[0], status: r.uncertain ? "uncertain" : "ok", note: catNote, apply: !r.uncertain });
+                continue;
+            }
             if (opt)
                 rows.push({ result: r, field: f, value: opt[0], status: r.uncertain ? "uncertain" : "ok", note: r.uncertain ? "ИИ не уверен в значении" : "", apply: !r.uncertain });
             else
@@ -128,7 +148,7 @@ export function match(parsed, steps) {
             rows.push({ result: r, field: f, value: n, status: "unit", note: `единицы на бланке «${r.unit}», в анкете «${f.unit}» — проверьте пересчёт`, apply: false });
             continue;
         }
-        rows.push({ result: r, field: f, value: n, status: r.uncertain ? "uncertain" : "ok", note: r.uncertain ? "ИИ не уверен в значении" : "", apply: !r.uncertain });
+        rows.push({ result: r, field: f, value: n, status: r.uncertain ? "uncertain" : "ok", note: r.uncertain ? "ИИ не уверен в значении" : catNote, apply: !r.uncertain });
     }
     // Повтор одного кода: оставляем отмеченным только последний
     const seen = new Map();
