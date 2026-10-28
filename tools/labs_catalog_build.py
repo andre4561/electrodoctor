@@ -19,6 +19,9 @@ REMAP = {"HIV_TEST": "HIV", "HIV_AB": "HIV", "HIV_1_2_AB": "HIV", "HIV_AG_AB_COM
          "FOBT": "STOOL_OCCULT", "FIT": "STOOL_OCCULT", "H_PYLORI_IGG": "HPYLORI", "SYPHILIS_SEROLOGY": "SYPHILIS", "RPR": "SYPHILIS", "SYPHILIS_SER": "SYPHILIS", "SYPHILIS_RPR_VDRL": "SYPHILIS", "SYPHILIS_TEST": "SYPHILIS", "SYPHILIS_SERUM": "SYPHILIS",
          "CORTISOL_SERUM": "CORTISOL", "PTH_INTACT": "PTH", "LP_A": "LPA", "LIPOPROTEIN_A": "LPA", "HOMA_IR": "HOMA", "C_PEPTIDE": "CPEP"}
 norm = lambda s: re.sub(r"[^a-zа-яё0-9]+", "", (s or "").lower().replace("ё", "е"))
+# Проверенные решения по дублям (tools/dedup_apply.py): «код-дубль → основной код»
+if os.path.exists(os.path.join(ROOT, "tools", "dedup_map.json")):
+    REMAP.update(json.load(open(os.path.join(ROOT, "tools", "dedup_map.json"), encoding="utf-8"))["map"])
 
 
 def form_fields():
@@ -86,7 +89,7 @@ def main():
             if x.get("kind") == "not_lab" or not x.get("code"):
                 not_lab[x.get("name") or s] += mentions.get(s, 1); continue
             code = re.sub(r"[^A-Z0-9_]", "_", str(x.get("existing") or x["code"]).upper()).strip("_")
-            code = REMAP.get(code, code)
+            while code in REMAP and REMAP[code] != code: code = REMAP[code]
             src2code[s] = code
             a = agg.setdefault(code, {"names": collections.Counter(), "aliases": set(), "type": collections.Counter(), "unit": collections.Counter(), "tier": collections.Counter(), "dx": set()})
             n = mentions.get(s, 1)
@@ -133,8 +136,10 @@ def main():
     # статьи, написанные по шаблону, знают свой код (code: в шапке)
     for f in glob.glob(os.path.join(ART, "*.md")):
         m = re.search(r"^code:\s*(\w+)", open(f, encoding="utf-8").read(3000), re.M)
-        if m and m.group(1) in items and not items[m.group(1)].get("article"):
-            items[m.group(1)]["article"] = os.path.basename(f)[:-3]
+        c = m.group(1) if m else None
+        while c in REMAP and REMAP[c] != c: c = REMAP[c]   # статья кода-дубля — статья основного кода
+        if c in items and not items[c].get("article"):
+            items[c]["article"] = os.path.basename(f)[:-3]
     # единицы — как у проверенной нормы (docs/data/norms.json), чтобы значение вводилось в тех же единицах
     nitems = json.load(open(os.path.join(ROOT, "docs", "data", "norms.json"), encoding="utf-8"))["items"]
     for code, it in items.items():

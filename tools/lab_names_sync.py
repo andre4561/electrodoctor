@@ -1,18 +1,23 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Статьи анализов с исправленным названием (tools/lab_names.py): обновить Title, переименовать файл, старое название — в синонимы.
-# Статьи ещё не опубликованы, поэтому старый файл просто уходит в tools/out/renamed_old/.
+# Старый файл уходит в tools/out/renamed_old/ (в git остаётся в истории).
 # Запуск после tools/labs_catalog_build.py, затем снова labs_catalog_build.py, section_pages.py, articles_home.py.
 import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lab_names import NAMES
+import json
+_dm = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dedup_map.json")
+DEDUP = json.load(open(_dm, encoding="utf-8"))["map"] if os.path.exists(_dm) else {}
 ART = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "docs", "articles", "lab-tests")
 bad = '<>:"/\\|?*'
 for f in sorted(os.listdir(ART)):
     if not f.endswith(".md"): continue
     p = os.path.join(ART, f); t = open(p, encoding="utf-8").read()
     m = re.search(r"^code:\s*(\w+)", t[:3000], re.M)
-    if not m or m.group(1) not in NAMES: continue
-    nm = NAMES[m.group(1)]
+    c = m.group(1) if m else None
+    while c in DEDUP and DEDUP[c] != c: c = DEDUP[c]   # статья кода-дубля — статья основного кода
+    if c not in NAMES: continue
+    nm = NAMES[c]
     old = re.search(r"^Title:\s*(.+)$", t, re.M).group(1).strip()
     if old != nm:
         t = t.replace(f"Title: {old}", f"Title: {nm}", 1)

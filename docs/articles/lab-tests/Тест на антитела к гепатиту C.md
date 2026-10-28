@@ -1,11 +1,12 @@
 ---
-Title: Тест на антитела к гепатиту C
+Title: Антитела к вирусу гепатита C
 Рубрики: анализ
 code: HEPATITIS_C_AB
 tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:
+  - "Тест на антитела к гепатиту C"
   - "Hepatitis C antibody test"
   - "Тест на гепатит C"
 ---
