@@ -70,6 +70,8 @@ def render(path):
 <style>{CSS}</style></head><body>
 <main class="pv-wrap">{content}
 <p class="pv-note">Локальный просмотр (tools/preview.py). На GitHub Pages оформление чуть другое.</p></main>
+<script src="/assets/analytics-config.js"></script>
+<script src="/assets/analytics.js" defer></script>
 <script src="/assets/totop.js" defer></script>
 <script src="/assets/sitenav.js" defer></script>
 </body></html>""".encode("utf-8")

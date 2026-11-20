@@ -64,6 +64,26 @@ export interface Settings {
   signs?: Record<string, any>;      // свои признаки диагнозов (Настройки → Диагнозы), перекрывают docs/data/signs.json
   signMethod?: string;              // как считать силу отклонения: "crit" | "dev"
   recognizer?: AgentDefaults;       // распознавание анализов по фото: провайдер ("" — общий провайдер агентов) и модель
+  metrikaId?: string;               // номер счётчика Яндекс.Метрики (Настройки → Прочее)
+}
+
+export const METRIKA_LS = "electrodoctor.metrika.id";
+/** Достаёт номер счётчика из вставленного кода Метрики или из голого числа. */
+export function parseMetrikaId(raw: string): string {
+  const s = (raw || "").trim();
+  if (!s) return "";
+  if (/^\d{5,}$/.test(s)) return s;
+  const m = s.match(/\bym\s*\(\s*(\d{5,})\s*[,)]/) || s.match(/\/watch\/(\d{5,})/) || s.match(/counter[_-]?id["'\s:=]+(\d{5,})/i) || s.match(/\b(\d{6,})\b/);
+  return m ? m[1] : "";
+}
+export function publishMetrikaId(id: string): void {
+  try {
+    if (id) localStorage.setItem(METRIKA_LS, id);
+    else localStorage.removeItem(METRIKA_LS);
+  } catch (e) { /* приватный режим */ }
+}
+export function metrikaConfigFile(id: string): string {
+  return `// SPDX-License-Identifier: AGPL-3.0-or-later\n// Публичный номер счётчика Яндекс.Метрики. Скачан из Настройки → Прочее.\nwindow.ED_METRIKA_ID = ${JSON.stringify(id || "")};\n`;
 }
 
 export const PROVIDERS: ProviderPreset[] = [
@@ -129,7 +149,7 @@ export function load(): Settings {
   const d = Store.getData();
   if (!d) return blank();
   const s: Settings = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-    agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" } }));
+    agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, metrikaId: d.metrikaId || "" }));
   // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
   if ((s.agentsRev || 1) < AGENTS_REV) {
     const have = new Set(s.agents.map(a => a.id));
@@ -139,10 +159,13 @@ export function load(): Settings {
     if (coord >= 0) s.agents.splice(coord, 0, ...add); else s.agents.push(...add);
     s.agentsRev = AGENTS_REV;
   }
+  publishMetrikaId(s.metrikaId || "");
   return s;
 }
 export function save(s: Settings): void {
-  Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer });
+  s.metrikaId = parseMetrikaId(s.metrikaId || "");
+  Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, metrikaId: s.metrikaId || "" });
+  publishMetrikaId(s.metrikaId || "");
 }
 // Чем распознаются анализы по фото: свой провайдер распознавания или общий провайдер агентов
 export function recognizerRuntime(s: Settings = load()): { preset?: ProviderPreset; conf?: ProviderConf; model: string; shared: boolean } {
@@ -207,7 +230,7 @@ const newId = (p: string) => p + Date.now().toString(36) + Math.random().toStrin
 export interface StepInfo { id: string; title: string }
 
 export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void {
-  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : "providers";
+  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
   view.innerHTML = `
     <h1>Настройки</h1>
     <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
@@ -219,12 +242,14 @@ export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void 
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
         <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">Диагнозы</a>
         <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">Хранение</a>
+        <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">Прочее</a>
       </aside>
       <section class="set-main" id="setmain"></section>
     </div>`;
   const main = q(view, "#setmain");
   const redraw = () => render(view, t, steps);
   if (t === "storage") { drawStorage(main, redraw); return; }
+  if (t === "misc") { drawMisc(main); return; }
   if (t === "diagnoses") {
     if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
     Dx.draw(main); return;
@@ -638,6 +663,61 @@ export function bindGate(root: HTMLElement, after: () => void): void {
     const err = f.querySelector<HTMLElement>("[data-gate-err]")!;
     err.textContent = "Проверяю…";
     Store.unlock(pw).then(after).catch(e => { err.textContent = (e instanceof Error && e.message) || String(e); });
+  };
+}
+
+function drawMisc(main: HTMLElement): void {
+  const s = load();
+  const id = s.metrikaId || "";
+  main.innerHTML = `<div class="set-head"><h2>Прочее</h2></div>
+    <div class="card">
+      <h3>Яндекс.Метрика</h3>
+      <p class="muted">Вставьте номер счётчика или весь код установки из кабинета Метрики — номер подставится сам. После сохранения счётчик заработает на главной, в статьях и в кабинете <b>в этом браузере</b>.</p>
+      <label for="metrika">Код или номер счётчика</label>
+      <textarea id="metrika" rows="8" placeholder="Номер, например 103456789 — или вставьте весь код установки из Метрики">${esc(id)}</textarea>
+      <p class="muted small" data-parsed>${id ? `Сейчас активен счётчик <code>${esc(id)}</code>.` : "Счётчик не задан."}</p>
+      <div class="grp">
+        <button type="button" class="btn primary" data-act="save">Сохранить</button>
+        <button type="button" class="btn" data-act="clear">Очистить</button>
+        <button type="button" class="btn" data-act="download" ${id ? "" : "disabled"}>Скачать analytics-config.js для хостинга</button>
+        <span class="muted" data-flash></span>
+      </div>
+      <p class="muted small">Чтобы Метрику видели <b>все посетители</b> вашего сайта на хостинге, скачайте файл и положите его в папку <code>assets/</code> на хостинге (рядом с <code>analytics.js</code>), затем снова залейте сайт. Настройка в кабинете сама на сервер не попадает — она хранится у вас локально.</p>
+    </div>`;
+  const ta = q<HTMLTextAreaElement>(main, "#metrika");
+  const parsed = q(main, "[data-parsed]");
+  const flash = q(main, "[data-flash]");
+  const dl = q<HTMLButtonElement>(main, '[data-act="download"]');
+  const refreshHint = () => {
+    const n = parseMetrikaId(ta.value);
+    parsed.innerHTML = n ? `Будет сохранён счётчик <code>${esc(n)}</code>.` : (ta.value.trim() ? `<span class="err">Не вижу номер счётчика в тексте.</span>` : "Счётчик не задан.");
+    dl.disabled = !n && !load().metrikaId;
+  };
+  ta.oninput = refreshHint;
+  q(main, '[data-act="save"]').onclick = () => {
+    const n = parseMetrikaId(ta.value);
+    if (ta.value.trim() && !n) { parsed.innerHTML = `<span class="err">Не вижу номер счётчика в тексте.</span>`; return; }
+    const st = load(); st.metrikaId = n; save(st); ta.value = n; refreshHint();
+    savedFlash(flash);
+    // подхватить без перезагрузки, если analytics.js уже на странице
+    try {
+      if (n && !(window as any).__edMetrika) {
+        const s1 = document.createElement("script"); s1.src = "../assets/analytics-config.js";
+        const s2 = document.createElement("script"); s2.src = "../assets/analytics.js";
+        document.head.appendChild(s1); s1.onload = () => { (window as any).ED_METRIKA_ID = n; document.head.appendChild(s2); };
+      } else if (n) { (window as any).ED_METRIKA_ID = n; }
+    } catch (e) { /* не страшно */ }
+  };
+  q(main, '[data-act="clear"]').onclick = () => {
+    const st = load(); st.metrikaId = ""; save(st); ta.value = ""; refreshHint(); savedFlash(flash);
+  };
+  dl.onclick = () => {
+    const n = parseMetrikaId(ta.value) || load().metrikaId || "";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([metrikaConfigFile(n)], { type: "text/javascript;charset=utf-8" }));
+    a.download = "analytics-config.js";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
 }
 
