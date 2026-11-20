@@ -1,121 +1,78 @@
-# Electrodoctor
+# Электродоктор
 
-**English** | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
+Открытый вычислитель дифференциальной диагностики: анализы, жалобы и данные осмотра на входе, 3–4 вероятных диагноза с процентами на выходе.
 
-**▶ [Try the live demo](https://andre4561.github.io/electrodoctor/demo.html)** — enter lab values and complaints, see the probabilities and every contribution. Runs in your browser; nothing is sent anywhere.
+В ядре нет нейросети. Каждый шаг расчёта — явная формула, и для каждого диагноза видно, какой показатель сколько добавил к вероятности.
 
-An open differential-diagnosis calculator: lab results, complaints and physical-exam findings go in, 3–4 likely diagnoses with probabilities come out.
+> ⚠️ Исследовательский проект. Не медицинское изделие, не для самодиагностики и не для лечебных решений. Все коэффициенты в репозитории пока условные. См. [DISCLAIMER.md](DISCLAIMER.md).
 
-There is no neural network at the core. Every step is an explicit formula, and for each diagnosis you can see how much each finding added to or subtracted from its probability.
+> **Важно.** Первая версия расчёта (движок на трёх диагнозах) лежит в локальной папке `удалить/` и на GitHub не выгружается. Живой расчёт — кабинет на сайте. Подробности — в [AGENTS.md](AGENTS.md).
 
-> ⚠️ Research project. Not a medical device, not for self-diagnosis and not for treatment decisions. All coefficients in this repository are illustrative placeholders. See [DISCLAIMER.md](DISCLAIMER.md).
+## Как это работает (кабинет)
 
-> 🌐 The detailed documentation in `docs/` and the reference data labels are currently in Russian. Translations are welcome.
+1. Данные клиента вносятся в анкету: общее, параметры, анализы, психолог.
+2. Для показателей считаются отклонение от нормы и сила (по критичности или по проценту отклонения — переключатель в настройках).
+3. По признакам диагнозов (`docs/data/signs.json`) складываются вклады «за» и «против».
+4. Вероятность: `балл = logit(исходная частота) + сумма вкладов`, `P = 1 / (1 + e^−балл)`.
+5. На вкладке «Диагнозы» видны проценты, разбивка вкладов и что досдать.
 
-## How it works
+Формат данных: [docs/data-format.md](docs/data-format.md). Дорожная карта: [docs/roadmap.md](docs/roadmap.md).
 
-1. **Patient table.** Everything is reduced to rows of "code — value — date": lab results, complaints, exam findings, vital signs.
-2. **Normalization.** For each finding the engine computes the signed deviation `d = ln(x / x0)`, the deviation strength, and a criticality score `k` (a parabola of the log-ratio).
-3. **Red flags.** Findings with `k ≥ 1` are marked as urgent.
-4. **Contributions.** For each diagnosis–finding pair in the reference: a deviation in the expected direction adds `+weight × strength`, in the opposite direction `−weight × strength`, a normal value adds a penalty, and a missing value adds 0 and becomes a "what to test next" hint.
-5. **Probability.** `score = logit(prior) + Σ contributions`, `P = 1 / (1 + e^−score)`. Diagnoses above a threshold are reported.
+## Быстрый старт — сайт и кабинет
 
-Complaints and exam findings use the same table: yes/no findings become 1/0 (with "not asked" kept distinct from "absent"), graded findings use validated scales (pain 0–10, edema 0–3+), and each category such as the character of pain becomes its own yes/no parameter.
-
-Details (in Russian): [docs/concept.md](docs/concept.md). Data formats: [docs/data-format.md](docs/data-format.md).
-
-## Quick start
-
-Python 3.9+ only, no external libraries.
-
-```bash
-python engine/electrodoctor.py examples/patient_anemia.csv
-```
-
-Expected output for the example:
-
-```
-Красные флаги: FERRITIN (k=1.04)
-D50  Железодефицитная анемия       92.5%  выдать
-I20  Стенокардия                    2.0%   не хватает параметров: 5
-D51  B12-дефицитная анемия          2.0%
-```
-
-(Red flag: ferritin. Iron-deficiency anemia 92.5% — reported; angina 2.0% — 5 parameters missing; B12-deficiency anemia 2.0%.)
-
-The second example, chest pain (`examples/patient_chest_pain.csv`), gives angina at 95.7%.
-
-Tests:
-
-```bash
-python -m unittest discover tests
-```
-
-### Website and cabinet (TypeScript)
-
-The in-browser engine, the demo page and the client cabinet are written in TypeScript (`src/`) and compiled to JavaScript in `docs/`, which GitHub Pages serves. Requires Node.js 20+.
+Нужны Node.js 20+ и Python 3 (для локального просмотра сайта).
 
 ```bash
 npm install
 npm run build   # src/*.ts → docs/*.js
-npm test        # build, TypeScript-vs-Python parity on the examples and 500 random patients, Python tests
+python tools/preview.py   # → http://localhost:8000/
 ```
 
-The Python version stays the reference; `tests/parity.test.js` makes sure both give the same numbers.
+Или дважды щёлкните `открыть-сайт.bat`. Краткая инструкция — в `Читать.md`.
 
-## Repository layout
+Кабинет: http://localhost:8000/app/#/clients
+
+```bash
+npm test        # сборка и тесты
+```
+
+## Структура
 
 ```
 electrodoctor/
-├── README.md              this file (English)
-├── README.ru.md           Russian version
-├── README.zh-CN.md        Chinese (Simplified) version
-├── DISCLAIMER.md          limitations and warnings
-├── CONTRIBUTING.md        how to propose weights, diagnoses, code
-├── LICENSE                GNU AGPL v3 (code)
-├── LICENSE-DATA           CC BY-SA 4.0 (data and documentation)
-├── LICENSE.md             what is licensed how
-├── src/                   TypeScript sources
-│   ├── engine.ts          engine for the browser and future apps
-│   ├── demo.ts            demo page
-│   └── app/               cabinet: clients and step-by-step questionnaire
-├── docs/                  website (GitHub Pages); *.js are built from src/, do not edit
-│   ├── concept.md         idea and math
-│   ├── data-format.md     formats of all tables
-│   ├── roadmap.md         what's next
-│   └── articles/          articles in Russian (Markdown, Obsidian-readable)
-│       ├── diagnoses/     diagnoses
-│       ├── lab-tests/     lab tests
-│       ├── supplements/   supplements
-│       ├── peptides/      peptides
-│       ├── probiotics/    probiotics
-│       ├── drugs/         drugs
-│       ├── general/       general articles
-│       ├── therapy/       therapies
-│       ├── practices/     philosophy and practices
-│       └── education/     general topics
-├── data/                  reference tables (open data)
-│   ├── parameters.csv     findings: labs, complaints, exam
-│   ├── diagnoses.csv      diagnoses and prior frequencies
-│   ├── links.csv          diagnosis–finding weights
-│   └── directions.csv     specialties ("which doctor to see")
-├── engine/
-│   └── electrodoctor.py   reference implementation
-├── examples/              fictional training patients
-└── tests/                 checks of the calculation, TypeScript-vs-Python parity
+├── README.md              этот файл
+├── AGENTS.md              контекст проекта для ИИ-агентов
+├── DISCLAIMER.md          ограничения и предупреждения
+├── CONTRIBUTING.md        как предлагать веса, диагнозы, код
+├── Читать.md              как открыть сайт локально
+├── открыть-сайт.bat       запуск локального сервера
+├── карта-сайта.drawio     схема страниц сайта
+├── LICENSE                GNU AGPL v3 (код)
+├── LICENSE-DATA           CC BY-SA 4.0 (данные и документация)
+├── LICENSE.md             что под какой лицензией
+├── src/app/               кабинет (TypeScript)
+├── docs/                  сайт (GitHub Pages); *.js собираются из src/
+│   ├── index.html         главная
+│   ├── app/               кабинет в браузере
+│   ├── data/              справочники кабинета (JSON)
+│   ├── data-format.md     форматы данных
+│   ├── roadmap.md         что дальше
+│   └── articles/          статьи (Markdown)
+├── tests/                 тесты
+└── tools/                 просмотр сайта и конвейер данных
 ```
 
-## How you can help
+## Чем можно помочь
 
-The most valuable part of the project is not the code but the table of weights. If you are a physician, a medical student or a researcher, you can:
+Самое ценное — справочник признаков и весов кабинета, не код. Можно:
 
-- propose weights for a diagnosis–finding pair, with a source;
-- add diagnoses from your specialty;
-- point out errors in the logic or examples;
-- suggest open datasets for calibration.
+- предложить или проверить признаки диагноза со ссылкой на источник;
+- добавить или вычитать статью;
+- указать на ошибку в логике или интерфейсе;
+- подсказать открытые наборы данных для калибровки.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Open questions are in [docs/roadmap.md](docs/roadmap.md). Issues and pull requests in English, Russian or Chinese are welcome.
+Как это сделать — в [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+## Лицензия
 
-Code — [GNU AGPL v3](LICENSE), data and documentation — [CC BY-SA 4.0](LICENSE-DATA). Details in [LICENSE.md](LICENSE.md).
+Код — [GNU AGPL v3](LICENSE), данные и документация — [CC BY-SA 4.0](LICENSE-DATA). Подробнее в [LICENSE.md](LICENSE.md).

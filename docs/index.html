@@ -19,11 +19,18 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
     font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 16px 48px; }
+  .top { background: var(--card); border-bottom: 1px solid var(--line); }
+  .top-in { max-width: 880px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; }
+  .top nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn { text-decoration: none; display: inline-block; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 7px 14px; border-radius: 8px; font-size: 14px; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 36px 16px 48px; }
   h1 { margin: 0; font-size: 34px; letter-spacing: -0.02em; }
   .lead { margin: 10px 0 0; color: var(--muted); font-size: 17px; max-width: 640px; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 36px 0 20px; }
-  @media (max-width: 640px) { .choices { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { .choices { grid-template-columns: 1fr; } .top nav { gap: 6px; } .btn { padding: 6px 10px; } }
   .choice { display: block; text-decoration: none; color: var(--ink); background: var(--card);
     border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 22px 20px;
     transition: border-color .15s, transform .15s; }
@@ -40,11 +47,19 @@
 </style>
 </head>
 <body>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="./">Электродоктор</a>
+    <nav aria-label="Разделы сайта">
+      <a class="btn on" href="./" aria-current="page">Главная</a>
+      <a class="btn" href="articles/">Информация</a>
+      <a class="btn" href="app/#/settings">Настройки</a>
+      <a class="btn" href="app/#/clients">Клиенты</a>
+    </nav>
+  </div>
+</header>
 <div class="wrap">
-  <header>
-    <h1>Электродоктор</h1>
-    <p class="lead">Открытая система поддержки диагностики: анализы и жалобы на входе — прозрачный расчёт — вероятные диагнозы и следующий самый полезный анализ.</p>
-  </header>
+  <p class="lead">Открытая система поддержки диагностики: анализы и жалобы на входе — прозрачный расчёт — вероятные диагнозы и следующий самый полезный анализ.</p>
 
   <nav class="choices" aria-label="Разделы">
     <a class="choice primary" href="app/#/clients">
@@ -52,21 +67,12 @@
       <p>Кабинет: клиенты, анкеты по этапам, анализы и подсказки расчёта. Данные хранятся только у вас — в браузере или в выбранной папке.</p>
       <span class="go">Открыть приложение</span>
     </a>
-    <a class="choice" href="demo.html">
-      <h2>Демо</h2>
-      <p>Калькулятор на одной странице: введите показатели или выберите пример — и посмотрите вероятности диагнозов и вклад каждого показателя.</p>
-      <span class="go">Открыть демо</span>
-    </a>
   </nav>
 
   <div class="note">Исследовательский проект, не медицинское изделие. Не для самодиагностики.</div>
 
   <div class="links">
-    <a href="articles/">Информация</a>
-    <a href="https://github.com/andre4561/electrodoctor/blob/main/docs/concept.md">Как это считается</a>
     <a href="https://github.com/andre4561/electrodoctor">Репозиторий на GitHub</a>
-    <a href="https://github.com/andre4561/electrodoctor/blob/main/README.md">English</a>
-    <a href="articles/lab-tests-todo.html">Какие статьи об анализах ещё нужно написать</a>
   </div>
 
   <footer>Код — GNU AGPL v3, данные — CC BY-SA 4.0.</footer>

@@ -13,3 +13,6 @@ secrets/
 
 # intermediate outputs of tools/ runs
 tools/out/
+
+# архив первой версии расчёта — только локально, на GitHub не выгружать
+удалить/

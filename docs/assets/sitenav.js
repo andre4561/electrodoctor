@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Электродоктор — шапка сайта на страницах статей, такая же, как в кабинете:
-// «Электродоктор» слева, справа Информация · Настройки · Клиенты · Выход.
-// Настройки, Клиенты и Выход видны, если в кабинет выполнен вход (как в самом кабинете).
+// Электродоктор — шапка на страницах статей, как на главной и в кабинете:
+// Главная · Информация · Настройки · Клиенты.
 // Подключение: <script src="…/assets/sitenav.js" defer></script>
 (function () {
   if (document.getElementById("ed-sitenav")) return;
   var me = document.currentScript || document.querySelector('script[src*="assets/sitenav.js"]');
-  var base = me ? me.src.replace(/assets\/sitenav\.js.*$/, "") : "/";       // корень сайта: …/electrodoctor/
-  var logged = false;
-  try { logged = sessionStorage.getItem("ed.login") === "1"; } catch (e) { /* нет доступа — считаем, что не вошли */ }
+  var base = me ? me.src.replace(/assets\/sitenav\.js.*$/, "") : "/";
 
   var css = "" +
     "#ed-sitenav{--n-bg:#fff;--n-ink:#1b1f24;--n-line:#e2e5ea;--n-acc:#2563c9;--n-soft:#e6eefb;" +
@@ -29,24 +26,17 @@
   function build() {
     var bar = document.createElement("header");
     bar.id = "ed-sitenav";
-    var links = '<a class="n-btn on" href="' + base + 'articles/" aria-current="page">Информация</a>';
-    if (logged) links += '<a class="n-btn" href="' + base + 'app/#/settings">Настройки</a>' +
-      '<a class="n-btn" href="' + base + 'app/#/clients">Клиенты</a>' +
-      '<button type="button" class="n-btn" data-logout>Выход</button>';
-    else links += '<a class="n-btn" href="' + base + 'app/">Кабинет</a>';
-    bar.innerHTML = '<div class="n-in"><a class="n-brand" href="' + base + 'app/">Электродоктор</a><nav aria-label="Разделы сайта">' + links + "</nav></div>";
-    var out = bar.querySelector("[data-logout]");
-    if (out) out.addEventListener("click", function () {
-      try { sessionStorage.removeItem("ed.login"); } catch (e) { /* не страшно */ }
-      location.href = base + "app/#/";
-    });
+    var links =
+      '<a class="n-btn" href="' + base + '">Главная</a>' +
+      '<a class="n-btn on" href="' + base + 'articles/" aria-current="page">Информация</a>' +
+      '<a class="n-btn" href="' + base + 'app/#/settings">Настройки</a>' +
+      '<a class="n-btn" href="' + base + 'app/#/clients">Клиенты</a>';
+    bar.innerHTML = '<div class="n-in"><a class="n-brand" href="' + base + '">Электродоктор</a><nav aria-label="Разделы сайта">' + links + "</nav></div>";
     document.body.insertBefore(bar, document.body.firstChild);
 
-    // Тёмная шапка — только если сама страница тёмная (оформление GitHub Pages всегда светлое)
     var bg = getComputedStyle(document.body).backgroundColor.match(/\d+/g);
     if (bg && bg.length >= 3 && (+bg[0] * 0.299 + +bg[1] * 0.587 + +bg[2] * 0.114) < 110) bar.classList.add("dark");
 
-    // Стандартный заголовок-ссылка «electrodoctor» от оформления GitHub Pages больше не нужен
     var first = document.querySelector(".markdown-body > h1:first-child, .pv-top");
     if (first && (first.classList.contains("pv-top") || (first.children.length === 1 && first.firstElementChild.tagName === "A" && !first.textContent.trim().match(/\s/)))) first.style.display = "none";
   }
