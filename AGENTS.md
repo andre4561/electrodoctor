@@ -128,9 +128,6 @@ python tools/preview.py   # сайт → http://localhost:8000/
 Команды первой версии (`python engine/electrodoctor.py examples/…`, parity) работают
 только если вернуть файлы из `удалить/` на старые пути — сейчас этого не делать.
 
-В `npm test` прописан `python3` — в Windows команда обычно `python`, тест может упасть
-на этом шаге, а не на коде.
-
 ### Сайт смотреть только через `tools/preview.py`
 
 ```bash

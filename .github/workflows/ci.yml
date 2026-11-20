@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: npm ci
-      - name: Сборка и тесты (TypeScript, сверка с Python, Python)
+      - name: Сборка и тесты
         run: npm test
       - name: Собранный docs/*.js совпадает с src/*.ts
         run: |
