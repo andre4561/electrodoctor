@@ -68,6 +68,9 @@ tbody tr.click:hover { background: var(--accent-soft); }
 .step.full::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
 .sec + .sec { margin-top: 20px; }
 .sec h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.sec-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 4px; }
+.sec-head h2 { margin: 0; }
+.sec-head .btn { flex: none; }
 .field { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
 .field:first-of-type { border-top: 0; }
 .field.wide { grid-template-columns: 1fr; gap: 6px; }
@@ -429,6 +432,28 @@ body.cv-lock { overflow: hidden; }
 .cv-pt { fill: var(--card); stroke: var(--danger); stroke-width: 2.5; cursor: grab; } .cv-pt.fixed { fill: var(--danger); }
 .cv-help { margin-top: 10px; } .cv-help ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .cv-overlay { animation: none; } }
+
+/* чат «Поговорить с доктором» */
+.talk-dlg { width: min(560px, 100%); display: flex; flex-direction: column; max-height: calc(100vh - 32px); overflow: hidden; }
+.talk-dlg .cv-head { flex: none; }
+.talk-bar { flex: none; margin: 10px 0 8px; }
+.talk-prov { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.talk-prov select { font-weight: 500; color: var(--ink); max-width: 100%; }
+.talk-log { flex: 1 1 auto; min-height: 220px; max-height: min(48vh, 420px); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.talk-hint { font-size: 14px; padding: 8px 10px; }
+.talk-msg { display: flex; flex-direction: column; gap: 4px; max-width: 92%; }
+.talk-user { align-self: flex-end; }
+.talk-assistant { align-self: flex-start; }
+.talk-bubble { padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+.talk-user .talk-bubble { background: var(--accent-soft); color: var(--ink); border: 1px solid var(--accent); }
+.talk-assistant .talk-bubble { background: var(--card); border: 1px solid var(--line); }
+.talk-meta { font-size: 12px; color: var(--muted); padding: 0 4px; }
+.talk-compose { flex: none; display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
+.talk-compose textarea { flex: 1; min-height: 56px; margin: 0; }
+.talk-compose .btn { flex: none; }
+.talk-err { margin: 8px 0 0; }
+.talk-empty { padding: 18px 4px 8px; display: grid; gap: 12px; justify-items: start; }
+.talk-empty p { margin: 0; font-size: 14px; max-width: 36em; }
 @media (max-width: 640px) { .norm, .dev, .crit, .norm-h, .dev-h, .crit-h { width: auto; flex: 1; } .dev { flex: 1.4; } }
 .cv-norm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; }
 .cv-norm label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }

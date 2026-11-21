@@ -125,3 +125,70 @@ export async function recognize(o: CallOpts): Promise<string> {
   if (!out) throw new Error("Провайдер вернул пустой ответ. Возможно, модель не умеет читать изображения — выберите модель с поддержкой картинок (vision).");
   return out;
 }
+
+// ---------- обычный чат (без файлов) ----------
+export interface ChatMessage { role: "user" | "assistant"; content: string }
+export interface ChatOpts {
+  preset: ProviderPreset;
+  conf: ProviderConf;
+  model: string;
+  system: string;
+  messages: ChatMessage[];
+  temperature?: number;
+  signal?: AbortSignal;
+}
+
+function openaiText(msg: any): string {
+  if (!msg) return "";
+  if (typeof msg.content === "string") return msg.content;
+  if (Array.isArray(msg.content)) return msg.content.map((p: any) => p.text || "").join("");
+  return "";
+}
+
+/** Multi-turn чат: system + история user/assistant → текст ответа. */
+export async function chat(o: ChatOpts): Promise<string> {
+  const api = apiOf(o.preset);
+  const base = trimSlash(o.conf.baseUrl);
+  const model = o.model.trim();
+  const temperature = o.temperature ?? 0.3;
+  if (api === "none") throw new Error(unsupportedReason(o.preset));
+  if (!model) throw new Error("Не указана модель. Впишите её в настройках провайдера.");
+  if (!o.messages.length) throw new Error("Нет сообщения для отправки.");
+
+  if (api === "anthropic") {
+    const j = await post(base + "/messages", authHeaders(o.preset, o.conf), {
+      model, max_tokens: 4096, temperature, system: o.system,
+      messages: o.messages.map(m => ({ role: m.role, content: m.content })),
+    }, o.signal);
+    const out = (j.content || []).filter((b: any) => b.type === "text").map((b: any) => b.text).join("\n");
+    if (!out) throw new Error("Провайдер вернул пустой ответ.");
+    return out;
+  }
+
+  if (api === "gemini") {
+    const contents = o.messages.map(m => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+    const j = await post(`${base}/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(o.conf.apiKey)}`, {}, {
+      systemInstruction: { parts: [{ text: o.system }] },
+      contents,
+      generationConfig: { temperature, responseMimeType: "application/json" },
+    }, o.signal);
+    const c = j.candidates && j.candidates[0];
+    if (!c) throw new Error("Gemini не вернул ответ" + (j.promptFeedback?.blockReason ? ": " + j.promptFeedback.blockReason : "."));
+    const out = (c.content?.parts || []).map((p: any) => p.text || "").join("");
+    if (!out) throw new Error("Провайдер вернул пустой ответ.");
+    return out;
+  }
+
+  const headers = authHeaders(o.preset, o.conf);
+  if (o.preset.id === "openrouter") headers["X-Title"] = "Electrodoctor";
+  const j = await post(route(o.preset, o.conf, base + "/chat/completions"), headers, {
+    model, temperature,
+    messages: [{ role: "system", content: o.system }, ...o.messages.map(m => ({ role: m.role, content: m.content }))],
+  }, o.signal);
+  const out = openaiText(j.choices && j.choices[0] && j.choices[0].message);
+  if (!out) throw new Error("Провайдер вернул пустой ответ.");
+  return out;
+}

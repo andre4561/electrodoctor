@@ -15,6 +15,7 @@ import * as Dx from "./diagnoses.js";
 import * as Sg from "./signs.js";
 import * as Labs from "./labs.js";
 import * as Cmp from "./complaints.js";
+import * as Talk from "./talk.js";
 import { articleUrl } from "./articles.js";
 const KEY = "electrodoctor.clients.v1";
 const $ = (s) => document.querySelector(s);
@@ -842,8 +843,10 @@ function renderClient(id, stepId) {
     }
     if (params)
         bindParams();
-    if (step.id === "general")
+    if (step.id === "general") {
         bindComplaints();
+        bindTalk();
+    }
     if (step.id === "diagnoses")
         Dx.ready().then(err => drawDxTab(c, err));
     function bindComplaints() {
@@ -862,6 +865,39 @@ function renderClient(id, stepId) {
                 clearTimeout(timer);
                 save();
                 refresh();
+            });
+        });
+    }
+    /** Подтянуть видимые поля и чипы жалоб после правок из чата с доктором. */
+    function syncGeneralFromClient() {
+        for (const f of Talk.talkFields()) {
+            const v = c.values[f.code];
+            const s = v === undefined || v === null || v === "" ? "" : String(v);
+            const el = form.querySelector(`[data-code="${f.code}"]`);
+            if (el && el.value !== s)
+                el.value = s;
+            const seg = form.querySelector(`[data-choice="${f.code}"]`);
+            if (seg) {
+                seg.querySelectorAll("button").forEach(b => {
+                    const bv = b.dataset.v ?? "";
+                    b.classList.toggle("on", bv === s);
+                });
+            }
+        }
+        const list = document.getElementById("cmplist");
+        if (list)
+            list.innerHTML = Cmp.complaintsListHtml(c);
+        const title = document.getElementById("title");
+        if (title)
+            title.textContent = (!getClient(id) && !c.values.NAME) ? "Новый клиент" : displayName(c);
+    }
+    function bindTalk() {
+        const btn = document.getElementById("talk-doctor");
+        if (!btn)
+            return;
+        btn.addEventListener("click", () => {
+            Talk.openTalkDialog(c, {
+                onChange: () => { clearTimeout(timer); save(); syncGeneralFromClient(); },
             });
         });
     }
@@ -1759,6 +1795,10 @@ function sectionHtml(step, sec, c) {
     const fields = head + sec.fields.map(f => fieldHtml(f, c.values[f.code], c)).join("");
     if (sec.fold && sec.id)
         return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), fields)}</div>`;
+    if (step.id === "general" && sec.title === "Клиент") {
+        return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
+      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${fields}</div>`;
+    }
     return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${fields}</div>`;
 }
 function filesListHtml(refs) {
