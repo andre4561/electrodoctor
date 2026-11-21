@@ -303,6 +303,41 @@ const DX_LIFT_MIN = 10; // выросшей по анализам хотя бы 
 const DX_PAGE = 25;
 const pct = (p) => p >= 99.5 ? ">99" : p >= 10 ? String(Math.round(p)) : p >= 1 ? p.toFixed(1).replace(".", ",") : "<1";
 const pctCls = (p) => p >= 70 ? "p4" : p >= 40 ? "p3" : p >= 20 ? "p2" : "p1";
+function openDxNote() {
+    const ov = document.createElement("div");
+    ov.className = "cv-overlay";
+    ov.innerHTML = `<div class="cv-dialog dxt-note-dlg" role="dialog" aria-modal="true" aria-labelledby="dxt-note-title">
+    <div class="cv-head"><b id="dxt-note-title">О расчёте</b>
+      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <p class="dxt-note">Это подсказка расчёта по анализам, а не диагноз. Сверху — самые вероятные. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href="#/settings/diagnoses">Настройки → Диагнозы</a>.</p>
+  </div>`;
+    document.body.appendChild(ov);
+    document.body.classList.add("cv-lock");
+    const close = () => {
+        document.removeEventListener("keydown", onKey);
+        ov.remove();
+        document.body.classList.remove("cv-lock");
+    };
+    const onKey = (e) => { if (e.key === "Escape")
+        close(); };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", e => { if (e.target === ov)
+        close(); });
+    const x = ov.querySelector("[data-close]");
+    x.addEventListener("click", close);
+    x.focus();
+}
+function bindDxNote(box) {
+    box.querySelector(".dxt-info")?.addEventListener("click", openDxNote);
+}
+let dxSort = "p";
+const sortDx = (list) => [...list].sort(dxSort === "lift"
+    ? (a, b) => (b.score.p - b.prior) - (a.score.p - a.prior) || b.score.p - a.score.p
+    : (a, b) => b.score.p - a.score.p || (b.score.p - b.prior) - (a.score.p - a.prior));
+const dxSortUi = () => `<span class="seg dxt-sort" role="group" aria-label="Сортировка">
+  <button type="button" data-dx-sort="p"${dxSort === "p" ? ' class="on"' : ""} title="по убыванию вероятности">По %</button>
+  <button type="button" data-dx-sort="lift"${dxSort === "lift" ? ' class="on"' : ""} title="насколько анализы подняли вероятность над распространённостью">По приросту</button>
+</span>`;
 function drawDxTab(c, err) {
     const box = document.getElementById("dxtab");
     if (!box)
@@ -315,17 +350,17 @@ function drawDxTab(c, err) {
     const sel = selSet(c);
     const filled = labFieldsOf(c).filter(f => (f.type === "number" || f.type === "select") && isFilled(f, c.values[f.code])).length;
     const src = sel ? `по анализам от <b>${esc(ruDate(sel.date))}</b>` : filled ? "по новому, ещё не сохранённому бланку анализов" : "";
-    const method = Dx.currentMethod() === "dev" ? "сила отклонения — по проценту от нормы" : "сила отклонения — по критичности";
-    const head = `<div class="dxt-head"><h2>Вероятные диагнозы</h2><span class="muted">${src}${src ? " · " : ""}${method}</span></div>
-    <p class="muted dxt-note">Это подсказка расчёта по анализам, а не диагноз. Сверху — диагнозы, вероятность которых анализы подняли сильнее всего. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href="#/settings/diagnoses">Настройки → Диагнозы</a>.</p>`;
+    const head = (withSort) => `<div class="dxt-head"><div class="dxt-title"><h2>Вероятные диагнозы</h2><button type="button" class="dxt-info" aria-label="О расчёте" title="О расчёте">!</button>${withSort ? dxSortUi() : ""}</div>${src ? `<span class="muted">${src}</span>` : ""}</div>`;
     if (!filled) {
-        box.innerHTML = head + `<div class="empty">Анализов пока нет. Заполните или загрузите их на вкладке <a href="#/client/${esc(c.id)}/labs">«Анализы»</a>.</div>`;
+        box.innerHTML = head(false) + `<div class="empty">Анализов пока нет. Заполните или загрузите их на вкладке <a href="#/client/${esc(c.id)}/labs">«Анализы»</a>.</div>`;
+        bindDxNote(box);
         return;
     }
     const all = Dx.rank(values, c);
-    const list = all.filter(r => r.score.p >= DX_SHOW_MIN && r.score.p - r.prior >= DX_LIFT_MIN && r.score.contribs.some(x => x.c > 0));
+    const list = sortDx(all.filter(r => r.score.p >= DX_SHOW_MIN && r.score.p - r.prior >= DX_LIFT_MIN && r.score.contribs.some(x => x.c > 0)));
     if (!list.length) {
-        box.innerHTML = head + `<div class="empty">По этим анализам вероятность ни одного диагноза заметно не выросла.</div>`;
+        box.innerHTML = head(false) + `<div class="empty">По этим анализам вероятность ни одного диагноза заметно не выросла.</div>`;
+        bindDxNote(box);
         return;
     }
     const secs = [...new Set(list.flatMap(r => r.item.sections))];
@@ -338,7 +373,7 @@ function drawDxTab(c, err) {
         const weight = (code) => (Sg.labSigns(r.signs).find(l => l.code === code) || { w: 0 }).w;
         const miss = [...new Set(r.score.missing)].filter(code => weight(code) >= 5).sort((a, b) => weight(b) - weight(a));
         const look = [...(r.signs.exam || []), ...(r.signs.instr || [])].filter(x => (x.w ?? 0) >= 7).sort((a, b) => (b.w ?? 0) - (a.w ?? 0)).slice(0, 5);
-        return `<details class="fold dxt-item" data-secs="${esc(r.item.sections.join(" "))}">
+        return `<details class="fold dxt-item" data-secs="${esc(r.item.sections.join(" "))}" data-p="${r.score.p}" data-lift="${r.score.p - r.prior}">
       <summary><span class="dxt-p ${pctCls(r.score.p)}">${pct(r.score.p)}%</span><span class="dx-title"><span class="fold-title">${esc(r.item.title)}</span><a class="dx-art" href="${Dx.articleUrl(r.name)}" target="_blank" rel="noopener" title="статья о диагнозе — в новой вкладке" aria-label="статья">↗</a>${(r.item.flags || []).map(f => `<span class="dx-flag f-${esc(f)}">${esc(Dx.flagTitle(f))}</span>`).join("")}<small class="muted dx-also">${r.item.sections.map(s => esc(Dx.sectionTitle(s))).join(", ")}</small></span><span class="fold-chev" aria-hidden="true"></span></summary>
       <div class="fold-body dxt-body">
         <p><span class="dxt-lbl">За</span>${up.map(chip).join("")}</p>
@@ -348,7 +383,7 @@ function drawDxTab(c, err) {
         <p class="muted dxt-meta">без анализов ${pct(r.prior)}% → по анализам ${pct(r.score.p)}% · признаков-анализов ${Sg.labSigns(r.signs).length} · <a href="#/settings/diagnoses/${esc(r.item.sections[0] || "")}">признаки в настройках</a></p>
       </div></details>`;
     };
-    box.innerHTML = head + `<div class="dx-chips dxt-filter" role="group" aria-label="Раздел"><button type="button" class="dx-chip on" data-sec="">Все ${list.length}</button>${secs.map(s => `<button type="button" class="dx-chip" data-sec="${esc(s)}">${esc(Dx.sectionTitle(s))} ${list.filter(r => r.item.sections.includes(s)).length}</button>`).join("")}</div>
+    box.innerHTML = head(true) + `<div class="dx-chips dxt-filter" role="group" aria-label="Раздел"><button type="button" class="dx-chip on" data-sec="">Все ${list.length}</button>${secs.map(s => `<button type="button" class="dx-chip" data-sec="${esc(s)}">${esc(Dx.sectionTitle(s))} ${list.filter(r => r.item.sections.includes(s)).length}</button>`).join("")}</div>
     <div class="dx-acc" id="dxtlist">${list.map(row).join("")}</div>
     <p class="muted dxt-more" id="dxtmore" hidden><button type="button" class="btn" id="dxtmorebtn">Показать все</button></p>`;
     let sec = "", showAll = false;
@@ -366,6 +401,22 @@ function drawDxTab(c, err) {
         more.hidden = shown >= n;
         box.querySelector("#dxtmorebtn").textContent = `Показать все ${n}`;
     };
+    const reorder = () => {
+        const listEl = box.querySelector("#dxtlist");
+        const items = [...listEl.children];
+        const key = dxSort === "lift" ? "lift" : "p";
+        items.sort((a, b) => (+b.dataset[key] - +a.dataset[key]) || (+b.dataset.p - +a.dataset.p));
+        items.forEach(el => listEl.appendChild(el));
+        apply();
+    };
+    box.querySelectorAll("[data-dx-sort]").forEach(b => b.addEventListener("click", () => {
+        const next = (b.dataset.dxSort || "p");
+        if (next === dxSort)
+            return;
+        dxSort = next;
+        box.querySelectorAll("[data-dx-sort]").forEach(x => x.classList.toggle("on", x === b));
+        reorder();
+    }));
     box.querySelectorAll(".dxt-filter .dx-chip").forEach(b => b.addEventListener("click", () => {
         sec = b.dataset.sec || "";
         box.querySelectorAll(".dxt-filter .dx-chip").forEach(x => x.classList.toggle("on", x === b));
@@ -383,6 +434,7 @@ function drawDxTab(c, err) {
         labFocus = code;
         location.hash = "#/client/" + c.id + "/labs";
     });
+    bindDxNote(box);
     apply();
 }
 // ---------- анализы по датам ----------
@@ -512,11 +564,18 @@ function renderClient(id, stepId) {
     view.innerHTML = `
     <div class="head">
       <div><a href="#/clients">← Клиенты</a><h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1></div>
-      <div class="grp" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : "Сохранено"}</span>
-        <button class="btn" id="csv" ${isNew ? "disabled" : ""}>CSV</button>
-        <button class="btn" id="md" ${isNew ? "disabled" : ""}>Markdown</button>
-        <button class="btn danger" id="del" ${isNew ? "disabled" : ""}>Удалить</button>
+      <div class="head-actions">
+        <div class="grp">
+          <button type="button" class="btn" id="export" ${isNew ? "disabled" : ""}>Выгрузить</button>
+          <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : ""}</span>
+        </div>
+        <div class="grp">
+          <span class="muted">Загрузить</span>
+          <button type="button" class="btn" id="csv-in">CSV</button>
+          <button type="button" class="btn" id="md-in">Markdown</button>
+          <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+          <input type="file" id="md-file" accept=".md,.markdown,text/markdown,.txt" hidden>
+        </div>
       </div>
     </div>
     <div class="steps" role="tablist">${STEPS.map((s, i) => {
@@ -532,6 +591,7 @@ function renderClient(id, stepId) {
     </div>
     <div class="nav2">
       ${si > 0 ? `<a class="btn" href="#/client/${esc(id)}/${STEPS[si - 1].id}">← ${esc(stepName(si - 1))}</a>` : "<span></span>"}
+      <button type="button" class="btn danger" id="del" ${isNew ? "disabled" : ""}>Удалить пациента</button>
       ${si < STEPS.length - 1 ? `<a class="btn primary" href="#/client/${esc(id)}/${STEPS[si + 1].id}">${esc(stepName(si + 1))} →</a>` : `<a class="btn primary" href="#/clients">Готово</a>`}
     </div>`;
     let timer;
@@ -547,7 +607,7 @@ function renderClient(id, stepId) {
         const written = putClient(c);
         delete drafts[id];
         $("#title").textContent = displayName(c);
-        ["csv", "md", "del"].forEach(b => { btn("#" + b).disabled = false; });
+        ["export", "del"].forEach(b => { btn("#" + b).disabled = false; });
         const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
         $("#saved").textContent = storageOk ? "Сохранено " + time : "Не сохраняется в браузере — выгрузите файл";
         written.then(folder => {
@@ -1230,8 +1290,38 @@ function renderClient(id, stepId) {
             });
         }
     }
-    $("#csv").onclick = () => download(fileBase(c) + ".csv", toCSV(c), "text/csv");
-    $("#md").onclick = () => download(fileBase(c) + ".md", toMarkdown(c), "text/markdown");
+    $("#export").onclick = () => openExportDialog(c);
+    const pickImport = (input, kind) => {
+        input.value = "";
+        input.onchange = async () => {
+            const f = input.files && input.files[0];
+            if (!f)
+                return;
+            try {
+                const text = await f.text();
+                const r = kind === "csv" ? fromCSV(text) : fromMarkdown(text);
+                const msg = applyImport(c, r);
+                if (!msg) {
+                    alert("В файле не нашлось данных для загрузки.");
+                    return;
+                }
+                if (!isFilled(null, c.values.NAME) && !getClient(id)) {
+                    alert(msg + "\n\nУкажите имя на вкладке «Общее», чтобы сохранить клиента.");
+                }
+                labFlash = msg;
+                clearTimeout(timer);
+                save();
+                location.hash = "#/client/" + id + "/labs";
+                renderClient(id, "labs");
+            }
+            catch (e) {
+                alert("Не удалось прочитать файл: " + ((e instanceof Error && e.message) || e));
+            }
+        };
+        input.click();
+    };
+    $("#csv-in").onclick = () => pickImport($("#csv-file"), "csv");
+    $("#md-in").onclick = () => pickImport($("#md-file"), "md");
     $("#del").onclick = () => {
         const inFolder = FS.ready() && c.folder ? " Подпапка «" + c.folder + "» в папке «" + FS.state.name + "» тоже будет удалена." : "";
         if (!confirm("Удалить клиента «" + displayName(c) + "» и все его данные?" + inFolder))
@@ -1417,39 +1507,130 @@ function fieldHtml(f, v, own) {
 function rowHtml(f, r) {
     return `<tr>${(f.columns || []).map(col => `<td><input type="text" data-row value="${esc(r[col.key])}" placeholder="${esc(col.placeholder || "")}" aria-label="${esc(col.label)}"></td>`).join("")}<td><button type="button" class="btn danger" data-act="rm" title="удалить строку" aria-label="удалить строку">×</button></td></tr>`;
 }
-// ---------- выгрузка ----------
 const fileBase = (c) => "client-" + displayName(c).replace(/[^\p{L}\p{N}]+/gu, "_").replace(/^_|_$/g, "").slice(0, 40);
 const csvCell = (v) => { const s = String(v == null ? "" : v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
 const SOURCE = { general: "опрос", params: "осмотр", labs: "анализ", psych: "психолог" };
-// Формат examples/*.csv: code,value,unit,date,source — его понимает engine/electrodoctor.py
-function toCSV(c) {
+const FIELD_BY_CODE = {};
+const STEP_OF_CODE = {};
+for (const step of STEPS)
+    for (const f of fieldsOf(step)) {
+        FIELD_BY_CODE[f.code] = f;
+        STEP_OF_CODE[f.code] = step.id;
+    }
+const isLabCode = (code) => STEP_OF_CODE[code] === "labs" || isExtraCode(code);
+// Дата в файле: ISO / дд.мм.гггг → ISO; day0, пусто, относительные — сегодня
+function parseExportDate(raw) {
+    const s = String(raw || "").trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(s))
+        return s.slice(0, 10);
+    const dmy = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(s);
+    if (dmy)
+        return `${dmy[3]}-${dmy[2].padStart(2, "0")}-${dmy[1].padStart(2, "0")}`;
+    return todayIso();
+}
+// Анализы для выгрузки: все сохранённые + несохранённый бланк; при правках открытых — актуальные значения
+function labExportSets(c) {
+    const out = sortedSets(c).map(s => ({ date: s.date, ...(s.time ? { time: s.time } : {}), values: { ...s.values } }));
+    const buf = bufValues(c);
+    if (!Object.keys(buf).length)
+        return out;
+    const metaDate = (c.labMeta && c.labMeta.date) || todayIso();
+    const metaTime = c.labMeta && c.labMeta.time;
+    if (!(c.labSel || "")) {
+        out.push({ date: metaDate, ...(metaTime ? { time: metaTime } : {}), values: buf });
+        return out;
+    }
+    if (labDirty(c)) {
+        const sel = selSet(c);
+        const i = sel ? sortedSets(c).findIndex(s => s.id === sel.id) : -1;
+        if (i >= 0)
+            out[i] = { date: metaDate, ...(metaTime ? { time: metaTime } : {}), values: buf };
+    }
+    return out;
+}
+function labsForExport(c, opts) {
+    const sets = labExportSets(c);
+    if (opts && opts.scope === "labs" && opts.labPick !== "all")
+        return sets.filter(s => s.date === opts.labPick);
+    return sets;
+}
+function pushCsvValue(lines, code, v, date, src) {
+    const f = FIELD_BY_CODE[code] || Labs.fieldFor(code) || null;
+    if (f && f.type === "files")
+        return;
+    if (f && f.type === "table") {
+        for (const r of v)
+            if (r.name || r.value)
+                lines.push(["LAB:" + (r.name || ""), r.value, r.unit || "", r.date || date, src].map(csvCell).join(","));
+        return;
+    }
+    const unit = (f && f.unit) || (f && f.type === "yesno" ? "да/нет" : f && f.type === "scale" ? "0–" + f.max : "");
+    lines.push([code, v, unit, date, src].map(csvCell).join(","));
+}
+function toCSV(c, opts) {
+    const scope = (opts && opts.scope) || "all";
     const lines = ["code,value,unit,date,source"];
-    for (const step of STEPS)
-        for (const f of fieldsOf(step)) {
-            const v = c.values[f.code];
-            if (!isFilled(f, v) || f.code === "NAME" || f.type === "files")
-                continue; // имя в CSV не пишем: файл обезличен
-            const src = SOURCE[step.id] || step.id;
-            if (f.type === "table") {
-                for (const r of v)
-                    if (r.name || r.value)
-                        lines.push(["LAB:" + (r.name || ""), r.value, r.unit, r.date || "day0", src].map(csvCell).join(","));
-            }
-            else {
-                const unit = f.unit || (f.type === "yesno" ? "да/нет" : f.type === "scale" ? "0–" + f.max : "");
-                lines.push([f.code, v, unit, "day0", src].map(csvCell).join(","));
+    if (scope === "all") {
+        for (const step of STEPS) {
+            if (step.id === "labs")
+                continue;
+            for (const f of fieldsOf(step)) {
+                const v = c.values[f.code];
+                if (!isFilled(f, v) || f.code === "NAME" || f.type === "files")
+                    continue;
+                pushCsvValue(lines, f.code, v, todayIso(), SOURCE[step.id] || step.id);
             }
         }
+    }
+    for (const s of labsForExport(c, opts)) {
+        for (const [code, v] of Object.entries(s.values))
+            pushCsvValue(lines, code, v, s.date, "анализ");
+    }
     return lines.join("\n") + "\n";
 }
 const mdCell = (s) => String(s == null ? "" : s).replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
-function toMarkdown(c) {
-    const show = (f, v) => f.type === "yesno" ? (String(v) === "1" ? "да" : "нет")
-        : f.type === "select" ? ((f.options || []).find(o => o[0] === v) || ["", String(v)])[1]
-            : f.type === "scale" ? v + " из " + f.max
-                : f.unit ? v + " " + f.unit : String(v);
+const mdShow = (f, v) => f.type === "yesno" ? (String(v) === "1" ? "да" : "нет")
+    : f.type === "select" ? ((f.options || []).find(o => o[0] === v) || ["", String(v)])[1]
+        : f.type === "scale" ? v + " из " + f.max
+            : f.unit ? v + " " + f.unit : String(v);
+function mdValuesTable(values) {
+    let out = "";
+    const codes = Object.keys(values);
+    const simple = codes.map(code => FIELD_BY_CODE[code] || Labs.fieldFor(code)).filter((f) => !!f && f.type !== "table" && f.type !== "files" && isFilled(f, values[f.code]));
+    const tables = codes.map(code => FIELD_BY_CODE[code]).filter((f) => !!f && f.type === "table" && isFilled(f, values[f.code]));
+    const extras = codes.filter(code => !FIELD_BY_CODE[code] && !Labs.fieldFor(code));
+    if (simple.length) {
+        out += "| Поле | Код | Значение |\n|---|---|---|\n";
+        for (const f of simple)
+            out += `| ${mdCell(f.label)} | ${f.code} | ${mdCell(mdShow(f, values[f.code]))} |\n`;
+    }
+    for (const code of extras)
+        out += (out.includes("| Поле |") ? "" : "| Поле | Код | Значение |\n|---|---|---|\n") + `| ${mdCell(code)} | ${code} | ${mdCell(values[code])} |\n`;
+    for (const f of tables) {
+        const cols = f.columns || [];
+        out += `\n#### ${mdCell(f.label)}\n\n| ${cols.map(col => mdCell(col.label)).join(" | ")} |\n|${cols.map(() => "---").join("|")}|\n`;
+        for (const r of values[f.code])
+            out += `| ${cols.map(col => mdCell(r[col.key])).join(" | ")} |\n`;
+    }
+    return out;
+}
+function toMarkdown(c, opts) {
+    const scope = (opts && opts.scope) || "all";
     let out = `# ${mdCell(displayName(c))}\n\nСоздан: ${fmtDate(c.createdAt)} · изменён: ${fmtDate(c.updatedAt)}\n`;
     STEPS.forEach((step, i) => {
+        if (step.id === "labs") {
+            const sets = labsForExport(c, opts);
+            if (!sets.length)
+                return;
+            out += `\n## ${i + 1}. ${mdCell(step.title)}\n`;
+            for (const s of sets) {
+                out += `\n### ${s.date}${s.time ? " " + s.time : ""}\n\n`;
+                out += mdValuesTable(s.values);
+            }
+            return;
+        }
+        if (scope !== "all")
+            return;
         const fs = fieldsOf(step).filter(f => isFilled(f, c.values[f.code]));
         if (!fs.length)
             return;
@@ -1461,7 +1642,7 @@ function toMarkdown(c) {
         if (simple.length) {
             out += "| Поле | Код | Значение |\n|---|---|---|\n";
             for (const f of simple)
-                out += `| ${mdCell(f.label)} | ${f.code} | ${mdCell(show(f, c.values[f.code]))} |\n`;
+                out += `| ${mdCell(f.label)} | ${f.code} | ${mdCell(mdShow(f, c.values[f.code]))} |\n`;
         }
         for (const f of fs.filter(f => f.type === "table")) {
             const cols = f.columns || [];
@@ -1471,6 +1652,322 @@ function toMarkdown(c) {
         }
     });
     return out;
+}
+function openExportDialog(c) {
+    const sets = labExportSets(c);
+    const dates = [...new Set(sets.map(s => s.date))];
+    const selDate = (c.labMeta && c.labMeta.date && dates.includes(c.labMeta.date)) ? c.labMeta.date
+        : (selSet(c) && dates.includes(selSet(c).date) ? selSet(c).date : dates[dates.length - 1] || "");
+    const ov = document.createElement("div");
+    ov.className = "cv-overlay";
+    ov.innerHTML = `<div class="cv-dialog exp-dlg" role="dialog" aria-modal="true" aria-labelledby="exp-title">
+    <div class="cv-head"><b id="exp-title">Выгрузить</b>
+      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <div class="exp-row"><span class="exp-lbl">Формат</span>
+      <span class="seg" role="group" aria-label="Формат">
+        <button type="button" class="on" data-fmt="csv">CSV</button>
+        <button type="button" data-fmt="md">Markdown</button>
+      </span></div>
+    <div class="exp-row"><span class="exp-lbl">Что</span>
+      <span class="seg" role="group" aria-label="Объём">
+        <button type="button" class="on" data-scope="all">Всё</button>
+        <button type="button" data-scope="labs">Анализы</button>
+      </span></div>
+    <div class="exp-labs" data-labs hidden>
+      <label class="exp-radio"><input type="radio" name="exp-pick" value="all" checked> Все анализы</label>
+      <label class="exp-radio"><input type="radio" name="exp-pick" value="date" ${dates.length ? "" : "disabled"}> За дату
+        <select data-exp-date ${dates.length ? "" : "disabled"}>${dates.length
+        ? dates.map(d => `<option value="${esc(d)}"${d === selDate ? " selected" : ""}>${esc(ruDate(d))}</option>`).join("")
+        : `<option value="">нет анализов</option>`}</select>
+      </label>
+      ${dates.length ? "" : `<p class="muted exp-empty">Сохранённых анализов пока нет — выгружать нечего.</p>`}
+    </div>
+    <div class="exp-actions">
+      <button type="button" class="btn primary" data-go>Выгрузить</button>
+    </div>
+  </div>`;
+    document.body.appendChild(ov);
+    document.body.classList.add("cv-lock");
+    let fmt = "csv", scope = "all";
+    const labsBox = ov.querySelector("[data-labs]");
+    const sync = () => { labsBox.hidden = scope !== "labs"; };
+    const close = () => {
+        document.removeEventListener("keydown", onKey);
+        ov.remove();
+        document.body.classList.remove("cv-lock");
+    };
+    const onKey = (e) => { if (e.key === "Escape")
+        close(); };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", e => { if (e.target === ov)
+        close(); });
+    ov.querySelector("[data-close]").addEventListener("click", close);
+    ov.querySelectorAll("[data-fmt]").forEach(b => b.addEventListener("click", () => {
+        fmt = (b.dataset.fmt || "csv");
+        ov.querySelectorAll("[data-fmt]").forEach(x => x.classList.toggle("on", x === b));
+    }));
+    ov.querySelectorAll("[data-scope]").forEach(b => b.addEventListener("click", () => {
+        scope = (b.dataset.scope || "all");
+        ov.querySelectorAll("[data-scope]").forEach(x => x.classList.toggle("on", x === b));
+        sync();
+    }));
+    const dateSel = ov.querySelector("[data-exp-date]");
+    if (dateSel)
+        dateSel.addEventListener("change", () => {
+            const r = ov.querySelector('input[name="exp-pick"][value="date"]');
+            if (r && !r.disabled)
+                r.checked = true;
+        });
+    ov.querySelector("[data-go]").addEventListener("click", () => {
+        const pickRad = ov.querySelector('input[name="exp-pick"]:checked');
+        const dateSel = ov.querySelector("[data-exp-date]");
+        const opts = {
+            scope,
+            labPick: scope === "labs" && pickRad && pickRad.value === "date" ? (dateSel && dateSel.value || "") : "all",
+        };
+        if (scope === "labs") {
+            const labs = labsForExport(c, opts);
+            if (!labs.length) {
+                alert(opts.labPick === "all" ? "Анализов пока нет." : "На эту дату анализов нет.");
+                return;
+            }
+        }
+        if (fmt === "csv")
+            download(fileBase(c) + ".csv", toCSV(c, opts), "text/csv");
+        else
+            download(fileBase(c) + ".md", toMarkdown(c, opts), "text/markdown");
+        close();
+    });
+    sync();
+    ov.querySelector("[data-go]").focus();
+}
+function parseCsvLine(line) {
+    const out = [];
+    let cur = "", i = 0, q = false;
+    while (i < line.length) {
+        const ch = line[i];
+        if (q) {
+            if (ch === '"' && line[i + 1] === '"') {
+                cur += '"';
+                i += 2;
+                continue;
+            }
+            if (ch === '"') {
+                q = false;
+                i++;
+                continue;
+            }
+            cur += ch;
+            i++;
+            continue;
+        }
+        if (ch === '"') {
+            q = true;
+            i++;
+            continue;
+        }
+        if (ch === ",") {
+            out.push(cur);
+            cur = "";
+            i++;
+            continue;
+        }
+        cur += ch;
+        i++;
+    }
+    out.push(cur);
+    return out;
+}
+function coerceImportValue(f, raw) {
+    const s = String(raw == null ? "" : raw).trim();
+    if (s === "")
+        return undefined;
+    if (!f) {
+        const n = Number(s.replace(/\s/g, "").replace(",", "."));
+        return isFinite(n) && /^-?\d/.test(s.replace(/\s/g, "")) ? n : s;
+    }
+    if (f.type === "number" || f.type === "scale") {
+        const n = Number(s.replace(/\s/g, "").replace(",", "."));
+        return isFinite(n) ? n : undefined;
+    }
+    if (f.type === "yesno") {
+        if (/^(1|да|yes|true)$/i.test(s))
+            return "1";
+        if (/^(0|нет|no|false)$/i.test(s))
+            return "0";
+        return undefined;
+    }
+    if (f.type === "select") {
+        const opts = f.options || [];
+        const byVal = opts.find(o => o[0] === s);
+        if (byVal)
+            return byVal[0];
+        const byLabel = opts.find(o => o[1].toLowerCase() === s.toLowerCase());
+        return byLabel ? byLabel[0] : s;
+    }
+    return s;
+}
+function emptyImport() { return { labs: new Map(), other: {} }; }
+function labBucket(data, date) {
+    const d = parseExportDate(date);
+    let vals = data.labs.get(d);
+    if (!vals) {
+        vals = {};
+        data.labs.set(d, vals);
+    }
+    return vals;
+}
+function putImported(data, code, raw, date, unit = "") {
+    if (!code || code === "NAME")
+        return;
+    if (code.startsWith("LAB:")) {
+        const name = code.slice(4).trim();
+        if (!name)
+            return;
+        const vals = labBucket(data, date);
+        const rows = Array.isArray(vals.LABS_OTHER) ? [...vals.LABS_OTHER] : [];
+        rows.push({ name, value: raw, unit: unit || "", date: parseExportDate(date) });
+        vals.LABS_OTHER = rows;
+        return;
+    }
+    const f = FIELD_BY_CODE[code] || Labs.fieldFor(code);
+    const v = coerceImportValue(f, raw);
+    if (v === undefined)
+        return;
+    if (isLabCode(code) || (f && STEP_OF_CODE[code] === "labs"))
+        labBucket(data, date)[code] = v;
+    else
+        data.other[code] = v;
+}
+function fromCSV(text) {
+    const data = emptyImport();
+    const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter(l => l.trim());
+    if (!lines.length)
+        return data;
+    const head = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
+    const iCode = head.indexOf("code"), iVal = head.indexOf("value");
+    const start = iCode >= 0 && iVal >= 0 ? 1 : 0;
+    const col = (row, name, fallback) => {
+        const i = head.indexOf(name);
+        return i >= 0 ? (row[i] || "") : (row[fallback] || "");
+    };
+    for (let li = start; li < lines.length; li++) {
+        const row = parseCsvLine(lines[li]);
+        if (!row.length || row.every(c => !c.trim()))
+            continue;
+        const code = (start ? col(row, "code", 0) : row[0] || "").trim();
+        const value = start ? col(row, "value", 1) : (row[1] || "");
+        const unit = start ? col(row, "unit", 2) : (row[2] || "");
+        const date = start ? col(row, "date", 3) : (row[3] || "");
+        putImported(data, code, value, date, unit);
+    }
+    return data;
+}
+function fromMarkdown(text) {
+    const data = emptyImport();
+    const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/);
+    let mode = "none";
+    let labDate = todayIso();
+    let inCodeTable = false;
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const h2 = /^##\s+\d+\.\s+(.+?)\s*$/.exec(line);
+        if (h2) {
+            const title = h2[1].trim().toLowerCase();
+            mode = title.includes("анализ") ? "labs" : "other";
+            labDate = todayIso();
+            inCodeTable = false;
+            continue;
+        }
+        const h3 = /^###\s+(.+?)\s*$/.exec(line);
+        if (h3 && mode === "labs") {
+            const raw = h3[1].trim();
+            const m = /^(\d{4}-\d{2}-\d{2})/.exec(raw)
+                || /^(\d{1,2}\.\d{1,2}\.\d{4})/.exec(raw)
+                || /(?:от\s+)?(\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})/i.exec(raw);
+            labDate = m ? parseExportDate(m[1]) : todayIso();
+            inCodeTable = false;
+            continue;
+        }
+        if (/^\|\s*Поле\s*\|\s*Код\s*\|\s*Значение\s*\|/i.test(line)) {
+            inCodeTable = true;
+            continue;
+        }
+        if (inCodeTable) {
+            if (/^\|\s*-+/.test(line))
+                continue;
+            if (!line.trim().startsWith("|")) {
+                inCodeTable = false;
+                continue;
+            }
+            const parts = line.split("|").map(x => x.trim());
+            const cells = parts[0] === "" && parts[parts.length - 1] === "" ? parts.slice(1, -1) : parts;
+            if (cells.length < 3)
+                continue;
+            const code = cells[1];
+            const rawVal = cells[2].replace(/<br\s*\/?>/gi, "\n").trim();
+            const f = FIELD_BY_CODE[code] || Labs.fieldFor(code);
+            let vraw = rawVal;
+            if (f && (f.type === "number" || f.type === "scale")) {
+                const num = rawVal.match(/-?\d+(?:[.,]\d+)?/);
+                if (num)
+                    vraw = num[0];
+            }
+            else if (f && f.type === "yesno") {
+                vraw = /да/i.test(rawVal) ? "1" : /нет/i.test(rawVal) ? "0" : rawVal;
+            }
+            if (mode === "labs")
+                putImported(data, code, vraw, labDate);
+            else
+                putImported(data, code, vraw, todayIso());
+        }
+    }
+    return data;
+}
+function applyImport(c, data) {
+    let nVals = 0, nSets = 0;
+    for (const [code, v] of Object.entries(data.other)) {
+        c.values[code] = v;
+        nVals++;
+    }
+    c.labs = c.labs || [];
+    let last = null;
+    for (const [date, values] of data.labs) {
+        const keys = Object.keys(values);
+        if (!keys.length)
+            continue;
+        nVals += keys.length;
+        nSets++;
+        // дополнительные коды из справочника — чтобы бланк их показал
+        for (const code of keys)
+            if (isExtraCode(code))
+                (labAdded[c.id] = labAdded[c.id] || new Set()).add(code);
+        const same = c.labs.find(x => x.date === date);
+        const now = new Date().toISOString();
+        if (same) {
+            same.values = { ...same.values, ...values };
+            same.savedAt = now;
+            last = same;
+        }
+        else {
+            const s = { id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date, values: { ...values }, savedAt: now };
+            c.labs.push(s);
+            last = s;
+        }
+    }
+    if (last) {
+        c.labSel = last.id;
+        c.labMeta = { date: last.date, ...(last.time ? { time: last.time } : {}) };
+        loadBuf(c, last.values);
+    }
+    if (!nSets && !Object.keys(data.other).length)
+        return "";
+    const parts = [];
+    if (nSets)
+        parts.push(nSets === 1 ? "1 сдача анализов" : nSets + " сдач анализов");
+    if (nVals)
+        parts.push(nVals + " показателей");
+    return "Загружено: " + parts.join(", ");
 }
 function download(name, text, type) {
     const a = document.createElement("a");

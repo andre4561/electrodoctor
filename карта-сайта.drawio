@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Electrodoctor">
   <diagram id="sitemap" name="Карта сайта">
-    <mxGraphModel dx="1514" dy="1358" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1600" math="0" shadow="0">
+    <mxGraphModel dx="1935" dy="1735" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1600" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -69,7 +69,7 @@
         </UserObject>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Кабинет — список клиентов&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Добавить клиента · открыть карточку" link="http://localhost:8000/app/#/clients" id="clients">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=center;spacing=6;" vertex="1">
-            <mxGeometry height="60" width="280" x="920" y="180" as="geometry" />
+            <mxGeometry height="60" width="280" x="720" y="150" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="e-home-clients" edge="1" parent="1" source="home" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="clients">
@@ -77,7 +77,7 @@
         </mxCell>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Карточка клиента&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Анкета по вкладкам + выгрузки" link="http://localhost:8000/app/#/client/new/general" id="client">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=center;spacing=6;" vertex="1">
-            <mxGeometry height="55" width="280" x="920" y="320" as="geometry" />
+            <mxGeometry height="55" width="280" x="720" y="250" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="e-clients-client" edge="1" parent="1" source="clients" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="client">
@@ -85,58 +85,36 @@
         </mxCell>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Общее&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Имя, пол, возраст, повод,&lt;br&gt;жалобы (боль в груди и др.), заметки" link="http://localhost:8000/app/#/client/new/general" id="tab-gen">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8f7;strokeColor=#9673a6;align=left;spacingLeft=8;spacing=3;fontSize=11;" vertex="1">
-            <mxGeometry height="70" width="220" x="800" y="440" as="geometry" />
+            <mxGeometry height="70" width="220" x="760" y="370" as="geometry" />
           </mxCell>
         </UserObject>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Параметры&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Рост, вес, BMI, давление, пульс,&lt;br&gt;осмотр, генетика" link="http://localhost:8000/app/#/client/new/params" id="tab-par">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8f7;strokeColor=#9673a6;align=left;spacingLeft=8;spacing=3;fontSize=11;" vertex="1">
-            <mxGeometry height="70" width="220" x="1040" y="440" as="geometry" />
+            <mxGeometry height="70" width="220" x="760" y="605" as="geometry" />
           </mxCell>
         </UserObject>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Анализы&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Импорт через ИИ · ОАК, биохимия,&lt;br&gt;сердце, коагулограмма, гормоны,&lt;br&gt;витамины, микроэлементы, иммунология,&lt;br&gt;онкомаркеры, аллергия, моча, кал&lt;br&gt;+ доп. анализы · история сдач" link="http://localhost:8000/app/#/client/new/labs" id="tab-lab">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8f7;strokeColor=#9673a6;align=left;spacingLeft=8;spacing=3;fontSize=11;" vertex="1">
-            <mxGeometry height="110" width="220" x="800" y="540" as="geometry" />
+            <mxGeometry height="110" width="220" x="760" y="470" as="geometry" />
           </mxCell>
         </UserObject>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Психолог&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Самочувствие и заметки беседы" link="http://localhost:8000/app/#/client/new/psych" id="tab-psy">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8f7;strokeColor=#9673a6;align=left;spacingLeft=8;spacing=3;fontSize=11;" vertex="1">
-            <mxGeometry height="55" width="220" x="1040" y="540" as="geometry" />
+            <mxGeometry height="55" width="220" x="760" y="700" as="geometry" />
           </mxCell>
         </UserObject>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Диагнозы (расчёт)&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Вероятности по signs.ts · за / против /&lt;br&gt;досдать · фильтр по разделам специальностей" link="http://localhost:8000/app/#/client/new/diagnoses" id="tab-dx">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8f7;strokeColor=#9673a6;align=left;spacingLeft=8;spacing=3;fontSize=11;" vertex="1">
-            <mxGeometry height="70" width="220" x="1040" y="675" as="geometry" />
+            <mxGeometry height="70" width="220" x="760" y="780" as="geometry" />
           </mxCell>
         </UserObject>
-        <mxCell id="e-c-gen" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="tab-gen">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-c-par" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="tab-par">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-c-lab" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="tab-lab">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-c-psy" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="tab-psy">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-c-dx" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="tab-dx">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;Настройки&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Левое меню — 6 разделов" link="http://localhost:8000/app/#/settings" id="settings">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;align=center;spacing=6;" vertex="1">
-            <mxGeometry height="55" width="260" x="1610" y="160" as="geometry" />
+            <mxGeometry height="55" width="260" x="1600" y="152.5" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="e-clients-set" edge="1" parent="1" source="clients" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;" target="settings">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-home-set" edge="1" parent="1" source="home" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;dashed=1;fontSize=10;fontColor=#999999;" target="settings" value="из шапки кабинета">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1450" y="75" />
-            </Array>
-          </mxGeometry>
         </mxCell>
         <UserObject label="&lt;b&gt;&lt;font style=&quot;color: #0563c1;&quot;&gt;&lt;u&gt;1. Провайдеры&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Ключи и модели: OpenAI, Anthropic,&lt;br&gt;Gemini, DeepSeek, Mistral, OpenRouter,&lt;br&gt;YandexGPT, GigaChat, Ollama, LM Studio,&lt;br&gt;свои (OpenAI-совместимые) · проверка связи" link="http://localhost:8000/app/#/settings/providers" id="set-prov">
           <mxCell parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d79b00;align=left;spacingLeft=8;spacing=3;fontSize=11;" vertex="1">
@@ -168,9 +146,6 @@
             <mxGeometry height="65" width="300" x="1600" y="830" as="geometry" />
           </mxCell>
         </UserObject>
-        <mxCell id="legend" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;align=left;spacingLeft=10;spacing=6;fontSize=11;verticalAlign=top;" value="&lt;b&gt;Легенда&lt;/b&gt;&lt;br&gt;Синий — главная&lt;br&gt;Зелёный — статьи&lt;br&gt;Фиолетовый — кабинет&lt;br&gt;Оранжевый — настройки&lt;br&gt;Серый пунктир — внешние ссылки (GitHub)&lt;br&gt;Синий подчёркнутый заголовок — ссылка (Ctrl+клик)&lt;br&gt;Отдельные статьи не показаны — только разделы и число" vertex="1">
-          <mxGeometry height="150" width="300" x="800" y="780" as="geometry" />
-        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

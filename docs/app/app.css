@@ -57,6 +57,8 @@ tbody tr.click:hover { background: var(--accent-soft); }
 
 /* анкета */
 .head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; justify-content: space-between; }
+.head-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.head-actions .grp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
 .saved { font-size: 13px; color: var(--muted); }
 .steps { display: flex; gap: 6px; margin: 16px 0; overflow-x: auto; padding-bottom: 2px; }
 .step { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 8px 16px; border-radius: 999px; font-size: 14px; white-space: nowrap; text-decoration: none; }
@@ -87,7 +89,8 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
 .rows td { padding: 4px; border-top: 0; }
 .rows input { width: 100%; }
 .rows th { padding: 4px; }
-.nav2 { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
+.nav2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; }
+.nav2 #del { flex: none; margin: 0 auto; }
 .err { color: var(--danger); font-size: 13px; }
 .foot { color: var(--muted); font-size: 13px; }
 
@@ -542,9 +545,25 @@ body.cv-lock { overflow: hidden; }
 
 /* Карточка клиента → Диагнозы: вероятные диагнозы по анализам */
 .dxt-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.dxt-title { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .dxt-head h2 { margin: 0; font-size: 17px; text-transform: none; letter-spacing: 0; color: var(--ink); }
 .dxt-head .muted { font-size: 13px; }
-.dxt-note { font-size: 13px; margin: 6px 0 12px; }
+.dxt-info { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1.5px solid var(--muted); background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.dxt-info:hover { border-color: var(--accent); color: var(--accent); }
+.dxt-sort { flex: none; }
+.dxt-sort button { padding: 4px 10px; font-size: 12px; }
+.dxt-note-dlg { width: min(520px, 100%); }
+.dxt-note { font-size: 15px; margin: 10px 0 0; color: var(--muted); line-height: 1.55; }
+.exp-dlg { width: min(420px, 100%); }
+.exp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+.exp-lbl { flex: none; width: 64px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.exp-labs { margin-top: 12px; display: grid; gap: 8px; padding-left: 74px; }
+.exp-radio { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.exp-radio input { margin: 0; }
+.exp-radio select { font: inherit; font-size: 14px; }
+.exp-empty { margin: 0; font-size: 13px; }
+.exp-actions { margin-top: 18px; display: flex; justify-content: flex-end; }
+@media (max-width: 480px) { .exp-labs { padding-left: 0; } }
 .dxt-filter { margin-bottom: 10px; }
 .dxt-item summary { gap: 10px; }
 .dxt-p { flex: none; min-width: 52px; text-align: center; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; padding: 3px 6px; border-radius: 8px; }

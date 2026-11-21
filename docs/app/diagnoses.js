@@ -125,7 +125,7 @@ export function rank(values, ctx) {
             continue;
         out.push({ name, item, signs: s, score: Sg.evaluate(s, values, ctx, m, spec), prior: s.prior ?? Sg.DEFAULT_PRIOR });
     }
-    return out.sort((a, b) => (b.score.p - b.prior) - (a.score.p - a.prior));
+    return out.sort((a, b) => b.score.p - a.score.p || (b.score.p - b.prior) - (a.score.p - a.prior));
 }
 const ownSigns = () => (Settings.load().signs || {});
 const method = () => Settings.load().signMethod === "dev" ? "dev" : "crit";
