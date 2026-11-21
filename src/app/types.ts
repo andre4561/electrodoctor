@@ -46,8 +46,13 @@ export interface Client {
   labs?: LabSet[];               // сохранённые анализы по датам
   labSel?: string;               // какой набор сейчас открыт на вкладке «Анализы»; "" — новый, ещё не сохранённый
   labMeta?: { date: string; time?: string };   // дата и время в строке «Сохранить» для открытого бланка
+  params?: ParamSet[];           // замеры тела и жизненные показатели по датам
+  paramSel?: string;             // какой снимок открыт на вкладке «Параметры»; "" — новый
+  paramMeta?: { date: string; time?: string };
 }
 // Анализы одной сдачи: дата, время и значения полей вкладки «Анализы»
 export interface LabSet { id: string; date: string; time?: string; values: Record<string, Value>; savedAt: string }
+// Снимок параметров (вес, давление и т.п.) на дату; рост и генетика в снимки не входят
+export interface ParamSet { id: string; date: string; time?: string; values: Record<string, Value>; savedAt: string }
 
 export interface Store { version: 1; clients: Record<string, Client> }

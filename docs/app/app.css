@@ -56,12 +56,13 @@ tbody tr.click:hover { background: var(--accent-soft); }
 .tblwrap { overflow-x: auto; }
 
 /* анкета */
-.head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; justify-content: space-between; }
-.head-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-.head-actions .grp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+.head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.head-back { flex: none; white-space: nowrap; font-size: 14px; }
+.head h1 { margin: 0; flex: 1 1 auto; min-width: 0; font-size: 22px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: none; margin-left: auto; }
 .saved { font-size: 13px; color: var(--muted); }
 .steps { display: flex; gap: 6px; margin: 16px 0; overflow-x: auto; padding-bottom: 2px; }
-.step { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 8px 16px; border-radius: 999px; font-size: 14px; white-space: nowrap; text-decoration: none; }
+.step { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--card); color: var(--ink); padding: 8px 16px; border-radius: 8px; font-size: 14px; white-space: nowrap; text-decoration: none; }
 .step:hover { border-color: var(--accent); }
 .step.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .step.full::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
@@ -90,7 +91,37 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
 .rows input { width: 100%; }
 .rows th { padding: 4px; }
 .nav2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 16px; }
-.nav2 #del { flex: none; margin: 0 auto; }
+.other-tab h2 { margin: 0 0 6px; font-size: 17px; text-transform: none; letter-spacing: 0; color: var(--ink); }
+.other-tab > .muted { margin: 0 0 18px; font-size: 14px; }
+.other-danger { display: grid; gap: 8px; justify-items: start; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.other-danger .muted { margin: 0; font-size: 13px; max-width: 42em; }
+
+/* жалобы: чипы + окно деталей */
+.cmp-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+.cmp-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 10px 14px; font: inherit; cursor: pointer; min-width: 140px; max-width: 280px; }
+.cmp-chip:hover { border-color: var(--accent); }
+.cmp-chip.on { border-color: var(--accent); background: var(--accent-soft); }
+.cmp-title { font-size: 14px; font-weight: 600; }
+.cmp-sum { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.cmp-chip.on .cmp-sum { color: var(--accent); }
+.cmp-dlg { width: min(480px, 100%); }
+.cmp-body { display: grid; gap: 14px; margin-top: 12px; }
+.cmp-check { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; cursor: pointer; user-select: none; }
+.cmp-check input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+.cmp-block { display: grid; gap: 8px; }
+.cmp-lbl { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.cmp-attrs { display: flex; flex-wrap: wrap; gap: 6px; }
+.cmp-attr { border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 8px; padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.cmp-attr.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.cmp-attr:disabled, .cmp-body textarea:disabled, .cmp-slide.off { opacity: .45; }
+.cmp-attr:disabled, .cmp-body textarea:disabled { cursor: not-allowed; }
+.cmp-body textarea { width: 100%; min-height: 72px; resize: vertical; }
+.cmp-slide { display: grid; gap: 4px; }
+.cmp-slide-val { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); line-height: 1.1; }
+.cmp-slide input[type=range] { width: 100%; height: 28px; margin: 0; cursor: pointer; accent-color: var(--accent); }
+.cmp-slide input[type=range]:disabled { cursor: not-allowed; }
+.cmp-slide-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.cmp-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .err { color: var(--danger); font-size: 13px; }
 .foot { color: var(--muted); font-size: 13px; }
 
@@ -548,6 +579,14 @@ body.cv-lock { overflow: hidden; }
 .dxt-title { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .dxt-head h2 { margin: 0; font-size: 17px; text-transform: none; letter-spacing: 0; color: var(--ink); }
 .dxt-head .muted { font-size: 13px; }
+.dxt-src { position: relative; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 13px; }
+.dxt-date { font: inherit; font-size: 13px; font-weight: 600; color: var(--accent); background: transparent; border: 0; border-bottom: 1px dashed var(--accent); padding: 0; cursor: pointer; border-radius: 0; }
+.dxt-date:hover { filter: brightness(1.1); }
+.dxt-date-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 160px; max-height: 280px; overflow: auto; display: grid; gap: 2px; padding: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,.14); }
+.dxt-date-menu[hidden] { display: none; }
+.dxt-date-menu button { display: block; width: 100%; text-align: left; font: inherit; font-size: 13px; padding: 7px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); cursor: pointer; }
+.dxt-date-menu button:hover { background: var(--accent-soft); }
+.dxt-date-menu button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .dxt-info { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1.5px solid var(--muted); background: transparent; color: var(--muted); font-size: 13px; font-weight: 700; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex: none; }
 .dxt-info:hover { border-color: var(--accent); color: var(--accent); }
 .dxt-sort { flex: none; }

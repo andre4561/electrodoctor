@@ -15,8 +15,9 @@ import * as Curve from "./curve.js";
 import * as Dx from "./diagnoses.js";
 import * as Sg from "./signs.js";
 import * as Labs from "./labs.js";
+import * as Cmp from "./complaints.js";
 import { articleUrl } from "./articles.js";
-import type { Client, Field, FileRef, LabSet, Section, Step, Store, TableRow, Value } from "./types.js";
+import type { Client, Field, FileRef, LabSet, ParamSet, Section, Step, Store, TableRow, Value } from "./types.js";
 
 const KEY = "electrodoctor.clients.v1";
 const $ = <T extends HTMLElement = HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -272,18 +273,59 @@ const dxSortUi = () => `<span class="seg dxt-sort" role="group" aria-label="Со
   <button type="button" data-dx-sort="lift"${dxSort === "lift" ? ' class="on"' : ""} title="насколько анализы подняли вероятность над распространённостью">По приросту</button>
 </span>`;
 
+function switchDxLab(c: Client, setId: string): void {
+  if (setId === (c.labSel || "")) return;
+  if (labDirty(c) && !confirm("Анализы не сохранены. Переключить дату без сохранения? Несохранённые изменения пропадут.")) return;
+  const s = (c.labs || []).find(x => x.id === setId); if (!s) return;
+  loadBuf(c, s.values);
+  c.labSel = s.id;
+  c.labMeta = { date: s.date, ...(s.time ? { time: s.time } : {}) };
+  putClient(c);
+  drawDxTab(c, "");
+}
+function dxSrcHtml(c: Client): string {
+  const sets = sortedSets(c), sel = selSet(c);
+  const filled = labFieldsOf(c).filter(f => (f.type === "number" || f.type === "select") && isFilled(f, c.values[f.code])).length;
+  if (!sets.length) return filled ? `<span class="muted dxt-src">по новому, ещё не сохранённому бланку анализов</span>` : "";
+  const label = sel ? labDateLabel(c, sel) : "новому бланку";
+  const tip = sel ? `анализы от ${ruDate(sel.date)}${sel.time ? " " + sel.time : ""}` : "открытый бланк";
+  return `<span class="muted dxt-src">по анализам от
+    <button type="button" class="dxt-date" id="dxdatebtn" aria-haspopup="listbox" aria-expanded="false" title="${esc(tip)}">${esc(label)} ▾</button>
+    <span class="dxt-date-menu" id="dxdatemenu" hidden role="listbox">${sets.map(s =>
+      `<button type="button" role="option" data-dx-lab="${esc(s.id)}"${s.id === c.labSel ? ' class="on" aria-selected="true"' : ""} title="${Object.keys(s.values).length} показателей">${esc(labDateLabel(c, s))}${s.time ? " " + esc(s.time) : ""}</button>`
+    ).join("")}</span></span>`;
+}
+function bindDxSrc(box: HTMLElement, c: Client): void {
+  const btn = box.querySelector<HTMLButtonElement>("#dxdatebtn");
+  const menu = box.querySelector<HTMLElement>("#dxdatemenu");
+  if (!btn || !menu) return;
+  const close = () => { menu.hidden = true; btn.setAttribute("aria-expanded", "false"); document.removeEventListener("click", onDoc); };
+  const onDoc = (e: MouseEvent) => { if (!box.querySelector(".dxt-src")?.contains(e.target as Node)) close(); };
+  btn.addEventListener("click", ev => {
+    ev.stopPropagation();
+    const open = menu.hidden;
+    menu.hidden = !open;
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) setTimeout(() => document.addEventListener("click", onDoc), 0);
+    else document.removeEventListener("click", onDoc);
+  });
+  menu.addEventListener("click", ev => {
+    const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-dx-lab]"); if (!b) return;
+    close();
+    switchDxLab(c, b.dataset.dxLab || "");
+  });
+}
 function drawDxTab(c: Client, err: string): void {
   const box = document.getElementById("dxtab"); if (!box) return;
   if (err) { box.innerHTML = `<p class="err">${esc(err)}</p>`; return; }
   const values = c.values as Record<string, unknown>;
-  const sel = selSet(c);
   const filled = labFieldsOf(c).filter(f => (f.type === "number" || f.type === "select") && isFilled(f, c.values[f.code])).length;
-  const src = sel ? `по анализам от <b>${esc(ruDate(sel.date))}</b>` : filled ? "по новому, ещё не сохранённому бланку анализов" : "";
-  const head = (withSort: boolean) => `<div class="dxt-head"><div class="dxt-title"><h2>Вероятные диагнозы</h2><button type="button" class="dxt-info" aria-label="О расчёте" title="О расчёте">!</button>${withSort ? dxSortUi() : ""}</div>${src ? `<span class="muted">${src}</span>` : ""}</div>`;
-  if (!filled) { box.innerHTML = head(false) + `<div class="empty">Анализов пока нет. Заполните или загрузите их на вкладке <a href="#/client/${esc(c.id)}/labs">«Анализы»</a>.</div>`; bindDxNote(box); return; }
+  const src = dxSrcHtml(c);
+  const head = (withSort: boolean) => `<div class="dxt-head"><div class="dxt-title"><h2>Вероятные диагнозы</h2><button type="button" class="dxt-info" aria-label="О расчёте" title="О расчёте">!</button>${withSort ? dxSortUi() : ""}</div>${src}</div>`;
+  if (!filled) { box.innerHTML = head(false) + `<div class="empty">Анализов пока нет. Заполните или загрузите их на вкладке <a href="#/client/${esc(c.id)}/labs">«Анализы»</a>.</div>`; bindDxNote(box); bindDxSrc(box, c); return; }
   const all = Dx.rank(values, c);
   const list = sortDx(all.filter(r => r.score.p >= DX_SHOW_MIN && r.score.p - r.prior >= DX_LIFT_MIN && r.score.contribs.some(x => x.c > 0)));
-  if (!list.length) { box.innerHTML = head(false) + `<div class="empty">По этим анализам вероятность ни одного диагноза заметно не выросла.</div>`; bindDxNote(box); return; }
+  if (!list.length) { box.innerHTML = head(false) + `<div class="empty">По этим анализам вероятность ни одного диагноза заметно не выросла.</div>`; bindDxNote(box); bindDxSrc(box, c); return; }
   const secs = [...new Set(list.flatMap(r => r.item.sections))];
   const row = (r: Dx.Ranked) => {
     const up = r.score.contribs.filter(x => x.c > 0).sort((a, b) => b.c - a.c), down = r.score.contribs.filter(x => x.c < 0).sort((a, b) => a.c - b.c);
@@ -346,6 +388,7 @@ function drawDxTab(c: Client, err: string): void {
     labFocus = code; location.hash = "#/client/" + c.id + "/labs";
   });
   bindDxNote(box);
+  bindDxSrc(box, c);
   apply();
 }
 
@@ -356,8 +399,15 @@ const LAB_STEP = STEPS.find(s => s.id === "labs");
 const LAB_FIELDS = LAB_STEP ? fieldsOf(LAB_STEP).filter(f => f.type !== "aiimport") : [];
 const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const ruDate = (iso: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : iso || "без даты"; };
+const ruDateShort = (iso: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1].slice(2)}` : iso || "без даты"; };
 const setKey = (s: { date: string; time?: string }) => (s.date || "") + " " + (s.time || "");
 const sortedSets = (c: Client) => [...(c.labs || [])].sort((a, b) => setKey(a).localeCompare(setKey(b)) || a.savedAt.localeCompare(b.savedAt));
+// Подпись сдачи на чипе: ДД.ММ.ГГ, при нескольких сдачах в один день — ДД.ММ.ГГ-2, -3…
+function labDateLabel(c: Client, s: LabSet): string {
+  const same = sortedSets(c).filter(x => x.date === s.date);
+  const i = same.findIndex(x => x.id === s.id);
+  return ruDateShort(s.date) + (i > 0 ? "-" + (i + 1) : "");
+}
 // Анализы из справочника, которых нет в бланке, но они есть у клиента (или только что добавлены кнопкой)
 const OTHER_STEP_CODES = new Set(STEPS.filter(s => s.id !== "labs").flatMap(s => fieldsOf(s).map(f => f.code)));
 const LAB_FORM_CODES = new Set(LAB_FIELDS.map(f => f.code));
@@ -409,9 +459,10 @@ function labDatesHtml(c: Client): string {
   const sets = sortedSets(c), sel = selSet(c);
   const chips = sets.map(s => {
     const n = Object.keys(s.values).length, cls = worstCls(c, s.values);
-    return `<button type="button" class="ld-chip ${cls}${s.id === c.labSel ? " on" : ""}" data-ld="${esc(s.id)}" title="анализы от ${esc(ruDate(s.date))}${s.time ? " " + esc(s.time) : ""} · показателей: ${n}"><span class="ld-txt">${esc(ruDate(s.date))}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
+    const label = labDateLabel(c, s);
+    return `<button type="button" class="ld-chip ${cls}${s.id === c.labSel ? " on" : ""}" data-ld="${esc(s.id)}" title="анализы от ${esc(ruDate(s.date))}${s.time ? " " + esc(s.time) : ""} · показателей: ${n}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
   }).join("");
-  const cap = sel ? `Анализы от <b>${esc(ruDate(sel.date))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые анализы</b> — заполните или загрузите через ИИ, затем сохраните внизу`;
+  const cap = sel ? `Анализы от <b>${esc(labDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые анализы</b> — заполните или загрузите через ИИ, затем сохраните внизу`;
   return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-ld="" title="новый бланк анализов">+ Новые</button>
     <div class="ld-scroll" id="ldscroll">${chips || `<span class="muted ld-none">сохранённых анализов пока нет</span>`}</div></div>
     <p class="ld-cap">${cap} <span class="ld-state" id="ldstate"></span></p>`;
@@ -430,12 +481,74 @@ function labExtraHtml(c: Client): string {
 }
 function labSaveHtml(c: Client): string {
   const sel = selSet(c), m = c.labMeta || { date: todayIso() };
+  const dirty = labDirty(c);
   return `<div class="lab-save" id="labsave">
     <label>Дата <input type="date" name="lsdate" value="${esc(m.date || "")}" required></label>
     <label>Время <input type="time" name="lstime" value="${esc(m.time || "")}"></label>
     <span class="ls-msg" id="lsmsg" aria-live="polite"></span>
-    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ls="del">Удалить эти анализы</button>` : ""}<button type="button" class="btn primary" data-ls="save">${sel ? "Сохранить изменения" : "Сохранить анализы"}</button></span>
+    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ls="del">Удалить эти анализы</button>` : ""}<button type="button" class="btn${dirty ? " primary" : ""}" data-ls="save">${sel ? "Сохранить изменения" : "Сохранить анализы"}</button></span>
     <div class="ls-ask" id="lsask" hidden></div>
+  </div>`;
+}
+
+// ---------- параметры тела по датам ----------
+// В историю входят меняющиеся поля; рост и генетика всегда в c.values без дат.
+const PARAM_STEP = STEPS.find(s => s.id === "params");
+const PARAM_HIST_CODES = new Set(["WEIGHT", "WAIST", "BMI", "BP_SYS", "BP_DIA", "PULSE", "TEMP", "SPO2", "EDEMA_LEGS"]);
+const PARAM_HIST_FIELDS = PARAM_STEP ? fieldsOf(PARAM_STEP).filter(f => PARAM_HIST_CODES.has(f.code)) : [];
+const isParamHistCode = (code: string) => PARAM_HIST_CODES.has(code);
+const sortedParamSets = (c: Client) => [...(c.params || [])].sort((a, b) => setKey(a).localeCompare(setKey(b)) || a.savedAt.localeCompare(b.savedAt));
+function paramDateLabel(c: Client, s: ParamSet): string {
+  const same = sortedParamSets(c).filter(x => x.date === s.date);
+  const i = same.findIndex(x => x.id === s.id);
+  return ruDateShort(s.date) + (i > 0 ? "-" + (i + 1) : "");
+}
+const selParamSet = (c: Client) => (c.params || []).find(s => s.id === c.paramSel);
+function paramBufValues(c: Client): Record<string, Value> {
+  const out: Record<string, Value> = {};
+  for (const f of PARAM_HIST_FIELDS) { const v = c.values[f.code]; if (v !== undefined && isFilled(f, v)) out[f.code] = JSON.parse(JSON.stringify(v)); }
+  return out;
+}
+function loadParamBuf(c: Client, values: Record<string, Value>): void {
+  for (const f of PARAM_HIST_FIELDS) delete c.values[f.code];
+  for (const [k, v] of Object.entries(values)) if (isParamHistCode(k)) c.values[k] = JSON.parse(JSON.stringify(v));
+}
+function paramDirty(c: Client): boolean {
+  const s = selParamSet(c), buf = paramBufValues(c), m = c.paramMeta || { date: "" };
+  if (!s) return Object.keys(buf).length > 0;
+  return !sameVals(buf, s.values) || m.date !== s.date || (m.time || "") !== (s.time || "");
+}
+function migrateParams(c: Client): boolean {
+  if (c.params) return false;
+  c.params = [];
+  const buf = paramBufValues(c);
+  if (!Object.keys(buf).length) { c.paramSel = ""; c.paramMeta = { date: todayIso() }; return true; }
+  const date = (c.updatedAt || c.createdAt || new Date().toISOString()).slice(0, 10);
+  const s: ParamSet = { id: "p" + Date.now().toString(36), date, values: buf, savedAt: new Date().toISOString() };
+  c.params.push(s); c.paramSel = s.id; c.paramMeta = { date };
+  return true;
+}
+function paramDatesHtml(c: Client): string {
+  const sets = sortedParamSets(c), sel = selParamSet(c);
+  const chips = sets.map(s => {
+    const n = Object.keys(s.values).length;
+    const label = paramDateLabel(c, s);
+    return `<button type="button" class="ld-chip${s.id === c.paramSel ? " on" : ""}" data-pd="${esc(s.id)}" title="замеры от ${esc(ruDate(s.date))}${s.time ? " " + esc(s.time) : ""} · показателей: ${n}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
+  }).join("");
+  const cap = sel ? `Замеры от <b>${esc(paramDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые замеры</b> — вес, давление и остальное по дате; рост и генетика без дат`;
+  return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-pd="" title="новый бланк замеров">+ Новые</button>
+    <div class="ld-scroll" id="pdscroll">${chips || `<span class="muted ld-none">сохранённых замеров пока нет</span>`}</div></div>
+    <p class="ld-cap">${cap} <span class="ld-state" id="pdstate"></span></p>`;
+}
+function paramSaveHtml(c: Client): string {
+  const sel = selParamSet(c), m = c.paramMeta || { date: todayIso() };
+  const dirty = paramDirty(c);
+  return `<div class="lab-save" id="paramsave">
+    <label>Дата <input type="date" name="psdate" value="${esc(m.date || "")}" required></label>
+    <label>Время <input type="time" name="pstime" value="${esc(m.time || "")}"></label>
+    <span class="ls-msg" id="psmsg" aria-live="polite"></span>
+    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ps="del">Удалить эти замеры</button>` : ""}<button type="button" class="btn${dirty ? " primary" : ""}" data-ps="save">${sel ? "Сохранить изменения" : "Сохранить замеры"}</button></span>
+    <div class="ls-ask" id="psask" hidden></div>
   </div>`;
 }
 
@@ -446,24 +559,22 @@ function renderClient(id: string, stepId: string): void {
   const si = Math.max(0, STEPS.findIndex(s => s.id === stepId));
   const step = STEPS[si];
   const isNew = !getClient(id);
-  if (migrateLabs(c) && getClient(id)) { const data = loadAll(); data.clients[id] = c; saveAll(data); }   // без смены даты изменения
+  let migrated = false;
+  if (migrateLabs(c)) migrated = true;
+  if (migrateParams(c)) migrated = true;
+  if (migrated && getClient(id)) { const data = loadAll(); data.clients[id] = c; saveAll(data); }
   const labs = step.id === "labs";
+  const params = step.id === "params";
 
   view.innerHTML = `
     <div class="head">
-      <div><a href="#/clients">← Клиенты</a><h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1></div>
+      <a class="head-back" href="#/clients">← Клиенты</a>
+      <h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1>
       <div class="head-actions">
-        <div class="grp">
-          <button type="button" class="btn" id="export" ${isNew ? "disabled" : ""}>Выгрузить</button>
-          <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : ""}</span>
-        </div>
-        <div class="grp">
-          <span class="muted">Загрузить</span>
-          <button type="button" class="btn" id="csv-in">CSV</button>
-          <button type="button" class="btn" id="md-in">Markdown</button>
-          <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
-          <input type="file" id="md-file" accept=".md,.markdown,text/markdown,.txt" hidden>
-        </div>
+        <button type="button" class="btn" id="export" ${isNew ? "disabled" : ""}>Выгрузить</button>
+        <button type="button" class="btn" id="import">Загрузить</button>
+        <input type="file" id="import-file" accept=".csv,.md,.markdown,.txt,text/csv,text/markdown,text/plain" hidden>
+        <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : ""}</span>
       </div>
     </div>
     <div class="steps" role="tablist">${STEPS.map((s, i) => {
@@ -472,15 +583,24 @@ function renderClient(id: string, stepId: string): void {
       return `<a class="step${i === si ? " on" : ""}${full && i !== si ? " full" : ""}" role="tab" aria-selected="${i === si}" href="#/client/${esc(id)}/${s.id}"${full ? ' title="всё заполнено"' : ""}>${esc(s.title)}</a>`;
     }).join("")}</div>
     ${labs ? `<div class="card lab-top" id="labtop">${labDatesHtml(c)}</div>` : ""}
+    ${params ? `<div class="card lab-top" id="paramtop">${paramDatesHtml(c)}</div>` : ""}
     <div class="card" id="form">${step.sections.length ? step.sections.map((sec, i) => (step.id === "labs" && step.sections.findIndex(s => s.fields.some(f => f.type === "number" && Norms.hasNorm(f.code))) === i ? `<div class="attn" id="attn">${attnHtml(step, c)}</div>` : "") + sectionHtml(step, sec, c)).join("")
       : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">Считаю вероятности диагнозов…</p></div>`
+      : step.id === "other" ? `<div class="other-tab">
+          <h2>Прочее</h2>
+          <p class="muted">Действия с карточкой клиента, которые не относятся к анкете и расчёту.</p>
+          <div class="other-danger">
+            <button type="button" class="btn danger" id="del" ${isNew ? "disabled" : ""}>Удалить пациента</button>
+            <p class="muted">Удалит карточку и все её данные на этом компьютере. Отменить нельзя.</p>
+          </div>
+        </div>`
       : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
       ${labs ? labExtraHtml(c) + labSaveHtml(c) : ""}
+      ${params ? paramSaveHtml(c) : ""}
     </div>
     <div class="nav2">
       ${si > 0 ? `<a class="btn" href="#/client/${esc(id)}/${STEPS[si - 1].id}">← ${esc(stepName(si - 1))}</a>` : "<span></span>"}
-      <button type="button" class="btn danger" id="del" ${isNew ? "disabled" : ""}>Удалить пациента</button>
-      ${si < STEPS.length - 1 ? `<a class="btn primary" href="#/client/${esc(id)}/${STEPS[si + 1].id}">${esc(stepName(si + 1))} →</a>` : `<a class="btn primary" href="#/clients">Готово</a>`}
+      ${si < STEPS.length - 1 ? `<a class="btn primary" href="#/client/${esc(id)}/${STEPS[si + 1].id}">${esc(stepName(si + 1))} →</a>` : "<span></span>"}
     </div>`;
 
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -494,7 +614,7 @@ function renderClient(id: string, stepId: string): void {
     const written = putClient(c);
     delete drafts[id];
     $("#title").textContent = displayName(c);
-    ["export", "del"].forEach(b => { btn("#" + b).disabled = false; });
+    ["export", "del"].forEach(b => { const el = document.querySelector<HTMLButtonElement>("#" + b); if (el) el.disabled = false; });
     const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
     $("#saved").textContent = storageOk ? "Сохранено " + time : "Не сохраняется в браузере — выгрузите файл";
     written.then(folder => {
@@ -515,13 +635,28 @@ function renderClient(id: string, stepId: string): void {
     if (v === "" || v == null) delete c.values[code]; else c.values[code] = v;
     clearTimeout(timer); timer = setTimeout(save, 250);
     if (labs) labState();
+    if (params) paramState();
   };
   // Состояние бланка анализов: сохранён или есть изменения
   const labState = () => {
-    const st = document.getElementById("ldstate"); if (!st) return;
     const dirty = labDirty(c), has = Object.keys(bufValues(c)).length > 0;
-    st.className = "ld-state" + (dirty ? " dirty" : "");
-    st.textContent = dirty ? (selSet(c) ? "· есть несохранённые изменения" : has ? "· не сохранены" : "") : selSet(c) ? "· сохранено" : "";
+    const st = document.getElementById("ldstate");
+    if (st) {
+      st.className = "ld-state" + (dirty ? " dirty" : "");
+      st.textContent = dirty ? (selSet(c) ? "· есть несохранённые изменения" : has ? "· не сохранены" : "") : selSet(c) ? "· сохранено" : "";
+    }
+    const saveBtn = document.querySelector<HTMLButtonElement>("#labsave [data-ls=save]");
+    if (saveBtn) saveBtn.classList.toggle("primary", dirty);
+  };
+  const paramState = () => {
+    const dirty = paramDirty(c), has = Object.keys(paramBufValues(c)).length > 0;
+    const st = document.getElementById("pdstate");
+    if (st) {
+      st.className = "ld-state" + (dirty ? " dirty" : "");
+      st.textContent = dirty ? (selParamSet(c) ? "· есть несохранённые изменения" : has ? "· не сохранены" : "") : selParamSet(c) ? "· сохранено" : "";
+    }
+    const saveBtn = document.querySelector<HTMLButtonElement>("#paramsave [data-ps=save]");
+    if (saveBtn) saveBtn.classList.toggle("primary", dirty);
   };
   const fieldByCode = (code: string | undefined) => fieldsOf(step).find(x => x.code === code) || (labs && code && isExtraCode(code) ? Labs.fieldFor(code) || undefined : undefined);
 
@@ -539,7 +674,20 @@ function renderClient(id: string, stepId: string): void {
     if (crit) { const k = Norms.criticality(el.dataset.code, v, c); crit.textContent = k.text; crit.className = "crit " + k.cls; crit.title = k.tip; }
   });
   if (labs) { bindLabs(); bindExtra(); }
+  if (params) bindParams();
+  if (step.id === "general") bindComplaints();
   if (step.id === "diagnoses") Dx.ready().then(err => drawDxTab(c, err));
+  function bindComplaints(): void {
+    const list = document.getElementById("cmplist"); if (!list) return;
+    const refresh = () => { list.innerHTML = Cmp.complaintsListHtml(c); };
+    list.addEventListener("click", ev => {
+      const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-cmp]"); if (!b) return;
+      const def = Cmp.COMPLAINTS.find(d => d.id === b.dataset.cmp); if (!def) return;
+      Cmp.openComplaintDialog(c, def, () => {
+        clearTimeout(timer); save(); refresh();
+      });
+    });
+  }
   // «Дополнительные анализы»: поиск по справочнику и добавление строки
   function bindExtra(): void {
     const box = document.getElementById("labextra"); if (!box) return;
@@ -647,6 +795,66 @@ function renderClient(id: string, stepId: string): void {
       write("new");
     });
     if (labFlash) { msg.className = "ls-msg ok"; msg.textContent = labFlash; labFlash = ""; }
+  }
+  function bindParams(): void {
+    paramState();
+    const sc = document.getElementById("pdscroll"); if (sc) sc.scrollLeft = sc.scrollWidth;
+    const go = (setId: string) => {
+      if (setId === (c.paramSel || "")) return;
+      if (paramDirty(c) && !confirm("Замеры не сохранены. Перейти без сохранения? Несохранённые изменения пропадут.")) return;
+      const s = (c.params || []).find(x => x.id === setId);
+      loadParamBuf(c, s ? s.values : {});
+      c.paramSel = s ? s.id : "";
+      c.paramMeta = s ? { date: s.date, time: s.time } : { date: todayIso() };
+      clearTimeout(timer); save(); renderClient(id, step.id);
+    };
+    $("#paramtop").addEventListener("click", ev => { const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-pd]"); if (b) go(b.dataset.pd || ""); });
+    const bar = $("#paramsave"), msg = $("#psmsg"), ask = $("#psask");
+    const dIn = bar.querySelector<HTMLInputElement>("[name=psdate]")!, tIn = bar.querySelector<HTMLInputElement>("[name=pstime]")!;
+    const meta = () => { c.paramMeta = { date: dIn.value, ...(tIn.value ? { time: tIn.value } : {}) }; clearTimeout(timer); timer = setTimeout(save, 250); paramState(); };
+    dIn.addEventListener("change", meta); tIn.addEventListener("change", meta);
+    const finish = (s: ParamSet, text: string) => {
+      c.paramSel = s.id; c.paramMeta = { date: s.date, ...(s.time ? { time: s.time } : {}) }; loadParamBuf(c, s.values);
+      clearTimeout(timer); save(); paramFlash = text; renderClient(id, step.id);
+    };
+    const write = (mode: "new" | "merge" | "update", target?: ParamSet) => {
+      const buf = paramBufValues(c), m = c.paramMeta!, now = new Date().toISOString();
+      if (mode === "update" && target) { target.values = buf; target.date = m.date; target.time = m.time; target.savedAt = now; return finish(target, "Изменения сохранены."); }
+      if (mode === "merge" && target) {
+        target.values = { ...target.values, ...buf }; target.savedAt = now;
+        return finish(target, `Добавлено к замерам от ${ruDate(target.date)}.`);
+      }
+      const s: ParamSet = { id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: m.date, ...(m.time ? { time: m.time } : {}), values: buf, savedAt: now };
+      (c.params = c.params || []).push(s);
+      finish(s, `Замеры от ${ruDate(s.date)} сохранены.`);
+    };
+    bar.addEventListener("click", ev => {
+      const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-ps]"); if (!b) return;
+      const act = b.dataset.ps;
+      if (act === "cancel") { ask.hidden = true; return; }
+      if (act === "merge" || act === "separate") { ask.hidden = true; return write(act === "merge" ? "merge" : "new", (c.params || []).find(x => x.id === b.dataset.target)); }
+      if (act === "del") {
+        const s = selParamSet(c); if (!s || !confirm(`Удалить замеры от ${ruDate(s.date)}? Это нельзя отменить.`)) return;
+        c.params = (c.params || []).filter(x => x.id !== s.id);
+        const last = sortedParamSets(c).pop();
+        loadParamBuf(c, last ? last.values : {}); c.paramSel = last ? last.id : ""; c.paramMeta = last ? { date: last.date, time: last.time } : { date: todayIso() };
+        clearTimeout(timer); save(); paramFlash = `Замеры от ${ruDate(s.date)} удалены.`; renderClient(id, step.id); return;
+      }
+      if (act !== "save") return;
+      if (!getClient(id) && !isFilled(null, c.values.NAME)) { msg.className = "ls-msg err"; msg.textContent = "Сначала укажите имя клиента на вкладке «Общее»."; return; }
+      if (!dIn.value) { msg.className = "ls-msg err"; msg.textContent = "Укажите дату замеров."; dIn.focus(); return; }
+      meta();
+      if (!Object.keys(paramBufValues(c)).length) { msg.className = "ls-msg err"; msg.textContent = "Нечего сохранять — заполните вес, давление или другие показатели."; return; }
+      const sel = selParamSet(c);
+      if (sel) return write("update", sel);
+      const same = (c.params || []).find(x => x.date === dIn.value);
+      if (same) {
+        ask.innerHTML = `На ${esc(ruDate(same.date))} уже есть замеры. <button type="button" class="btn primary" data-ps="merge" data-target="${esc(same.id)}">Добавить к ним</button><button type="button" class="btn" data-ps="separate">Сохранить отдельно</button><button type="button" class="btn" data-ps="cancel">Отмена</button>`;
+        ask.hidden = false; return;
+      }
+      write("new");
+    });
+    if (paramFlash) { msg.className = "ls-msg ok"; msg.textContent = paramFlash; paramFlash = ""; }
   }
   // Сводка «Требуют внимания»: обновляется, когда уходите из поля (а не на каждую цифру); нажатие — к полю
   const refreshAttn = () => { const box = document.getElementById("attn"); if (box) box.innerHTML = attnHtml(step, c); };
@@ -920,12 +1128,15 @@ function renderClient(id: string, stepId: string): void {
   }
 
   $("#export").onclick = () => openExportDialog(c);
-  const pickImport = (input: HTMLInputElement, kind: "csv" | "md") => {
+  $("#import").onclick = () => {
+    const input = $<HTMLInputElement>("#import-file");
     input.value = "";
     input.onchange = async () => {
       const f = input.files && input.files[0]; if (!f) return;
       try {
         const text = await f.text();
+        const kind = detectImportKind(f.name, text);
+        if (!kind) { alert("Не понял формат файла. Нужен CSV или Markdown, выгруженный из кабинета."); return; }
         const r = kind === "csv" ? fromCSV(text) : fromMarkdown(text);
         const msg = applyImport(c, r);
         if (!msg) { alert("В файле не нашлось данных для загрузки."); return; }
@@ -940,18 +1151,18 @@ function renderClient(id: string, stepId: string): void {
     };
     input.click();
   };
-  $("#csv-in").onclick = () => pickImport($<HTMLInputElement>("#csv-file"), "csv");
-  $("#md-in").onclick = () => pickImport($<HTMLInputElement>("#md-file"), "md");
-  $("#del").onclick = () => {
+  const delBtn = document.getElementById("del");
+  if (delBtn) delBtn.addEventListener("click", () => {
     const inFolder = FS.ready() && c.folder ? " Подпапка «" + c.folder + "» в папке «" + FS.state.name + "» тоже будет удалена." : "";
     if (!confirm("Удалить клиента «" + displayName(c) + "» и все его данные?" + inFolder)) return;
     deleteClient(id); location.hash = "#/clients";
-  };
+  });
   const first = form.querySelector<HTMLElement>("input, textarea, select");
   if (first && si === 0 && !c.values.NAME) first.focus();
 }
 
 let labFlash = "";   // сообщение после сохранения анализов
+let paramFlash = ""; // сообщение после сохранения замеров параметров
 let aiFlash = "";   // сообщение после переноса, показывается на перерисованной странице
 const AI_TAB_KEY = "electrodoctor.ai.tab";
 const lsGet = (k: string) => { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } };
@@ -1047,6 +1258,12 @@ function sectionHtml(step: Step, sec: Section, c: Client): string {
   // над колонкой норм — заголовок «Норма» (если в разделе есть показатели с нормой)
   const head = sec.fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
     ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
+  if (step.id === "general" && sec.title === "Жалобы") {
+    const plain = sec.fields.filter(f => !Cmp.isComplaintCode(f.code)).map(f => fieldHtml(f, c.values[f.code], c)).join("");
+    return `<div class="sec"><h2>${esc(sec.title)}</h2>
+      <div class="cmp-list" id="cmplist">${Cmp.complaintsListHtml(c)}</div>
+      ${plain}</div>`;
+  }
   const fields = head + sec.fields.map(f => fieldHtml(f, c.values[f.code], c)).join("");
   if (sec.fold && sec.id) return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), fields)}</div>`;
   return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${fields}</div>`;
@@ -1057,7 +1274,7 @@ function filesListHtml(refs: FileRef[]): string {
 }
 
 function fieldHtml(f: Field, v: Value | undefined, own?: Norms.Ctx): string {
-  if (f.hidden) return `<p class="muted hidden-note">${esc(f.label)}: добавление скрыто.</p>`;
+  if (f.hidden) return f.type === "files" ? `<p class="muted hidden-note">${esc(f.label)}: ${esc(f.hint || "добавление скрыто")}</p>` : "";
   if (f.type === "aiimport") return aiImportHtml();
   const la = Labs.LABS[f.code];   // название анализа — ссылка на статью о нём, в новой вкладке
   const art = articleUrl(f.code) || (la && la.article ? "../articles/lab-tests/" + encodeURIComponent(la.article) + ".html" : undefined);
@@ -1145,6 +1362,23 @@ function labsForExport(c: Client, opts?: ExportOpts) {
   if (opts && opts.scope === "labs" && opts.labPick !== "all") return sets.filter(s => s.date === opts.labPick);
   return sets;
 }
+function paramExportSets(c: Client): { date: string; time?: string; values: Record<string, Value> }[] {
+  const out = sortedParamSets(c).map(s => ({ date: s.date, ...(s.time ? { time: s.time } : {}), values: { ...s.values } }));
+  const buf = paramBufValues(c);
+  if (!Object.keys(buf).length) return out;
+  const metaDate = (c.paramMeta && c.paramMeta.date) || todayIso();
+  const metaTime = c.paramMeta && c.paramMeta.time;
+  if (!(c.paramSel || "")) {
+    out.push({ date: metaDate, ...(metaTime ? { time: metaTime } : {}), values: buf });
+    return out;
+  }
+  if (paramDirty(c)) {
+    const sel = selParamSet(c);
+    const i = sel ? sortedParamSets(c).findIndex(s => s.id === sel.id) : -1;
+    if (i >= 0) out[i] = { date: metaDate, ...(metaTime ? { time: metaTime } : {}), values: buf };
+  }
+  return out;
+}
 function pushCsvValue(lines: string[], code: string, v: Value, date: string, src: string): void {
   const f = FIELD_BY_CODE[code] || Labs.fieldFor(code) || null;
   if (f && f.type === "files") return;
@@ -1163,10 +1397,14 @@ function toCSV(c: Client, opts?: ExportOpts): string {
     for (const step of STEPS) {
       if (step.id === "labs") continue;
       for (const f of fieldsOf(step)) {
+        if (step.id === "params" && isParamHistCode(f.code)) continue; // timed → paramExportSets
         const v = c.values[f.code];
         if (!isFilled(f, v) || f.code === "NAME" || f.type === "files") continue;
         pushCsvValue(lines, f.code, v as Value, todayIso(), SOURCE[step.id] || step.id);
       }
+    }
+    for (const s of paramExportSets(c)) {
+      for (const [code, v] of Object.entries(s.values)) pushCsvValue(lines, code, v, s.date, "осмотр");
     }
   }
   for (const s of labsForExport(c, opts)) {
@@ -1212,6 +1450,20 @@ function toMarkdown(c: Client, opts?: ExportOpts): string {
       return;
     }
     if (scope !== "all") return;
+    if (step.id === "params") {
+      const stable = fieldsOf(step).filter(f => !isParamHistCode(f.code) && isFilled(f, c.values[f.code]));
+      const sets = paramExportSets(c);
+      if (!stable.length && !sets.length) return;
+      out += `\n## ${i + 1}. ${mdCell(step.title)}\n`;
+      if (stable.length) {
+        out += "\n" + mdValuesTable(Object.fromEntries(stable.map(f => [f.code, c.values[f.code] as Value])));
+      }
+      for (const s of sets) {
+        out += `\n### ${s.date}${s.time ? " " + s.time : ""}\n\n`;
+        out += mdValuesTable(s.values);
+      }
+      return;
+    }
     const fs = fieldsOf(step).filter(f => isFilled(f, c.values[f.code]));
     if (!fs.length) return;
     out += `\n## ${i + 1}. ${mdCell(step.title)}\n\n`;
@@ -1351,14 +1603,20 @@ function coerceImportValue(f: Field | null, raw: string): Value | undefined {
   }
   return s;
 }
-interface ImportData { labs: Map<string, Record<string, Value>>; other: Record<string, Value> }
-function emptyImport(): ImportData { return { labs: new Map(), other: {} }; }
-function labBucket(data: ImportData, date: string): Record<string, Value> {
+interface ImportData {
+  labs: Map<string, Record<string, Value>>;
+  params: Map<string, Record<string, Value>>;
+  other: Record<string, Value>;
+}
+function emptyImport(): ImportData { return { labs: new Map(), params: new Map(), other: {} }; }
+function dateBucket(map: Map<string, Record<string, Value>>, date: string): Record<string, Value> {
   const d = parseExportDate(date);
-  let vals = data.labs.get(d);
-  if (!vals) { vals = {}; data.labs.set(d, vals); }
+  let vals = map.get(d);
+  if (!vals) { vals = {}; map.set(d, vals); }
   return vals;
 }
+function labBucket(data: ImportData, date: string): Record<string, Value> { return dateBucket(data.labs, date); }
+function paramBucket(data: ImportData, date: string): Record<string, Value> { return dateBucket(data.params, date); }
 function putImported(data: ImportData, code: string, raw: string, date: string, unit = ""): void {
   if (!code || code === "NAME") return;
   if (code.startsWith("LAB:")) {
@@ -1371,8 +1629,24 @@ function putImported(data: ImportData, code: string, raw: string, date: string, 
   }
   const f = FIELD_BY_CODE[code] || Labs.fieldFor(code);
   const v = coerceImportValue(f, raw); if (v === undefined) return;
+  if (isParamHistCode(code)) { paramBucket(data, date)[code] = v; return; }
   if (isLabCode(code) || (f && STEP_OF_CODE[code] === "labs")) labBucket(data, date)[code] = v;
   else data.other[code] = v;
+}
+// По расширению, иначе по содержимому: CSV с заголовком code,value… или Markdown с ## / таблицами
+function detectImportKind(name: string, text: string): "csv" | "md" | null {
+  const n = (name || "").toLowerCase();
+  if (/\.csv$/i.test(n)) return "csv";
+  if (/\.(md|markdown)$/i.test(n)) return "md";
+  const head = text.replace(/^\uFEFF/, "").trimStart().slice(0, 800);
+  if (/^#\s+/m.test(head) || /^\|\s*Поле\s*\|\s*Код\s*\|/m.test(head) || /^##\s+/m.test(head)) return "md";
+  const first = head.split(/\r?\n/).find(l => l.trim()) || "";
+  if (/^code\s*,\s*value\b/i.test(first) || /^[A-Z][A-Z0-9_]*\s*,/.test(first)) return "csv";
+  if (/\.txt$/i.test(n)) {
+    if (head.includes("|") && /код/i.test(head)) return "md";
+    if (first.includes(",")) return "csv";
+  }
+  return null;
 }
 function fromCSV(text: string): ImportData {
   const data = emptyImport();
@@ -1398,26 +1672,26 @@ function fromCSV(text: string): ImportData {
 function fromMarkdown(text: string): ImportData {
   const data = emptyImport();
   const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/);
-  let mode: "none" | "labs" | "other" = "none";
-  let labDate = todayIso();
+  let mode: "none" | "labs" | "params" | "other" = "none";
+  let dated = todayIso();
   let inCodeTable = false;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const h2 = /^##\s+\d+\.\s+(.+?)\s*$/.exec(line);
     if (h2) {
       const title = h2[1].trim().toLowerCase();
-      mode = title.includes("анализ") ? "labs" : "other";
-      labDate = todayIso();
+      mode = title.includes("анализ") ? "labs" : title.includes("параметр") ? "params" : "other";
+      dated = todayIso();
       inCodeTable = false;
       continue;
     }
     const h3 = /^###\s+(.+?)\s*$/.exec(line);
-    if (h3 && mode === "labs") {
+    if (h3 && (mode === "labs" || mode === "params")) {
       const raw = h3[1].trim();
       const m = /^(\d{4}-\d{2}-\d{2})/.exec(raw)
         || /^(\d{1,2}\.\d{1,2}\.\d{4})/.exec(raw)
         || /(?:от\s+)?(\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})/i.exec(raw);
-      labDate = m ? parseExportDate(m[1]) : todayIso();
+      dated = m ? parseExportDate(m[1]) : todayIso();
       inCodeTable = false;
       continue;
     }
@@ -1438,42 +1712,51 @@ function fromMarkdown(text: string): ImportData {
       } else if (f && f.type === "yesno") {
         vraw = /да/i.test(rawVal) ? "1" : /нет/i.test(rawVal) ? "0" : rawVal;
       }
-      if (mode === "labs") putImported(data, code, vraw, labDate);
+      if (mode === "labs") putImported(data, code, vraw, dated);
+      else if (mode === "params") putImported(data, code, vraw, isParamHistCode(code) ? dated : todayIso());
       else putImported(data, code, vraw, todayIso());
     }
   }
   return data;
 }
 function applyImport(c: Client, data: ImportData): string {
-  let nVals = 0, nSets = 0;
+  let nVals = 0, nLabSets = 0, nParamSets = 0;
   for (const [code, v] of Object.entries(data.other)) { c.values[code] = v; nVals++; }
   c.labs = c.labs || [];
-  let last: LabSet | null = null;
+  let lastLab: LabSet | null = null;
   for (const [date, values] of data.labs) {
     const keys = Object.keys(values); if (!keys.length) continue;
-    nVals += keys.length; nSets++;
-    // дополнительные коды из справочника — чтобы бланк их показал
+    nVals += keys.length; nLabSets++;
     for (const code of keys) if (isExtraCode(code)) (labAdded[c.id] = labAdded[c.id] || new Set()).add(code);
-    const same = c.labs.find(x => x.date === date);
     const now = new Date().toISOString();
-    if (same) {
-      same.values = { ...same.values, ...values };
-      same.savedAt = now;
-      last = same;
-    } else {
-      const s: LabSet = { id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date, values: { ...values }, savedAt: now };
-      c.labs.push(s);
-      last = s;
-    }
+    const s: LabSet = { id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date, values: { ...values }, savedAt: now };
+    c.labs.push(s);
+    lastLab = s;
   }
-  if (last) {
-    c.labSel = last.id;
-    c.labMeta = { date: last.date, ...(last.time ? { time: last.time } : {}) };
-    loadBuf(c, last.values);
+  if (lastLab) {
+    c.labSel = lastLab.id;
+    c.labMeta = { date: lastLab.date, ...(lastLab.time ? { time: lastLab.time } : {}) };
+    loadBuf(c, lastLab.values);
   }
-  if (!nSets && !Object.keys(data.other).length) return "";
+  c.params = c.params || [];
+  let lastParam: ParamSet | null = null;
+  for (const [date, values] of data.params) {
+    const keys = Object.keys(values); if (!keys.length) continue;
+    nVals += keys.length; nParamSets++;
+    const now = new Date().toISOString();
+    const s: ParamSet = { id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date, values: { ...values }, savedAt: now };
+    c.params.push(s);
+    lastParam = s;
+  }
+  if (lastParam) {
+    c.paramSel = lastParam.id;
+    c.paramMeta = { date: lastParam.date, ...(lastParam.time ? { time: lastParam.time } : {}) };
+    loadParamBuf(c, lastParam.values);
+  }
+  if (!nLabSets && !nParamSets && !Object.keys(data.other).length) return "";
   const parts = [];
-  if (nSets) parts.push(nSets === 1 ? "1 сдача анализов" : nSets + " сдач анализов");
+  if (nLabSets) parts.push(nLabSets === 1 ? "1 сдача анализов" : nLabSets + " сдач анализов");
+  if (nParamSets) parts.push(nParamSets === 1 ? "1 срез параметров" : nParamSets + " срезов параметров");
   if (nVals) parts.push(nVals + " показателей");
   return "Загружено: " + parts.join(", ");
 }

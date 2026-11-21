@@ -24,13 +24,15 @@ export const STEPS: Step[] = [
       ]},
       { title: "Жалобы", fields: [
         { code: "C_FATIGUE", label: "Слабость, усталость", type: "yesno" },
+        // Боль в груди: в списке — чип (complaints.ts); детали скрыты, коды для расчёта/выгрузки
         { code: "PAIN_CHEST", label: "Боль в груди", type: "yesno" },
-        { code: "PAIN_CHEST_PRESSING", label: "Боль в груди: давящая", type: "yesno" },
-        { code: "PAIN_CHEST_STABBING", label: "Боль в груди: колющая", type: "yesno" },
-        { code: "PAIN_CHEST_IRRAD_LARM", label: "Боль в груди: отдаёт в левую руку", type: "yesno" },
-        { code: "PAIN_CHEST_EXERTION", label: "Боль в груди: при нагрузке", type: "yesno" },
-        { code: "PAIN_CHEST_RELIEF_REST", label: "Боль в груди: проходит в покое", type: "yesno" },
-        { code: "PAIN_CHEST_NRS", label: "Боль в груди: интенсивность", type: "scale", max: 10 },
+        { code: "PAIN_CHEST_PRESSING", label: "Боль в груди: давящая", type: "yesno", hidden: true },
+        { code: "PAIN_CHEST_STABBING", label: "Боль в груди: колющая", type: "yesno", hidden: true },
+        { code: "PAIN_CHEST_IRRAD_LARM", label: "Боль в груди: отдаёт в левую руку", type: "yesno", hidden: true },
+        { code: "PAIN_CHEST_EXERTION", label: "Боль в груди: при нагрузке", type: "yesno", hidden: true },
+        { code: "PAIN_CHEST_RELIEF_REST", label: "Боль в груди: проходит в покое", type: "yesno", hidden: true },
+        { code: "PAIN_CHEST_NRS", label: "Боль в груди: интенсивность", type: "scale", max: 100, hidden: true },
+        { code: "PAIN_CHEST_NOTE", label: "Боль в груди: описание", type: "textarea", hidden: true },
         { code: "COMPLAINTS_OTHER", label: "Другие жалобы", type: "textarea" }
       ]},
       { title: "Заметки", fields: [
@@ -285,5 +287,5 @@ export const STEPS: Step[] = [
     ]
   },
   { id: "diagnoses", title: "Диагнозы", sections: [] },
-  { id: "step6", title: "6", sections: [] }
+  { id: "other", title: "Прочее", sections: [] }
 ];
