@@ -18,6 +18,41 @@ const SECS: LabSec[] = [
     prefix: "Моча",
     icon: '<path d="M12 3c4 6 6 9 6 12a6 6 0 0 1-12 0c0-3 2-6 6-12z"/><path d="M10 15h4"/>',
   },
+  {
+    id: "stool", title: "Кал", desc: "Копрограмма, скрытая кровь, эластаза, патогены и другие",
+    prefix: "Кал",
+    icon: '<ellipse cx="12" cy="14" rx="6" ry="5"/><path d="M8 11c1-3 2.5-5 4-5s3 2 4 5"/>',
+  },
+  {
+    id: "swab", title: "Мазки", desc: "Слюна, мазки, мокрота, отделяемое слизистых и ран",
+    prefix: "Мазки",
+    icon: '<path d="M8 20l8-8"/><path d="M14 4l6 6"/><path d="M9 19l-2 2"/><path d="M16 6l2-2"/>',
+  },
+  {
+    id: "csf", title: "Ликвор", desc: "Спинномозговая жидкость: белок, клетки, инфекции ЦНС",
+    prefix: "Ликвор",
+    icon: '<circle cx="12" cy="8" r="3"/><path d="M12 11v8"/><path d="M9 16h6"/>',
+  },
+  {
+    id: "fluid", title: "Другие жидкости", desc: "Плевральная, синовиальная, асцит, амниотическая и выпоты",
+    prefix: "Другие жидкости",
+    icon: '<path d="M7 10c0 4 2.5 8 5 8s5-4 5-8-2.5-5-5-5-5 2-5 5z"/>',
+  },
+  {
+    id: "tissue", title: "Ткань", desc: "Биоптат, гистология, цитология, FISH и исследования ткани",
+    prefix: "Ткань",
+    icon: '<rect x="5" y="7" width="14" height="10" rx="1"/><path d="M9 7V5h6v2"/><path d="M8 12h8"/>',
+  },
+  {
+    id: "breath", title: "Выдыхаемый воздух", desc: "FeNO и другие показатели выдыхаемого воздуха",
+    prefix: "Выдыхаемый воздух",
+    icon: '<path d="M4 14c2-4 4-6 8-6s6 2 8 6"/><path d="M8 14c1-2 2-3 4-3s3 1 4 3"/>',
+  },
+  {
+    id: "other", title: "Прочее", desc: "Пот, ногти, волосы, кожный соскоб и редкие материалы",
+    prefix: "Прочее",
+    icon: '<circle cx="12" cy="12" r="7"/><path d="M12 8v4l2.5 2.5"/>',
+  },
 ];
 
 const TYPE_MARK: Record<Labs.LabType, { mark: string; title: string }> = {
@@ -76,7 +111,15 @@ function row(code: string, l: Labs.Lab): string {
 
 function drawSection(main: HTMLElement, sec: LabSec): void {
   const list = entriesFor(sec);
-  const groups = [...new Set(list.map(([, l]) => l.group || `${sec.prefix} — прочее`))];
+  const counts = new Map<string, number>();
+  for (const [, l] of list) {
+    const g = l.group || `${sec.prefix} — прочее`;
+    counts.set(g, (counts.get(g) || 0) + 1);
+  }
+  const groups = [...counts.keys()].sort((a, b) => (counts.get(b)! - counts.get(a)!)
+    || groupLabel(a, sec).localeCompare(groupLabel(b, sec), "ru"));
+  const chip = (g: string, label: string, n: number, on = false) =>
+    `<button type="button" class="dx-chip${on ? " on" : ""}" data-g="${esc(g)}">${esc(label)} <span class="dx-chip-n">${n}</span></button>`;
   main.innerHTML = `<div class="dx-secbar">
       <a href="#/settings/labs">← Все разделы</a>
       ${ico(sec.icon, 32)}
@@ -86,8 +129,8 @@ function drawSection(main: HTMLElement, sec: LabSec): void {
       <input type="search" id="labq" placeholder="Поиск по названию, коду, синониму" aria-label="Поиск анализов">
     </div>
     <div class="lab-chips" role="group" aria-label="Группы">
-      <button type="button" class="dx-chip on" data-g="">Все</button>
-      ${groups.map(g => `<button type="button" class="dx-chip" data-g="${esc(g)}">${esc(groupLabel(g, sec))}</button>`).join("")}
+      ${chip("", "Все", list.length, true)}
+      ${groups.map(g => chip(g, groupLabel(g, sec), counts.get(g) || 0)).join("")}
     </div>
     <div class="lab-newform card" id="labnewform" hidden>
       <div class="lab-newgrid">
@@ -95,7 +138,7 @@ function drawSection(main: HTMLElement, sec: LabSec): void {
         <label>Код <input name="code" required placeholder="B12" pattern="[A-Za-z][A-Za-z0-9_]*" title="латиница, цифры, подчёркивание"></label>
         <label>Единица <input name="unit" placeholder="пмоль/л"></label>
         <label>Тип <select name="type"><option value="number">число</option><option value="qual">качеств.</option><option value="text">текст</option></select></label>
-        <label>Группа <select name="group">${groups.map(g => `<option value="${esc(g)}">${esc(groupLabel(g, sec))}</option>`).join("")}
+        <label>Группа <select name="group">${groups.map(g => `<option value="${esc(g)}">${esc(groupLabel(g, sec))} (${counts.get(g) || 0})</option>`).join("")}
           <option value="${esc(sec.prefix + " — прочее")}">прочее</option></select></label>
       </div>
       <p class="muted">Анализ попадёт в справочник (в этих настройках) и станет доступен для выбора в кабинете и признаках.</p>

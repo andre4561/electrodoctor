@@ -523,6 +523,7 @@ body.cv-lock { overflow: hidden; }
 .dx-secbar .dx-sec-sort button { padding: 4px 10px; font-size: 12px; }
 .dx-secbar input[type=search] { flex: 1 1 auto; min-width: 0; }
 .lab-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.lab-chips .dx-chip-n { margin-left: 4px; font-variant-numeric: tabular-nums; opacity: 0.65; font-weight: 600; }
 .lab-card { padding: 4px 8px; }
 .lab-table td, .lab-table th { padding: 7px 8px; vertical-align: top; }
 .lab-table td small { display: block; color: var(--muted); font-size: 11px; }

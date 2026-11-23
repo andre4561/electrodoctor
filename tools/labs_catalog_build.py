@@ -156,15 +156,17 @@ def main():
         it = items.get(code)
         if it and it["name"] != nm:
             it["aliases"] = sorted(set(it["aliases"]) | {it["name"]} - {nm}); it["name"] = nm
+    import lab_groups
+    gstat = lab_groups.apply(items)   # материал («откуда берётся») у записей без group
     data = {"format": "electrodoctor-labs", "version": 1,
-            "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
+            "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, group — раздел по материалу (Кровь / Моча / Кал / …), inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках }. Нормы числовых анализов — в docs/data/norms.json. Собирается tools/labs_catalog_build.py; пустые group дописывает tools/lab_groups.py.",
             "items": dict(sorted(items.items(), key=lambda kv: (0 if kv[1].get("inForm") else 1, -kv[1].get("refs", 0), kv[0])))}
     with open(os.path.join(ROOT, "docs", "data", "labs.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(data, fh, ensure_ascii=False, indent=1); fh.write("\n")
     with open(os.path.join(ROOT, "tools", "out", "not_lab.md"), "w", encoding="utf-8") as fh:
         fh.write("# Не анализы: исследования, опросники, пробы\n\nИИ назвал их в «нет в анкете», но это не лабораторные анализы. Кандидаты для блоков «Осмотр» и «Инструментальные исследования».\n\n")
         fh.write("\n".join(f"- {k} — {n}" for k, n in not_lab.most_common()) + "\n")
-    print(f"всего {len(items)}; в бланке {sum(1 for i in items.values() if i['inForm'])}; со статьёй {sum(1 for i in items.values() if i.get('article'))}; не анализы {len(not_lab)}; кодов из разбора {len(agg)}; склеено дублей {len(merged)}")
+    print(f"всего {len(items)}; в бланке {sum(1 for i in items.values() if i['inForm'])}; со статьёй {sum(1 for i in items.values() if i.get('article'))}; не анализы {len(not_lab)}; кодов из разбора {len(agg)}; склеено дублей {len(merged)}; групп по материалу {dict(gstat)}")
 
 
 if __name__ == "__main__":
