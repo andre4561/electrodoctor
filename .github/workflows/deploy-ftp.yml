@@ -1,6 +1,6 @@
 name: Публикация на FTP
 
-# Сайт на хостинг владельца: явный FTPS (FTP over TLS), порт 21.
+# Сайт на хостинг владельца: обычный FTP без шифрования, порт 21.
 # GitHub Pages не меняется — он по-прежнему публикует папку docs/ с ветки main.
 #
 # Что заливается. В репозитории docs/ — это уже собранный сайт: JavaScript
@@ -15,8 +15,8 @@ name: Публикация на FTP
 #      перед сборкой пишется временный docs/_config.yml с baseurl: "" —
 #      это значение плагин не трогает. Файл только в раннере, Pages его не видит.
 #   3) содержимое _site/ уходит в каталог, куда FTP-пользователь попадает при входе.
-#      Сервер — 32rumba.ru (тот же хост, 45.67.58.17): сертификат Let's Encrypt
-#      выписан на это имя, поэтому проверка TLS строгая.
+#      Сервер — 32rumba.ru (тот же хост, 45.67.58.17). Шифрование выключено:
+#      FTPS шёл примерно на 20 КБ/с.
 
 on:
   schedule:
@@ -89,10 +89,9 @@ jobs:
         with:
           server: 32rumba.ru
           port: 21
-          protocol: ftps
+          protocol: ftp
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./_site/
           server-dir: ./
-          security: strict
           timeout: 120000
