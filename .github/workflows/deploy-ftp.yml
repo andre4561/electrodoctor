@@ -1,0 +1,68 @@
+name: Публикация на FTP
+
+# Сайт на хостинг владельца: явный FTPS (FTP over TLS), порт 21.
+# GitHub Pages не меняется — он по-прежнему публикует папку docs/ с ветки main.
+#
+# Что заливается. В репозитории docs/ — это уже собранный сайт: JavaScript
+# кабинета коммитится из src/ (tsc, outDir docs/, сверка в CI), а статьи
+# лежат как Markdown. На Pages их превращает в HTML встроенный Jekyll
+# (legacy). На FTP Jekyll нет, а кабинет ссылается на статьи как на *.html,
+# поэтому перед выгрузкой:
+#   1) npm run build — кабинет из src/ в docs/;
+#   2) actions/jekyll-build-pages — тот же сборщик, что у GitHub Pages,
+#      результат в _site/ (без префикса /electrodoctor: на хостинге сайт в корне);
+#   3) содержимое _site/ уходит в каталог, куда FTP-пользователь попадает при входе.
+
+on:
+  schedule:
+    # 00:00 UTC = 03:00 МСК. День месяца */3: 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31.
+    - cron: "0 0 */3 * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Сборка и выгрузка
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Код
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Сборка кабинета
+        run: |
+          npm ci
+          npm run build
+
+      - name: Сборка HTML (Jekyll, как GitHub Pages)
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Выгрузка на FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: 45.67.58.17
+          port: 21
+          protocol: ftps
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./_site/
+          server-dir: ./
+          # Хост задан IP-адресом: имя в сертификате с ним обычно не совпадает.
+          # strict оборвал бы соединение. Шифрование явного FTPS при loose остаётся.
+          security: loose
+          timeout: 120000

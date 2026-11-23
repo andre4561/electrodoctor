@@ -62,6 +62,7 @@ python tools/preview.py   # → http://localhost:8000/
 electrodoctor/
 ├── README.md              этот файл
 ├── AGENTS.md              контекст проекта для ИИ-агентов
+├── .github/workflows/     проверка CI и публикация сайта на FTP
 ├── DISCLAIMER.md          ограничения и предупреждения
 ├── CONTRIBUTING.md        как предлагать веса, диагнозы, код
 ├── Читать.md              как открыть сайт локально
@@ -81,6 +82,19 @@ electrodoctor/
 ├── tests/                 тесты
 └── tools/                 просмотр сайта и конвейер данных
 ```
+
+## Публикация на хостинг (FTP)
+
+Готовый сайт дополнительно выкладывается на хостинг по явному FTPS (FTP поверх TLS): сервер `45.67.58.17`, порт 21. GitHub Pages при этом не меняется и по-прежнему собирает папку `docs/` с ветки `main`.
+
+Workflow — [`.github/workflows/deploy-ftp.yml`](.github/workflows/deploy-ftp.yml). Он собирает кабинет (`npm ci` и `npm run build`: JavaScript из `src/` попадает в `docs/`) и прогоняет Markdown через Jekyll тем же сборщиком, что и GitHub Pages. На хостинг уходит уже готовая папка `_site/` — в каталог, в который FTP-пользователь попадает сразу после входа. Отдельный путь на сервере не задаётся.
+
+Секреты добавляются в репозитории: **Settings → Secrets and variables → Actions → New repository secret**.
+
+- `FTP_USERNAME` — логин FTP
+- `FTP_PASSWORD` — пароль FTP
+
+По расписанию выкладка идёт в 00:00 UTC (03:00 по Москве) в такие дни месяца: 1, 4, 7, 10, 13, 16, 19, 22, 25, 28 и 31. Вручную: вкладка **Actions** → **Публикация на FTP** → **Run workflow**.
 
 ## Лицензия
 
