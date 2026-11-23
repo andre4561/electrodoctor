@@ -108,7 +108,7 @@ def main():
         name = a["names"].most_common(1)[0][0]
         items[code] = {"name": name, "aliases": sorted(a["aliases"] - {name}), "type": a["type"].most_common(1)[0][0],
                        "unit": a["unit"].most_common(1)[0][0] if a["unit"] else "", "tier": a["tier"].most_common(1)[0][0],
-                       "inForm": False, "refs": len(a["dx"]), "source": "разбор ИИ: gpt-oss-120b"}
+                       "inForm": False, "refs": len(a["dx"])}
     # дубли: ИИ в разных порциях давал одному анализу разные коды — склеиваем по названию и синонимам
     #  (в бланк ничего не вливаем по синонимам: «Эритроциты» крови и мочи — разные анализы)
     by_name = {}
@@ -166,7 +166,7 @@ def main():
             it["aliases"] = sorted(set(it["aliases"]) | {it["name"]} - {nm}); it["name"] = nm
     tiers = collections.Counter(it["tier"] for it in items.values())
     data = {"format": "electrodoctor-labs", "version": 1,
-            "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, tier: basic — основной, special — специализированный, rare — редкий/новый, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках, source }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
+            "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, tier: basic — основной, special — специализированный, rare — редкий/новый, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
             "items": dict(sorted(items.items(), key=lambda kv: ({"basic": 0, "special": 1, "rare": 2}[kv[1]["tier"]] if kv[1]["tier"] in ("basic", "special", "rare") else 3, -kv[1].get("refs", 0), kv[0])))}
     with open(os.path.join(ROOT, "docs", "data", "labs.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(data, fh, ensure_ascii=False, indent=1); fh.write("\n")

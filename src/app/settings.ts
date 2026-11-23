@@ -8,6 +8,7 @@
 // Хранятся у пользователя: в этом браузере или в выбранной папке, ключи — по желанию зашифрованы паролем (setstore.ts).
 // Ключ уходит только своему провайдеру — когда кабинет отправляет ему фото анализов (aicall.ts).
 import * as Dx from "./diagnoses.js";
+import * as SetLabs from "./setlabs.js";
 import { fold } from "./ui.js";
 import * as M from "./models.js";
 import * as Store from "./setstore.js";
@@ -230,7 +231,7 @@ const newId = (p: string) => p + Date.now().toString(36) + Math.random().toStrin
 export interface StepInfo { id: string; title: string }
 
 export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void {
-  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
+  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "labs" ? "labs" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
   view.innerHTML = `
     <h1>Настройки</h1>
     <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
@@ -240,6 +241,7 @@ export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void 
         <a class="set-tab${t === "agents" ? " on" : ""}" href="#/settings/agents">Агенты</a>
         <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">Консилиум</a>
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
+        <a class="set-tab${t === "labs" ? " on" : ""}" href="#/settings/labs">Анализы</a>
         <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">Диагнозы</a>
         <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">Хранение</a>
         <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">Прочее</a>
@@ -250,6 +252,10 @@ export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void 
   const redraw = () => render(view, t, steps);
   if (t === "storage") { drawStorage(main, redraw); return; }
   if (t === "misc") { drawMisc(main); return; }
+  if (t === "labs") {
+    if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
+    SetLabs.draw(main); return;
+  }
   if (t === "diagnoses") {
     if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
     Dx.draw(main); return;
@@ -824,7 +830,7 @@ function drawWeights(main: HTMLElement): void {
   const row = (f: { code: string; label: string; unit?: string }) => {
     const n = NORMS[f.code], mine = typeof own[f.code] === "number", myCurve = !!curves[f.code];
     return `<tr data-w="${esc(f.code)}" data-k="${esc((f.label + " " + f.code).toLowerCase())}">
-      <td title="${esc(n.source ? "источник: " + n.source : "")}">${esc(f.label)}<small>${esc(f.code)}${n.note ? " · " + esc(n.note) : ""}</small></td>
+      <td>${esc(f.label)}<small>${esc(f.code)}${n.note ? " · " + esc(n.note) : ""}</small></td>
       <td class="muted">${esc(f.unit || "")}</td>
       <td class="w-safe" title="норма и безопасный диапазон (где критичность не выше 10) — по кривой критичности; интервал из справочника ${esc(n.range)}" data-safe>${safeCell(f.code, f.unit || "")}</td>
       <td><span class="w-curvecell"><button type="button" class="btn w-curve${myCurve || mine ? " own" : ""}" data-curve>Настроить</button>${myCurve || mine ? '<span class="w-own" title="норма или кривая изменены">своя</span>' : ""}</span></td>
@@ -902,7 +908,7 @@ function drawWeights(main: HTMLElement): void {
       const nv = (st.norms || {})[code], cv = (st.curves || {})[code];
       if (typeof nv === "number") it.norm = nv;
       if (cv) it.curve = { L: cv.L, R: cv.R, pts: cv.pts, ...(cv.linear ? { linear: true } : {}) };
-      if (typeof nv === "number" || cv) it.source = "изменено в кабинете " + today() + (it.source ? "; исходно: " + it.source : "");
+      if (it.source) delete it.source;
     }
     j.updated = today();
     download("norms-" + today() + ".json", JSON.stringify(j, null, 2));

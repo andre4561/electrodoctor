@@ -515,6 +515,18 @@ body.cv-lock { overflow: hidden; }
 .dx-name { font-weight: 600; font-size: 15px; line-height: 1.25; hyphens: auto; overflow-wrap: anywhere; }
 .dx-desc { font-size: 13px; color: var(--muted); line-height: 1.35; flex: 1; }
 .dx-count { font-size: 13px; font-variant-numeric: tabular-nums; }
+.dx-secbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; min-width: 0; }
+.dx-secbar a { flex-shrink: 0; white-space: nowrap; font-size: 14px; }
+.dx-secbar h2 { margin: 0; font-size: 18px; flex-shrink: 0; white-space: nowrap; }
+.dx-secbar .muted { flex-shrink: 0; white-space: nowrap; font-size: 14px; }
+.dx-secbar .dx-sec-sort { flex-shrink: 0; }
+.dx-secbar .dx-sec-sort button { padding: 4px 10px; font-size: 12px; }
+.dx-secbar input[type=search] { flex: 1 1 auto; min-width: 0; }
+.lab-card { padding: 4px 8px; }
+.lab-table td, .lab-table th { padding: 7px 8px; vertical-align: top; }
+.lab-table td small { display: block; color: var(--muted); font-size: 11px; }
+.lab-table tr.lab-sec th { padding-top: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-top: 0; }
+.lab-table td:nth-child(6) { max-width: 220px; font-size: 12px; color: var(--muted); }
 .dx-back { margin: 0 0 10px; }
 .dx-head { align-items: center; justify-content: flex-start; gap: 10px; }
 .dx-head .muted { margin-left: auto; }

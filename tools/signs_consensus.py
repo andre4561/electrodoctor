@@ -12,9 +12,6 @@ import argparse, json, os
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 CMP = os.path.join(ROOT, "tools", "out", "signs_cmp")
 SIGNS = os.path.join(ROOT, "docs", "data", "signs.json")
-SOURCE = "черновик ИИ: совпавшее у gpt-oss-120b и yandexgpt-5.1, спорное решил Claude (29.10.2026)"
-
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
@@ -53,8 +50,8 @@ def main():
         it["labs"] = new
         if prior is not None:
             it["prior"] = prior
-        it["source"] = SOURCE
-        it["checked"] = False
+        it.pop("source", None)
+        it.pop("checked", None)
         after += len(new)
     path = SIGNS if a.apply else os.path.join(CMP, "signs_candidate.json")
     with open(path, "w", encoding="utf-8", newline="\n") as fh:

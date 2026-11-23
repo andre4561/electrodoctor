@@ -182,7 +182,6 @@ def main():
                 text, sec = text2, sec + sec2
                 usage = {k: (usage.get(k) or 0) + (usage2.get(k) or 0) for k in set(usage) | set(usage2)
                          if isinstance(usage.get(k, 0), int) and isinstance(usage2.get(k, 0), int)}
-            res["source"] = f"черновик ИИ: {a.model}"
             json.dump({"name": name, "model": a.model, "usage": usage, "seconds": round(sec, 1), "dropped": dropped, "signs": res, "raw": text},
                       open(os.path.join(out_dir, name + ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             ok += 1

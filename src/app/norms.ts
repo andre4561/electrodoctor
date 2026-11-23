@@ -8,7 +8,7 @@
 import { getData } from "./setstore.js";
 import { defaultCurve, evaluate, type Curve } from "./curve.js";
 
-export interface Norm { v: number; range: string; note?: string; name?: string; unit?: string; source?: string; curve?: Curve; adjust?: Rule[] }
+export interface Norm { v: number; range: string; note?: string; name?: string; unit?: string; curve?: Curve; adjust?: Rule[] }
 
 export const NORMS_URL = "../data/norms.json";
 export const NORMS: Record<string, Norm> = {};
@@ -23,7 +23,7 @@ export async function loadNorms(): Promise<void> {
     if (j.format !== "electrodoctor-norms" || !j.items) throw new Error("это не файл норм");
     for (const [code, it] of Object.entries<any>(j.items)) {
       if (typeof it.norm !== "number") continue;
-      NORMS[code] = { v: it.norm, range: String(it.range || ""), note: it.note, name: it.name, unit: it.unit, source: it.source,
+      NORMS[code] = { v: it.norm, range: String(it.range || ""), note: it.note, name: it.name, unit: it.unit,
         curve: it.curve && Array.isArray(it.curve.pts) && it.curve.pts.length >= 2 ? it.curve : undefined,
         adjust: Array.isArray(it.adjust) ? it.adjust : undefined };
     }
@@ -50,8 +50,8 @@ const toNum = (value: unknown) => typeof value === "number" ? value : value === 
 // ---------- уровни: настройки → правило по параметрам клиента → своё у клиента ----------
 // Контекст клиента: его анкета (пол, возраст…), свои нормы и кривые
 export interface Ctx { values?: Record<string, unknown>; norms?: Record<string, number>; curves?: Record<string, Curve> }
-// Правило в norms.json: items.CODE.adjust = [{ when: { SEX: "F", ageFrom: 18, ageTo: 60, child: false }, norm?, curve?, label?, source? }]
-export interface Rule { when?: { SEX?: string; ageFrom?: number; ageTo?: number; child?: boolean }; norm?: number; curve?: Curve; label?: string; source?: string }
+// Правило в norms.json: items.CODE.adjust = [{ when: { SEX: "F", ageFrom: 18, ageTo: 60, child: false }, norm?, curve?, label? }]
+export interface Rule { when?: { SEX?: string; ageFrom?: number; ageTo?: number; child?: boolean }; norm?: number; curve?: Curve; label?: string }
 function ruleFor(code: string, ctx?: Ctx): Rule | undefined {
   const n = NORMS[code]; const list = n && n.adjust;
   if (!list || !ctx || !ctx.values) return undefined;

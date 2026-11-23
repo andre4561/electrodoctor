@@ -81,7 +81,7 @@ def main():
         l = labs["items"].get(code)
         if not l: continue
         if code in REJECT:
-            if str(norms["items"].get(code, {}).get("source", "")).startswith("предложено ИИ"): del norms["items"][code]
+            if code in norms["items"]: del norms["items"][code]
             rej.append((code, l["name"], REJECT[code])); continue
         unit, low, high, note = FIX.get(code, (p.get("unit") or "", p.get("low"), p.get("high"), p.get("note") or ""))
         if code not in FIX and p.get("confidence") == "low": skipped.append((code, l["name"], "ИИ не уверен")); continue
@@ -92,8 +92,7 @@ def main():
         else: rng, norm = f"{fmt(low)}–{fmt(high)}", (low + high) / 2
         norm = float(("%.3g" % norm))
         norms["items"][code] = {"name": l["name"], "unit": unit, "section": "Справочник анализов", "norm": norm, "range": rng,
-                                **({"note": note} if note else {}),
-                                "source": "предложено ИИ (gpt-oss-120b), проверено Claude" + (" с исправлением" if code in FIX else "") + "; середина интервала; кривая — по интервалу"}
+                                **({"note": note} if note else {})}
         l["unit"] = unit
         (fixed if code in FIX else ok).append((code, l["name"], f"{rng} {unit}".strip()))
     json.dump(norms, open(npath, "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=2)

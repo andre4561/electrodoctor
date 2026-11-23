@@ -3,7 +3,7 @@
 //
 // У диагноза — список признаков: анализ, ожидаемое направление (выше/ниже нормы), важность 0–10
 // и что делать, если анализ в норме. Исходные признаки — в docs/data/signs.json (их заполняет ИИ по статьям,
-// пометка «черновик ИИ»), правки человека хранятся в настройках и перекрывают исходные.
+// правки человека хранятся в настройках и перекрывают исходные.
 //
 // Формула (черновая, будет калиброваться):
 //   сила отклонения s — 0…1, двумя способами (переключатель в Настройки → Диагнозы):
@@ -22,7 +22,7 @@ export type Dir = "up" | "down" | "any";
 export interface LabSign { code: string; dir: Dir; w: number; normal?: "none" | "lower"; kind?: "sign" | "risk"; src?: "article" | "knowledge"; why?: string }
 export interface TextSign { name: string; w?: number; note?: string }
 export interface NoList { name: string; dir?: Dir; w?: number; why?: string; code?: string }   // нужный анализ, которого нет в бланке; code — код справочника
-export interface Signs { prior?: number; labs: LabSign[]; exam?: TextSign[]; instr?: TextSign[]; nolist?: NoList[]; source?: string; checked?: boolean }
+export interface Signs { prior?: number; labs: LabSign[]; exam?: TextSign[]; instr?: TextSign[]; nolist?: NoList[] }
 export type Method = "crit" | "dev";
 
 export const K = 0.5;              // перевод «важность × сила» в шаги логарифма шансов: 10 × 1 → +5

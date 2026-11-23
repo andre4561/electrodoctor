@@ -1,7 +1,7 @@
 {
  "format": "electrodoctor-labs",
  "version": 1,
- "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, tier: basic — основной, special — специализированный, rare — редкий/новый, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках, source }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
+ "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, tier: basic — основной, special — специализированный, rare — редкий/новый, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
  "items": {
   "HIV": {
    "name": "ВИЧ: антиген и антитела",
@@ -116,7 +116,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 11,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев мочи"
   },
   "ABG": {
@@ -144,7 +143,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 10,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Газовый анализ артериальной крови"
   },
   "SYPHILIS": {
@@ -195,7 +193,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 8,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к тиреопероксидазе (ТПО)"
   },
   "ANTI_HCV": {
@@ -247,7 +244,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 6,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH влагалищного содержимого"
   },
   "TRANSFERRIN_SATURATION": {
@@ -263,7 +259,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Насыщение трансферрина железом"
   },
   "WOUND_CULTURE": {
@@ -284,7 +279,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев гноя или раневого отделения"
   },
   "AMH": {
@@ -315,7 +309,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Аммиак"
   },
   "BACTERIAL_CULTURE": {
@@ -333,7 +326,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бактериологический посев"
   },
   "CALPROTECTIN": {
@@ -373,7 +365,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Белок в спинномозговой жидкости"
   },
   "DENGUE_NS1": {
@@ -391,7 +382,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген NS1 вируса денге"
   },
   "H_PYLORI_TEST": {
@@ -410,7 +400,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на Helicobacter pylori"
   },
   "PCO2": {
@@ -429,7 +418,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Парциальное давление CO₂ в крови (pCO₂)"
   },
   "PROG": {
@@ -461,7 +449,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Паратгормон"
   },
   "ARTERIAL_PH": {
@@ -476,7 +463,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH артериальный"
   },
   "CANDIDA_SMEAR": {
@@ -493,7 +479,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кандидозный мазок"
   },
   "CORTISOL": {
@@ -572,7 +557,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IGF-1"
   },
   "KETONES": {
@@ -589,7 +573,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кетоны крови"
   },
   "PCR_RSV": {
@@ -607,7 +590,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на РСВ (респираторно-синцитиальный вирус)"
   },
   "PO2": {
@@ -624,7 +606,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Парциальное давление кислорода (pO2)"
   },
   "RAPID_AG_STREP_A": {
@@ -643,7 +624,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс‑тест на антиген БГСА"
   },
   "THIAMINE": {
@@ -662,7 +642,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Витамин B1 - тиамин"
   },
   "THROAT_CULTURE": {
@@ -681,7 +660,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из горла (культура)"
   },
   "URINALYSIS": {
@@ -694,7 +672,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Общий анализ мочи"
   },
   "U_KETONES": {
@@ -709,7 +686,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кетоны в моче"
   },
   "VITD": {
@@ -739,7 +715,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "β-гидроксибутират"
   },
   "BICARBONATE": {
@@ -755,7 +730,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бикарбонат"
   },
   "BLOOD_KETONES": {
@@ -770,7 +744,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кетоны крови"
   },
   "BLOOD_MICROSCOPY": {
@@ -784,7 +757,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия крови (концентрация, микрогематокрит)"
   },
   "CERVICAL_CYTOLOGY": {
@@ -798,7 +770,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Цитология шейки матки"
   },
   "COPROGRAM": {
@@ -812,7 +783,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Копрограмма (лейкоциты, эритроциты в кале)"
   },
   "DRUG_ALCOHOL_SCREEN": {
@@ -827,7 +797,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Скрининг на наркотики алкоголь"
   },
   "EBV_VCA_IGM": {
@@ -843,7 +812,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к ВЭБ VCA IgM"
   },
   "EMA": {
@@ -858,7 +826,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к эндомизию (EMA)"
   },
   "ENTEROBIUS_SMEAR": {
@@ -874,7 +841,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Соскоб на энтеробиоз"
   },
   "HAV_IGM": {
@@ -888,7 +854,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM анти-HAV"
   },
   "HBC_IGM": {
@@ -903,7 +868,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM анти-HBc"
   },
   "HBC_TOTAL": {
@@ -919,7 +883,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к HBcAg суммарные (anti-HBc)"
   },
   "HIV_ANTIBODY": {
@@ -935,7 +898,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти-ВИЧ"
   },
   "INFLUENZA_AG_RAPID": {
@@ -950,7 +912,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс‑тест на антиген гриппа"
   },
   "KOH_MICROSCOPY": {
@@ -965,7 +926,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия соскоба с КОН"
   },
   "KOH_PREP": {
@@ -981,7 +941,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Аминный тест (KOH)"
   },
   "LEGIONELLA_ANTIGEN_URINE": {
@@ -996,7 +955,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген Legionella в моче"
   },
   "MALARIA_RDT": {
@@ -1011,7 +969,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Быстрый тест на антиген малярии"
   },
   "PROTEIN_CRE_RATIO": {
@@ -1027,7 +984,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Протеинурия (белок креатинин в моче)"
   },
   "SARS_COV2_PCR": {
@@ -1043,7 +999,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на SARS-CoV-2"
   },
   "STI_NAAT_PANEL": {
@@ -1056,7 +1011,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тесты на трихомонады, хламидии, гонорею (NAAT)"
   },
   "TOXO_IGG": {
@@ -1074,7 +1028,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgG к Toxoplasma gondii"
   },
   "URINE_ALBUMIN": {
@@ -1090,7 +1043,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Альбумин в моче (микроальбуминурия)"
   },
   "URINE_CALCIUM_24H": {
@@ -1105,7 +1057,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кальций в суточной моче"
   },
   "URINE_OXALATE": {
@@ -1121,7 +1072,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Оксалаты в суточной моче"
   },
   "U_RBC": {
@@ -1150,7 +1100,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ангиотензин‑превращающий фермент (ACE)"
   },
   "AFB_SMEAR": {
@@ -1164,7 +1113,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия мокроты на кислотоустойчивые бактерии"
   },
   "AFP": {
@@ -1191,7 +1139,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на амфетамины в моче"
   },
   "ANTI_D_TITER": {
@@ -1205,7 +1152,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Титр анти‑D"
   },
   "ANTI_SSA_SSB": {
@@ -1219,7 +1165,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти-SSA SSB антитела"
   },
   "ANTI_TG": {
@@ -1233,7 +1178,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к ТГ"
   },
   "ASLO": {
@@ -1263,7 +1207,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антистрептолизин-О (АСЛ-О)"
   },
   "B12": {
@@ -1287,7 +1230,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG к парвовирусу B19"
   },
   "B19_IGM": {
@@ -1298,7 +1240,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к парвовирусу B19"
   },
   "BENCE_JONES": {
@@ -1312,7 +1253,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Белок Бенса-Джонса"
   },
   "BENZODIAZEPINES_URINE": {
@@ -1326,7 +1266,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бензодиазепины в моче"
   },
   "BENZOYLEC_GUINE_URINE": {
@@ -1339,7 +1278,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бензоилэкгонин в моче"
   },
   "BLOOD_BLASTS": {
@@ -1350,7 +1288,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бласты в мазке крови"
   },
   "BLOOD_GAS_CAPILLARY": {
@@ -1365,7 +1302,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Капиллярный газ крови"
   },
   "BLOOD_PH": {
@@ -1378,7 +1314,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH крови"
   },
   "BORRELIA_IGG": {
@@ -1392,7 +1327,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG к Borrelia burgdorferi"
   },
   "BV_AMINO_TEST": {
@@ -1407,7 +1341,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Аминный тест на бактериальный вагиноз"
   },
   "CA": {
@@ -1449,7 +1382,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсины A-B Clostridioides difficile в кале"
   },
   "CHLAMYDIA_TEST": {
@@ -1460,7 +1392,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на хламидии"
   },
   "CHOLERA_ANTIGEN_RAPID": {
@@ -1474,7 +1405,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс‑тест на антиген Vibrio cholerae в стуле"
   },
   "COBALT_INDIRECT": {
@@ -1488,7 +1418,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Непрямая проба Кумбса"
   },
   "COMBS_DIRECT_TEST": {
@@ -1499,7 +1428,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Прямая проба Кумбса"
   },
   "CONJUNCTIVAL_PH": {
@@ -1512,7 +1440,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH конъюнктивальной жидкости"
   },
   "CORTISOL_PLASMA_MORNING": {
@@ -1526,7 +1453,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кортизол в плазме (утренний)"
   },
   "CSF_GRAM_STAIN": {
@@ -1537,7 +1463,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Грам-окраска ликвора"
   },
   "CSF_PRESSURE": {
@@ -1551,7 +1476,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Давление ликвора при люмбальной пункции"
   },
   "CU": {
@@ -1578,7 +1502,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев на Candida и стафилококк"
   },
   "DEEP_WOUND_CULTURE": {
@@ -1589,7 +1512,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура из глубины раны"
   },
   "DENGUE_IGG": {
@@ -1602,7 +1524,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG к денге (сероконверсия)"
   },
   "DENGUE_IGM": {
@@ -1615,7 +1536,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к денге"
   },
   "DGP_IGG": {
@@ -1630,7 +1550,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgG к деамидированным пептидам глиадина"
   },
   "DIPHTHERIA_SWAB": {
@@ -1644,7 +1563,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок на дифтерию"
   },
   "DPT_ANTIBODY": {
@@ -1657,7 +1575,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к дифтерийному анатоксину"
   },
   "DRUG_SCREEN": {
@@ -1672,7 +1589,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на наркотики (скрининг)"
   },
   "EGFR": {
@@ -1686,7 +1602,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Расчётная СКФ (eGFR)"
   },
   "ELISA_TEST": {
@@ -1697,7 +1612,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест Элека (иммунопреципитация)"
   },
   "ETHANOL": {
@@ -1712,7 +1626,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Этанол в крови"
   },
   "FERN_TEST": {
@@ -1723,7 +1636,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест «папоротника» (кристаллизация)"
   },
   "GBS_CULTURE": {
@@ -1737,7 +1649,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев на стрептококк группы B"
   },
   "GDH_STOOL": {
@@ -1751,7 +1662,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Глутаматдегидрогеназа (GDH) в кале"
   },
   "GFR_CALC": {
@@ -1765,7 +1675,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "СКФ (расчёт по креатинину)"
   },
   "GIARDIA_ANTIGEN": {
@@ -1778,7 +1687,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген Giardia в кале (ИФА)"
   },
   "GIARDIA_MICRO": {
@@ -1791,7 +1699,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия кала на цисты Giardia"
   },
   "GLU_PLEURAL": {
@@ -1802,7 +1709,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Глюкоза в плевральной жидкости"
   },
   "GONORRHEA_TEST": {
@@ -1813,7 +1719,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на гонококк"
   },
   "GRAM_STAIN_ABSCESS_CULTURE": {
@@ -1824,7 +1729,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок с окраской по Граму и посев из гнойничка"
   },
   "GRAM_STAIN_DIPLOCOCCI": {
@@ -1838,7 +1742,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Грам‑окраска мазка (микроскопия) с диплококками"
   },
   "GRAM_STAIN_URETHRAL": {
@@ -1854,7 +1757,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Грам-окраска уретрального мазка"
   },
   "HAPTO": {
@@ -1867,7 +1769,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гаптоглобин"
   },
   "HAV_IGG": {
@@ -1882,7 +1783,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG к вирусу гепатита A (anti-HAV IgG)"
   },
   "HBEAG": {
@@ -1895,7 +1795,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HBeAg"
   },
   "HBE_ANTIBODY": {
@@ -1910,7 +1809,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к HBeAg (anti-HBe)"
   },
   "HBS_ANTIBODY": {
@@ -1925,7 +1823,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к HBsAg (anti-HBs)"
   },
   "HCV_AB": {
@@ -1939,7 +1836,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к вирусу гепатита C"
   },
   "HDV_ANTIBODY": {
@@ -1954,7 +1850,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к вирусу гепатита D (anti-HDV)"
   },
   "HE4": {
@@ -1980,7 +1875,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к вирусу гепатита B"
   },
   "HEPATITIS_C_AB": {
@@ -1995,7 +1889,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на антитела к гепатиту C"
   },
   "HETERO_ANTIBODY": {
@@ -2009,7 +1902,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на гетерофильные антитела (Монотест)"
   },
   "HEV_IGM": {
@@ -2023,7 +1915,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM анти-HEV"
   },
   "HIV_4TH_GEN": {
@@ -2039,7 +1930,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген и антитела к ВИЧ (тест 4-го поколения)"
   },
   "HIV_ELISA": {
@@ -2055,7 +1945,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к ВИЧ (ИФА, экспресс-тест)"
   },
   "HIV_SYPHILIS_HBV_HCV_PANEL": {
@@ -2069,7 +1958,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ВИЧ, сифилис, гепатиты B и C (панель)"
   },
   "HP_ANTIGEN_STOOL": {
@@ -2082,7 +1970,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген H. pylori в кале"
   },
   "HP_IGG": {
@@ -2095,7 +1982,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серологический IgG к H. pylori"
   },
   "INFLUENZA_A_PCR": {
@@ -2109,7 +1995,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на грипп A (мазок из носоглотки)"
   },
   "LEUCOESTERASE_URINE": {
@@ -2123,7 +2008,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лейкоцитарная эстераза в моче"
   },
   "MALARIA_RAPID": {
@@ -2138,7 +2022,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на малярию (быстрый толстый мазок)"
   },
   "MALARIA_WET_PREP": {
@@ -2154,7 +2037,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Нативный мазок крови на малярию"
   },
   "MEASLES_IGM": {
@@ -2167,7 +2049,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к вирусу кори"
   },
   "MELATONIN": {
@@ -2180,7 +2061,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мелатонин"
   },
   "MONOPLUS_EB": {
@@ -2196,7 +2076,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гетерофильные антитела к вирусу Эпштейна-Барр (Моноплюс)"
   },
   "MUMPS_IGG": {
@@ -2210,7 +2089,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG‑антитела к вирусу паротита"
   },
   "MUMPS_IGM": {
@@ -2223,7 +2101,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM‑антитела к вирусу паротита"
   },
   "MYOGLOBIN_URINE": {
@@ -2237,7 +2114,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Миоглобин в моче"
   },
   "M_PROTEIN": {
@@ -2252,7 +2128,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "М‑белок (моноклональный белок)"
   },
   "NASAL_CULTURE": {
@@ -2263,7 +2138,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из носа"
   },
   "NASAL_SWAB_CULTURE": {
@@ -2276,7 +2150,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев мазка из носа"
   },
   "NASAL_SWAB_STAPH": {
@@ -2287,7 +2160,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок из носа на стафилококк"
   },
   "NITRITE_PH_TEST": {
@@ -2300,7 +2172,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Нитразиновый тест (подтекание околоплодных вод)"
   },
   "NITRITE_URINE": {
@@ -2314,7 +2185,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Нитриты в моче"
   },
   "OGTT_2H": {
@@ -2329,7 +2199,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Глюкоза через 2 ч после 75 г глюкозы"
   },
   "OGTT_75G": {
@@ -2342,7 +2211,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ОГТТ с 75 г глюкозы"
   },
   "ORAL_NASAL_CULTURE": {
@@ -2353,7 +2221,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из зева и носа"
   },
   "P": {
@@ -2381,7 +2248,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Парциальное давление кислорода в артериальной крови (PaO2)"
   },
   "PCR_OSTRICH": {
@@ -2394,7 +2260,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ДНК остриц в кале"
   },
   "PH_PLEURAL": {
@@ -2405,7 +2270,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH плевральной жидкости"
   },
   "PREALBUMIN": {
@@ -2420,7 +2284,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Транстиретин (преальбумин)"
   },
   "PREGNANCY_URINE": {
@@ -2434,7 +2297,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на беременность в моче"
   },
   "PRL": {
@@ -2461,7 +2323,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Белок в плевральной жидкости"
   },
   "PUSTULE_CULTURE": {
@@ -2472,7 +2333,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из пустулы"
   },
   "RAPID_STREP_AG": {
@@ -2487,7 +2347,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс-тест на антиген стрептококка"
   },
   "RBC_CASTS": {
@@ -2500,7 +2359,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Эритроцитарные цилиндры в моче"
   },
   "RBC_FOLATE": {
@@ -2514,7 +2372,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фолаты в эритроцитах"
   },
   "RF": {
@@ -2542,7 +2399,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Rh‑фактор"
   },
   "ROTAVIRUS_ANTIGEN": {
@@ -2556,7 +2412,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген ротавируса в кале (экспресс-тест)"
   },
   "SALIVA_PH": {
@@ -2570,7 +2425,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH слюны"
   },
   "SALIVA_SECRETION": {
@@ -2584,7 +2438,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Слюноотделение (объём, состав)"
   },
   "SALMONELLA_CULTURE": {
@@ -2595,7 +2448,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев кала на Salmonella (культура)"
   },
   "SARS_COV2_ANTIGEN": {
@@ -2609,7 +2461,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген SARS-CoV-2 (экспресс-тест)"
   },
   "SA_SCREENING": {
@@ -2624,7 +2475,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев мазок из носа и рук на Staphylococcus aureus"
   },
   "SCRAPING_MICROSCOPY": {
@@ -2637,7 +2487,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия кожного соскоба"
   },
   "SEROLOGY_CONVALESCENT": {
@@ -2650,7 +2499,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология (парные сыворотки)"
   },
   "SEROL_SYPHILIS_HIV_HSV": {
@@ -2661,7 +2509,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серологические тесты на сифилис, ВИЧ, герпес"
   },
   "SERUM_ELECTROPHORESIS_IMMUNOFIX": {
@@ -2677,7 +2524,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Электрофорез сыворотки с иммунофиксацией"
   },
   "SERUM_OSM": {
@@ -2690,7 +2536,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Осмоляльность сыворотки"
   },
   "SHIGELLA_CULTURE": {
@@ -2703,7 +2548,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев кала на Shigella"
   },
   "SMEAR_MICROSCOPY": {
@@ -2716,7 +2560,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия мазка (ключевые клетки ≥20%)"
   },
   "SMEAR_SGV": {
@@ -2727,7 +2570,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок на СГВ"
   },
   "SPUTUM_SALIVA_CULTURE": {
@@ -2741,7 +2583,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура мокроты слюны"
   },
   "STI_NAAT": {
@@ -2754,7 +2595,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "NAAT (ПЦР) на Chlamydia trachomatis, Neisseria gonorrhoeae, Mycoplasma genitalium"
   },
   "STOOL_CULTURE": {
@@ -2768,7 +2608,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев кала на патогенные бактерии"
   },
   "STOOL_PATHOGENIC_BACT": {
@@ -2782,7 +2621,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кал на патогенные бактерии (шигеллы, кампилобактер)"
   },
   "STOOL_PATHOGEN_CULTURE": {
@@ -2795,7 +2633,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев стула на сальмонеллы, шигеллы, кампилобактер"
   },
   "STOOL_SHIGA": {
@@ -2808,7 +2645,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев кала + шига‑токсин (ИФА ПЦР)"
   },
   "STREP_A_ANTIGEN_RAPID": {
@@ -2822,7 +2658,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс‑тест на антиген стрептококка группы A (перианальный)"
   },
   "STREP_THROAT_SWAB": {
@@ -2836,7 +2671,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок из зева на стрептококк"
   },
   "SWAB_BACTERIA": {
@@ -2849,7 +2683,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок на бактерии"
   },
   "SWAB_CANDIDA": {
@@ -2862,7 +2695,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок на Candida"
   },
   "SWAB_CULTURE": {
@@ -2876,7 +2708,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок, посев"
   },
   "SWEAT_CHLORIDE": {
@@ -2891,7 +2722,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Хлориды пота (потовая проба)"
   },
   "TBEV_IGM": {
@@ -2905,7 +2735,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к вирусу клещевого энцефалита"
   },
   "TB_CULTURE": {
@@ -2919,7 +2748,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев мокроты на микобактерии (культура)"
   },
   "TETANUS_AB_TITER": {
@@ -2933,7 +2761,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Титр антител к тетанотоксину"
   },
   "THC_COOH_URINE": {
@@ -2947,7 +2774,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ТГК-COOH в моче"
   },
   "THYROGLOBULIN": {
@@ -2961,7 +2787,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тиреоглобулин"
   },
   "TIBC": {
@@ -2974,7 +2799,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ОЖСС (общая железосвязывающая способность)"
   },
   "TOXO_IGM": {
@@ -2990,7 +2814,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgM к Toxoplasma gondii"
   },
   "UMBILICAL_BLOOD_PH": {
@@ -3001,7 +2824,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "pH пуповинной крови новорождённого"
   },
   "URINE_CITRATE": {
@@ -3014,7 +2836,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Цитрат мочи"
   },
   "URINE_DIPSTICK_LEU_NIT": {
@@ -3027,7 +2848,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест‑полоска мочи (лейкоцитарная эстераза, нитриты)"
   },
   "URINE_FIRST_PART": {
@@ -3042,7 +2862,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Первая порция мочи (лейкоциты, лейкоцитарная эстераза)"
   },
   "URINE_HGB": {
@@ -3055,7 +2874,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гемоглобин в моче"
   },
   "URINE_OSM": {
@@ -3068,7 +2886,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Осмоляльность мочи"
   },
   "U_ALB_CREA": {
@@ -3134,7 +2951,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бактериологический посев из влагалища мочи"
   },
   "VIRAL_IGM_IGG_ELISA": {
@@ -3148,7 +2964,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgM-IgG к вирусу (ИФА)"
   },
   "VITAMIN_E": {
@@ -3159,7 +2974,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Витамин E"
   },
   "VZV_AB": {
@@ -3174,7 +2988,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к VZV IgM IgG"
   },
   "VZV_IGG": {
@@ -3187,7 +3000,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG к VZV (серологический)"
   },
   "WET_PREP_MICROSCOPY": {
@@ -3201,7 +3013,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия влажного препарата"
   },
   "WOUND_CULTURE_SENSITIVITY": {
@@ -3215,7 +3026,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из раны с определением чувствительности"
   },
   "ALB": {
@@ -3808,7 +3618,6 @@
    "tier": "basic",
    "inForm": false,
    "refs": 0,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс‑тест на RSV (антиген)"
   },
   "SE": {
@@ -4187,7 +3996,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 26,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев крови"
   },
   "HPV_DNA": {
@@ -4214,7 +4022,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 11,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ДНК ВПЧ (ПЦР)"
   },
   "CD4_COUNT": {
@@ -4232,7 +4039,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 10,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "CD4‑лимфоциты (количество)"
   },
   "FISH": {
@@ -4260,7 +4066,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 10,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Флуоресцентная гибридизация in situ (FISH)"
   },
   "TROPONIN": {
@@ -4298,7 +4103,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 9,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев гнойного содержимого"
   },
   "SPECIFIC_IGE": {
@@ -4322,7 +4126,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 9,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфический IgE"
   },
   "PLASMA_FREE_METANEPHRINES": {
@@ -4345,7 +4148,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 8,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Плазменные свободные метанефрины"
   },
   "TTG_IGA": {
@@ -4367,7 +4169,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 7,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к тканевой трансглутаминазе IgA"
   },
   "ANCA": {
@@ -4384,7 +4185,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 6,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антинейтрофильные цитоплазматические антитела (ANCA)"
   },
   "APL": {
@@ -4404,7 +4204,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 6,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антифосфолипидные антитела (LAC, aCL, anti‑β2GP1)"
   },
   "CHLAM_PCR": {
@@ -4426,7 +4225,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 6,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на хламидии"
   },
   "HLA_B27": {
@@ -4440,7 +4238,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 6,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HLA‑B27"
   },
   "MSI_DMMR": {
@@ -4460,7 +4257,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 6,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "MSI dMMR"
   },
   "A1AT_LEVEL": {
@@ -4479,7 +4275,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Уровень альфа-1-антитрипсина"
   },
   "ACHR_AB": {
@@ -4496,7 +4291,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к рецепторам ацетилхолина (AChR)"
   },
   "ACPA": {
@@ -4518,7 +4312,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к циклическому цитруллинированному пептиду (ACPA)"
   },
   "ALDOSTERONE": {
@@ -4533,7 +4326,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Альдостерон"
   },
   "BRCA1_BRCA2": {
@@ -4551,7 +4343,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест BRCA1 BRCA2"
   },
   "CARBOXYHEMOGLOBIN": {
@@ -4569,7 +4360,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Карбоксигемоглобин (HbCO)"
   },
   "CFTR_GENETIC": {
@@ -4590,7 +4380,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест CFTR"
   },
   "ELASTASE1": {
@@ -4606,7 +4395,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кал на эластазу-1"
   },
   "NFL_PLASMA": {
@@ -4622,7 +4410,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Нейрофиламент лёгкий (NfL) в плазме"
   },
   "SPUTUM_CULTURE": {
@@ -4637,7 +4424,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев мокроты"
   },
   "TRAB": {
@@ -4659,7 +4445,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 5,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к рецептору ТТГ (TRAb)"
   },
   "ANTI_RO_SSA": {
@@ -4678,7 +4463,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑Ro SSA"
   },
   "BETA_D_GLUCAN_SERUM": {
@@ -4696,7 +4480,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "β-D-глюкан в сыворотке"
   },
   "BLOOD_LEAD": {
@@ -4716,7 +4499,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Свинец в крови"
   },
   "CERULOPLASMIN": {
@@ -4729,7 +4511,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Церулоплазмин"
   },
   "GC_CHLAM_PCR": {
@@ -4748,7 +4529,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на гонококк и хламидии"
   },
   "HIV_RNA_VL": {
@@ -4768,7 +4548,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Вирусная нагрузка ВИЧ (РНК)"
   },
   "HSV_PCR": {
@@ -4787,7 +4566,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирус простого герпеса (HSV)"
   },
   "NT_PROBNP": {
@@ -4816,7 +4594,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ренин"
   },
   "TRICHOMONAS_PCR": {
@@ -4835,7 +4612,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на трихомонады"
   },
   "ANTI_LA_SSB": {
@@ -4852,7 +4628,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑La SSB"
   },
   "ANTI_MUSK": {
@@ -4865,7 +4640,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к MuSK"
   },
   "ASPERGILLUS_SPECIFIC_IGE": {
@@ -4880,7 +4654,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgE специфический к Aspergillus"
   },
   "BCR_ABL1_PCR": {
@@ -4896,7 +4669,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР BCR--ABL1 (количественная)"
   },
   "CDI_TOXIN": {
@@ -4911,7 +4683,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кал на токсины C. difficile"
   },
   "EPO": {
@@ -4926,7 +4697,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Эритропоэтин"
   },
   "ER_PR_IHC": {
@@ -4941,7 +4711,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Статус ER PR (иммунохимия)"
   },
   "FUNGAL_CULTURE": {
@@ -4956,7 +4725,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев на грибы"
   },
   "GONORRHEA_PCR": {
@@ -4974,7 +4742,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Neisseria gonorrhoeae"
   },
   "HEMOGLOBIN_ELECTROPHORESIS": {
@@ -4990,7 +4757,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Электрофорез гемоглобина"
   },
   "HER2": {
@@ -5003,7 +4769,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HER2 (рецептор эпидермального фактора роста 2)"
   },
   "IGG4": {
@@ -5016,7 +4781,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммуноглобулин G4 (IgG4)"
   },
   "OG_POLY_IGG_CSF": {
@@ -5030,7 +4794,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Олигоклональные полосы IgG в спинномозговой жидкости"
   },
   "PCR_STI": {
@@ -5046,7 +4809,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на инфекции, передающиеся половым путём (ИППП)"
   },
   "P_TAU217": {
@@ -5064,7 +4826,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "p-tau217 (кровь)"
   },
   "SECRETION_CULTURE": {
@@ -5077,7 +4838,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев отделяемого"
   },
   "TRYPTASE": {
@@ -5091,7 +4851,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Триптаза крови"
   },
   "VZV_PCR": {
@@ -5109,7 +4868,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ДНК VZV из содержимого пузырька или корочки"
   },
   "ALK_REARR": {
@@ -5123,7 +4881,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Перестройка ALK"
   },
   "ANTI_21_HYDROXYLASE": {
@@ -5138,7 +4895,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к 21‑гидроксилазе"
   },
   "ANTI_DSDNA": {
@@ -5153,7 +4909,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑dsDNA антитела"
   },
   "ANTI_SCL70": {
@@ -5170,7 +4925,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти-Scl-70 антитела"
   },
   "AQP4_AB": {
@@ -5186,7 +4940,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к аквапорину‑4"
   },
   "B2M": {
@@ -5201,7 +4954,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "β2‑микроглобулин"
   },
   "BARTONELLA_SER": {
@@ -5217,7 +4969,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология на бартонеллы"
   },
   "BILE_ACIDS": {
@@ -5233,7 +4984,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Желчные кислоты в сыворотке"
   },
   "BRAF_V600": {
@@ -5249,7 +4999,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация BRAF V600"
   },
   "CALCITONIN": {
@@ -5263,7 +5012,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кальцитонин"
   },
   "CALCITRIOL": {
@@ -5278,7 +5026,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "1,25‑дигидроксивитамин D (кальцитриол)"
   },
   "CANDIDA_CULTURE": {
@@ -5294,7 +5041,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок и посев на кандиды с микроскопией и определением pH"
   },
   "CHLAMYDIA_AB": {
@@ -5308,7 +5054,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к хламидии (IgG IgM)"
   },
   "CMV_IGM": {
@@ -5325,7 +5070,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgM к цитомегаловирусу"
   },
   "CORNEAL_SCRAPE_CULTURE": {
@@ -5341,7 +5085,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев соскоба роговицы"
   },
   "CORTISOL_SALIVA_NIGHT": {
@@ -5358,7 +5101,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кортизол (ночной, слюна)"
   },
   "COTININE_URINE": {
@@ -5371,7 +5113,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Котинин в моче"
   },
   "CRYPTOC_OCC_ANTIGEN": {
@@ -5389,7 +5130,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Криптококковый антиген"
   },
   "CSF_ABETA42_40_RATIO": {
@@ -5404,7 +5144,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Соотношение Aβ42 Aβ40 в спинномозговой жидкости"
   },
   "CSF_CULTURE": {
@@ -5418,7 +5157,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев ликвора"
   },
   "CSF_PCR": {
@@ -5432,7 +5170,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР в ликворе"
   },
   "CSF_WBC": {
@@ -5448,7 +5185,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лейкоциты в спинномозговой жидкости"
   },
   "DEXAMETHASONE_SUPPRESSION": {
@@ -5465,7 +5201,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Проба с дексаметазоном"
   },
   "DIABETES_AUTOAB": {
@@ -5480,7 +5215,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Аутоантитела к GAD65, IA‑2, ZnT8, инсулин"
   },
   "EBV_DNA_PLASMA": {
@@ -5495,7 +5229,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "EBV‑DNA в плазме"
   },
   "F8_ACTIVITY": {
@@ -5511,7 +5244,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фактор VIII активность"
   },
   "FGF23": {
@@ -5524,7 +5256,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FGF23"
   },
   "FREE_LIGHT_CHAINS": {
@@ -5543,7 +5274,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Свободные лёгкие цепи κ λ"
   },
   "GASTRIN": {
@@ -5559,7 +5289,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гастрин"
   },
   "GDF15": {
@@ -5575,7 +5304,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "GDF-15 (фактор роста и дифференцировки 15)"
   },
   "GFAP": {
@@ -5591,7 +5319,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Глиальный фибриллярный кислый белок"
   },
   "GH": {
@@ -5605,7 +5332,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гормон роста (GH)"
   },
   "HCV_RNA": {
@@ -5622,7 +5348,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "РНК вируса гепатита C (ПЦР)"
   },
   "HEPCIDIN": {
@@ -5637,7 +5362,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гепсидин"
   },
   "HER2_TEST": {
@@ -5652,7 +5376,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Статус HER2"
   },
   "HLA_DQ2_DQ8": {
@@ -5665,7 +5388,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Типирование HLA‑DQ2 DQ8"
   },
   "HPV_HR_16_18": {
@@ -5682,7 +5404,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на ВПЧ высокого риска (типы 16 18)"
   },
   "HPV_P16_COMBO": {
@@ -5696,7 +5417,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "p16 HPV‑иммуноисследование"
   },
   "HSV_IGG": {
@@ -5712,7 +5432,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Типоспецифические IgG к HSV‑1 HSV‑2"
   },
   "HSV_PCR_LESION": {
@@ -5727,7 +5446,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирус простого герпеса из язв"
   },
   "IGRA": {
@@ -5743,7 +5461,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IGRA (квантифероновый тест)"
   },
   "IL6": {
@@ -5758,7 +5475,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IL-6 (интерлейкин-6)"
   },
   "INFLUENZA_PCR": {
@@ -5773,7 +5489,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на грипп (молекулярный тест)"
   },
   "KI67": {
@@ -5786,7 +5501,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ki‑67 индекс"
   },
   "LAM_URINE": {
@@ -5804,7 +5518,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген LAM в моче (туберкулёз)"
   },
   "MMA": {
@@ -5819,7 +5532,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метилмалоновая кислота"
   },
   "MOG_AB": {
@@ -5834,7 +5546,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к MOG"
   },
   "MTB_PCR": {
@@ -5852,7 +5563,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Mycobacterium tuberculosis в мокроте"
   },
   "MUMPS_PCR": {
@@ -5869,7 +5579,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на эпидемический паротит"
   },
   "M_GENITALIUM_PCR": {
@@ -5883,7 +5592,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Mycoplasma genitalium"
   },
   "NMDA_RECEPTOR_AB": {
@@ -5898,7 +5606,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к NMDA‑рецептору в крови CSF"
   },
   "NOREPINEPHRINE": {
@@ -5914,7 +5621,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Норадреналин в плазме"
   },
   "P16_IHC": {
@@ -5928,7 +5634,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "p16, иммуногистохимия"
   },
   "P16_KI67_IC": {
@@ -5943,7 +5648,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммуноцитохимия p16 Ki-67 (двойное окрашивание)"
   },
   "P53_IHC": {
@@ -5957,7 +5661,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "p53, иммуногистохимия"
   },
   "PDL1": {
@@ -5973,7 +5676,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "PD-L1, экспрессия в опухоли"
   },
   "PD_L1_CPS": {
@@ -5986,7 +5688,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "PD‑L1 CPS"
   },
   "PERTUSSIS_PCR": {
@@ -6002,7 +5703,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР мазка из носоглотки на Bordetella pertussis"
   },
   "PETH": {
@@ -6016,7 +5716,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фосфатидилэтанол (PEth) — маркер употребления алкоголя"
   },
   "PNEUMO_ANTIGEN_URINE": {
@@ -6029,7 +5728,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген пневмококка в моче"
   },
   "PRNT": {
@@ -6043,7 +5741,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Реакция нейтрализации (PRNT)"
   },
   "PUS_CULTURE_SENSITIVITY": {
@@ -6057,7 +5754,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев гноя с чувствительностью к антибиотикам"
   },
   "S100": {
@@ -6071,7 +5767,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Белок S100"
   },
   "SCC_ANTIGEN": {
@@ -6085,7 +5780,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген плоскоклеточной карциномы (SCC)"
   },
   "STI_PCR_PANEL": {
@@ -6101,7 +5795,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ИППП (гонококк, хламидии, микоплазма)"
   },
   "SYNOVIAL_WBC": {
@@ -6119,7 +5812,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лейкоциты в синовиальной жидкости"
   },
   "TOX_SCREEN_URINE": {
@@ -6132,7 +5824,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсикологический скрининг мочи"
   },
   "TRIPTASE": {
@@ -6145,7 +5836,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Триптаза"
   },
   "UCHL1": {
@@ -6163,7 +5853,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "UCH-L1 (убиквитин-C-концевая гидролаза L1)"
   },
   "VMA_HVA": {
@@ -6180,7 +5869,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метаболиты катехоламинов в моче (VMA, HVA)"
   },
   "17OHP": {
@@ -6191,7 +5879,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "17‑ОН‑прогестерон"
   },
   "AAV9_AB": {
@@ -6206,7 +5893,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к адено‑ассоциированному вектору AAV9"
   },
   "ABETA42_40_CSF": {
@@ -6219,7 +5905,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Aβ42 40 (ликвор)"
   },
   "ABSCESS_CULTURE": {
@@ -6232,7 +5917,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев содержимого абсцесса"
   },
   "ADA": {
@@ -6247,7 +5931,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Аденозиндезаминаза (ADA)"
   },
   "ADAMTS13_ACTIVITY": {
@@ -6261,7 +5944,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность ADAMTS13"
   },
   "ADA_PLEURAL": {
@@ -6275,7 +5957,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ADA в плевральной жидкости"
   },
   "AFP_MATERNAL": {
@@ -6289,7 +5970,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Альфа‑фетопротеин в сыворотке матери"
   },
   "AFP_NEONATAL": {
@@ -6303,7 +5983,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Альфа‑фетопротеин в крови новорождённого"
   },
   "AGGREGOMETRY": {
@@ -6317,7 +5996,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Агрегометрия тромбоцитов"
   },
   "ALPHA_DEFENSIN_SYN": {
@@ -6330,7 +6008,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Альфа‑дефензин в синовиальной жидкости"
   },
   "ALPHA_SYNUCLEIN_CSF": {
@@ -6344,7 +6021,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "α‑синуклеин в спинномозговой жидкости"
   },
   "AMNIOTIC_FLUID_PCR": {
@@ -6358,7 +6034,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР амниотической жидкости"
   },
   "ANAPLASMA_PCR": {
@@ -6373,7 +6048,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Anaplasma phagocytophilum"
   },
   "ANTIBODIES_SERUM_CSF": {
@@ -6384,7 +6058,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела в сыворотке и ликворе"
   },
   "ANTIMYCOTIC_SENSITIVITY": {
@@ -6397,7 +6070,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Чувствительность к противогрибковым препаратам"
   },
   "ANTITHROMBIN_PROTEIN_C_S_DEFICIT": {
@@ -6411,7 +6083,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Дефицит антитромбина, протеинов C и S"
   },
   "ANTI_C1Q": {
@@ -6425,7 +6096,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑C1q антитела"
   },
   "ANTI_CENTROMERE": {
@@ -6438,7 +6108,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑центромерные антитела"
   },
   "ANTI_DNA_B": {
@@ -6454,7 +6123,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти-ДНКаза B (антитела к стрептококковой ДНКазе B)"
   },
   "ANTI_GANGLIOID_ANTIBODIES": {
@@ -6469,7 +6137,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиганглиозидные антитела"
   },
   "ANTI_GBM": {
@@ -6482,7 +6149,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑GBM антитела"
   },
   "ANTI_HMGCR": {
@@ -6496,7 +6162,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑HMGCR"
   },
   "ANTI_JO1": {
@@ -6511,7 +6176,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти-Jo-1 (антитела к гистидил-тРНК-синтетазе)"
   },
   "ANTI_MDA5": {
@@ -6525,7 +6189,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑MDA5"
   },
   "ANTI_MI2": {
@@ -6539,7 +6202,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑Mi‑2"
   },
   "ANTI_NXP2": {
@@ -6553,7 +6215,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑NXP2"
   },
   "ANTI_PF4": {
@@ -6568,7 +6229,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к PF4"
   },
   "ANTI_PLA2R": {
@@ -6581,7 +6241,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑PLA2R антитела"
   },
   "ANTI_PMSCL": {
@@ -6595,7 +6254,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑PM Scl"
   },
   "ANTI_RNA_POLYMERASE_III": {
@@ -6608,7 +6266,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑RNA полимераза III антитела"
   },
   "ANTI_SM": {
@@ -6622,7 +6279,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑Sm антитела"
   },
   "ANTI_SRP": {
@@ -6636,7 +6292,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑SRP"
   },
   "ANTI_TIF1G": {
@@ -6650,7 +6305,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑TIF1‑γ"
   },
   "ANTI_TTG": {
@@ -6665,7 +6319,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к тканевой трансглутаминазе (anti-tTG)"
   },
   "ANTI_XA": {
@@ -6680,7 +6333,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анти‑Xa"
   },
   "ARR": {
@@ -6695,7 +6347,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Соотношение альдостерон ренин (ARR)"
   },
   "ARYL_SULFATASE_A": {
@@ -6709,7 +6360,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность арилсульфатазы A"
   },
   "ASCITES_NEUTROPHILS": {
@@ -6723,7 +6373,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Нейтрофилы в асцитической жидкости"
   },
   "ASPERGILLUS_IGG": {
@@ -6736,7 +6385,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgG к Aspergillus"
   },
   "AUTOIMMUNE_SCREENING": {
@@ -6751,7 +6399,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Аутоиммунный скрининг (АНФ, анти-ТПО и др.)"
   },
   "B19_PCR_BLOOD": {
@@ -6762,7 +6409,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ДНК B19 в крови"
   },
   "BAL_CD4_CD8_RATIO": {
@@ -6775,7 +6421,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Отношение CD4 CD8 в BAL ( 3,5)"
   },
   "BAL_LYMPHOCYTOSIS": {
@@ -6789,7 +6434,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лимфоцитоз в BAL 30%"
   },
   "BARTONELLA_QUINTANA_SER": {
@@ -6802,7 +6446,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология ПЦР на Bartonella quintana"
   },
   "BARTONELLA_SERUM_IGG_IGM": {
@@ -6815,7 +6458,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология IgG IgM к Bartonella henselae"
   },
   "BETA2_TRANSFERRIN": {
@@ -6831,7 +6473,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бета-2-трансферрин в выделениях"
   },
   "BILE_ACIDS_STOOL": {
@@ -6844,7 +6485,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Желчные кислоты в кале (48 ч)"
   },
   "BILE_CULTURE": {
@@ -6857,7 +6497,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев желчи"
   },
   "BLOOD_CULTURE_POSITIVE": {
@@ -6871,7 +6510,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Положительный посев крови"
   },
   "BLOOD_PCR": {
@@ -6882,7 +6520,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР крови"
   },
   "BONE_ALP": {
@@ -6895,7 +6532,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Костно-специфическая щелочная фосфатаза"
   },
   "BONE_BIOPSY_CULTURE": {
@@ -6906,7 +6542,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Биопсия кости с посевом"
   },
   "BONE_MARROW_CULTURE": {
@@ -6920,7 +6555,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев костного мозга"
   },
   "BORRELIA_RECURRENTIS_SER": {
@@ -6933,7 +6567,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология ПЦР на Borrelia recurrentis"
   },
   "BORRELIA_SER": {
@@ -6947,7 +6580,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология Borrelia"
   },
   "BOTULISM_TOXIN_TEST": {
@@ -6961,7 +6593,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсин ботулизма в сыворотке кал пищевых образцах"
   },
   "BRCA2_DNA_REPAIR_GENES": {
@@ -6974,7 +6605,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест BRCA2 и других генов репарации ДНК"
   },
   "BUBON_CULTURE": {
@@ -6987,7 +6617,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Бактериологический посев бубона"
   },
   "BV_CULTURE": {
@@ -7000,7 +6629,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура на бактериальный вагиноз"
   },
   "C4": {
@@ -7029,7 +6657,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология Campylobacter jejuni и других предшествующих инфекций"
   },
   "CAMPYLOBACTER_STOOL": {
@@ -7043,7 +6670,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кал на Campylobacter (культура или ПЦР)"
   },
   "CANDIDA_PCR": {
@@ -7056,7 +6682,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Candida"
   },
   "CAPNOCYC_TEST": {
@@ -7069,7 +6694,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Исследование на Capnocytophaga canimorsus"
   },
   "CAP_MEASUREMENT": {
@@ -7084,7 +6708,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Контролируемый параметр ослабления (CAP) для оценки стеатоза"
   },
   "CDIFF": {
@@ -7101,7 +6724,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Clostridioides difficile в кале"
   },
   "CDI_PCR": {
@@ -7115,7 +6737,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Молекулярный тест на Clostridioides difficile"
   },
   "CDI_PCR_TOXIN": {
@@ -7129,7 +6750,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на гены токсинов Clostridioides difficile в кале"
   },
   "CDI_TOXIN_PCR": {
@@ -7142,7 +6762,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на токсин C. difficile (ПЦР + токсин)"
   },
   "CDT": {
@@ -7157,7 +6776,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Углеводдефицитный трансферрин (CDT)"
   },
   "CEREULID_TEST": {
@@ -7171,7 +6789,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Цереулид в пище (ИФА)"
   },
   "CGRP": {
@@ -7186,7 +6803,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Пептид, связанный с геном кальцитонина (CGRP)"
   },
   "CHIKV_IGG": {
@@ -7200,7 +6816,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG‑антитела к Chikungunya"
   },
   "CHIKV_IGM": {
@@ -7214,7 +6829,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM‑антитела к Chikungunya"
   },
   "CHIKV_RNA_PCR": {
@@ -7229,7 +6843,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР РНК вируса чикунгунья"
   },
   "CHOLERA_CULTURE": {
@@ -7243,7 +6856,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев стула на Vibrio cholerae с определением серогруппы"
   },
   "CHOLERA_PCR": {
@@ -7257,7 +6869,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Vibrio cholerae в стуле"
   },
   "CHOLINESTERASE_ACTIVITY": {
@@ -7271,7 +6882,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность холинэстеразы"
   },
   "CHROMOGRANIN_A": {
@@ -7284,7 +6894,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Хромогранин A"
   },
   "CK_MB": {
@@ -7314,7 +6923,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспрессия CLDN18.2"
   },
   "CMV_DNA_PCR": {
@@ -7330,7 +6938,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Количественная ПЦР ДНК ЦМВ"
   },
   "CMV_IGG_AVIDITY": {
@@ -7343,7 +6950,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Авидность IgG к ЦМВ"
   },
   "CMV_PCR": {
@@ -7356,7 +6962,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на цитомегаловирус (ЦМВ)"
   },
   "COCCIDIOIDES_CF": {
@@ -7370,7 +6975,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Комплемент‑связывающие антитела к Coccidioides"
   },
   "COCCIDIOIDES_CULTURE": {
@@ -7381,7 +6985,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура мокроты на Coccidioides"
   },
   "COCCIDIOIDES_IGG": {
@@ -7396,7 +6999,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgG к Coccidioides"
   },
   "COCCIDIOIDES_IGM": {
@@ -7411,7 +7013,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgM к Coccidioides"
   },
   "COCCIDIOIDES_PCR": {
@@ -7425,7 +7026,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ДНК Coccidioides"
   },
   "COL1A1_COL1A2_PANEL": {
@@ -7439,7 +7039,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест COL1A1 COL1A2 и др"
   },
   "CONJUNCTIVAL_CULTURE": {
@@ -7452,7 +7051,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок посев с конъюнктивы"
   },
   "COPEPTIN": {
@@ -7467,7 +7065,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Копептин"
   },
   "CORNEAL_SCRAPE_PCR": {
@@ -7481,7 +7078,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР соскоба роговицы"
   },
   "CORTISOL_PLASMA_NIGHT": {
@@ -7492,7 +7088,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кортизол плазма (ночной)"
   },
   "CORTISOL_SALIVA_EVENING": {
@@ -7506,7 +7101,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кортизол в слюне (вечерний)"
   },
   "CORTISOL_URINE_24H": {
@@ -7520,7 +7114,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кортизол в суточной моче (2 измерения)"
   },
   "CPE_STOOL": {
@@ -7533,7 +7126,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Энтеротоксин CPE в стуле (ИФА, ПЦР)"
   },
   "CREATININE_SALIVA": {
@@ -7547,7 +7139,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Креатинин в слюне"
   },
   "CRYOGLOBULINS": {
@@ -7560,7 +7151,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Криоглобулины"
   },
   "CRYPTOSPORIDIUM_STOOL": {
@@ -7577,7 +7167,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Криптоспоридий в кале"
   },
   "CSF_ABETA42_40": {
@@ -7588,7 +7177,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "β‑амилоид 42 40 в спинномозговой жидкости"
   },
   "CSF_GLUC": {
@@ -7602,7 +7190,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Глюкоза в спинномозговой жидкости"
   },
   "CSF_PTAU": {
@@ -7615,7 +7202,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "p‑tau в спинномозговой жидкости"
   },
   "CSF_SERUM_AB_INDEX": {
@@ -7629,7 +7215,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Индекс антител CSF сыворотка"
   },
   "CTX": {
@@ -7642,7 +7227,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "C‑терминальный коллагеновый фрагмент (CTX)"
   },
   "CULTURE_BCYE": {
@@ -7655,7 +7239,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев на BCYE"
   },
   "CULTURE_SENSITIVITY": {
@@ -7666,7 +7249,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из очага с чувствительностью"
   },
   "CU_URINE_24H": {
@@ -7679,7 +7261,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Медь в суточной моче"
   },
   "CXCL13_CSF": {
@@ -7692,7 +7273,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "CXCL13 в спинномозговой жидкости"
   },
   "CYST_FLUID_ANALYSIS": {
@@ -7705,7 +7285,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анализ жидкости кисты"
   },
   "CYTOSPOONG_TFF3": {
@@ -7720,7 +7299,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Cytosponge с TFF3 (скрининг пищевода Барретта)"
   },
   "C_PERFRINGENS_STOOL_COUNT": {
@@ -7733,7 +7311,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Количественный посев стула на C. perfringens (споры г)"
   },
   "DEEP_TISSUE_CULTURE": {
@@ -7744,7 +7321,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев из глубоких тканей"
   },
   "DENGUE_IGM_IGG": {
@@ -7759,7 +7335,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgM-IgG к вирусу денге"
   },
   "DENGUE_PCR": {
@@ -7773,7 +7348,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирус денге"
   },
   "DERMATOPHYTES_PCR": {
@@ -7784,7 +7358,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на дерматофиты"
   },
   "DFI_SPERM": {
@@ -7795,7 +7368,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Индекс фрагментации ДНК сперматозоидов"
   },
   "DIALYSATE_WBC": {
@@ -7809,7 +7381,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лейкоциты в диализате"
   },
   "DRUGS_HAIR": {
@@ -7822,7 +7393,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на наркотики в волосах"
   },
   "DSG1_DSG3_ELISA": {
@@ -7835,7 +7405,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к десмоглеину-1 и десмоглеину-3 (ИФА)"
   },
   "EAR_DISCHARGE_CULTURE": {
@@ -7848,7 +7417,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев отделяемого из уха"
   },
   "EBV_PCR_BLOOD": {
@@ -7862,7 +7430,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ВЭБ в крови"
   },
   "EBV_PCR_SERUM": {
@@ -7877,7 +7444,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ВЭБ- ПЦР и серология"
   },
   "ECHINOCOCCUS_SERUM": {
@@ -7888,7 +7454,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология на эхинококк (ИФА)"
   },
   "EGFR_MUT": {
@@ -7901,7 +7466,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация EGFR"
   },
   "ENTEROVIRUS_PCR_CSF": {
@@ -7916,7 +7480,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на энтеровирусы в ликворе"
   },
   "ENTEROVIRUS_PCR_NP": {
@@ -7931,7 +7494,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на энтеровирусы (мазок из носоглотки)"
   },
   "ENTEROVIRUS_PCR_STOOL": {
@@ -7946,7 +7508,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кала на энтеровирусы"
   },
   "EOSINOPHIL_BIOPSY_ESOPHAGUS": {
@@ -7957,7 +7518,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Эозинофилы в биопсии пищевода"
   },
   "ETHYLENE_GLYCOL_LEVEL": {
@@ -7971,7 +7531,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Этиленгликоль"
   },
   "ETHYLGLUCURONIDE": {
@@ -7985,7 +7544,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Этилглюкуронид в моче"
   },
   "EWSR1_FLI1_FUSION": {
@@ -7998,7 +7556,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Перестройка EWSR1‑FLI1 (FISH RT‑PCR)"
   },
   "EYELID_MARGIN_CULTURE": {
@@ -8012,7 +7569,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев с края века"
   },
   "F9_ACTIVITY": {
@@ -8027,7 +7583,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность фактора IX"
   },
   "FACTOR_V_LEIDEN": {
@@ -8041,7 +7596,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация фактора V Лейден"
   },
   "FENO": {
@@ -8052,7 +7606,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FeNO (окислённый азот в выдыхаемом воздухе)"
   },
   "FENTANYL_TEST_STRIP": {
@@ -8065,7 +7618,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест‑полоски на фентанил"
   },
   "FETAL_FIBRONECTIN": {
@@ -8082,7 +7634,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фетальный фибронектин во влагалищном секрете"
   },
   "FETAL_HGB": {
@@ -8097,7 +7648,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гемоглобин крови плода (кордоцентез)"
   },
   "FGF19": {
@@ -8111,7 +7661,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FGF19 в сыворотке"
   },
   "FGF21": {
@@ -8126,7 +7675,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FGF-21 (фактор роста фибробластов 21)"
   },
   "FGFR3_MUT": {
@@ -8139,7 +7687,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация FGFR3"
   },
   "FIBULIN3": {
@@ -8152,7 +7699,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фибулин‑3"
   },
   "FOLLOWUP_PCR": {
@@ -8165,7 +7711,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Контрольная ПЦР через 3–5 недель после лечения"
   },
   "FOOD_BACILLUS_CEREUS_CULTURE": {
@@ -8178,7 +7723,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев пищи на Bacillus cereus"
   },
   "FUNGAL_BLOOD_CULTURE": {
@@ -8192,7 +7736,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев крови на грибы"
   },
   "FUNGAL_CULTURE_PCR": {
@@ -8207,7 +7750,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев на грибы и ПЦР"
   },
   "FUNGAL_MICROSCOPY_CULTURE": {
@@ -8220,7 +7762,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия и посев на грибы"
   },
   "G6PD_ACTIVITY": {
@@ -8233,7 +7774,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность глюкозо-6-фосфатдегидрогеназы (G6PD)"
   },
   "G6PD_GENOTYPE": {
@@ -8244,7 +7784,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический анализ G6PD"
   },
   "GAD_AB": {
@@ -8257,7 +7796,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к GAD"
   },
   "GALACTOMANNAN_BAL": {
@@ -8268,7 +7806,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Галактоманнан в бронхоальвеолярном лаваже"
   },
   "GALACTOMANNAN_SERUM": {
@@ -8279,7 +7816,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Галактоманнан в сыворотке"
   },
   "GALC_ACTIVITY": {
@@ -8293,7 +7829,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность галактоцереброзидазы (GALC)"
   },
   "GIARDIA_ANTIGEN_PCR": {
@@ -8307,7 +7842,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген ПЦР лямблий"
   },
   "GIARDIA_PCR_PANEL": {
@@ -8318,7 +7852,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР‑панель кала (Giardia)"
   },
   "GLAND_BIOPSY_HISTO": {
@@ -8331,7 +7864,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Биопсия гистология удалённой железы"
   },
   "GLUCOCERBROSIDASE_ACTIVITY": {
@@ -8344,7 +7876,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность глюкоцереброзидазы"
   },
   "GLU_JOINT": {
@@ -8358,7 +7889,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Глюкоза в суставной жидкости"
   },
   "HANTAVIRUS_IGM": {
@@ -8372,7 +7902,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к хантавирусу"
   },
   "HANTAVIRUS_IGM_IGG": {
@@ -8385,7 +7914,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM IgG к хантавирусу"
   },
   "HANTAVIRUS_PCR": {
@@ -8399,7 +7927,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на хантавирус"
   },
   "HAV_RNA": {
@@ -8414,7 +7941,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "РНК вируса гепатита A (ПЦР)"
   },
   "HBB_MUTATION": {
@@ -8429,7 +7955,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутации гена β-глобина (HBB)"
   },
   "HBF": {
@@ -8444,7 +7969,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фетальный гемоглобин (HbF)"
   },
   "HBV_DNA": {
@@ -8459,7 +7983,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ДНК вируса гепатита B (количественная ПЦР)"
   },
   "HELICO_PYLORI": {
@@ -8474,7 +7997,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Helicobacter pylori (дыхательный тест антиген антитела)"
   },
   "HEP_B_C_SERUM": {
@@ -8488,7 +8010,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на гепатит B и C"
   },
   "HER2_FISH": {
@@ -8501,7 +8022,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HER2, FISH"
   },
   "HER2_IHC": {
@@ -8514,7 +8034,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HER2, иммуногистохимия"
   },
   "HER2_IHC_FISH": {
@@ -8527,7 +8046,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Статус HER2 (иммунохимия FISH)"
   },
   "HERPES_PCR": {
@@ -8541,7 +8059,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на герпес"
   },
   "HEXA_ACTIVITY": {
@@ -8554,7 +8071,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность гексозаминидазы A (лейкоциты)"
   },
   "HFE_GENOTYPE": {
@@ -8568,7 +8084,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотипирование HFE (C282Y C282Y)"
   },
   "HISTO_ANTIBODIES": {
@@ -8583,7 +8098,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к Histoplasma (иммунодиффузия, РСК)"
   },
   "HISTO_ANTIGEN_SERUM": {
@@ -8597,7 +8111,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген Histoplasma в сыворотке"
   },
   "HISTO_ANTIGEN_URINE": {
@@ -8612,7 +8125,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген Histoplasma в моче"
   },
   "HISTO_PCR": {
@@ -8626,7 +8138,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ДНК Histoplasma (ткань, БАЛ)"
   },
   "HIV_PCR_NEONATE": {
@@ -8639,7 +8150,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ВИЧ у новорождённого"
   },
   "HIV_RESISTANCE_GENOTYPE": {
@@ -8654,7 +8164,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотипирование резистентности ВИЧ к антиретровирусным препаратам"
   },
   "HLA_B1502": {
@@ -8669,7 +8178,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на аллель HLA‑B 15 02"
   },
   "HLA_B51": {
@@ -8683,7 +8191,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HLA‑B51"
   },
   "HLA_B5701": {
@@ -8697,7 +8204,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест HLA‑B 57 01"
   },
   "HLA_B57_01": {
@@ -8710,7 +8216,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотипирование HLA-B 57 01"
   },
   "HLA_C0602": {
@@ -8723,7 +8228,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический маркер HLA‑C 06 02"
   },
   "HLA_DQB1_0602": {
@@ -8738,7 +8242,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотип HLA‑DQB1 06 02"
   },
   "HLA_TYPING": {
@@ -8751,7 +8254,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HLA‑типирование пациента и родственников"
   },
   "HOLOTRANSCOBALAMIN": {
@@ -8766,7 +8268,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Голотранскобаламин (активный витамин B12)"
   },
   "HPV_DNA_ORAL": {
@@ -8780,7 +8281,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ДНК ВПЧ в полости рта"
   },
   "HPV_P16": {
@@ -8793,7 +8293,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ВПЧ p16 тест"
   },
   "HP_PCR": {
@@ -8806,7 +8305,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР H. pylori в кале биоптате"
   },
   "HRD_SCORE": {
@@ -8820,7 +8318,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "HRD-статус (дефицит гомологичной рекомбинации)"
   },
   "HSV2_IGG_G2": {
@@ -8831,7 +8328,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Типоспецифические IgG к HSV‑2 (gG2)"
   },
   "HSV_CSF_PCR": {
@@ -8845,7 +8341,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР HSV в спинномозговой жидкости"
   },
   "HSV_PCR_BLOOD_NEONATE": {
@@ -8858,7 +8353,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР HSV в крови новорождённого"
   },
   "HSV_PCR_CSF": {
@@ -8872,7 +8366,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР HSV в ликворе"
   },
   "HTT_CAG_REPEAT_COUNT": {
@@ -8886,7 +8379,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Число CAG‑повторов в гене HTT"
   },
   "IA2_AB": {
@@ -8899,7 +8391,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к IA-2"
   },
   "IDH1_2_MUT": {
@@ -8914,7 +8405,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация IDH1 2"
   },
   "IFA_BORRELIA_IGG": {
@@ -8927,7 +8417,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ИФА IgG к боррелиям"
   },
   "IFA_BORRELIA_IGM": {
@@ -8940,7 +8429,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ИФА IgM к боррелиям"
   },
   "IGAPEMPHIGUS_AB": {
@@ -8954,7 +8442,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела IgA к десмоглеинам (IgA-пемфигус)"
   },
   "IGE_LATEX": {
@@ -8967,7 +8454,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфический IgE к латексу"
   },
   "IHC_P16": {
@@ -8980,7 +8466,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммунохимия p16 (биопсия)"
   },
   "IL17_PLASMA": {
@@ -8993,7 +8478,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IL‑17 в плазме"
   },
   "IMMUNOFIX_AMYLOID_A": {
@@ -9006,7 +8490,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммунофиксация амилоида A"
   },
   "IMMUNOGLOBULINS_PANEL": {
@@ -9017,7 +8500,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммуноглобулины (IgA, IgG, IgM) для оценки иммунодефицита"
   },
   "INFLUENZA_A_H1N1_PCR": {
@@ -9032,7 +8514,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на грипп A (H1N1) в мазке из носоглотки"
   },
   "INHIBIN_B": {
@@ -9045,7 +8526,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ингибин B"
   },
   "INHIBITOR_BETHESDA": {
@@ -9060,7 +8540,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ингибиторы факторов свёртывания (метод Бетесда)"
   },
   "ISOLATE_SEROTYPING": {
@@ -9073,7 +8552,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серотипирование изолята"
   },
   "KLEIH_BETKE": {
@@ -9087,7 +8565,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест Клейхауэра‑Бетке (определение фетальных эритроцитов)"
   },
   "KRAS_G12C": {
@@ -9100,7 +8577,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация KRAS G12C"
   },
   "KRAS_MUT": {
@@ -9113,7 +8589,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация KRAS"
   },
   "LACTATE": {
@@ -9138,7 +8613,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест LCT‑13910 (C C)"
   },
   "LEISHMANIA_PCR": {
@@ -9152,7 +8626,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ДНК Leishmania"
   },
   "LEISHMANIA_SERUM": {
@@ -9165,7 +8638,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серологический тест на антитела к Leishmania"
   },
   "LPA_APOB_APOA1_AB": {
@@ -9179,7 +8651,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к LPA, APOB, APOA1"
   },
   "LRP4_AB": {
@@ -9192,7 +8663,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к LRP4"
   },
   "LYMPH_IMMUNOPHENOTYPE": {
@@ -9203,7 +8673,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммунофенотип лимфоцитов (CD4, CD8, CD19)"
   },
   "LYM_PLEOCYTOSIS_CSF": {
@@ -9216,7 +8685,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лимфоцитарный плеоцитоз в спинномозговой жидкости"
   },
   "LYSOZYME": {
@@ -9229,7 +8697,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лизоцим"
   },
   "MACROLIDE_RESISTANCE_23S": {
@@ -9243,7 +8710,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на мутации устойчивости к макролидам (23S рРНК)"
   },
   "MAC_SUSC": {
@@ -9257,7 +8723,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Чувствительность MAC к макролидам и амикацину"
   },
   "MALARIA_PCR": {
@@ -9268,7 +8733,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Plasmodium"
   },
   "MANC_PCR": {
@@ -9279,7 +8743,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "МАНК (ПЦР) мазка из цервикального канала"
   },
   "MC4R_LEPTIN_POMC_PANEL": {
@@ -9294,7 +8757,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический анализ MC4R, LEP, POMC"
   },
   "MESOTHELIN": {
@@ -9307,7 +8769,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мезотелин"
   },
   "METABOLIC_SCREENING": {
@@ -9318,7 +8779,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метаболический скрининг"
   },
   "METABOLIC_SCREENING_ACYLCOA_MCAD": {
@@ -9333,7 +8793,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метаболический скрининг (ацил‑картиниты, MCAD)"
   },
   "METANEFRIN": {
@@ -9347,7 +8806,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метанефрины в моче крови"
   },
   "METANEPHRINES_24H": {
@@ -9360,7 +8818,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метанефрины в моче за 24 ч"
   },
   "METHANOL_LEVEL": {
@@ -9374,7 +8831,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метанол"
   },
   "MGMT_METHYL": {
@@ -9388,7 +8844,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метилирование MGMT"
   },
   "MIA": {
@@ -9403,7 +8858,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Белок MIA (melanoma inhibitory activity)"
   },
   "MICROARRAY_ANALYSIS": {
@@ -9414,7 +8868,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический микроматричный анализ"
   },
   "MILK_CULTURE": {
@@ -9425,7 +8878,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев молока"
   },
   "MIR_371A_3P": {
@@ -9436,7 +8888,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "miR-371a-3p"
   },
   "MMP9_TEARS": {
@@ -9450,7 +8901,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "MMP-9 в слёзной жидкости"
   },
   "MOLECULAR_ALLERGO_DIAG": {
@@ -9465,7 +8915,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Молекулярная аллергодиагностика"
   },
   "MOLECULAR_PANEL": {
@@ -9478,7 +8927,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Молекулярная панель"
   },
   "MRSA_CULTURE": {
@@ -9489,7 +8937,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура на MRSA"
   },
   "MRSA_PCR": {
@@ -9504,7 +8951,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на гены mecA mecC (метициллин-резистентный S. aureus)"
   },
   "MRSA_SENSITIVITY": {
@@ -9517,7 +8963,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антибиотикочувствительность (MRSA)"
   },
   "MULTIPLEX_PCR_RESP": {
@@ -9530,7 +8975,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Экспресс‑тест ПЦР на грипп, COVID‑19, RSV"
   },
   "MULTIPLEX_PCR_RESPIRATORY_VIRUSES": {
@@ -9544,7 +8988,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мультиплексный ПЦР‑панель респираторных вирусов"
   },
   "MYCN_AMP": {
@@ -9557,7 +9000,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Амплификация MYCN"
   },
   "MYELOGRAM": {
@@ -9571,7 +9013,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Миелограмма"
   },
   "MYELOPROLIF_MUTATION_PANEL": {
@@ -9586,7 +9027,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анализ мутаций JAK2, CALR, MPL"
   },
   "NAIL_HISTO_PAS": {
@@ -9597,7 +9037,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гистология ногтя с PAS‑окраской"
   },
   "NASOPHARYNGEAL_CULTURE": {
@@ -9610,7 +9049,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура назофарингеального мазка"
   },
   "NEONATE_CULTURE": {
@@ -9621,7 +9059,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев новорожденного (кровь ликвор)"
   },
   "NF1_NF2_SPRED1_PANEL": {
@@ -9635,7 +9072,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование NF1, NF2 и SPRED1"
   },
   "NFL": {
@@ -9648,7 +9084,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лёгкие цепи нейрофиламентов (NfL)"
   },
   "NGCT_RECTAL_PCR": {
@@ -9662,7 +9097,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на гонорею и хламидии из прямой кишки"
   },
   "NGONORRHEAE_CULTURE": {
@@ -9675,7 +9109,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Культура на N. gonorrhoeae с определением чувствительности"
   },
   "NGONORRHEAE_NAAT": {
@@ -9689,7 +9122,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "NAAT на Neisseria gonorrhoeae"
   },
   "NGS_TUMOR_PANEL": {
@@ -9702,7 +9134,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "NGS панель опухоли"
   },
   "NICKEL_BLOOD": {
@@ -9715,7 +9146,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Никель в крови"
   },
   "NIPT_RH": {
@@ -9728,7 +9158,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Неинвазивный ДНК‑тест резуса плода"
   },
   "NON_TREPONEMAL_TEST": {
@@ -9743,7 +9172,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Нетрепонемный тест (RPR VDRL, количественный)"
   },
   "NORMETANEPHRINE": {
@@ -9758,7 +9186,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Норметанефрин в суточной моче"
   },
   "NRAS_KIT_PANEL": {
@@ -9771,7 +9198,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Панель NRAS KIT"
   },
   "NTRK_FUSION": {
@@ -9785,7 +9211,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Слияние генов NTRK"
   },
   "ONCOMARKER_PANEL": {
@@ -9798,7 +9223,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Онкомаркеры (CEA, CA‑125, CA‑19‑9)"
   },
   "OPISTORCHIS_ANTIGEN": {
@@ -9811,7 +9235,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Описторхозный антиген в кале"
   },
   "OREXIN": {
@@ -9827,7 +9250,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Орексин (гипокретин-1) в спинномозговой жидкости"
   },
   "OSTEOCALCIN": {
@@ -9840,7 +9262,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Остеокальцин"
   },
   "OXYTOCIN": {
@@ -9854,7 +9275,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Окситоцин в плазме"
   },
   "P1NP": {
@@ -9868,7 +9288,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "P1NP (N-концевой пропептид проколлагена 1 типа)"
   },
   "PALB2_GENETIC": {
@@ -9882,7 +9301,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование PALB2 и других генов"
   },
   "PAMG1_TEST": {
@@ -9895,7 +9313,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на PAMG-1"
   },
   "PARACETAMOL_LEVEL": {
@@ -9909,7 +9326,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Концентрация парацетамола"
   },
   "PARACETAMOL_PLASMA": {
@@ -9922,7 +9338,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Концентрация парацетамола в крови"
   },
   "PARIETAL_CELL_ANTIBODIES": {
@@ -9937,7 +9352,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к париетальным клеткам и внутреннему фактору"
   },
   "PCP_PCR": {
@@ -9951,7 +9365,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР Pneumocystis jirovecii в мокроте БАЛ"
   },
   "PCR_BARTONELLA_LN": {
@@ -9964,7 +9377,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР Bartonella в аспирате лимфоузла"
   },
   "PCR_BLOOD_CSF": {
@@ -9980,7 +9392,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР крови или ликвора"
   },
   "PCR_CSF": {
@@ -9996,7 +9407,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ликвора (бактерии, вирусы)"
   },
   "PCR_GARDNERELLA_PANEL": {
@@ -10009,7 +9419,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Gardnerella, Atopobium, Prevotella"
   },
   "PCR_GONORRHEA_SYN": {
@@ -10023,7 +9432,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на гонококк в синовиальной жидкости"
   },
   "PCR_HHV8": {
@@ -10037,7 +9445,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР HHV‑8 в крови"
   },
   "PCR_LEGIONELLA_SPUTUM": {
@@ -10050,7 +9457,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР Legionella в мокроте БАЛ"
   },
   "PCR_MPOX": {
@@ -10064,7 +9470,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на mpox (мазок с сыпи)"
   },
   "PCR_NAIL": {
@@ -10077,7 +9482,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ногтевых масс"
   },
   "PCR_NOROVIRUS": {
@@ -10091,7 +9495,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кала на норовирус"
   },
   "PCR_ROTAVIRUS": {
@@ -10104,7 +9507,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кала на ротавирус"
   },
   "PCR_SALMONELLA": {
@@ -10119,7 +9521,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кала на Salmonella"
   },
   "PCR_SKIN_BIOPSY": {
@@ -10132,7 +9533,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кожи (биопсия)"
   },
   "PCR_SYNOVIAL_FLUID": {
@@ -10145,7 +9545,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР синовиальной жидкости"
   },
   "PCR_TB": {
@@ -10160,7 +9559,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на туберкулез"
   },
   "PCR_TREPONEMA": {
@@ -10173,7 +9571,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на Treponema pallidum из язвы высыпаний"
   },
   "PCR_T_CRUZI_BLOOD": {
@@ -10186,7 +9583,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР T. cruzi в крови"
   },
   "PEPSINOGEN_GASTRIN": {
@@ -10201,7 +9597,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Пепсиноген I II, гастрин‑17"
   },
   "PEP_I_II": {
@@ -10215,7 +9610,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Пепсиноген I II (соотношение)"
   },
   "PERIODONTAL_CELL_VIABILITY": {
@@ -10228,7 +9622,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Жизнеспособность клеток периодонтальной связки"
   },
   "PERTUSSIS_SERO": {
@@ -10242,7 +9635,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к B. pertussis (IgG-IgA)"
   },
   "PHENYLALANINE": {
@@ -10256,7 +9648,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фенилаланин в плазме крови"
   },
   "PHE_TYR_RATIO": {
@@ -10270,7 +9661,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Соотношение фенилаланин тирозин в крови"
   },
   "PHOSPHATIDYL_ETHANOL": {
@@ -10284,7 +9674,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фосфатидилэтанол в крови новорождённого"
   },
   "PHOX2B_MUT": {
@@ -10297,7 +9686,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутация PHOX2B"
   },
   "PIVKA_II": {
@@ -10308,7 +9696,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "PIVKA‑II (DCP)"
   },
   "PLACENTA_AMNIOTIC_CULTURE": {
@@ -10319,7 +9706,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев плаценты амниотической жидкости"
   },
   "PLAKIN_AB": {
@@ -10330,7 +9716,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к плакинам (энвоплакин, периплакин)"
   },
   "PLASMA_OSM": {
@@ -10345,7 +9730,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Осмоляльность плазмы"
   },
   "PLASMA_PORPHYRINS": {
@@ -10358,7 +9742,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Порфирины плазмы"
   },
   "PLATELET_AGGREGOMETRY": {
@@ -10374,7 +9757,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Агрегация тромбоцитов (агрегометрия)"
   },
   "PNH_CLONE_FLAER": {
@@ -10390,7 +9772,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПНГ-клон (FLAER, проточная цитометрия)"
   },
   "POLE_SEQ": {
@@ -10403,7 +9784,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Секвенирование POLE"
   },
   "POLIO_PCR_STOOL": {
@@ -10416,7 +9796,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Полиовирус в кале (ПЦР)"
   },
   "POLYP_HISTOLOGY": {
@@ -10429,7 +9808,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гистологическое исследование удалённого полипа"
   },
   "PR3_ANCA": {
@@ -10443,7 +9821,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "PR3-ANCA (c-ANCA)"
   },
   "PROGRANULIN": {
@@ -10454,7 +9831,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Програнулин в плазме"
   },
   "PROINSULIN": {
@@ -10468,7 +9844,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Проинсулин"
   },
   "PROSTATE_SECRETION_WBC": {
@@ -10482,7 +9857,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лейкоциты в секрете простаты после массажа"
   },
   "PROTEIN_14_3_3_CSF": {
@@ -10496,7 +9870,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Белок 14‑3‑3 в спинномозговой жидкости"
   },
   "PROTOPORPHYRIN": {
@@ -10510,7 +9883,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Протопорфирин эритроцитов"
   },
   "PTAU181_CSF": {
@@ -10524,7 +9896,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "p‑tau181 в спинномозговой жидкости"
   },
   "PVL_TEST": {
@@ -10539,7 +9910,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лейкоцидин Пантона-Валентайна (PVL)"
   },
   "PYRUVATE": {
@@ -10553,7 +9923,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Пируват в сыворотке"
   },
   "RAPID_UREASE_BIOPSY": {
@@ -10567,7 +9936,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Быстрый уреазный тест (биоптат)"
   },
   "RECTAL_SWAB_PCR": {
@@ -10581,7 +9949,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ректального мазка"
   },
   "RESPIRATORY_PATHOGEN_PANEL": {
@@ -10594,7 +9961,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мультиплексный ПЦР‑панель дыхательных патогенов"
   },
   "RESPIRATORY_RT_PCR": {
@@ -10608,7 +9974,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ОТ-ПЦР мазка из горла-носоглотки"
   },
   "RET_GENETIC": {
@@ -10619,7 +9984,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест RET"
   },
   "RET_HE": {
@@ -10634,7 +9998,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ret‑He (гемоглобин в ретикулоцитах)"
   },
   "RICKETTSIA_PROWAZEKII_SER": {
@@ -10647,7 +10010,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология на Rickettsia prowazekii"
   },
   "ROS1_FUSION": {
@@ -10660,7 +10022,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Слияние ROS1"
   },
   "ROTEM": {
@@ -10674,7 +10035,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тромбоэластометрия (ROTEM TEG)"
   },
   "RUBELLA_IGG": {
@@ -10688,7 +10048,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG к краснухе"
   },
   "RUBELLA_IGM": {
@@ -10703,7 +10062,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к вирусу краснухи"
   },
   "RUBELLA_PCR": {
@@ -10718,7 +10076,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР к краснухе"
   },
   "SALICYLATES_BLOOD": {
@@ -10732,7 +10089,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Салицилаты (уровень в крови)"
   },
   "SALIVA_PCR_REPEAT": {
@@ -10743,7 +10099,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ОТ‑ПЦР слюны (повторно)"
   },
   "SARCOPTES_PCR": {
@@ -10758,7 +10113,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР Sarcoptes scabiei"
   },
   "SARS_COV2_INFLUENZA_PCR": {
@@ -10772,7 +10126,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на SARS‑CoV‑2 и грипп"
   },
   "SA_ENTEROTOXIN": {
@@ -10787,7 +10140,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на энтеротоксин Staphylococcus aureus в пищевых остатках"
   },
   "SEROGROUP_TYPING": {
@@ -10801,7 +10153,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Определение серогруппы и геномное типирование"
   },
   "SEROL_T_CRUZI_IGG": {
@@ -10814,7 +10165,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серологический тест IgG к T. cruzi (двойное ИФА РНИФ)"
   },
   "SEROTONIN_PLASMA": {
@@ -10827,7 +10177,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серотонин (в плазме)"
   },
   "SERPINA1_GENOTYPE": {
@@ -10840,7 +10189,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотип SERPINA1"
   },
   "SERUM_ABETA42_40_RATIO": {
@@ -10853,7 +10201,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Соотношение Aβ42 Aβ40 в сыворотке"
   },
   "SERUM_ANTIBODY_PAIR": {
@@ -10866,7 +10213,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серологический тест на антитела (парные пробы)"
   },
   "SERUM_PROTEIN_ELECTROPHORESIS": {
@@ -10879,7 +10225,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Электрофорез белков сыворотки"
   },
   "SFLT1_PLGF_RATIO": {
@@ -10892,7 +10237,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Соотношение sFlt‑1 PlGF"
   },
   "SHIGELLA_PCR": {
@@ -10906,7 +10250,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кала на ДНК Shigella (ген ipaH)"
   },
   "SIL2R": {
@@ -10920,7 +10263,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Растворимый рецептор IL‑2 (sIL‑2R)"
   },
   "SKIN_CULTURE": {
@@ -10933,7 +10275,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев с кожи"
   },
   "SKIN_DIF": {
@@ -10944,7 +10285,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Прямая иммунофлюоресценция (IgG C3) в коже"
   },
   "SKIN_MICROSCOPY_CULTURE": {
@@ -10955,7 +10295,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия и посев с кожи"
   },
   "SKIN_SCRAPING_FUNGAL_MICRO": {
@@ -10969,7 +10308,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Микроскопия соскоба кожи на грибы"
   },
   "SMUTANS_SALIVA_COUNT": {
@@ -10983,7 +10321,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Количество Streptococcus mutans в слюне"
   },
   "SOLUBLE_TF_RECEPTOR": {
@@ -10997,7 +10334,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "sTfR (растворимый трансферрин‑рецептор)"
   },
   "SPECIFIC_AUTOANTIBODIES": {
@@ -11012,7 +10348,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфические антитела к центромеру, Scl‑70 и др"
   },
   "SPECIFIC_IGE_COW_MILK": {
@@ -11026,7 +10361,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфический IgE к белку коровьего молока"
   },
   "SPECIFIC_IGE_VENOM": {
@@ -11041,7 +10375,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфический IgE к яду пчелы осы шершня"
   },
   "SPERM_DNA_FRAG": {
@@ -11055,7 +10388,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фрагментация ДНК сперматозоидов"
   },
   "SPNEUMO_PCR": {
@@ -11068,7 +10400,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР S. pneumoniae в крови ликворе"
   },
   "SPUTUM_CYTOLOGY": {
@@ -11082,7 +10413,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Исследование мокроты на клетки (цитология)"
   },
   "STI_MULTIPLEX_PCR": {
@@ -11095,7 +10425,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на гонорею, хламидиоз, трихомониаз"
   },
   "STOOL_AMOEBA_TEST": {
@@ -11106,7 +10435,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кал на лямблии (антиген ПЦР)"
   },
   "STOOL_BACILLUS_CEREUS_CULTURE": {
@@ -11119,7 +10447,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев стула на Bacillus cereus"
   },
   "STOOL_CULTURE_SENS": {
@@ -11133,7 +10460,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев кала с определением чувствительности"
   },
   "STOOL_DNA_TEST": {
@@ -11147,7 +10473,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ДНК-тест кала"
   },
   "STOOL_MULTIPLEX_PCR": {
@@ -11160,7 +10485,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мультиплексная ПЦР кала (панель)"
   },
   "STOOL_PATHOGENS": {
@@ -11174,7 +10498,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР посев кала на Salmonella, Shigella, Yersinia, Campylobacter"
   },
   "STOOL_PATHOGEN_PCR": {
@@ -11187,7 +10510,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР кала на патогены"
   },
   "STREP_A_CULTURE": {
@@ -11200,7 +10522,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Перианальный мазок на посев стрептококка группы A"
   },
   "STREP_A_SMEAR": {
@@ -11214,7 +10535,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мазок на стрептококк группы A"
   },
   "SYNOVIAL_CRYSTALS_PFC": {
@@ -11228,7 +10548,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кристаллы ПФК в синовиальной жидкости"
   },
   "SYNOVIAL_CULTURE": {
@@ -11241,7 +10560,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев синовиальной жидкости"
   },
   "SYNOVIAL_GRAM_STAIN": {
@@ -11255,7 +10573,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Грам‑окраска синовиальной жидкости"
   },
   "SYNOVIAL_MONOURATE_CRYSTALS": {
@@ -11268,7 +10585,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кристаллы моноурата в синовиальной жидкости (микроскопия)"
   },
   "TB_SPUTUM_CULTURE": {
@@ -11282,7 +10598,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Посев мокроты с определением чувствительности к препаратам"
   },
   "TB_SPUTUM_MICRO": {
@@ -11296,7 +10611,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Исследование мокроты на микобактерию туберкулеза (микроскопия)"
   },
   "TEAR_OSMOLALITY": {
@@ -11310,7 +10624,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Осмолярность слёзной жидкости"
   },
   "THROMBOELASTOGRAPHY": {
@@ -11324,7 +10637,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тромбоэластография"
   },
   "THROMBOPHILIA_PANEL": {
@@ -11337,7 +10649,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тесты на тромбофилию (фактор V Leiden, протромбин)"
   },
   "TOXICOLOGY_URINE": {
@@ -11348,7 +10659,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсикологический анализ мочи"
   },
   "TOXIC_SCREEN": {
@@ -11361,7 +10671,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсический скрининг (парацетамол, салицилаты и др.)"
   },
   "TOXO_IGG_AVIDITY": {
@@ -11376,7 +10685,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgG‑авидность к Toxoplasma gondii"
   },
   "TOXO_PCR": {
@@ -11392,7 +10700,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ДНК Toxoplasma (кровь-спинномозговая жидкость)"
   },
   "TOX_GENE_PCR": {
@@ -11403,7 +10710,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на ген tox"
   },
   "TOX_SCREEN_OPIOIDS": {
@@ -11416,7 +10722,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсикологический скрининг (опиоиды)"
   },
   "TPMT_NUDT15_GENOTYPE": {
@@ -11430,7 +10735,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотип TPMT, NUDT15"
   },
   "TREC_TEST": {
@@ -11443,7 +10747,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "TREC (неонатальный скрининг)"
   },
   "TREPONEMAL_TEST": {
@@ -11458,7 +10761,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Трепонемный тест (ИФА ХЛИА, РПГА)"
   },
   "TYROSINASE_MRNA": {
@@ -11471,7 +10773,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "мРНК тирозиназы (ПЦР)"
   },
   "URATE_24H_EXCRETION": {
@@ -11484,7 +10785,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Суточная экскреция уратов"
   },
   "URETHRAL_CYTO": {
@@ -11495,7 +10795,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Уретральный цитологический тест"
   },
   "URINE_5HIAA_24H": {
@@ -11508,7 +10807,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "5‑Гидроксииндолуксусная кислота в суточной моче"
   },
   "URINE_COPPER": {
@@ -11521,7 +10819,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Медь в моче"
   },
   "URINE_ELECTROPHORESIS_BENCE_JONES": {
@@ -11535,7 +10832,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Электрофорез мочи (Bence Jones)"
   },
   "URINE_GAS": {
@@ -11548,7 +10844,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Газ в моче (пневматурия)"
   },
   "URINE_HYDROXYPROLINE": {
@@ -11563,7 +10858,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Гидроксипролин в моче"
   },
   "URINE_IODINE": {
@@ -11578,7 +10872,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Йод в моче"
   },
   "URINE_METANEPHRINES": {
@@ -11591,7 +10884,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метанефрины в суточной моче (фракционированные)"
   },
   "URINE_NAA": {
@@ -11604,7 +10896,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "N‑ацетиласпартат в моче"
   },
   "URINE_OPIOID": {
@@ -11618,7 +10909,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Опиоиды в моче (включая фентанил)"
   },
   "URINE_PTERINS": {
@@ -11632,7 +10922,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Птерины в моче"
   },
   "URINE_SERUM_ANTIGEN": {
@@ -11643,7 +10932,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антигенный тест в моче сыворотке"
   },
   "VACCINE_RESPONSE": {
@@ -11654,7 +10942,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Ответ на вакцинацию (пневмококк, столбняк)"
   },
   "VEGF": {
@@ -11669,7 +10956,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фактор роста эндотелия сосудов (VEGF) в плазме"
   },
   "VIRAL_PCR": {
@@ -11683,7 +10969,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирусный геном"
   },
   "VIRAL_RNA_PCR": {
@@ -11696,7 +10981,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР РНК вируса в крови ликворе мочи"
   },
   "VIRUS_MULTIPLEX_PCR": {
@@ -11709,7 +10993,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирусы (аденовирус, герпес)"
   },
   "VIRUS_PCR": {
@@ -11722,7 +11005,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирусы"
   },
   "VIRUS_RNA_RTPCR": {
@@ -11736,7 +11018,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ОТ-ПЦР вируса в крови"
   },
   "VIRUS_SERO_PCR_PANEL": {
@@ -11747,7 +11028,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология ПЦР вирусов (ВИЧ, гепатиты, парвовирус)"
   },
   "VLCFA_C26_0": {
@@ -11762,7 +11042,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Очень длинноцепочечные жирные кислоты (C26-0)"
   },
   "VWD_FACTOR": {
@@ -11778,7 +11057,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Фактор Виллебранда- ристоцетин-кофакторная активность"
   },
   "VWF_ACTIVITY": {
@@ -11792,7 +11070,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность VWF (VWF RCo или GPIbM)"
   },
   "VWF_AG": {
@@ -11806,7 +11083,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген фактора Виллебранда (VWF Ag)"
   },
   "VWF_CB": {
@@ -11819,7 +11095,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Связывание VWF с коллагеном (VWF CB)"
   },
   "VWF_FVIIIIB": {
@@ -11832,7 +11107,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Связывание VWF с фактором VIII (VWF FVIIIB)"
   },
   "WESTERN_BLOT_BORRELIA": {
@@ -11846,7 +11120,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Иммуноблот к боррелиям (Western blot)"
   },
   "WEST_NILE_AB": {
@@ -11861,7 +11134,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к вирусу Западного Нила"
   },
   "WHEAT_SPECIFIC_IGE": {
@@ -11874,7 +11146,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфические IgE к пшенице"
   },
   "WNV_IGM": {
@@ -11887,7 +11158,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к вирусу Западного Нила в сыворотке"
   },
   "WNV_IGM_CSF": {
@@ -11900,7 +11170,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к вирусу Западного Нила в ликворе"
   },
   "YERSINIA_PCR": {
@@ -11913,7 +11182,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР Yersinia pestis"
   },
   "Y_MICRODELETION_KARYOTYPE": {
@@ -11927,7 +11195,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кариотип с микроделецией Y‑хромосомы"
   },
   "ZIKA_IGM": {
@@ -11940,7 +11207,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "IgM к вирусу Зика"
   },
   "ZIKA_PCR": {
@@ -11954,7 +11220,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР на вирус Зика (моча кровь)"
   },
   "ZIKA_RNA_PCR_SERUM": {
@@ -11967,7 +11232,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР РНК вируса Зика в сыворотке"
   },
   "ZIKA_RNA_PCR_URINE": {
@@ -11980,7 +11244,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР РНК вируса Зика в моче"
   },
   "ZINC_PROTOPORPHYRIN": {
@@ -11995,7 +11258,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Цинк-протопорфирин (свободный протопорфирин эритроцитов)"
   },
   "ZNT8_AB": {
@@ -12008,7 +11270,6 @@
    "tier": "special",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к ZnT8"
   },
   "ACTH": {
@@ -12185,7 +11446,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 4,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тау-белок в спинномозговой жидкости (CSF total tau)"
   },
   "GENETIC_PANEL": {
@@ -12201,7 +11461,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 3,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест (расширенная панель)"
   },
   "ANTI_NEURONAL_AB": {
@@ -12216,7 +11475,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антинейрональные антитела (anti‑Hu и др.)"
   },
   "APOE_GENOTYPE": {
@@ -12230,7 +11488,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотип APOE"
   },
   "CTDNA": {
@@ -12246,7 +11503,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Жидкостная биопсия (ctDNA)"
   },
   "EXOME_SEQUENCING": {
@@ -12260,7 +11516,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Секвенирование экзома, хромосомный микроматричный анализ"
   },
   "FETAL_MICROARRAY": {
@@ -12277,7 +11532,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Хромосомный микроматричный анализ плода"
   },
   "FMR1_TEST": {
@@ -12292,7 +11546,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест ДНК FMR1 (анализ CGG‑повтора)"
   },
   "GENETIC_FH_PANEL": {
@@ -12308,7 +11561,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (LDLR, APOB, PCSK9)"
   },
   "GENETIC_TEST": {
@@ -12324,7 +11576,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 2,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование"
   },
   "22Q11_DELETION": {
@@ -12337,7 +11588,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Делеция 22q11.2"
   },
   "ABL1_KINASE_MUTATION": {
@@ -12350,7 +11600,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анализ мутаций киназного домена ABL1"
   },
   "ALPHA_SYNUCLEIN_RT_QUIC": {
@@ -12365,7 +11614,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Альфа-синуклеин в ликворе (RT-QuIC)"
   },
   "ANKH_GENE_TEST": {
@@ -12378,7 +11626,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое исследование ANKH"
   },
   "ATM_GENE_TEST": {
@@ -12389,7 +11636,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое исследование гена ATM (секвенирование, делеции)"
   },
   "ATM_WESTERN_BLOT": {
@@ -12402,7 +11648,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Вестерн‑блот белка ATM и киназная активность"
   },
   "ATP7B_GENETIC": {
@@ -12415,7 +11660,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест ATP7B"
   },
   "BAP1_GERMLINE": {
@@ -12429,7 +11673,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Наследственный вариант BAP1"
   },
   "BAP1_MUTATION": {
@@ -12442,7 +11685,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Анализ мутации BAP1"
   },
   "BMF_PANEL": {
@@ -12453,7 +11695,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическая панель недостаточности костного мозга"
   },
   "BM_CYTOGENETICS_MOLECULAR": {
@@ -12464,7 +11705,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Цитогенетика и молекулярное исследование костного мозга"
   },
   "C9ORF72_GENOTYPE": {
@@ -12477,7 +11717,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотип C9orf72"
   },
   "CACNA1A_ATP1A2_SCN1A_PANEL": {
@@ -12491,7 +11730,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование CACNA1A, ATP1A2, SCN1A"
   },
   "CDKN2A_MUT": {
@@ -12502,7 +11740,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест CDKN2A"
   },
   "CFH_ARMS2_HTRA1_GENETIC_TEST": {
@@ -12515,7 +11752,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (CFH, ARMS2 HTRA1)"
   },
   "CHANNELOPATHY_CARDIOMYOPATHY_PANEL": {
@@ -12528,7 +11764,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический скрининг (панель каналопатий и кардиомиопатий)"
   },
   "CMT_GENE_PANEL": {
@@ -12541,7 +11776,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Панель генов CMT (NGS)"
   },
   "CU_LIVER_BIOPSY": {
@@ -12554,7 +11788,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Медь в печени (биопсия)"
   },
   "CYSTINURIA_HYPEROXALURIA_PANEL": {
@@ -12567,7 +11800,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическая панель (цистинурия, гипероксалурия)"
   },
   "DHPR_ACTIVITY": {
@@ -12581,7 +11813,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Активность дигидроптерин редуктазы (DHPR)"
   },
   "DMD_GENETIC": {
@@ -12594,7 +11825,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест DMD (MLPA секвенирование)"
   },
   "DNA_METHYLATION_15Q11_13": {
@@ -12607,7 +11837,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Метилирование ДНК 15q11‑q13"
   },
   "EBOLA_ANTIGEN": {
@@ -12621,7 +11850,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антиген вируса Эбола (экспресс-тест)"
   },
   "EBOLA_IG": {
@@ -12635,7 +11863,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Антитела к вирусу Эбола"
   },
   "EBOLA_MARBURG_SER": {
@@ -12652,7 +11879,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Серология на Эболу Марбург (IgM IgG)"
   },
   "EBOLA_RNA_PCR": {
@@ -12666,7 +11892,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР крови на вирус Эбола"
   },
   "EBOLA_SPERM_PCR": {
@@ -12680,7 +11905,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР спермы на Ebola"
   },
   "ETV6_RUNX1_PCR": {
@@ -12694,7 +11918,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "ПЦР ETV6--RUNX1"
   },
   "FANCONI_BREAKAGE_TEST": {
@@ -12707,7 +11930,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Хромосомная ломкость (анемия Фанкони)"
   },
   "FBN1_GENETIC": {
@@ -12720,7 +11942,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование FBN1"
   },
   "FGFR3_GENETIC_TEST": {
@@ -12734,7 +11955,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование FGFR3"
   },
   "FILAGGRIN_MUTATION": {
@@ -12748,7 +11968,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на мутации филаггрина"
   },
   "FISH_15Q11_13": {
@@ -12762,7 +11981,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FISH участка 15q11-q13"
   },
   "FISH_17P": {
@@ -12777,7 +11995,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FISH del(17p) и другие исследования FISH"
   },
   "FISH_NGS_PANEL": {
@@ -12788,7 +12005,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Молекулярный тест (FISH NGS) на MDM2, SS18, EWSR1, FUS"
   },
   "FISH_PHILADELPHIA": {
@@ -12803,7 +12019,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "FISH на филадельфийскую хромосому (BCR--ABL1)"
   },
   "FXN_GAA_REPEATS": {
@@ -12814,7 +12029,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест FXN (повторы GAA)"
   },
   "GBA1_GENOTYPE": {
@@ -12827,7 +12041,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генотипирование GBA1"
   },
   "GENETIC_ALS_PANEL": {
@@ -12840,7 +12053,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (C9orf72, SOD1, TARDBP, FUS)"
   },
   "GENETIC_F8_F9": {
@@ -12854,7 +12066,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование F8 F9"
   },
   "GENETIC_ND_PANEL": {
@@ -12867,7 +12078,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (C9orf72, GRN, MAPT)"
   },
   "GENETIC_PANEL_HHT": {
@@ -12878,7 +12088,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический анализ (ENG, ACVRL1, SMAD4, RASA1)"
   },
   "GENETIC_PANEL_PRSS1_SPINK1_CFTR_CTRC": {
@@ -12891,7 +12100,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (PRSS1, SPINK1, CFTR, CTRC)"
   },
   "GENETIC_PARKINSON_PANEL": {
@@ -12904,7 +12112,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (GBA1, LRRK2, PRKN)"
   },
   "GENETIC_SEQUENCING_PANEL": {
@@ -12917,7 +12124,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (секвенирование панелей генов)"
   },
   "GENETIC_VWF": {
@@ -12930,7 +12136,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование VWF"
   },
   "GJB2_GENETIC": {
@@ -12943,7 +12148,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест GJB2"
   },
   "GJB2_PANEL": {
@@ -12956,7 +12160,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование (панель GJB2)"
   },
   "GNAQ_MUT": {
@@ -12967,7 +12170,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на мутацию GNAQ"
   },
   "GNPTAB_GNPTG_NAGPA_AP4E1_PANEL": {
@@ -12978,7 +12180,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на GNPTAB, GNPTG, NAGPA, AP4E1"
   },
   "HEMOGLOBIN_GENE_PANEL": {
@@ -12993,7 +12194,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на гены HBB, HBA1, HBA2"
   },
   "HEXA_SEQUENCING": {
@@ -13006,7 +12206,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Секвенирование гена HEXA"
   },
   "HTT_LONG_READ_SEQUENCING": {
@@ -13020,7 +12219,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Секвенирование длинных прочтений гена HTT"
   },
   "IL12_IFNG_DEFECT": {
@@ -13034,7 +12232,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Тест на дефекты пути IL‑12 IFN‑γ"
   },
   "LIPID_LAYER_INTERFEROMETRY": {
@@ -13047,7 +12244,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Интерферометрия липидного слоя"
   },
   "LIZO_GB1": {
@@ -13061,7 +12257,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Лизо‑Gb1 (глюкозилсфингозин, маркер болезни Гоше)"
   },
   "MASS_SPEC_PROTEIN_BIOPSY": {
@@ -13077,7 +12272,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Масс-спектрометрия белков биоптата"
   },
   "MECP2_GENETIC": {
@@ -13092,7 +12286,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование MECP2"
   },
   "MHTT_CSF": {
@@ -13106,7 +12299,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "mHTT в спинномозговой жидкости"
   },
   "MODY_GENETIC_TEST": {
@@ -13117,7 +12309,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование MODY"
   },
   "MULTIGEN_PANEL": {
@@ -13133,7 +12324,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мультигенная генетическая панель"
   },
   "NF1_MUT": {
@@ -13144,7 +12334,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на NF1"
   },
   "NGS_PANEL": {
@@ -13157,7 +12346,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Молекулярная панель NGS"
   },
   "NRAS_MUT": {
@@ -13168,7 +12356,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на мутацию NRAS"
   },
   "ORTHOPOX_PCR_PANEL": {
@@ -13181,7 +12368,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мультиплексная ПЦР панель ортопоксвирусов"
   },
   "PAH_GENE": {
@@ -13195,7 +12381,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое исследование гена PAH"
   },
   "PARTNER_KARYOTYPE": {
@@ -13208,7 +12393,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Кариотип партнёров"
   },
   "PKD1_PKD2_GENETIC_TEST": {
@@ -13221,7 +12405,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование PKD1 PKD2"
   },
   "PMP22_DUPLICATION_MLPA": {
@@ -13234,7 +12417,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Дупликация PMP22 (MLPA)"
   },
   "PRNP_SEQUENCING": {
@@ -13247,7 +12429,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Секвенирование гена PRNP"
   },
   "PSYCHOSIN": {
@@ -13260,7 +12441,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Психозин"
   },
   "RB1_GENETIC": {
@@ -13273,7 +12453,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование RB1"
   },
   "RT_QUIC_CSF": {
@@ -13287,7 +12466,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "RT‑QuIC в спинномозговой жидкости"
   },
   "SMN1_CARRIER": {
@@ -13303,7 +12481,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Носительство мутации SMN1 у родителей"
   },
   "SMN_COPY_NUMBER": {
@@ -13319,7 +12496,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Количественный анализ копий генов SMN1 и SMN2"
   },
   "SQLE_MUTATION": {
@@ -13333,7 +12509,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мутации гена SQLE"
   },
   "TELOMERE_LENGTH": {
@@ -13346,7 +12521,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Длина теломер"
   },
   "THROMBOPHILIA_GENETIC_PANEL": {
@@ -13360,7 +12534,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетический тест на наследственные тромбофилии (фактор V Leiden, протромбин G20210A)"
   },
   "TISSUE_CYPHER": {
@@ -13373,7 +12546,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "TissueCypher (риск прогрессирования пищевода Барретта)"
   },
   "TOXICOLOGICAL_SCREENING_POSTMORTEM": {
@@ -13386,7 +12558,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Токсикологический скрининг (постмортальный)"
   },
   "TSC_GENETIC_PANEL": {
@@ -13400,7 +12571,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое исследование TSC1 TSC2"
   },
   "TTR_GENE_TEST": {
@@ -13415,7 +12585,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование гена TTR"
   },
   "UNIPARENTAL_DISOMY_15": {
@@ -13429,7 +12598,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Унипарентальная дисомия 15"
   },
   "VARIOLA_PCR": {
@@ -13443,7 +12611,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Специфическая ПЦР на вирус Variola"
   },
   "VHL_GENETIC_TEST": {
@@ -13456,7 +12623,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Генетическое тестирование VHL (секвенирование + делеций)"
   },
   "VIRAL_SEQUENCING": {
@@ -13467,7 +12633,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Вирусное секвенирование"
   },
   "VWF_MULTIMER": {
@@ -13480,7 +12645,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "Мультимерный анализ VWF"
   },
   "WATS3D": {
@@ -13493,7 +12657,6 @@
    "tier": "rare",
    "inForm": false,
    "refs": 1,
-   "source": "разбор ИИ: gpt-oss-120b",
    "article": "WATS3D (щёточная биопсия пищевода с компьютерным 3D-анализом)"
   }
  }

@@ -6,7 +6,7 @@ import type { Field } from "./types.js";
 
 export type LabType = "number" | "qual" | "text";
 export type Tier = "basic" | "special" | "rare";
-export interface Lab { name: string; aliases: string[]; type: LabType; unit: string; tier: Tier; group?: string; inForm: boolean; article?: string; refs?: number; source?: string }
+export interface Lab { name: string; aliases: string[]; type: LabType; unit: string; tier: Tier; group?: string; inForm: boolean; article?: string; refs?: number }
 
 export const LABS_URL = "../data/labs.json";
 export const LABS: Record<string, Lab> = {};

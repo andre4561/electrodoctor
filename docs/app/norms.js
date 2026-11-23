@@ -23,7 +23,7 @@ export async function loadNorms() {
         for (const [code, it] of Object.entries(j.items)) {
             if (typeof it.norm !== "number")
                 continue;
-            NORMS[code] = { v: it.norm, range: String(it.range || ""), note: it.note, name: it.name, unit: it.unit, source: it.source,
+            NORMS[code] = { v: it.norm, range: String(it.range || ""), note: it.note, name: it.name, unit: it.unit,
                 curve: it.curve && Array.isArray(it.curve.pts) && it.curve.pts.length >= 2 ? it.curve : undefined,
                 adjust: Array.isArray(it.adjust) ? it.adjust : undefined };
         }

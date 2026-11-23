@@ -71,10 +71,8 @@ export function draw(main) {
     const names = Object.keys(data.items);
     const withSigns = (id) => names.filter(n => data.items[n].sections.includes(id) && signCount(n) > 0).length;
     const m = method();
-    const flagCnt = (id) => all.filter(it => (it.flags || []).includes(id)).length;
     main.innerHTML = `<div class="set-head"><h2>Диагнозы</h2><span class="muted">${all.length} ${plural(all.length)} в ${data.sections.length} ${data.sections.length % 10 === 1 && data.sections.length % 100 !== 11 ? "разделе" : "разделах"}</span></div>
-    <p class="muted dx-lead">Разделы — по специальностям врачей. Диагноз может быть сразу в нескольких разделах.
-      Пометки: ${data.flags.map(f => `<span class="dx-flag f-${esc(f.id)}">${esc(f.title)}</span> ${flagCnt(f.id)}`).join(" · ")}.</p>
+    <p class="muted dx-lead">Разделы — по специальностям врачей. Диагноз может быть сразу в нескольких разделах.</p>
     <div class="card dx-method">
       <b>Сила отклонения в расчёте вероятности</b>
       <label><input type="radio" name="sm" value="crit"${m === "crit" ? " checked" : ""}> по критичности — кривая показателя (0–100)</label>
@@ -169,12 +167,9 @@ const textList = (xs, empty) => xs && xs.length
     : `<p class="muted dx-later">${empty}</p>`;
 function dxBody(name) {
     const s = signsFor(name) || { labs: [] }, own = !!ownSigns()[name];
-    const src = own ? "изменено вручную" : s.source ? s.source : Sg.FILE_SIGNS[name] ? "исходные" : "признаков пока нет";
     return `<div class="dx-form" data-dxform="${esc(name)}">
     <div class="dx-meta">
       <label>Распространённость <input type="number" name="prior" min="0.01" max="99" step="0.1" value="${esc(s.prior ?? "")}" placeholder="${Sg.DEFAULT_PRIOR}"> %</label>
-      <label><input type="checkbox" name="checked"${s.checked ? " checked" : ""}> проверено человеком</label>
-      <span class="muted">источник: <span data-dxsrc>${esc(src)}</span></span>
     </div>
     <h4>Анализы <small class="muted">важность 0–10: насколько отклонение указывает на этот диагноз</small></h4>
     <div class="tblwrap"><table class="dx-signs"><thead><tr><th>Показатель</th><th>Направление</th><th>Важность</th><th>Если в норме</th><th></th></tr></thead>
@@ -189,7 +184,7 @@ function dxBody(name) {
 function dxStatus(name) {
     const s = signsFor(name), own = !!ownSigns()[name];
     const n = signCount(name);
-    const tags = [own ? `<span class="dx-tag own">своё</span>` : "", s && !own && s.source && /ИИ/.test(s.source) ? `<span class="dx-tag ai">черновик ИИ</span>` : "", s && s.checked ? `<span class="dx-tag ok">проверено</span>` : ""].join("");
+    const tags = own ? `<span class="dx-tag own">своё</span>` : "";
     return (n ? `признаков: ${n}` : `<span class="muted">признаков нет</span>`) + tags;
 }
 function collect(form, name) {
@@ -206,7 +201,7 @@ function collect(form, name) {
         labs.push({ code, dir, w, ...(normal ? { normal } : {}), ...(d.kind === "risk" ? { kind: "risk" } : {}), ...(d.src === "knowledge" ? { src: "knowledge" } : {}), ...(d.why ? { why: d.why } : {}) });
     });
     const pr = Number(form.querySelector("[name=prior]").value);
-    const out = { labs, source: "изменено вручную" };
+    const out = { labs };
     if (form.querySelector("[name=prior]").value !== "" && isFinite(pr))
         out.prior = Math.min(99, Math.max(0.01, pr));
     if (base.exam)
@@ -215,23 +210,34 @@ function collect(form, name) {
         out.instr = base.instr;
     if (base.nolist)
         out.nolist = base.nolist;
-    if (form.querySelector("[name=checked]").checked)
-        out.checked = true;
     return out;
 }
+let secSort = "alpha";
+const priorOf = (name) => signsFor(name)?.prior ?? Sg.DEFAULT_PRIOR;
+function sortSecList(list) {
+    return [...list].sort((a, b) => secSort === "prior"
+        ? priorOf(b[0]) - priorOf(a[0]) || a[1].title.localeCompare(b[1].title, "ru")
+        : a[1].title.localeCompare(b[1].title, "ru"));
+}
 function drawSection(main, d, sec) {
-    const list = Object.entries(d.items).filter(([, it]) => it.sections.includes(sec.id)).sort((a, b) => a[1].title.localeCompare(b[1].title, "ru"));
-    const flagTitle = (id) => (d.flags.find(f => f.id === id) || { title: id }).title;
+    const raw = Object.entries(d.items).filter(([, it]) => it.sections.includes(sec.id));
+    const list = sortSecList(raw);
     const secTitle = (id) => (d.sections.find(s => s.id === id) || { title: id }).title;
-    const used = d.flags.filter(f => list.some(([, it]) => (it.flags || []).includes(f.id)));
-    main.innerHTML = `<p class="dx-back"><a href="#/settings/diagnoses">← Все разделы</a></p>
-    <div class="set-head dx-head">${icon(sec.id, 32)}<h2>${esc(sec.title)}</h2><span class="muted" id="dxcount">${list.length} ${plural(list.length)}</span></div>
-    <div class="dx-tools"><input type="search" id="dxq" placeholder="Поиск по названию" aria-label="Поиск по названию">
-      ${used.length ? `<span class="dx-chips" role="group" aria-label="Пометки"><button type="button" class="dx-chip on" data-f="">Все</button>${used.map(f => `<button type="button" class="dx-chip" data-f="${esc(f.id)}">${esc(f.title)}</button>`).join("")}</span>` : ""}</div>
+    main.innerHTML = `<div class="dx-secbar">
+      <a href="#/settings/diagnoses">← Все разделы</a>
+      ${icon(sec.id, 32)}
+      <h2>${esc(sec.title)}</h2>
+      <span class="muted" id="dxcount">${list.length} ${plural(list.length)}</span>
+      <span class="seg dx-sec-sort" role="group" aria-label="Сортировка">
+        <button type="button" data-sec-sort="alpha"${secSort === "alpha" ? ' class="on"' : ""} title="по алфавиту">А–Я</button>
+        <button type="button" data-sec-sort="prior"${secSort === "prior" ? ' class="on"' : ""} title="по распространённости (как часто встречается)">По %</button>
+      </span>
+      <input type="search" id="dxq" placeholder="Поиск по названию" aria-label="Поиск по названию">
+    </div>
     <div class="dx-acc">${list.map(([name, it]) => {
         const also = it.sections.filter(s => s !== sec.id);
-        return `<details class="fold dx-item" data-dx="${esc(name)}" data-k="${esc(it.title.toLowerCase())}" data-f="${esc((it.flags || []).join(" "))}">
-        <summary><span class="dx-title"><span class="fold-title">${esc(it.title)}</span><a class="dx-art" href="${articleUrl(name)}" target="_blank" rel="noopener" title="статья о диагнозе — откроется в новой вкладке" aria-label="статья">↗</a>${(it.flags || []).map(f => `<span class="dx-flag f-${esc(f)}">${esc(flagTitle(f))}</span>`).join("")}${also.length ? `<small class="muted dx-also">также: ${also.map(s => esc(secTitle(s))).join(", ")}</small>` : ""}</span><span class="fold-status" data-dxstatus>${dxStatus(name)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
+        return `<details class="fold dx-item" data-dx="${esc(name)}" data-k="${esc(it.title.toLowerCase())}" data-prior="${priorOf(name)}" data-title="${esc(it.title)}">
+        <summary><span class="dx-title"><span class="fold-title">${esc(it.title)}</span><a class="dx-art" href="${articleUrl(name)}" target="_blank" rel="noopener" title="статья о диагнозе — откроется в новой вкладке" aria-label="статья">↗</a>${also.length ? `<small class="muted dx-also">также: ${also.map(s => `<a href="#/settings/diagnoses/${esc(s)}">${esc(secTitle(s))}</a>`).join(", ")}</small>` : ""}</span><span class="fold-status" data-dxstatus>${dxStatus(name)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
         <div class="fold-body" data-dxbody></div></details>`;
     }).join("")}</div><p class="muted empty" id="dxempty" hidden>Ничего не найдено</p>`;
     // Содержимое строки собирается при раскрытии — страница остаётся лёгкой даже на 150 диагнозов
@@ -249,9 +255,6 @@ function drawSection(main, d, sec) {
         putOwn(name, collect(form, name));
         const d = form.closest("details");
         d.querySelector("[data-dxstatus]").innerHTML = dxStatus(name);
-        const src = form.querySelector("[data-dxsrc]");
-        if (src)
-            src.textContent = "изменено вручную";
         const foot = form.querySelector(".dx-foot");
         if (foot && !foot.querySelector("[data-dx-act=reset]"))
             foot.insertAdjacentHTML("beforeend", `<button type="button" class="btn" data-dx-act="reset">${Sg.FILE_SIGNS[name] ? "Вернуть исходные признаки" : "Очистить признаки"}</button>`);
@@ -297,12 +300,11 @@ function drawSection(main, d, sec) {
         }
     });
     const qi = main.querySelector("#dxq");
-    let flag = "";
     const apply = () => {
         const s = qi.value.trim().toLowerCase();
         let n = 0;
         main.querySelectorAll(".dx-item").forEach(li => {
-            const ok = (!s || (li.dataset.k || "").includes(s)) && (!flag || (li.dataset.f || "").split(" ").includes(flag));
+            const ok = !s || (li.dataset.k || "").includes(s);
             li.hidden = !ok;
             if (ok)
                 n++;
@@ -310,10 +312,21 @@ function drawSection(main, d, sec) {
         main.querySelector("#dxempty").hidden = n > 0;
         main.querySelector("#dxcount").textContent = `${n} ${plural(n)}${n !== list.length ? " из " + list.length : ""}`;
     };
-    qi.addEventListener("input", apply);
-    main.querySelectorAll(".dx-chip").forEach(b => b.addEventListener("click", () => {
-        flag = b.dataset.f || "";
-        main.querySelectorAll(".dx-chip").forEach(x => x.classList.toggle("on", x === b));
+    const reorder = () => {
+        const items = [...acc.children];
+        items.sort((a, b) => secSort === "prior"
+            ? (+b.dataset.prior - +a.dataset.prior) || (a.dataset.title || "").localeCompare(b.dataset.title || "", "ru")
+            : (a.dataset.title || "").localeCompare(b.dataset.title || "", "ru"));
+        items.forEach(el => acc.appendChild(el));
         apply();
+    };
+    qi.addEventListener("input", apply);
+    main.querySelectorAll("[data-sec-sort]").forEach(b => b.addEventListener("click", () => {
+        const next = (b.dataset.secSort || "alpha");
+        if (next === secSort)
+            return;
+        secSort = next;
+        main.querySelectorAll("[data-sec-sort]").forEach(x => x.classList.toggle("on", x === b));
+        reorder();
     }));
 }
