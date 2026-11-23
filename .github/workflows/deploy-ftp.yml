@@ -1,0 +1,93 @@
+name: Публикация на FTP
+
+# Сайт на хостинг владельца: явный FTPS (FTP over TLS), порт 21.
+# GitHub Pages не меняется — он по-прежнему публикует папку docs/ с ветки main.
+#
+# Что заливается. В репозитории docs/ — это уже собранный сайт: JavaScript
+# кабинета коммитится из src/ (tsc, outDir docs/, сверка в CI), а статьи
+# лежат как Markdown. На Pages их превращает в HTML встроенный Jekyll
+# (legacy). На FTP Jekyll нет, а кабинет ссылается на статьи как на *.html,
+# поэтому перед выгрузкой:
+#   1) npm run build — кабинет из src/ в docs/;
+#   2) actions/jekyll-build-pages — тот же сборщик, что у GitHub Pages.
+#      В production плагин github-metadata сам ставит baseurl репозитория
+#      (/electrodoctor), если он пустой или равен «/». Для корня хостинга
+#      перед сборкой пишется временный docs/_config.yml с baseurl: "" —
+#      это значение плагин не трогает. Файл только в раннере, Pages его не видит.
+#   3) содержимое _site/ уходит в каталог, куда FTP-пользователь попадает при входе.
+#      Сервер — 32rumba.ru (тот же хост, 45.67.58.17): сертификат Let's Encrypt
+#      выписан на это имя, поэтому проверка TLS строгая.
+
+on:
+  schedule:
+    # 00:00 UTC = 03:00 МСК. День месяца */3: 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31.
+    - cron: "0 0 */3 * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Сборка и выгрузка
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Код
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Сборка кабинета
+        run: |
+          npm ci
+          npm run build
+
+      - name: Конфиг Jekyll для корня хостинга
+        run: |
+          # Не коммитить: baseurl "" на Pages сломал бы сайт в /electrodoctor/.
+          # nil и «/» плагин заменяет на путь репозитория, пустую строку — нет.
+          cat > docs/_config.yml <<'EOF'
+          url: "https://32rumba.ru"
+          baseurl: ""
+          EOF
+
+      - name: Сборка HTML (Jekyll, как GitHub Pages)
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Адреса статей без префикса GitHub Pages
+        run: |
+          html=_site/articles/index.html
+          test -f "$html"
+          # «/electrodoctor/» в ссылке на github.com — это имя репозитория, его не трогаем.
+          # Ломают сайт только пути самого хостинга и канонические адреса Pages.
+          if grep -q '="/electrodoctor/' "$html" || grep -q 'github.io/electrodoctor' "$html"; then
+            echo "::error::в статьях остался префикс /electrodoctor — скрипты и стили не откроются с корня хостинга"
+            exit 1
+          fi
+          grep -q 'src="/assets/sitenav.js"' "$html"
+          grep -q 'href="/assets/css/style.css' "$html"
+
+      - name: Выгрузка на FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: 32rumba.ru
+          port: 21
+          protocol: ftps
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./_site/
+          server-dir: ./
+          security: strict
+          timeout: 120000
