@@ -79,6 +79,11 @@ jobs:
           grep -q 'src="/assets/sitenav.js"' "$html"
           grep -q 'href="/assets/css/style.css' "$html"
 
+      # jekyll-build-pages пишет _site/ из Docker от root. Следующий шаг
+      # создаёт в этой папке .ftp-deploy-sync-state.json и без chown падает с EACCES.
+      - name: Права на собранный сайт
+        run: sudo chown -R "$(id -u):$(id -g)" _site
+
       - name: Выгрузка на FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
