@@ -1,0 +1,39 @@
+name: Проверка FTPS (временная)
+
+# Временная проверка входа с ветки пулл-реквеста. До мержа файл удаляется.
+# dry-run не загружает и не удаляет файлы на сервере.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Сухой прогон FTPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Код
+        uses: actions/checkout@v4
+
+      - name: Локальная папка для сравнения
+        run: |
+          mkdir -p ftp-probe
+          printf '%s\n' 'dry-run probe, not uploaded' > ftp-probe/probe.txt
+
+      - name: Подключение FTPS без записи
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: 32rumba.ru
+          port: 21
+          protocol: ftps
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./ftp-probe/
+          server-dir: ./
+          security: strict
+          dry-run: true
+          log-level: verbose
+          timeout: 120000
