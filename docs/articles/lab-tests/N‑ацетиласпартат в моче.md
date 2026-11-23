@@ -2,7 +2,6 @@
 Title: N‑ацетиласпартат в моче
 Рубрики: анализ
 code: URINE_NAA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

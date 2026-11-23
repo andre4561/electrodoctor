@@ -2,7 +2,6 @@
 Title: Мутация PHOX2B
 Рубрики: анализ
 code: PHOX2B_MUT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

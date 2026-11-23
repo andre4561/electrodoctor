@@ -2,7 +2,6 @@
 Title: Генетическое тестирование MODY
 Рубрики: анализ
 code: MODY_GENETIC_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

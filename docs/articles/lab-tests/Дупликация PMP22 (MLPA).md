@@ -2,7 +2,6 @@
 Title: Дупликация PMP22 (MLPA)
 Рубрики: анализ
 code: PMP22_DUPLICATION_MLPA
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

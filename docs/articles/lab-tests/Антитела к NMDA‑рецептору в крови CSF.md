@@ -2,7 +2,6 @@
 Title: Антитела к NMDA‑рецептору в крови/CSF
 Рубрики: анализ
 code: NMDA_RECEPTOR_AB
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

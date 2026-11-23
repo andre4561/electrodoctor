@@ -2,7 +2,6 @@
 Title: Парциальное давление кислорода в артериальной крови (PaO2)
 Рубрики: анализ
 code: PAO2
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

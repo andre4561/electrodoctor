@@ -2,7 +2,6 @@
 Title: Специфический IgE к яду пчелы/осы/шершня
 Рубрики: анализ
 code: SPECIFIC_IGE_VENOM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

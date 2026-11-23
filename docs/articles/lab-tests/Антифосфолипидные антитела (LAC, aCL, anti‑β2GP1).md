@@ -2,7 +2,6 @@
 Title: Антифосфолипидные антитела (LAC, aCL, anti‑β2GP1)
 Рубрики: анализ
 code: APL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

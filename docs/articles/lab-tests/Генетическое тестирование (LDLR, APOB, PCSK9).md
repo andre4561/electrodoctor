@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (LDLR, APOB, PCSK9)
 Рубрики: анализ
 code: GENETIC_FH_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

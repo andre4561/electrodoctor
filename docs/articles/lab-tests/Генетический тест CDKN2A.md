@@ -2,7 +2,6 @@
 Title: Генетический тест CDKN2A
 Рубрики: анализ
 code: CDKN2A_MUT
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

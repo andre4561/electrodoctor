@@ -2,7 +2,6 @@
 Title: Генетическое тестирование RB1
 Рубрики: анализ
 code: RB1_GENETIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

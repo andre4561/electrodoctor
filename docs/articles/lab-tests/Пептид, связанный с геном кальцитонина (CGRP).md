@@ -2,7 +2,6 @@
 Title: Пептид, связанный с геном кальцитонина (CGRP)
 Рубрики: анализ
 code: CGRP
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

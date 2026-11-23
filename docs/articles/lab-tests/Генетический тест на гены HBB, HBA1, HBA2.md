@@ -2,7 +2,6 @@
 Title: Генетический тест на гены HBB, HBA1, HBA2
 Рубрики: анализ
 code: HEMOGLOBIN_GENE_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

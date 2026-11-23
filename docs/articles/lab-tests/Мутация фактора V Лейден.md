@@ -2,7 +2,6 @@
 Title: Мутация фактора V Лейден
 Рубрики: анализ
 code: FACTOR_V_LEIDEN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

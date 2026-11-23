@@ -2,7 +2,6 @@
 Title: Антиген SARS-CoV-2 (экспресс-тест)
 Рубрики: анализ
 code: SARS_COV2_ANTIGEN
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (PRSS1, SPINK1, CFTR, CTRC)
 Рубрики: анализ
 code: GENETIC_PANEL_PRSS1_SPINK1_CFTR_CTRC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: CD4‑лимфоциты (количество)
 Рубрики: анализ
 code: CD4_COUNT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

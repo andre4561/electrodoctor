@@ -2,7 +2,6 @@
 Title: Посев пищи на Bacillus cereus
 Рубрики: анализ
 code: FOOD_BACILLUS_CEREUS_CULTURE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

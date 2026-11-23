@@ -2,7 +2,6 @@
 Title: Углеводдефицитный трансферрин (CDT)
 Рубрики: анализ
 code: CDT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Антитела IgM к цитомегаловирусу
 Рубрики: анализ
 code: CMV_IGM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

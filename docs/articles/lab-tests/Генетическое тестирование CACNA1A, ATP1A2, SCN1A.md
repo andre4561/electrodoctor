@@ -2,7 +2,6 @@
 Title: Генетическое тестирование CACNA1A, ATP1A2, SCN1A
 Рубрики: анализ
 code: CACNA1A_ATP1A2_SCN1A_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

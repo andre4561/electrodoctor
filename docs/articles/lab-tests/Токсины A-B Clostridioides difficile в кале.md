@@ -2,7 +2,6 @@
 Title: Токсины A/B Clostridioides difficile в кале
 Рубрики: анализ
 code: CDI_TOXIN_AB
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

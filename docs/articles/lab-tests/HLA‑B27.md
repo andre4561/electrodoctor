@@ -2,7 +2,6 @@
 Title: HLA‑B27
 Рубрики: анализ
 code: HLA_B27
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

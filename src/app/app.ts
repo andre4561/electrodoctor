@@ -468,16 +468,16 @@ function labDatesHtml(c: Client): string {
     <div class="ld-scroll" id="ldscroll">${chips || `<span class="muted ld-none">сохранённых анализов пока нет</span>`}</div></div>
     <p class="ld-cap">${cap} <span class="ld-state" id="ldstate"></span></p>`;
 }
-// Блок под группами: анализы из справочника у этого клиента и поиск «+ Добавить анализ»
+// Доп. анализы у клиента: выбор только из справочника (каталог + свои из Настройки → Анализы). Новый код в справочник — там же.
 function labExtraHtml(c: Client): string {
   const rows = extraCodes(c).map(code => {
-    const f = Labs.fieldFor(code)!;
+    const f = Labs.fieldFor(code); if (!f) return "";
     return `<div class="lab-extra-row">${fieldHtml(f, c.values[code], c)}<button type="button" class="btn lab-rm" data-rm-extra="${esc(code)}" title="убрать из бланка" aria-label="убрать из бланка">×</button></div>`;
   }).join("");
   return `<div class="sec lab-extra" id="labextra">
-    <h3>Дополнительные анализы <small class="muted">из справочника — ${Object.keys(Labs.LABS).length} анализов</small></h3>
-    ${rows ? `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Нужного анализа нет в бланке? Найдите его в справочнике: по названию, сокращению или по-английски.</p>`}
-    <div class="lab-add"><input type="search" id="labadd" placeholder="+ Добавить анализ: например, антитела к ТПО, HLA-B27, посев мочи" aria-label="Добавить анализ из справочника" autocomplete="off"><div class="lab-add-res" id="labaddres"></div></div>
+    <h3>Дополнительные анализы <small class="muted">из справочника — ${Object.keys(Labs.LABS).length} анализов · новый код — в <a href="#/settings/labs">Настройки → Анализы</a></small></h3>
+    ${rows ? `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Нужного анализа нет в бланке? Выберите его из справочника по названию, сокращению или по-английски.</p>`}
+    <div class="lab-add"><input type="search" id="labadd" placeholder="Выбрать из справочника: например, антитела к ТПО, HLA-B27, посев мочи" aria-label="Выбрать анализ из справочника" autocomplete="off"><div class="lab-add-res" id="labaddres"></div></div>
   </div>`;
 }
 function labSaveHtml(c: Client): string {
@@ -717,19 +717,18 @@ function renderClient(id: string, stepId: string): void {
       });
     });
   }
-  // «Дополнительные анализы»: поиск по справочнику и добавление строки
+  // Выбор из справочника и убрать из бланка (создать новый анализ в справочнике — Настройки → Анализы)
   function bindExtra(): void {
     const box = document.getElementById("labextra"); if (!box) return;
     const q = box.querySelector<HTMLInputElement>("#labadd")!, res = box.querySelector<HTMLElement>("#labaddres")!;
     const exclude = (code: string) => LAB_FORM_CODES.has(code) || OTHER_STEP_CODES.has(code) || extraCodes(c).includes(code);
     const draw = () => {
       const found = Labs.search(q.value, exclude);
-      // анализ из бланка тоже можно найти — тогда кнопка ведёт к его полю
       const inForm = q.value.trim().length >= 2 ? LAB_FIELDS.filter(f => f.label.toLowerCase().includes(q.value.trim().toLowerCase())).slice(0, 3) : [];
       res.innerHTML = q.value.trim().length < 2 ? "" : (found.length || inForm.length)
         ? inForm.map(f => `<button type="button" class="lab-res" data-go-form="${esc(f.code)}"><b>${esc(f.label)}</b> <small class="muted">уже в бланке — перейти</small></button>`).join("")
-          + found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""} <span class="lab-tier t-${l.tier}">${Labs.TIER_NAME[l.tier]}</span>${l.type === "qual" ? ` <small class="muted">положительно / отрицательно</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
-        : `<p class="muted">Ничего не нашлось. Попробуйте другое название или сокращение.</p>`;
+          + found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""}${l.type === "qual" ? ` <small class="muted">положительно / отрицательно</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
+        : `<p class="muted">В справочнике ничего не нашлось. Новый анализ добавляют в <a href="#/settings/labs">Настройки → Анализы</a>.</p>`;
     };
     q.addEventListener("input", draw);
     q.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); const b = res.querySelector<HTMLElement>("[data-add], [data-go-form]"); if (b) b.click(); } });
@@ -740,7 +739,8 @@ function renderClient(id: string, stepId: string): void {
       else if (goF) { labFocus = goF.dataset.goForm!; focusLab(); }
       else if (rm) {
         const code = rm.dataset.rmExtra!;
-        if (c.values[code] !== undefined && !confirm(`Убрать «${Labs.LABS[code].name}» из бланка? Значение в открытых анализах сотрётся.`)) return;
+        const name = (Labs.LABS[code] && Labs.LABS[code].name) || code;
+        if (c.values[code] !== undefined && !confirm(`Убрать «${name}» из бланка? Значение в открытых анализах сотрётся.`)) return;
         delete c.values[code]; labAdded[c.id]?.delete(code); clearTimeout(timer); save(); renderClient(id, step.id);
       }
     });
@@ -1802,6 +1802,8 @@ function download(name: string, text: string, type: string): void {
 }
 
 window.addEventListener("hashchange", route);
-Promise.all([FS.init().catch(folderError), Settings.Store.init(), Norms.loadNorms(), Labs.loadLabs()]).finally(route);
+Promise.all([FS.init().catch(folderError), Settings.Store.init(), Norms.loadNorms(), Labs.loadLabs()])
+  .then(() => Labs.applyOwn(Settings.load().labs as Record<string, Labs.Lab> | undefined))
+  .finally(route);
 // настройки дочитались из папки, открылся доступ или введён пароль — перерисовать страницу настроек
 Settings.Store.onChange(() => { if (location.hash.startsWith("#/settings")) route(); });

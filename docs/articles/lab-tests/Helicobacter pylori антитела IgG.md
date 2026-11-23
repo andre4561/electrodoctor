@@ -2,7 +2,6 @@
 Title: Helicobacter pylori: антитела IgG
 Рубрики: анализ
 code: HPYLORI
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

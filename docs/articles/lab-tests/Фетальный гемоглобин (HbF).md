@@ -2,7 +2,6 @@
 Title: Фетальный гемоглобин (HbF)
 Рубрики: анализ
 code: HBF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

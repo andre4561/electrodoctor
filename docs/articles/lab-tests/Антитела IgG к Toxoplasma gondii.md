@@ -2,7 +2,6 @@
 Title: Антитела IgG к Toxoplasma gondii
 Рубрики: анализ
 code: TOXO_IGG
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

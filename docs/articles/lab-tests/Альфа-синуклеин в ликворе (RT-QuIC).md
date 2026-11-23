@@ -2,7 +2,6 @@
 Title: Альфа-синуклеин в ликворе (RT-QuIC)
 Рубрики: анализ
 code: ALPHA_SYNUCLEIN_RT_QUIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

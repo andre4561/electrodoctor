@@ -2,7 +2,6 @@
 Title: FeNO (окислённый азот в выдыхаемом воздухе)
 Рубрики: анализ
 code: FENO
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

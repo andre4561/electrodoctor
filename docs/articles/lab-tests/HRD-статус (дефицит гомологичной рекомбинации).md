@@ -2,7 +2,6 @@
 Title: HRD-статус (дефицит гомологичной рекомбинации)
 Рубрики: анализ
 code: HRD_SCORE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

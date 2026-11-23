@@ -2,7 +2,6 @@
 Title: Генотип C9orf72
 Рубрики: анализ
 code: C9ORF72_GENOTYPE
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

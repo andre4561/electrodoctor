@@ -2,7 +2,6 @@
 Title: ПЦР на грипп A (H1N1) в мазке из носоглотки
 Рубрики: анализ
 code: INFLUENZA_A_H1N1_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

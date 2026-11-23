@@ -58,7 +58,7 @@ def yaml_q(s):
 
 def front(code, l, model, short):
     al = [a for a in l["aliases"] if a and a != l["name"]][:12]
-    lines = ["---", f"Title: {l['name']}", "Рубрики: анализ", f"code: {code}", f"tier: {l['tier']}",
+    lines = ["---", f"Title: {l['name']}", "Рубрики: анализ", f"code: {code}",
              f"status: черновик ИИ ({model}), не проверено", f"length: {SHORT_MARK if short else 'полная'}"]
     if al:
         lines += ["aliases:"] + [f"  - {yaml_q(a)}" for a in al]
@@ -99,14 +99,13 @@ def main():
                 have_codes.add(m.group(1)); by_code[m.group(1)] = f
                 s = re.search(r"^status: черновик ИИ \(([^)]+)\), не проверено", head, re.M); made_by[m.group(1)] = s.group(1) if s else ""
                 if SHORT_MARK in head[:600]: short_have.add(m.group(1))
-    full = lambda l: l["inForm"] or (l["tier"] in ("basic", "special") and l.get("refs", 0) >= 3)
+    full = lambda l: l["inForm"] or l.get("refs", 0) >= 3
     todo = [c for c, l in labs.items() if not l.get("article") and c not in have_codes and (full(l) if a.mode == "full" else not full(l))]
     if a.replace:
         todo = [c for c, l in labs.items() if c in made_by and made_by[c] == a.replace and (full(l) if a.mode == "full" else not full(l))]
     if a.upgrade:
-        rank = {"basic": 0, "special": 1, "rare": 2}
         todo = sorted((c for c in labs if made_by.get(c) == a.upgrade and c in short_have),
-                      key=lambda c: (rank.get(labs[c]["tier"], 3), -labs[c].get("refs", 0), c))
+                      key=lambda c: (0 if labs[c].get("inForm") else 1, -labs[c].get("refs", 0), c))
     if a.codes: todo = a.codes
     if a.limit: todo = todo[:a.limit]
     art_dir = a.dest or ART

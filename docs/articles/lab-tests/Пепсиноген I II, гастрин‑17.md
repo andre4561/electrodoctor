@@ -2,7 +2,6 @@
 Title: Пепсиноген I/II, гастрин‑17
 Рубрики: анализ
 code: PEPSINOGEN_GASTRIN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

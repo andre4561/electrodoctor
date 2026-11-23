@@ -2,7 +2,6 @@
 Title: Мутации гена SQLE
 Рубрики: анализ
 code: SQLE_MUTATION
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

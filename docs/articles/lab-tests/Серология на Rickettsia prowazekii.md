@@ -2,7 +2,6 @@
 Title: Серология на Rickettsia prowazekii
 Рубрики: анализ
 code: RICKETTSIA_PROWAZEKII_SER
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Анти-SSA/SSB антитела
 Рубрики: анализ
 code: ANTI_SSA_SSB
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

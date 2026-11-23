@@ -2,7 +2,6 @@
 Title: Генетический анализ (ENG, ACVRL1, SMAD4, RASA1)
 Рубрики: анализ
 code: GENETIC_PANEL_HHT
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

@@ -2,7 +2,6 @@
 Title: FGF23
 Рубрики: анализ
 code: FGF23
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

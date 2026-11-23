@@ -2,7 +2,6 @@
 Title: IgM/IgG к хантавирусу
 Рубрики: анализ
 code: HANTAVIRUS_IGM_IGG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

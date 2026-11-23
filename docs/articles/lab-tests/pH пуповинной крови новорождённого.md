@@ -2,7 +2,6 @@
 Title: pH пуповинной крови новорождённого
 Рубрики: анализ
 code: UMBILICAL_BLOOD_PH
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

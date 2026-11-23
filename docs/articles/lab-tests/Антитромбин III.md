@@ -2,7 +2,6 @@
 Title: Антитромбин III
 Рубрики: анализ
 code: ANTITHROMBIN
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

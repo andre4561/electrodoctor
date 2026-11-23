@@ -2,7 +2,6 @@
 Title: Посев на Candida и стафилококк
 Рубрики: анализ
 code: CULTURE_CANDIDA_STAPH
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

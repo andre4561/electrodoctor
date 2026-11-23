@@ -2,7 +2,6 @@
 Title: Генетический тест на мутацию NRAS
 Рубрики: анализ
 code: NRAS_MUT
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

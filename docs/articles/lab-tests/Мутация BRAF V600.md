@@ -2,7 +2,6 @@
 Title: Мутация BRAF V600
 Рубрики: анализ
 code: BRAF_V600
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

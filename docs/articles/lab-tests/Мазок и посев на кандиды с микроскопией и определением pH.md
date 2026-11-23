@@ -2,7 +2,6 @@
 Title: Мазок и посев на кандиды с микроскопией и определением pH
 Рубрики: анализ
 code: CANDIDA_CULTURE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

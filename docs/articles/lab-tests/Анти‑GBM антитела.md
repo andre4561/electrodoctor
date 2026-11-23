@@ -2,7 +2,6 @@
 Title: Анти‑GBM антитела
 Рубрики: анализ
 code: ANTI_GBM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

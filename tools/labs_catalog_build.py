@@ -40,7 +40,7 @@ def form_fields():
         unit = (re.search(r'unit: "([^"]*)"', rest) or [None, ""])[1]
         opts = rest
         t = "number" if typ == "number" else "qual" if re.search(r"обнаружен|положит|нет\"|рост", opts) else "text"
-        out[code] = {"name": label, "aliases": [], "type": t, "unit": unit, "tier": "basic", "group": group, "inForm": True}
+        out[code] = {"name": label, "aliases": [], "type": t, "unit": unit, "group": group, "inForm": True}
     return out
 
 
@@ -67,10 +67,6 @@ def articles():
 
 def main():
     items = form_fields()
-    new21 = {"TROPONIN", "NT_PROBNP", "BNP", "CK", "CK_MB", "MYOGLOBIN", "LPA", "APOB", "APOA1", "HCY", "LDH", "LACTATE",
-             "LIPASE", "AMYLASE_P", "CYSC", "CPEP", "HOMA", "ACTH", "PCT", "C3", "C4"}
-    for c in new21:
-        if c in items: items[c]["tier"] = "special"
     # статьи бланка — из src/app/articles.ts
     at = open(os.path.join(ROOT, "src", "app", "articles.ts"), encoding="utf-8").read()
     for c, a in re.findall(r'^\s+(\w+): "([^"]+)",', at, re.M):
@@ -91,13 +87,12 @@ def main():
             code = re.sub(r"[^A-Z0-9_]", "_", str(x.get("existing") or x["code"]).upper()).strip("_")
             while code in REMAP and REMAP[code] != code: code = REMAP[code]
             src2code[s] = code
-            a = agg.setdefault(code, {"names": collections.Counter(), "aliases": set(), "type": collections.Counter(), "unit": collections.Counter(), "tier": collections.Counter(), "dx": set()})
+            a = agg.setdefault(code, {"names": collections.Counter(), "aliases": set(), "type": collections.Counter(), "unit": collections.Counter(), "dx": set()})
             n = mentions.get(s, 1)
             a["names"][x.get("name") or s] += n
             a["aliases"] |= {s, *[str(y) for y in (x.get("aliases") or [])]}
             a["type"][x.get("type") or "text"] += n
             if x.get("unit"): a["unit"][x["unit"]] += n
-            a["tier"][x.get("tier") or "rare"] += n
             a["dx"] |= where.get(s, set())
     for code, a in agg.items():
         if code in items:            # тот же анализ, что в бланке: только синонимы
@@ -107,7 +102,7 @@ def main():
             continue
         name = a["names"].most_common(1)[0][0]
         items[code] = {"name": name, "aliases": sorted(a["aliases"] - {name}), "type": a["type"].most_common(1)[0][0],
-                       "unit": a["unit"].most_common(1)[0][0] if a["unit"] else "", "tier": a["tier"].most_common(1)[0][0],
+                       "unit": a["unit"].most_common(1)[0][0] if a["unit"] else "",
                        "inForm": False, "refs": len(a["dx"])}
     # дубли: ИИ в разных порциях давал одному анализу разные коды — склеиваем по названию и синонимам
     #  (в бланк ничего не вливаем по синонимам: «Эритроциты» крови и мочи — разные анализы)
@@ -130,9 +125,6 @@ def main():
     for s, c in list(src2code.items()):
         while c in merged: c = merged[c]
         src2code[s] = c
-    # уровень по данным: редкий, но нужный многим диагнозам — специализированный
-    for it in items.values():
-        if it["tier"] == "rare" and it.get("refs", 0) >= 5: it["tier"] = "special"
     # статьи, написанные по шаблону, знают свой код (code: в шапке)
     for f in glob.glob(os.path.join(ART, "*.md")):
         m = re.search(r"^code:\s*(\w+)", open(f, encoding="utf-8").read(3000), re.M)
@@ -164,16 +156,15 @@ def main():
         it = items.get(code)
         if it and it["name"] != nm:
             it["aliases"] = sorted(set(it["aliases"]) | {it["name"]} - {nm}); it["name"] = nm
-    tiers = collections.Counter(it["tier"] for it in items.values())
     data = {"format": "electrodoctor-labs", "version": 1,
-            "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, tier: basic — основной, special — специализированный, rare — редкий/новый, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
-            "items": dict(sorted(items.items(), key=lambda kv: ({"basic": 0, "special": 1, "rare": 2}[kv[1]["tier"]] if kv[1]["tier"] in ("basic", "special", "rare") else 3, -kv[1].get("refs", 0), kv[0])))}
+            "about": "Справочник анализов. items: КОД → { name, aliases — синонимы, type: number | qual (положительно/отрицательно) | text, unit, group — группа бланка, inForm — есть в бланке, article — статья в docs/articles/lab-tests/ (без .md), refs — у скольких диагнозов в признаках }. Нормы числовых анализов — в docs/data/norms.json. Собирается скриптом tools/labs_catalog_build.py.",
+            "items": dict(sorted(items.items(), key=lambda kv: (0 if kv[1].get("inForm") else 1, -kv[1].get("refs", 0), kv[0])))}
     with open(os.path.join(ROOT, "docs", "data", "labs.json"), "w", encoding="utf-8", newline="\n") as fh:
         json.dump(data, fh, ensure_ascii=False, indent=1); fh.write("\n")
     with open(os.path.join(ROOT, "tools", "out", "not_lab.md"), "w", encoding="utf-8") as fh:
         fh.write("# Не анализы: исследования, опросники, пробы\n\nИИ назвал их в «нет в анкете», но это не лабораторные анализы. Кандидаты для блоков «Осмотр» и «Инструментальные исследования».\n\n")
         fh.write("\n".join(f"- {k} — {n}" for k, n in not_lab.most_common()) + "\n")
-    print(f"всего {len(items)}: {dict(tiers)}; в бланке {sum(1 for i in items.values() if i['inForm'])}; со статьёй {sum(1 for i in items.values() if i.get('article'))}; не анализы {len(not_lab)}; кодов из разбора {len(agg)}; склеено дублей {len(merged)}")
+    print(f"всего {len(items)}; в бланке {sum(1 for i in items.values() if i['inForm'])}; со статьёй {sum(1 for i in items.values() if i.get('article'))}; не анализы {len(not_lab)}; кодов из разбора {len(agg)}; склеено дублей {len(merged)}")
 
 
 if __name__ == "__main__":

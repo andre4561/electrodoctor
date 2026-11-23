@@ -2,7 +2,6 @@
 Title: Мутации гена β-глобина (HBB)
 Рубрики: анализ
 code: HBB_MUTATION
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

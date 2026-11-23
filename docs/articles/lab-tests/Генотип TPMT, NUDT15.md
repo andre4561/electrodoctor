@@ -2,7 +2,6 @@
 Title: Генотип TPMT, NUDT15
 Рубрики: анализ
 code: TPMT_NUDT15_GENOTYPE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

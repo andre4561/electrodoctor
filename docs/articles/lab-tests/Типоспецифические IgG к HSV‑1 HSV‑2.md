@@ -2,7 +2,6 @@
 Title: Типоспецифические IgG к HSV‑1/HSV‑2
 Рубрики: анализ
 code: HSV_IGG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

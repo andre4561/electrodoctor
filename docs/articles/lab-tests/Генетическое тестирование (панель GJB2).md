@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (панель GJB2)
 Рубрики: анализ
 code: GJB2_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

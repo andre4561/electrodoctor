@@ -2,7 +2,6 @@
 Title: Анти-Jo-1 (антитела к гистидил-тРНК-синтетазе)
 Рубрики: анализ
 code: ANTI_JO1
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

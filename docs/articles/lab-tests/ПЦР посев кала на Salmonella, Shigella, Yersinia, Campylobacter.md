@@ -2,7 +2,6 @@
 Title: ПЦР/посев кала на Salmonella, Shigella, Yersinia, Campylobacter
 Рубрики: анализ
 code: STOOL_PATHOGENS
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

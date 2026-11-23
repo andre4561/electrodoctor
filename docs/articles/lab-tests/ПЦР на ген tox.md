@@ -2,7 +2,6 @@
 Title: ПЦР на ген tox
 Рубрики: анализ
 code: TOX_GENE_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

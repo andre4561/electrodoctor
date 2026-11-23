@@ -2,7 +2,6 @@
 Title: Статус HER2
 Рубрики: анализ
 code: HER2_TEST
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

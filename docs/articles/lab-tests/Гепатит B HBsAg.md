@@ -2,7 +2,6 @@
 Title: Гепатит B: HBsAg
 Рубрики: анализ
 code: HBSAG
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

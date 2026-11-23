@@ -2,7 +2,6 @@
 Title: Анти‑MDA5
 Рубрики: анализ
 code: ANTI_MDA5
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

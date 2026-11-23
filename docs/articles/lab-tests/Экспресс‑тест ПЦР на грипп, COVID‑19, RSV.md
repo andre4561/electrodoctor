@@ -2,7 +2,6 @@
 Title: Экспресс‑тест / ПЦР на грипп, COVID‑19, RSV
 Рубрики: анализ
 code: MULTIPLEX_PCR_RESP
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

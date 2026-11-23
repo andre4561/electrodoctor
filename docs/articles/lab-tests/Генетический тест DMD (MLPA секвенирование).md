@@ -2,7 +2,6 @@
 Title: Генетический тест DMD (MLPA/секвенирование)
 Рубрики: анализ
 code: DMD_GENETIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

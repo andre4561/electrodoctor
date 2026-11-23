@@ -2,7 +2,6 @@
 Title: Антинейрональные антитела (anti‑Hu и др.)
 Рубрики: анализ
 code: ANTI_NEURONAL_AB
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

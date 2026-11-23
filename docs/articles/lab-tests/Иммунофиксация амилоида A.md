@@ -2,7 +2,6 @@
 Title: Иммунофиксация амилоида A
 Рубрики: анализ
 code: IMMUNOFIX_AMYLOID_A
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

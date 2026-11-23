@@ -2,7 +2,6 @@
 Title: Анти‑C1q антитела
 Рубрики: анализ
 code: ANTI_C1Q
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

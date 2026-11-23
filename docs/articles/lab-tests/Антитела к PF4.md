@@ -2,7 +2,6 @@
 Title: Антитела к PF4
 Рубрики: анализ
 code: ANTI_PF4
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

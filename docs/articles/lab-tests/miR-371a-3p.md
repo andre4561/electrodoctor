@@ -2,7 +2,6 @@
 Title: miR-371a-3p
 Рубрики: анализ
 code: MIR_371A_3P
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

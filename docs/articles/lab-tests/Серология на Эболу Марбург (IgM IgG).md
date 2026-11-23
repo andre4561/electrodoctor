@@ -2,7 +2,6 @@
 Title: Серология на Эболу/Марбург (IgM/IgG)
 Рубрики: анализ
 code: EBOLA_MARBURG_SER
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

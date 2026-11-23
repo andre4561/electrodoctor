@@ -2,7 +2,6 @@
 Title: ПЦР Sarcoptes scabiei
 Рубрики: анализ
 code: SARCOPTES_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

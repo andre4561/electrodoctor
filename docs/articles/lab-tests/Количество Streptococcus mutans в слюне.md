@@ -2,7 +2,6 @@
 Title: Количество Streptococcus mutans в слюне
 Рубрики: анализ
 code: SMUTANS_SALIVA_COUNT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

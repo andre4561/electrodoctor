@@ -2,7 +2,6 @@
 Title: Антитела к VZV IgM/IgG
 Рубрики: анализ
 code: VZV_AB
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

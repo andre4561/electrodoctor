@@ -2,7 +2,6 @@
 Title: ПЦР на ДНК Leishmania
 Рубрики: анализ
 code: LEISHMANIA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

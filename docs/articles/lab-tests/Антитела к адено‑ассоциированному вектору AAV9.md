@@ -2,7 +2,6 @@
 Title: Антитела к адено‑ассоциированному вектору AAV9
 Рубрики: анализ
 code: AAV9_AB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: NAAT на Neisseria gonorrhoeae
 Рубрики: анализ
 code: NGONORRHEAE_NAAT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

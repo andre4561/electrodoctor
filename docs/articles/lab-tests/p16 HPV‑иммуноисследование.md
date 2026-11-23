@@ -2,7 +2,6 @@
 Title: p16/HPV‑иммуноисследование
 Рубрики: анализ
 code: HPV_P16_COMBO
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

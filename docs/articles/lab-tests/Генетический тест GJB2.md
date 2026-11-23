@@ -2,7 +2,6 @@
 Title: Генетический тест GJB2
 Рубрики: анализ
 code: GJB2_GENETIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

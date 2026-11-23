@@ -2,7 +2,6 @@
 Title: Слияние ROS1
 Рубрики: анализ
 code: ROS1_FUSION
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

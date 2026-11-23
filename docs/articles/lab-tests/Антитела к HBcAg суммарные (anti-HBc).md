@@ -2,7 +2,6 @@
 Title: Антитела к HBcAg суммарные (anti-HBc)
 Рубрики: анализ
 code: HBC_TOTAL
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

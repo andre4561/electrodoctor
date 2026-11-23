@@ -2,7 +2,6 @@
 Title: mHTT в спинномозговой жидкости
 Рубрики: анализ
 code: MHTT_CSF
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

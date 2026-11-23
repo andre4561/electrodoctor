@@ -2,7 +2,6 @@
 Title: PD‑L1 CPS
 Рубрики: анализ
 code: PD_L1_CPS
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

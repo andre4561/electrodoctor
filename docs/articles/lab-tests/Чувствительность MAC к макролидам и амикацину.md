@@ -2,7 +2,6 @@
 Title: Чувствительность MAC к макролидам и амикацину
 Рубрики: анализ
 code: MAC_SUSC
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

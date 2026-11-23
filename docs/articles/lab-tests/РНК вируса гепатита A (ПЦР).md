@@ -2,7 +2,6 @@
 Title: РНК вируса гепатита A (ПЦР)
 Рубрики: анализ
 code: HAV_RNA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

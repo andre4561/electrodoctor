@@ -2,7 +2,6 @@
 Title: Анти‑SRP
 Рубрики: анализ
 code: ANTI_SRP
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

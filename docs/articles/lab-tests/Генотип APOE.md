@@ -2,7 +2,6 @@
 Title: Генотип APOE
 Рубрики: анализ
 code: APOE_GENOTYPE
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

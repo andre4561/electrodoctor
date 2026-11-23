@@ -2,7 +2,6 @@
 Title: ПЦР на Vibrio cholerae в стуле
 Рубрики: анализ
 code: CHOLERA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

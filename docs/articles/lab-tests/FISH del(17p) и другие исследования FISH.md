@@ -2,7 +2,6 @@
 Title: FISH del(17p) и другие исследования FISH
 Рубрики: анализ
 code: FISH_17P
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

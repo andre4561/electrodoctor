@@ -2,7 +2,6 @@
 Title: Кал на Campylobacter (культура или ПЦР)
 Рубрики: анализ
 code: CAMPYLOBACTER_STOOL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

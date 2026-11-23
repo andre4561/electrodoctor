@@ -2,7 +2,6 @@
 Title: Ангиотензин‑превращающий фермент (ACE)
 Рубрики: анализ
 code: ACE
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

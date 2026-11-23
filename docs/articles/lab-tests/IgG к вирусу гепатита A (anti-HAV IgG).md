@@ -2,7 +2,6 @@
 Title: IgG к вирусу гепатита A (anti-HAV IgG)
 Рубрики: анализ
 code: HAV_IGG
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

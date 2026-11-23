@@ -2,7 +2,6 @@
 Title: Анализ мутаций киназного домена ABL1
 Рубрики: анализ
 code: ABL1_KINASE_MUTATION
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: IgM к вирусу Западного Нила в ликворе
 Рубрики: анализ
 code: WNV_IGM_CSF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

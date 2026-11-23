@@ -2,7 +2,6 @@
 Title: Метаболический скрининг (ацил‑картиниты, MCAD)
 Рубрики: анализ
 code: METABOLIC_SCREENING_ACYLCOA_MCAD
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

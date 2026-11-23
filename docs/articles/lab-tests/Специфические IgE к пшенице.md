@@ -2,7 +2,6 @@
 Title: Специфические IgE к пшенице
 Рубрики: анализ
 code: WHEAT_SPECIFIC_IGE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

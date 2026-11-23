@@ -2,7 +2,6 @@
 Title: HE4
 Рубрики: анализ
 code: HE4
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

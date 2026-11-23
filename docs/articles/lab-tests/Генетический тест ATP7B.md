@@ -2,7 +2,6 @@
 Title: Генетический тест ATP7B
 Рубрики: анализ
 code: ATP7B_GENETIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

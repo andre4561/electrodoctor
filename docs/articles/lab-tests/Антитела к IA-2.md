@@ -2,7 +2,6 @@
 Title: Антитела к IA-2
 Рубрики: анализ
 code: IA2_AB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

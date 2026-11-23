@@ -2,7 +2,6 @@
 Title: Титр анти‑D
 Рубрики: анализ
 code: ANTI_D_TITER
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

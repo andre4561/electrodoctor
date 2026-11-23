@@ -2,7 +2,6 @@
 Title: Анти-ДНКаза B (антитела к стрептококковой ДНКазе B)
 Рубрики: анализ
 code: ANTI_DNA_B
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

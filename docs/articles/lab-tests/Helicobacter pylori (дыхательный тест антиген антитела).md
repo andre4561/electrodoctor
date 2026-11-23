@@ -2,7 +2,6 @@
 Title: Helicobacter pylori (дыхательный тест/антиген/антитела)
 Рубрики: анализ
 code: HELICO_PYLORI
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: IgM к вирусу Зика
 Рубрики: анализ
 code: ZIKA_IGM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

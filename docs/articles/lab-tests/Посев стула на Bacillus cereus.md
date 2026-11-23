@@ -2,7 +2,6 @@
 Title: Посев стула на Bacillus cereus
 Рубрики: анализ
 code: STOOL_BACILLUS_CEREUS_CULTURE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

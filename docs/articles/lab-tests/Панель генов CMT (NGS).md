@@ -2,7 +2,6 @@
 Title: Панель генов CMT (NGS)
 Рубрики: анализ
 code: CMT_GENE_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

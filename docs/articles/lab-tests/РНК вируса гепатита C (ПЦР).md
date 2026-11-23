@@ -2,7 +2,6 @@
 Title: РНК вируса гепатита C (ПЦР)
 Рубрики: анализ
 code: HCV_RNA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

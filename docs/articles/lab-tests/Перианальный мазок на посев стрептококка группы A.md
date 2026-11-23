@@ -2,7 +2,6 @@
 Title: Перианальный мазок на посев стрептококка группы A
 Рубрики: анализ
 code: STREP_A_CULTURE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

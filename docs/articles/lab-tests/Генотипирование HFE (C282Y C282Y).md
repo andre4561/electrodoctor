@@ -2,7 +2,6 @@
 Title: Генотипирование HFE (C282Y/C282Y)
 Рубрики: анализ
 code: HFE_GENOTYPE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

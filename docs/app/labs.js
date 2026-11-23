@@ -1,14 +1,23 @@
 export const LABS_URL = "../data/labs.json";
 export const LABS = {};
+let baseLabs = {};
 let loading = null;
 export function loadLabs() {
     return loading || (loading = fetch(LABS_URL, { cache: "no-cache" })
         .then(r => (r.ok ? r.json() : { items: {} }))
-        .then(j => { Object.assign(LABS, (j && j.items) || {}); })
+        .then(j => {
+        baseLabs = { ...((j && j.items) || {}) };
+        Object.keys(LABS).forEach(k => delete LABS[k]);
+        Object.assign(LABS, baseLabs);
+    })
         .catch(e => { console.error("справочник анализов не загрузился", e); loading = null; }));
 }
+/** Свои анализы из настроек поверх файла каталога (добавленные в Настройки → Анализы). */
+export function applyOwn(own) {
+    Object.keys(LABS).forEach(k => delete LABS[k]);
+    Object.assign(LABS, baseLabs, own || {});
+}
 export const has = (code) => !!LABS[code];
-export const TIER_NAME = { basic: "основной", special: "специализированный", rare: "редкий" };
 // Результат «положительно/отрицательно»: варианты в бланке и распознавание слов с бланков лабораторий
 export const QUAL_OPTIONS = [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]];
 const NEG = /(^|[^а-яa-z])(не\s*обнаруж|не\s*выявл|отриц|нет\s*роста|рост[а]?\s*нет|negative|not\s*detected|non-?reactive|нет$|^-$|^отр)/i;
@@ -39,13 +48,12 @@ export function fieldFor(code) {
         return { code, label: l.name, type: "select", options: QUAL_OPTIONS };
     return { code, label: l.name, type: "text" };
 }
-// Поиск по названию, синонимам и коду; основные и частые — выше
+// Поиск по названию, синонимам и коду; чаще встречающиеся в признаках диагнозов — выше
 const norm = (s) => s.toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9]+/g, "");
 export function search(q, exclude, limit = 12) {
     const n = norm(q);
     if (n.length < 2)
         return [];
-    const tierW = { basic: 0, special: 1, rare: 2 };
     const out = [];
     for (const [code, l] of Object.entries(LABS)) {
         if (exclude(code))
@@ -55,7 +63,7 @@ export function search(q, exclude, limit = 12) {
         names.forEach((x, i) => { const p = x.indexOf(n); if (p >= 0)
             best = Math.min(best, (p === 0 ? 0 : 2) + (i === 0 ? 0 : 1)); });
         if (best < 99)
-            out.push({ code, score: best * 10 + tierW[l.tier] * 3 - Math.min(5, (l.refs || 0) / 4) });
+            out.push({ code, score: best * 10 - Math.min(5, (l.refs || 0) / 4) });
     }
     return out.sort((a, b) => a.score - b.score).slice(0, limit).map(x => x.code);
 }

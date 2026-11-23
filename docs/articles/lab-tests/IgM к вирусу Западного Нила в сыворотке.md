@@ -2,7 +2,6 @@
 Title: IgM к вирусу Западного Нила в сыворотке
 Рубрики: анализ
 code: WNV_IGM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

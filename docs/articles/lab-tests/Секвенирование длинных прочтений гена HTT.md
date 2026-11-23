@@ -2,7 +2,6 @@
 Title: Секвенирование длинных прочтений гена HTT
 Рубрики: анализ
 code: HTT_LONG_READ_SEQUENCING
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

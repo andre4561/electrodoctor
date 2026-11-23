@@ -2,7 +2,6 @@
 Title: NT-proBNP
 Рубрики: анализ
 code: NT_PROBNP
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

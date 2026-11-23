@@ -2,7 +2,6 @@
 Title: Нейрофиламент лёгкий (NfL) в плазме
 Рубрики: анализ
 code: NFL_PLASMA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Мазок на Candida
 Рубрики: анализ
 code: SWAB_CANDIDA
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

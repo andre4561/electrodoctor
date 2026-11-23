@@ -2,7 +2,6 @@
 Title: Число CAG‑повторов в гене HTT
 Рубрики: анализ
 code: HTT_CAG_REPEAT_COUNT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

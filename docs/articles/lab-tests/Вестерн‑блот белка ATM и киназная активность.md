@@ -2,7 +2,6 @@
 Title: Вестерн‑блот белка ATM и киназная активность
 Рубрики: анализ
 code: ATM_WESTERN_BLOT
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

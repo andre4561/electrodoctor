@@ -2,7 +2,6 @@
 Title: Генетическое исследование ANKH
 Рубрики: анализ
 code: ANKH_GENE_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

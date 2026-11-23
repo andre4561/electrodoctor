@@ -2,7 +2,6 @@
 Title: Генетический тест BRCA1/BRCA2
 Рубрики: анализ
 code: BRCA1_BRCA2
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

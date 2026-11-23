@@ -2,7 +2,6 @@
 Title: Индекс антител CSF/сыворотка
 Рубрики: анализ
 code: CSF_SERUM_AB_INDEX
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

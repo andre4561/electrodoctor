@@ -2,7 +2,6 @@
 Title: Генетическое тестирование NF1, NF2 и SPRED1
 Рубрики: анализ
 code: NF1_NF2_SPRED1_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

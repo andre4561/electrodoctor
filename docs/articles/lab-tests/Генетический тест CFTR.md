@@ -2,7 +2,6 @@
 Title: Генетический тест CFTR
 Рубрики: анализ
 code: CFTR_GENETIC
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Статус ER/PR (иммунохимия)
 Рубрики: анализ
 code: ER_PR_IHC
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

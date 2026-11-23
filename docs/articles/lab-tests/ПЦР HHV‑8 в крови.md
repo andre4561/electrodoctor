@@ -2,7 +2,6 @@
 Title: ПЦР HHV‑8 в крови
 Рубрики: анализ
 code: PCR_HHV8
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

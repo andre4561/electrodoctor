@@ -2,7 +2,6 @@
 Title: Контролируемый параметр ослабления (CAP) для оценки стеатоза
 Рубрики: анализ
 code: CAP_MEASUREMENT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

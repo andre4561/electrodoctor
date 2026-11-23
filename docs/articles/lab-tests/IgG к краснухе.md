@@ -2,7 +2,6 @@
 Title: IgG к краснухе
 Рубрики: анализ
 code: RUBELLA_IGG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

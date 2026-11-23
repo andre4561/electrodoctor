@@ -2,7 +2,6 @@
 Title: Типоспецифические IgG к HSV‑2 (gG2)
 Рубрики: анализ
 code: HSV2_IGG_G2
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

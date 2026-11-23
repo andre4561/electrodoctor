@@ -2,7 +2,6 @@
 Title: WATS3D (щёточная биопсия пищевода с компьютерным 3D-анализом)
 Рубрики: анализ
 code: WATS3D
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

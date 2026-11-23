@@ -2,7 +2,6 @@
 Title: Тау-белок в спинномозговой жидкости (CSF total tau)
 Рубрики: анализ
 code: CSF_TAU
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

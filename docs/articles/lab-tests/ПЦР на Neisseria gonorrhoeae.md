@@ -2,7 +2,6 @@
 Title: ПЦР на Neisseria gonorrhoeae
 Рубрики: анализ
 code: GONORRHEA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: IgM к вирусу кори
 Рубрики: анализ
 code: MEASLES_IGM
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

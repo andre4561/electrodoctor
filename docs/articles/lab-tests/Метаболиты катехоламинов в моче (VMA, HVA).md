@@ -2,7 +2,6 @@
 Title: Метаболиты катехоламинов в моче (VMA, HVA)
 Рубрики: анализ
 code: VMA_HVA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

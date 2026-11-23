@@ -2,7 +2,6 @@
 Title: Антитела IgG к Aspergillus
 Рубрики: анализ
 code: ASPERGILLUS_IGG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

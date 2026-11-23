@@ -2,7 +2,6 @@
 Title: Активность галактоцереброзидазы (GALC)
 Рубрики: анализ
 code: GALC_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

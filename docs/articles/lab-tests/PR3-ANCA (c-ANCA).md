@@ -2,7 +2,6 @@
 Title: PR3-ANCA (c-ANCA)
 Рубрики: анализ
 code: PR3_ANCA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

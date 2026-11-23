@@ -2,7 +2,6 @@
 Title: HLA‑типирование пациента и родственников
 Рубрики: анализ
 code: HLA_TYPING
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

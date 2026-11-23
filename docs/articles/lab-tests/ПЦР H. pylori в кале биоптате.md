@@ -2,7 +2,6 @@
 Title: ПЦР H. pylori в кале/биоптате
 Рубрики: анализ
 code: HP_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

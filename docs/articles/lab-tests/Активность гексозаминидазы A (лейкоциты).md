@@ -2,7 +2,6 @@
 Title: Активность гексозаминидазы A (лейкоциты)
 Рубрики: анализ
 code: HEXA_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

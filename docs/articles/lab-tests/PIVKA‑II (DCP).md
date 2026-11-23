@@ -2,7 +2,6 @@
 Title: PIVKA‑II (DCP)
 Рубрики: анализ
 code: PIVKA_II
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

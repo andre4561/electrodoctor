@@ -2,7 +2,6 @@
 Title: ПЦР ETV6::RUNX1
 Рубрики: анализ
 code: ETV6_RUNX1_PCR
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

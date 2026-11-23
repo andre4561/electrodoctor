@@ -2,7 +2,6 @@
 Title: Анти‑RNA полимераза III антитела
 Рубрики: анализ
 code: ANTI_RNA_POLYMERASE_III
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

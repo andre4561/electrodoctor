@@ -2,7 +2,6 @@
 Title: Активность дигидроптерин редуктазы (DHPR)
 Рубрики: анализ
 code: DHPR_ACTIVITY
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

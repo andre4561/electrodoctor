@@ -122,7 +122,7 @@ for i, g in enumerate(groups, 1):
         "id": i,
         "items": [{"code": c, "name": labs[c]["name"], "aliases": labs[c].get("aliases", [])[:12],
                    "unit": labs[c].get("unit", ""), "type": labs[c].get("type", ""), "material": material(c),
-                   "group": labs[c].get("group", ""), "tier": labs[c].get("tier", ""), "inForm": labs[c].get("inForm", False),
+                   "group": labs[c].get("group", ""), "inForm": labs[c].get("inForm", False),
                    "diagnoses": used[c], "article": labs[c].get("article", "")} for c in g],
         "links": [{"a": a, "b": b, "why": sorted(w)} for (a, b), w in sorted(edges.items()) if a in g and b in g],
     })

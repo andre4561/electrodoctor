@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (C9orf72, SOD1, TARDBP, FUS)
 Рубрики: анализ
 code: GENETIC_ALS_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

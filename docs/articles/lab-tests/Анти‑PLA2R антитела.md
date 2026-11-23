@@ -2,7 +2,6 @@
 Title: Анти‑PLA2R антитела
 Рубрики: анализ
 code: ANTI_PLA2R
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

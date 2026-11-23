@@ -2,7 +2,6 @@
 Title: Тест на Helicobacter pylori
 Рубрики: анализ
 code: H_PYLORI_TEST
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

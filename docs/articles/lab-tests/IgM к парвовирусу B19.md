@@ -2,7 +2,6 @@
 Title: IgM к парвовирусу B19
 Рубрики: анализ
 code: B19_IGM
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

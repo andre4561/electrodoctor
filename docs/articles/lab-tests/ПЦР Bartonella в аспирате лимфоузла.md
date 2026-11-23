@@ -2,7 +2,6 @@
 Title: ПЦР Bartonella в аспирате лимфоузла
 Рубрики: анализ
 code: PCR_BARTONELLA_LN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

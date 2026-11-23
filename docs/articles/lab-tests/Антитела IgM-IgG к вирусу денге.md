@@ -2,7 +2,6 @@
 Title: Антитела IgM/IgG к вирусу денге
 Рубрики: анализ
 code: DENGUE_IGM_IGG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

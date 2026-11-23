@@ -2,7 +2,6 @@
 Title: ПЦР HSV в ликворе
 Рубрики: анализ
 code: HSV_PCR_CSF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

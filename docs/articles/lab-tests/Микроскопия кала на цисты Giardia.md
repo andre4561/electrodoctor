@@ -2,7 +2,6 @@
 Title: Микроскопия кала на цисты Giardia
 Рубрики: анализ
 code: GIARDIA_MICRO
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

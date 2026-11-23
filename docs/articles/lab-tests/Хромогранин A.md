@@ -2,7 +2,6 @@
 Title: Хромогранин A
 Рубрики: анализ
 code: CHROMOGRANIN_A
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

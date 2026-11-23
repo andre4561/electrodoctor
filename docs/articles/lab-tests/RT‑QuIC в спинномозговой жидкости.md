@@ -2,7 +2,6 @@
 Title: RT‑QuIC в спинномозговой жидкости
 Рубрики: анализ
 code: RT_QUIC_CSF
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

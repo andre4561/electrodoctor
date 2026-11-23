@@ -2,7 +2,6 @@
 Title: ПЦР на Gardnerella, Atopobium, Prevotella
 Рубрики: анализ
 code: PCR_GARDNERELLA_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

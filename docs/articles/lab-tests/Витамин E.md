@@ -2,7 +2,6 @@
 Title: Витамин E
 Рубрики: анализ
 code: VITAMIN_E
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

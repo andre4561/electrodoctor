@@ -2,7 +2,6 @@
 Title: Rh‑фактор
 Рубрики: анализ
 code: RH_FACTOR
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Секвенирование гена HEXA
 Рубрики: анализ
 code: HEXA_SEQUENCING
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Панель NRAS/KIT
 Рубрики: анализ
 code: NRAS_KIT_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

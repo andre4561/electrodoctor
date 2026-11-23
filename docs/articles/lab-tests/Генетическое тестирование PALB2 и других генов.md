@@ -2,7 +2,6 @@
 Title: Генетическое тестирование PALB2 и других генов
 Рубрики: анализ
 code: PALB2_GENETIC
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

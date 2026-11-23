@@ -2,7 +2,6 @@
 Title: Серология IgG/IgM к Bartonella henselae
 Рубрики: анализ
 code: BARTONELLA_SERUM_IGG_IGM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

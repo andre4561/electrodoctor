@@ -2,7 +2,6 @@
 Title: Ингибин B
 Рубрики: анализ
 code: INHIBIN_B
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

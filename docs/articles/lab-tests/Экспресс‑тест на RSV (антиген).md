@@ -2,7 +2,6 @@
 Title: Экспресс‑тест на RSV (антиген)
 Рубрики: анализ
 code: RSV_ANTIGEN
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

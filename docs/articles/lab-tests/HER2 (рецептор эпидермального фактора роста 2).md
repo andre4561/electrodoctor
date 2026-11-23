@@ -2,7 +2,6 @@
 Title: HER2 (рецептор эпидермального фактора роста 2)
 Рубрики: анализ
 code: HER2
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

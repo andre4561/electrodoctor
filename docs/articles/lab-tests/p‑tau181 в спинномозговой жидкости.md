@@ -2,7 +2,6 @@
 Title: p‑tau181 в спинномозговой жидкости
 Рубрики: анализ
 code: PTAU181_CSF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

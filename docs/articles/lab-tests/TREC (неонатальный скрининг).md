@@ -2,7 +2,6 @@
 Title: TREC (неонатальный скрининг)
 Рубрики: анализ
 code: TREC_TEST
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

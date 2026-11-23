@@ -2,7 +2,6 @@
 Title: Антитела IgG к деамидированным пептидам глиадина
 Рубрики: анализ
 code: DGP_IGG
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

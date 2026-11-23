@@ -2,7 +2,6 @@
 Title: Молекулярная панель NGS
 Рубрики: анализ
 code: NGS_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

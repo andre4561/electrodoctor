@@ -2,7 +2,6 @@
 Title: Антиген Histoplasma в моче
 Рубрики: анализ
 code: HISTO_ANTIGEN_URINE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

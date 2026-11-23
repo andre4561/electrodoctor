@@ -2,7 +2,6 @@
 Title: IGF-1
 Рубрики: анализ
 code: IGF1
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

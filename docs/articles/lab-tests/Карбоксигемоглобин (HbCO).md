@@ -2,7 +2,6 @@
 Title: Карбоксигемоглобин (HbCO)
 Рубрики: анализ
 code: CARBOXYHEMOGLOBIN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

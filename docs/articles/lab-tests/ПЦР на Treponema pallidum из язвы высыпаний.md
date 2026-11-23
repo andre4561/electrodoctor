@@ -2,7 +2,6 @@
 Title: ПЦР на Treponema pallidum из язвы/высыпаний
 Рубрики: анализ
 code: PCR_TREPONEMA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

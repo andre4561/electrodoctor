@@ -2,7 +2,6 @@
 Title: Перестройка ALK
 Рубрики: анализ
 code: ALK_REARR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

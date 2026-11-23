@@ -2,7 +2,6 @@
 Title: Аутоантитела к GAD65, IA‑2, ZnT8, инсулин
 Рубрики: анализ
 code: DIABETES_AUTOAB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

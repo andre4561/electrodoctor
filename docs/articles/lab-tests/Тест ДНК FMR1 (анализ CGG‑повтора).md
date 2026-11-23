@@ -2,7 +2,6 @@
 Title: Тест ДНК FMR1 (анализ CGG‑повтора)
 Рубрики: анализ
 code: FMR1_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: IgM анти-HBc
 Рубрики: анализ
 code: HBC_IGM
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

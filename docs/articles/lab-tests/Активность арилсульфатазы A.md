@@ -2,7 +2,6 @@
 Title: Активность арилсульфатазы A
 Рубрики: анализ
 code: ARYL_SULFATASE_A
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Серология/ПЦР на Borrelia recurrentis
 Рубрики: анализ
 code: BORRELIA_RECURRENTIS_SER
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

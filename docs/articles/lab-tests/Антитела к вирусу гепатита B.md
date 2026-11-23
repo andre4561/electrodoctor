@@ -2,7 +2,6 @@
 Title: Антитела к вирусу гепатита B
 Рубрики: анализ
 code: HEPATITIS_B_AB
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

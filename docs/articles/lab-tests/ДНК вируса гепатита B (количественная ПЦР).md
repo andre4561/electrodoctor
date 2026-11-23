@@ -2,7 +2,6 @@
 Title: ДНК вируса гепатита B (количественная ПЦР)
 Рубрики: анализ
 code: HBV_DNA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

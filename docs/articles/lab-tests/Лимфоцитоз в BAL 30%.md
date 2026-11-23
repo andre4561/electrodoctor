@@ -2,7 +2,6 @@
 Title: Лимфоцитоз в BAL >30%
 Рубрики: анализ
 code: BAL_LYMPHOCYTOSIS
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

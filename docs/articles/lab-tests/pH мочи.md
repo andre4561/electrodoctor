@@ -2,7 +2,6 @@
 Title: pH мочи
 Рубрики: анализ
 code: U_PH
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

@@ -2,7 +2,6 @@
 Title: HER2, FISH
 Рубрики: анализ
 code: HER2_FISH
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

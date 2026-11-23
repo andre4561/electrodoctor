@@ -2,7 +2,6 @@
 Title: Антитела к ВЭБ: VCA IgM
 Рубрики: анализ
 code: EBV_VCA_IGM
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

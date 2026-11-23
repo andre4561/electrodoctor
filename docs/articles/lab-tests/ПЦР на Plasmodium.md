@@ -2,7 +2,6 @@
 Title: ПЦР на Plasmodium
 Рубрики: анализ
 code: MALARIA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

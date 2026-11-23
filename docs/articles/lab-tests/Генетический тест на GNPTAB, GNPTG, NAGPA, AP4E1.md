@@ -2,7 +2,6 @@
 Title: Генетический тест на GNPTAB, GNPTG, NAGPA, AP4E1
 Рубрики: анализ
 code: GNPTAB_GNPTG_NAGPA_AP4E1_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

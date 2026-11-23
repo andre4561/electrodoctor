@@ -2,7 +2,6 @@
 Title: Генетическое тестирование FGFR3
 Рубрики: анализ
 code: FGFR3_GENETIC_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

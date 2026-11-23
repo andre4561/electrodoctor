@@ -2,7 +2,6 @@
 Title: Авидность IgG к ЦМВ
 Рубрики: анализ
 code: CMV_IGG_AVIDITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

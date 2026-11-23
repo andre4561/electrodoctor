@@ -2,7 +2,6 @@
 Title: Культура на N. gonorrhoeae с определением чувствительности
 Рубрики: анализ
 code: NGONORRHEAE_CULTURE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

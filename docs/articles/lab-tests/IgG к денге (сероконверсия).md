@@ -2,7 +2,6 @@
 Title: IgG к денге (сероконверсия)
 Рубрики: анализ
 code: DENGUE_IGG
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

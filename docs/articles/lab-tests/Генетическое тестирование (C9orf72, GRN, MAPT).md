@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (C9orf72, GRN, MAPT)
 Рубрики: анализ
 code: GENETIC_ND_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

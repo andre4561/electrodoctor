@@ -2,7 +2,6 @@
 Title: ПЦР на ДНК Toxoplasma (кровь/спинномозговая жидкость)
 Рубрики: анализ
 code: TOXO_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

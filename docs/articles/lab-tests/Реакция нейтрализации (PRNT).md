@@ -2,7 +2,6 @@
 Title: Реакция нейтрализации (PRNT)
 Рубрики: анализ
 code: PRNT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

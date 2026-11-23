@@ -2,7 +2,6 @@
 Title: Специфический IgE к латексу
 Рубрики: анализ
 code: IGE_LATEX
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

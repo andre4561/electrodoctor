@@ -2,7 +2,6 @@
 Title: ПЦР на гены токсинов Clostridioides difficile в кале
 Рубрики: анализ
 code: CDI_PCR_TOXIN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

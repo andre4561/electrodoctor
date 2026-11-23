@@ -2,7 +2,6 @@
 Title: Дефицит антитромбина, протеинов C и S
 Рубрики: анализ
 code: ANTITHROMBIN_PROTEIN_C_S_DEFICIT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

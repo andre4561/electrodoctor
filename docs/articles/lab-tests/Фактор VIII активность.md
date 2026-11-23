@@ -2,7 +2,6 @@
 Title: Фактор VIII активность
 Рубрики: анализ
 code: F8_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

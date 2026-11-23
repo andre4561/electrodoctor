@@ -2,7 +2,6 @@
 Title: Исследование на Capnocytophaga canimorsus
 Рубрики: анализ
 code: CAPNOCYC_TEST
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

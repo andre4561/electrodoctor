@@ -2,7 +2,6 @@
 Title: Генетическое тестирование MECP2
 Рубрики: анализ
 code: MECP2_GENETIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

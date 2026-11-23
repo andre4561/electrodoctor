@@ -2,7 +2,6 @@
 Title: Перестройка EWSR1‑FLI1 (FISH/RT‑PCR)
 Рубрики: анализ
 code: EWSR1_FLI1_FUSION
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

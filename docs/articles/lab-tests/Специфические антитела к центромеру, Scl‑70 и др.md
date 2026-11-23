@@ -2,7 +2,6 @@
 Title: Специфические антитела к центромеру, Scl‑70 и др.
 Рубрики: анализ
 code: SPECIFIC_AUTOANTIBODIES
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

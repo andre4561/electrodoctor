@@ -2,7 +2,6 @@
 Title: ПЦР Legionella в мокроте/БАЛ
 Рубрики: анализ
 code: PCR_LEGIONELLA_SPUTUM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: p-tau217 (кровь)
 Рубрики: анализ
 code: P_TAU217
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

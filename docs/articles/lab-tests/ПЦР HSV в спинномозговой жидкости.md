@@ -2,7 +2,6 @@
 Title: ПЦР HSV в спинномозговой жидкости
 Рубрики: анализ
 code: HSV_CSF_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

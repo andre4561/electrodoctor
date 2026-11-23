@@ -2,7 +2,6 @@
 Title: ПНГ-клон (FLAER, проточная цитометрия)
 Рубрики: анализ
 code: PNH_CLONE_FLAER
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

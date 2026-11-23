@@ -2,7 +2,6 @@
 Title: Анти-Scl-70 антитела
 Рубрики: анализ
 code: ANTI_SCL70
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

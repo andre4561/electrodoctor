@@ -2,7 +2,6 @@
 Title: IGRA (квантифероновый тест)
 Рубрики: анализ
 code: IGRA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

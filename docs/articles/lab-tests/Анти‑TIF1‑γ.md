@@ -2,7 +2,6 @@
 Title: Анти‑TIF1‑γ
 Рубрики: анализ
 code: ANTI_TIF1G
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

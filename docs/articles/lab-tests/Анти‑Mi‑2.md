@@ -2,7 +2,6 @@
 Title: Анти‑Mi‑2
 Рубрики: анализ
 code: ANTI_MI2
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

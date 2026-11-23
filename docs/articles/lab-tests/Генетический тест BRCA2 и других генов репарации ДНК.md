@@ -2,7 +2,6 @@
 Title: Генетический тест BRCA2 и других генов репарации ДНК
 Рубрики: анализ
 code: BRCA2_DNA_REPAIR_GENES
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

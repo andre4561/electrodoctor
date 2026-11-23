@@ -2,7 +2,6 @@
 Title: ПЦР на mpox (мазок с сыпи)
 Рубрики: анализ
 code: PCR_MPOX
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

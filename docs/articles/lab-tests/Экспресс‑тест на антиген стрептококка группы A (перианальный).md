@@ -2,7 +2,6 @@
 Title: Экспресс‑тест на антиген стрептококка группы A (перианальный)
 Рубрики: анализ
 code: STREP_A_ANTIGEN_RAPID
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

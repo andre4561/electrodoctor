@@ -2,7 +2,6 @@
 Title: ТГК-COOH в моче
 Рубрики: анализ
 code: THC_COOH_URINE
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

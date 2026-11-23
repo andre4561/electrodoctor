@@ -2,7 +2,6 @@
 Title: β-D-глюкан в сыворотке
 Рубрики: анализ
 code: BETA_D_GLUCAN_SERUM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

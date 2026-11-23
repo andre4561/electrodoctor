@@ -2,7 +2,6 @@
 Title: Ret‑He (гемоглобин в ретикулоцитах)
 Рубрики: анализ
 code: RET_HE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

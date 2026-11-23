@@ -2,7 +2,6 @@
 Title: Парциальное давление CO₂ в крови (pCO₂)
 Рубрики: анализ
 code: PCO2
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

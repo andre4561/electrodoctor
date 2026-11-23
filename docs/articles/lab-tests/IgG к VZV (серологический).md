@@ -2,7 +2,6 @@
 Title: IgG к VZV (серологический)
 Рубрики: анализ
 code: VZV_IGG
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

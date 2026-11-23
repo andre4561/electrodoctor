@@ -2,7 +2,6 @@
 Title: Растворимый рецептор IL‑2 (sIL‑2R)
 Рубрики: анализ
 code: SIL2R
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

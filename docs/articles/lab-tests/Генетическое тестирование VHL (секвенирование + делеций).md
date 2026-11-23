@@ -2,7 +2,6 @@
 Title: Генетическое тестирование VHL (секвенирование + делеций)
 Рубрики: анализ
 code: VHL_GENETIC_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

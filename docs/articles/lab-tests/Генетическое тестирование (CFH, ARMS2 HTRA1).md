@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (CFH, ARMS2/HTRA1)
 Рубрики: анализ
 code: CFH_ARMS2_HTRA1_GENETIC_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Антиген фактора Виллебранда (VWF:Ag)
 Рубрики: анализ
 code: VWF_AG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

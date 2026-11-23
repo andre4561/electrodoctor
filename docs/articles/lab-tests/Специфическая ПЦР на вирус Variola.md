@@ -2,7 +2,6 @@
 Title: Специфическая ПЦР на вирус Variola
 Рубрики: анализ
 code: VARIOLA_PCR
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

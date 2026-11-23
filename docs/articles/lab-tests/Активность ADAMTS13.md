@@ -2,7 +2,6 @@
 Title: Активность ADAMTS13
 Рубрики: анализ
 code: ADAMTS13_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

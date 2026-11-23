@@ -2,7 +2,6 @@
 Title: Анти‑HMGCR
 Рубрики: анализ
 code: ANTI_HMGCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

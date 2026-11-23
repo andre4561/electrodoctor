@@ -2,7 +2,6 @@
 Title: Генетическое исследование TSC1/TSC2
 Рубрики: анализ
 code: TSC_GENETIC_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

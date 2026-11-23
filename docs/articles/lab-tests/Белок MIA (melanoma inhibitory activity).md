@@ -2,7 +2,6 @@
 Title: Белок MIA (melanoma inhibitory activity)
 Рубрики: анализ
 code: MIA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

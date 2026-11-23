@@ -2,7 +2,6 @@
 Title: Антиген LAM в моче (туберкулёз)
 Рубрики: анализ
 code: LAM_URINE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

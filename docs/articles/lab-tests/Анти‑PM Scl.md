@@ -2,7 +2,6 @@
 Title: Анти‑PM/Scl
 Рубрики: анализ
 code: ANTI_PMSCL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Посев/мазок из носа и рук на Staphylococcus aureus
 Рубрики: анализ
 code: SA_SCREENING
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

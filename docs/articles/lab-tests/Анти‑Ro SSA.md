@@ -2,7 +2,6 @@
 Title: Анти‑Ro/SSA
 Рубрики: анализ
 code: ANTI_RO_SSA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

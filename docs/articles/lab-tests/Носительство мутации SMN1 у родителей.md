@@ -2,7 +2,6 @@
 Title: Носительство мутации SMN1 у родителей
 Рубрики: анализ
 code: SMN1_CARRIER
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

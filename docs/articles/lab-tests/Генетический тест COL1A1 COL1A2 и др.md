@@ -2,7 +2,6 @@
 Title: Генетический тест COL1A1/COL1A2 и др.
 Рубрики: анализ
 code: COL1A1_COL1A2_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

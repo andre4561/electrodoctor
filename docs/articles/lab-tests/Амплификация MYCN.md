@@ -2,7 +2,6 @@
 Title: Амплификация MYCN
 Рубрики: анализ
 code: MYCN_AMP
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

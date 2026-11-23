@@ -2,7 +2,6 @@
 Title: Жидкостная биопсия (ctDNA)
 Рубрики: анализ
 code: CTDNA
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

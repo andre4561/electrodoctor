@@ -2,7 +2,6 @@
 Title: Генетический анализ MC4R, LEP, POMC
 Рубрики: анализ
 code: MC4R_LEPTIN_POMC_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

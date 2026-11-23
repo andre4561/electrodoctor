@@ -2,7 +2,6 @@
 Title: Отношение CD4/CD8 в BAL (>3,5)
 Рубрики: анализ
 code: BAL_CD4_CD8_RATIO
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

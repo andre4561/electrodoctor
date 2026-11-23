@@ -2,7 +2,6 @@
 Title: Иммунофенотип лимфоцитов (CD4, CD8, CD19)
 Рубрики: анализ
 code: LYMPH_IMMUNOPHENOTYPE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

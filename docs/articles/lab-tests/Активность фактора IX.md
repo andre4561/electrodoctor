@@ -2,7 +2,6 @@
 Title: Активность фактора IX
 Рубрики: анализ
 code: F9_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

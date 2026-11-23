@@ -2,7 +2,6 @@
 Title: Серологический тест IgG к T. cruzi (двойное ИФА/РНИФ)
 Рубрики: анализ
 code: SEROL_T_CRUZI_IGG
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

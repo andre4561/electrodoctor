@@ -2,7 +2,6 @@
 Title: Генотип HLA‑DQB1*06:02
 Рубрики: анализ
 code: HLA_DQB1_0602
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: NAAT (ПЦР) на Chlamydia trachomatis, Neisseria gonorrhoeae, Mycoplasma genitalium
 Рубрики: анализ
 code: STI_NAAT
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

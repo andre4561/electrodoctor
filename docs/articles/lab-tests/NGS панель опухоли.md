@@ -2,7 +2,6 @@
 Title: NGS панель опухоли
 Рубрики: анализ
 code: NGS_TUMOR_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

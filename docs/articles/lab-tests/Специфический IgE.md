@@ -2,7 +2,6 @@
 Title: Специфический IgE
 Рубрики: анализ
 code: SPECIFIC_IGE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

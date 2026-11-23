@@ -2,7 +2,6 @@
 Title: Липопротеин(a)
 Рубрики: анализ
 code: LPA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

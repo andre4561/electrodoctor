@@ -2,7 +2,6 @@
 Title: ПЦР T. cruzi в крови
 Рубрики: анализ
 code: PCR_T_CRUZI_BLOOD
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

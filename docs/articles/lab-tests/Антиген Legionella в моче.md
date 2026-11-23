@@ -2,7 +2,6 @@
 Title: Антиген Legionella в моче
 Рубрики: анализ
 code: LEGIONELLA_ANTIGEN_URINE
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

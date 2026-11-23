@@ -115,7 +115,7 @@ groups.sort(key=lambda g: (-len(g[0]), g[0]))
 res = []
 for i, (g, ps) in enumerate(groups, 1):
     res.append({"id": i, "items": [{"code": c, "name": labs[c]["name"], "aliases": labs[c].get("aliases", [])[:12], "unit": labs[c].get("unit", ""),
-                                    "type": labs[c].get("type", ""), "material": MAT[c], "group": labs[c].get("group", ""), "tier": labs[c].get("tier", ""),
+                                    "type": labs[c].get("type", ""), "material": MAT[c], "group": labs[c].get("group", ""),
                                     "inForm": labs[c].get("inForm", False), "diagnoses": used[c], "article": labs[c].get("article", "")} for c in g],
                 "links": [{"a": a, "b": b, "why": sorted(pairs[(a, b)])} for a, b in ps]})
 json.dump({"groups": res}, open(os.path.join(DIR, "candidates2.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)

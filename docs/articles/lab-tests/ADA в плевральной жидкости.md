@@ -2,7 +2,6 @@
 Title: ADA в плевральной жидкости
 Рубрики: анализ
 code: ADA_PLEURAL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

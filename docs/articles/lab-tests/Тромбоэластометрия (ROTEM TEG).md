@@ -2,7 +2,6 @@
 Title: Тромбоэластометрия (ROTEM/TEG)
 Рубрики: анализ
 code: ROTEM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

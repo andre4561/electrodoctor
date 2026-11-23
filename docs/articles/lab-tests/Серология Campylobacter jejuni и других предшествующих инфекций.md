@@ -2,7 +2,6 @@
 Title: Серология Campylobacter jejuni и других предшествующих инфекций
 Рубрики: анализ
 code: CAMPYLOBACTER_SERUM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

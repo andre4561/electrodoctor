@@ -2,7 +2,6 @@
 Title: sTfR (растворимый трансферрин‑рецептор)
 Рубрики: анализ
 code: SOLUBLE_TF_RECEPTOR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

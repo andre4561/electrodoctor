@@ -2,7 +2,6 @@
 Title: Антитела к рецептору ТТГ (TRAb)
 Рубрики: анализ
 code: TRAB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

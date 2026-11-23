@@ -2,7 +2,6 @@
 Title: Лизо‑Gb1 (глюкозилсфингозин, маркер болезни Гоше)
 Рубрики: анализ
 code: LIZO_GB1
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

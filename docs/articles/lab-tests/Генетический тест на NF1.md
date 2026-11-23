@@ -2,7 +2,6 @@
 Title: Генетический тест на NF1
 Рубрики: анализ
 code: NF1_MUT
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

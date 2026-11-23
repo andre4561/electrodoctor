@@ -2,7 +2,6 @@
 Title: Слияние генов NTRK
 Рубрики: анализ
 code: NTRK_FUSION
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

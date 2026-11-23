@@ -2,7 +2,6 @@
 Title: Антинейтрофильные цитоплазматические антитела (ANCA)
 Рубрики: анализ
 code: ANCA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

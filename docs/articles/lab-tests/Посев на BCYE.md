@@ -2,7 +2,6 @@
 Title: Посев на BCYE
 Рубрики: анализ
 code: CULTURE_BCYE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: ПЦР‑панель кала (Giardia)
 Рубрики: анализ
 code: GIARDIA_PCR_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

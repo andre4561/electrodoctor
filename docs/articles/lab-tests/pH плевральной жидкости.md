@@ -2,7 +2,6 @@
 Title: pH плевральной жидкости
 Рубрики: анализ
 code: PH_PLEURAL
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

@@ -2,7 +2,6 @@
 Title: Прямая иммунофлюоресценция (IgG/C3) в коже
 Рубрики: анализ
 code: SKIN_DIF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

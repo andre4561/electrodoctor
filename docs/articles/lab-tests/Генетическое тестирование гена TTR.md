@@ -2,7 +2,6 @@
 Title: Генетическое тестирование гена TTR
 Рубрики: анализ
 code: TTR_GENE_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

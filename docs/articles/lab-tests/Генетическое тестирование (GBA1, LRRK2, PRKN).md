@@ -2,7 +2,6 @@
 Title: Генетическое тестирование (GBA1, LRRK2, PRKN)
 Рубрики: анализ
 code: GENETIC_PARKINSON_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Антитела к тканевой трансглутаминазе IgA
 Рубрики: анализ
 code: TTG_IGA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

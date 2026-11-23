@@ -2,7 +2,6 @@
 Title: Связывание VWF с фактором VIII (VWF:FVIIIB)
 Рубрики: анализ
 code: VWF_FVIIIIB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

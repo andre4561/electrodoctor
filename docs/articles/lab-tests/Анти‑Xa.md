@@ -2,7 +2,6 @@
 Title: Анти‑Xa
 Рубрики: анализ
 code: ANTI_XA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

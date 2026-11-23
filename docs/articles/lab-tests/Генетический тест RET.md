@@ -2,7 +2,6 @@
 Title: Генетический тест RET
 Рубрики: анализ
 code: RET_GENETIC
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

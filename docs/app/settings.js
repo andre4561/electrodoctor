@@ -96,7 +96,7 @@ export function load() {
     if (!d)
         return blank();
     const s = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, metrikaId: d.metrikaId || "" }));
+        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, metrikaId: d.metrikaId || "" }));
     // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
     if ((s.agentsRev || 1) < AGENTS_REV) {
         const have = new Set(s.agents.map(a => a.id));
@@ -118,7 +118,7 @@ export function load() {
 }
 export function save(s) {
     s.metrikaId = parseMetrikaId(s.metrikaId || "");
-    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, metrikaId: s.metrikaId || "" });
+    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, metrikaId: s.metrikaId || "" });
     publishMetrikaId(s.metrikaId || "");
 }
 // Чем распознаются анализы по фото: свой провайдер распознавания или общий провайдер агентов

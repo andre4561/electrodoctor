@@ -2,7 +2,6 @@
 Title: Генетическое тестирование FBN1
 Рубрики: анализ
 code: FBN1_GENETIC
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

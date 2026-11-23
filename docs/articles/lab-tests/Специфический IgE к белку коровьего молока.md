@@ -2,7 +2,6 @@
 Title: Специфический IgE к белку коровьего молока
 Рубрики: анализ
 code: SPECIFIC_IGE_COW_MILK
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

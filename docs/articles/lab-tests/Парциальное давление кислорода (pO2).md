@@ -2,7 +2,6 @@
 Title: Парциальное давление кислорода (pO2)
 Рубрики: анализ
 code: PO2
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

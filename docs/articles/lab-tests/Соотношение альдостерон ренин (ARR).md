@@ -2,7 +2,6 @@
 Title: Соотношение альдостерон/ренин (ARR)
 Рубрики: анализ
 code: ARR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

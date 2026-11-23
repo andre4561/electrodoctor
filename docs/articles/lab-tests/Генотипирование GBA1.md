@@ -2,7 +2,6 @@
 Title: Генотипирование GBA1
 Рубрики: анализ
 code: GBA1_GENOTYPE
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

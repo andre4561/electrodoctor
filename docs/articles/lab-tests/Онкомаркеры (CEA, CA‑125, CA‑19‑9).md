@@ -2,7 +2,6 @@
 Title: Онкомаркеры (CEA, CA‑125, CA‑19‑9)
 Рубрики: анализ
 code: ONCOMARKER_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

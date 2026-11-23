@@ -1,24 +1,32 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Электродоктор — справочник анализов (docs/data/labs.json).
-// В бланке вкладки «Анализы» — основные анализы (fields.ts). Остальные из справочника добавляются клиенту
-// кнопкой «+ Добавить анализ» и хранятся в c.values под своим кодом, как и анализы бланка.
+// Электродоктор — справочник анализов (docs/data/labs.json + свои из Настройки → Анализы).
+// В бланке вкладки «Анализы» — основные (fields.ts). Остальные выбираются из справочника
+// и хранятся в c.values под своим кодом. Новый анализ в справочник — только в настройках.
 import type { Field } from "./types.js";
 
 export type LabType = "number" | "qual" | "text";
-export type Tier = "basic" | "special" | "rare";
-export interface Lab { name: string; aliases: string[]; type: LabType; unit: string; tier: Tier; group?: string; inForm: boolean; article?: string; refs?: number }
+export interface Lab { name: string; aliases: string[]; type: LabType; unit: string; group?: string; inForm: boolean; article?: string; refs?: number }
 
 export const LABS_URL = "../data/labs.json";
 export const LABS: Record<string, Lab> = {};
+let baseLabs: Record<string, Lab> = {};
 let loading: Promise<void> | null = null;
 export function loadLabs(): Promise<void> {
   return loading || (loading = fetch(LABS_URL, { cache: "no-cache" })
     .then(r => (r.ok ? r.json() : { items: {} }))
-    .then(j => { Object.assign(LABS, (j && j.items) || {}); })
+    .then(j => {
+      baseLabs = { ...((j && j.items) || {}) };
+      Object.keys(LABS).forEach(k => delete LABS[k]);
+      Object.assign(LABS, baseLabs);
+    })
     .catch(e => { console.error("справочник анализов не загрузился", e); loading = null; }));
 }
+/** Свои анализы из настроек поверх файла каталога (добавленные в Настройки → Анализы). */
+export function applyOwn(own?: Record<string, Lab> | null): void {
+  Object.keys(LABS).forEach(k => delete LABS[k]);
+  Object.assign(LABS, baseLabs, own || {});
+}
 export const has = (code: string) => !!LABS[code];
-export const TIER_NAME: Record<Tier, string> = { basic: "основной", special: "специализированный", rare: "редкий" };
 
 // Результат «положительно/отрицательно»: варианты в бланке и распознавание слов с бланков лабораторий
 export const QUAL_OPTIONS: [string, string][] = [["не обнаружено", "не обнаружено"], ["обнаружено", "обнаружено"], ["сомнительно", "сомнительно"]];
@@ -45,18 +53,17 @@ export function fieldFor(code: string): Field | null {
   return { code, label: l.name, type: "text" };
 }
 
-// Поиск по названию, синонимам и коду; основные и частые — выше
+// Поиск по названию, синонимам и коду; чаще встречающиеся в признаках диагнозов — выше
 const norm = (s: string) => s.toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9]+/g, "");
 export function search(q: string, exclude: (code: string) => boolean, limit = 12): string[] {
   const n = norm(q); if (n.length < 2) return [];
-  const tierW: Record<string, number> = { basic: 0, special: 1, rare: 2 };
   const out: { code: string; score: number }[] = [];
   for (const [code, l] of Object.entries(LABS)) {
     if (exclude(code)) continue;
     const names = [l.name, ...l.aliases, code].map(norm);
     let best = 99;
     names.forEach((x, i) => { const p = x.indexOf(n); if (p >= 0) best = Math.min(best, (p === 0 ? 0 : 2) + (i === 0 ? 0 : 1)); });
-    if (best < 99) out.push({ code, score: best * 10 + tierW[l.tier] * 3 - Math.min(5, (l.refs || 0) / 4) });
+    if (best < 99) out.push({ code, score: best * 10 - Math.min(5, (l.refs || 0) / 4) });
   }
   return out.sort((a, b) => a.score - b.score).slice(0, limit).map(x => x.code);
 }

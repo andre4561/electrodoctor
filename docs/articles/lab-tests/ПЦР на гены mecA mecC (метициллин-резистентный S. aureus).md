@@ -2,7 +2,6 @@
 Title: ПЦР на гены mecA/mecC (метициллин-резистентный S. aureus)
 Рубрики: анализ
 code: MRSA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

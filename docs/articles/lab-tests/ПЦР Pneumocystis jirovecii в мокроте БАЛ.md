@@ -2,7 +2,6 @@
 Title: ПЦР Pneumocystis jirovecii в мокроте/БАЛ
 Рубрики: анализ
 code: PCP_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

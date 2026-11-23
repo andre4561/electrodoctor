@@ -2,7 +2,6 @@
 Title: Антиген H. pylori в кале
 Рубрики: анализ
 code: HP_ANTIGEN_STOOL
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

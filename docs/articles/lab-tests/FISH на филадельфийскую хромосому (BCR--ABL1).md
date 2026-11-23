@@ -2,7 +2,6 @@
 Title: FISH на филадельфийскую хромосому (BCR::ABL1)
 Рубрики: анализ
 code: FISH_PHILADELPHIA
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

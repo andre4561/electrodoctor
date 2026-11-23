@@ -2,7 +2,6 @@
 Title: Генетическое исследование гена PAH
 Рубрики: анализ
 code: PAH_GENE
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

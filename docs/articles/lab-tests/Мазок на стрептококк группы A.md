@@ -2,7 +2,6 @@
 Title: Мазок на стрептококк группы A
 Рубрики: анализ
 code: STREP_A_SMEAR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

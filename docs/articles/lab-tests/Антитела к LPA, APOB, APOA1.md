@@ -2,7 +2,6 @@
 Title: Антитела к LPA, APOB, APOA1
 Рубрики: анализ
 code: LPA_APOB_APOA1_AB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

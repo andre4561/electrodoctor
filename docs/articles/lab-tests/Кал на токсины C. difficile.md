@@ -2,7 +2,6 @@
 Title: Кал на токсины C. difficile
 Рубрики: анализ
 code: CDI_TOXIN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

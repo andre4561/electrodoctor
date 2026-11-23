@@ -2,7 +2,6 @@
 Title: Посев на стрептококк группы B
 Рубрики: анализ
 code: GBS_CULTURE
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

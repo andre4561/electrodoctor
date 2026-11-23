@@ -2,7 +2,6 @@
 Title: Количественный посев стула на C. perfringens (споры/г)
 Рубрики: анализ
 code: C_PERFRINGENS_STOOL_COUNT
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Анализ мутаций JAK2, CALR, MPL
 Рубрики: анализ
 code: MYELOPROLIF_MUTATION_PANEL
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

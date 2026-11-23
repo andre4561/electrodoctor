@@ -2,7 +2,6 @@
 Title: TissueCypher (риск прогрессирования пищевода Барретта)
 Рубрики: анализ
 code: TISSUE_CYPHER
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

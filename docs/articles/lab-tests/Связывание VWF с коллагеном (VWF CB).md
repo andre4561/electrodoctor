@@ -2,7 +2,6 @@
 Title: Связывание VWF с коллагеном (VWF:CB)
 Рубрики: анализ
 code: VWF_CB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

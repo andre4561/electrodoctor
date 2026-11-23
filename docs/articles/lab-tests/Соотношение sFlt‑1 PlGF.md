@@ -2,7 +2,6 @@
 Title: Соотношение sFlt‑1/PlGF
 Рубрики: анализ
 code: SFLT1_PLGF_RATIO
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

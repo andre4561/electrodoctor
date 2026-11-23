@@ -2,7 +2,6 @@
 Title: Культура на MRSA
 Рубрики: анализ
 code: MRSA_CULTURE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

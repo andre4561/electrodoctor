@@ -2,7 +2,6 @@
 Title: Генетический анализ G6PD
 Рубрики: анализ
 code: G6PD_GENOTYPE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

@@ -2,7 +2,6 @@
 Title: Генетическое тестирование PKD1/PKD2
 Рубрики: анализ
 code: PKD1_PKD2_GENETIC_TEST
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

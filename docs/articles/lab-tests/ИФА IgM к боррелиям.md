@@ -2,7 +2,6 @@
 Title: ИФА IgM к боррелиям
 Рубрики: анализ
 code: IFA_BORRELIA_IGM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

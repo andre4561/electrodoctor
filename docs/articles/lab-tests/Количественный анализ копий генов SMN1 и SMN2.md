@@ -2,7 +2,6 @@
 Title: Количественный анализ копий генов SMN1 и SMN2
 Рубрики: анализ
 code: SMN_COPY_NUMBER
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

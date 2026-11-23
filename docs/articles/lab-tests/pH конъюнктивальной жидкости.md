@@ -2,7 +2,6 @@
 Title: pH конъюнктивальной жидкости
 Рубрики: анализ
 code: CONJUNCTIVAL_PH
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

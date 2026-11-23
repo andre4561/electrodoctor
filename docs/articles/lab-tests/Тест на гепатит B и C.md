@@ -2,7 +2,6 @@
 Title: Тест на гепатит B и C
 Рубрики: анализ
 code: HEP_B_C_SERUM
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

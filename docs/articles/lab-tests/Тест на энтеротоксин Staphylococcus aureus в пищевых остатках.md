@@ -2,7 +2,6 @@
 Title: Тест на энтеротоксин Staphylococcus aureus в пищевых остатках
 Рубрики: анализ
 code: SA_ENTEROTOXIN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

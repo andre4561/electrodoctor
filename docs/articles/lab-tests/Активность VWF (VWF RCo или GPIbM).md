@@ -2,7 +2,6 @@
 Title: Активность VWF (VWF:RCo или GPIbM)
 Рубрики: анализ
 code: VWF_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

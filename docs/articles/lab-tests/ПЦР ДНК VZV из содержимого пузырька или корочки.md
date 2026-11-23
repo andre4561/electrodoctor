@@ -2,7 +2,6 @@
 Title: ПЦР ДНК VZV из содержимого пузырька или корочки
 Рубрики: анализ
 code: VZV_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Гистология ногтя с PAS‑окраской
 Рубрики: анализ
 code: NAIL_HISTO_PAS
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

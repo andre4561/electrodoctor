@@ -2,7 +2,6 @@
 Title: Анализ мутации BAP1
 Рубрики: анализ
 code: BAP1_MUTATION
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

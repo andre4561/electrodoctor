@@ -2,7 +2,6 @@
 Title: Молекулярный тест (FISH/NGS) на MDM2, SS18, EWSR1, FUS
 Рубрики: анализ
 code: FISH_NGS_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

@@ -2,7 +2,6 @@
 Title: Антитела IgM/IgG к вирусу (ИФА)
 Рубрики: анализ
 code: VIRAL_IGM_IGG_ELISA
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: ПЦР спермы на Ebola
 Рубрики: анализ
 code: EBOLA_SPERM_PCR
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Флуоресцентная гибридизация in situ (FISH)
 Рубрики: анализ
 code: FISH
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

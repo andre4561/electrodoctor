@@ -2,7 +2,6 @@
 Title: Антиген плоскоклеточной карциномы (SCC)
 Рубрики: анализ
 code: SCC_ANTIGEN
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

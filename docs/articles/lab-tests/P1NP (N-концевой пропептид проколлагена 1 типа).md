@@ -2,7 +2,6 @@
 Title: P1NP (N-концевой пропептид проколлагена 1 типа)
 Рубрики: анализ
 code: P1NP
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

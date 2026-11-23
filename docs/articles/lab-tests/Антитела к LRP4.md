@@ -2,7 +2,6 @@
 Title: Антитела к LRP4
 Рубрики: анализ
 code: LRP4_AB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Антиген Giardia в кале (ИФА)
 Рубрики: анализ
 code: GIARDIA_ANTIGEN
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

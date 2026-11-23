@@ -2,7 +2,6 @@
 Title: Генетический тест на наследственные тромбофилии (фактор V Leiden, протромбин G20210A)
 Рубрики: анализ
 code: THROMBOPHILIA_GENETIC_PANEL
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

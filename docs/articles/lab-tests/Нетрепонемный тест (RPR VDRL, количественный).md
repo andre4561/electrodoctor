@@ -2,7 +2,6 @@
 Title: Нетрепонемный тест (RPR/VDRL, количественный)
 Рубрики: анализ
 code: NON_TREPONEMAL_TEST
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

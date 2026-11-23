@@ -2,7 +2,6 @@
 Title: Наследственный вариант BAP1
 Рубрики: анализ
 code: BAP1_GERMLINE
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

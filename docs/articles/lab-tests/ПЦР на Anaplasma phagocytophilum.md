@@ -2,7 +2,6 @@
 Title: ПЦР на Anaplasma phagocytophilum
 Рубрики: анализ
 code: ANAPLASMA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: PD-L1, экспрессия в опухоли
 Рубрики: анализ
 code: PDL1
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

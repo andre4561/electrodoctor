@@ -2,7 +2,6 @@
 Title: ПЦР на SARS‑CoV‑2 и грипп
 Рубрики: анализ
 code: SARS_COV2_INFLUENZA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

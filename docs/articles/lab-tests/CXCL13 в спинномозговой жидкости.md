@@ -2,7 +2,6 @@
 Title: CXCL13 в спинномозговой жидкости
 Рубрики: анализ
 code: CXCL13_CSF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

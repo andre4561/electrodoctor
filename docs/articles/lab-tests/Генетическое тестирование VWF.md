@@ -2,7 +2,6 @@
 Title: Генетическое тестирование VWF
 Рубрики: анализ
 code: GENETIC_VWF
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

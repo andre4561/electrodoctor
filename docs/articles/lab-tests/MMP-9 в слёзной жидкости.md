@@ -2,7 +2,6 @@
 Title: MMP-9 в слёзной жидкости
 Рубрики: анализ
 code: MMP9_TEARS
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

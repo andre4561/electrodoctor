@@ -2,7 +2,6 @@
 Title: Кариотип с микроделецией Y‑хромосомы
 Рубрики: анализ
 code: Y_MICRODELETION_KARYOTYPE
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

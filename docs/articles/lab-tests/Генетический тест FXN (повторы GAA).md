@@ -2,7 +2,6 @@
 Title: Генетический тест FXN (повторы GAA)
 Рубрики: анализ
 code: FXN_GAA_REPEATS
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 ---

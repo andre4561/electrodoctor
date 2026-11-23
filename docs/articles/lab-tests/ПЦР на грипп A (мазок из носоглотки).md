@@ -2,7 +2,6 @@
 Title: ПЦР на грипп A (мазок из носоглотки)
 Рубрики: анализ
 code: INFLUENZA_A_PCR
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

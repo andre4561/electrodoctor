@@ -2,7 +2,6 @@
 Title: UCH-L1 (убиквитин-C-концевая гидролаза L1)
 Рубрики: анализ
 code: UCHL1
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

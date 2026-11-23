@@ -2,7 +2,6 @@
 Title: Мутация KRAS G12C
 Рубрики: анализ
 code: KRAS_G12C
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

@@ -2,7 +2,6 @@
 Title: Антитела к HBsAg (anti-HBs)
 Рубрики: анализ
 code: HBS_ANTIBODY
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

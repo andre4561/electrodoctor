@@ -2,7 +2,6 @@
 Title: Антитела к хламидии (IgG/IgM)
 Рубрики: анализ
 code: CHLAMYDIA_AB
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

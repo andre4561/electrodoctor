@@ -2,7 +2,6 @@
 Title: Посев кала на Shigella
 Рубрики: анализ
 code: SHIGELLA_CULTURE
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

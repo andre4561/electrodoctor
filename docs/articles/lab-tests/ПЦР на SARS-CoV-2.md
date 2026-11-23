@@ -2,7 +2,6 @@
 Title: ПЦР на SARS-CoV-2
 Рубрики: анализ
 code: SARS_COV2_PCR
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

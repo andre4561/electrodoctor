@@ -2,7 +2,6 @@
 Title: Фактор роста эндотелия сосудов (VEGF) в плазме
 Рубрики: анализ
 code: VEGF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

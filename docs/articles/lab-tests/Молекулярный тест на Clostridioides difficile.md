@@ -2,7 +2,6 @@
 Title: Молекулярный тест на Clostridioides difficile
 Рубрики: анализ
 code: CDI_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

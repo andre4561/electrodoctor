@@ -2,7 +2,6 @@
 Title: ПЦР кала на ДНК Shigella (ген ipaH)
 Рубрики: анализ
 code: SHIGELLA_PCR
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

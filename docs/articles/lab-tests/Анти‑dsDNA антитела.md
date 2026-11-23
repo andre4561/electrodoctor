@@ -2,7 +2,6 @@
 Title: Анти‑dsDNA антитела
 Рубрики: анализ
 code: ANTI_DSDNA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

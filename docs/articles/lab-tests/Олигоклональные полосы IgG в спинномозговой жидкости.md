@@ -2,7 +2,6 @@
 Title: Олигоклональные полосы IgG в спинномозговой жидкости
 Рубрики: анализ
 code: OG_POLY_IGG_CSF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

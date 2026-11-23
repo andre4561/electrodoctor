@@ -2,7 +2,6 @@
 Title: Активность глюкозо-6-фосфатдегидрогеназы (G6PD)
 Рубрики: анализ
 code: G6PD_ACTIVITY
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

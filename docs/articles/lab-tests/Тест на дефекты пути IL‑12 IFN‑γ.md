@@ -2,7 +2,6 @@
 Title: Тест на дефекты пути IL‑12/IFN‑γ
 Рубрики: анализ
 code: IL12_IFNG_DEFECT
-tier: rare
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

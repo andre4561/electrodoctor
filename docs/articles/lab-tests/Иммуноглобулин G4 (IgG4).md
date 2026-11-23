@@ -2,7 +2,6 @@
 Title: Иммуноглобулин G4 (IgG4)
 Рубрики: анализ
 code: IGG4
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

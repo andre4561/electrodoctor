@@ -2,7 +2,6 @@
 Title: Статус HER2 (иммунохимия/FISH)
 Рубрики: анализ
 code: HER2_IHC_FISH
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

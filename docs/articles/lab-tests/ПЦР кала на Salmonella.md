@@ -2,7 +2,6 @@
 Title: ПЦР кала на Salmonella
 Рубрики: анализ
 code: PCR_SALMONELLA
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

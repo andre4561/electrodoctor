@@ -2,7 +2,6 @@
 Title: ВИЧ, сифилис, гепатиты B и C (панель)
 Рубрики: анализ
 code: HIV_SYPHILIS_HBV_HCV_PANEL
-tier: basic
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

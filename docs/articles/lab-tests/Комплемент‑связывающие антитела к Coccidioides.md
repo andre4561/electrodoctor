@@ -2,7 +2,6 @@
 Title: Комплемент‑связывающие антитела к Coccidioides
 Рубрики: анализ
 code: COCCIDIOIDES_CF
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:

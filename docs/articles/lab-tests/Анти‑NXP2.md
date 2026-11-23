@@ -2,7 +2,6 @@
 Title: Анти‑NXP2
 Рубрики: анализ
 code: ANTI_NXP2
-tier: special
 status: черновик ИИ (aliceai-llm), вычитано Claude, специалистом не проверено
 length: полная
 aliases:
