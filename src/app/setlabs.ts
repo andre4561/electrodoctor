@@ -5,9 +5,10 @@ import * as Settings from "./settings.js";
 
 const esc = (s: unknown) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[c]);
 
-interface LabSec { id: string; title: string; desc: string; prefix: string; icon: string }
+export interface LabSec { id: string; title: string; desc: string; prefix: string; icon: string }
 
-const SECS: LabSec[] = [
+/** Разделы каталога по материалу — те же, что в модалке выбора анализа у клиента. */
+export const SECS: LabSec[] = [
   {
     id: "blood", title: "Кровь", desc: "Общий анализ, биохимия, гормоны, инфекции и другие показатели крови",
     prefix: "Кровь",

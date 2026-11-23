@@ -14,6 +14,7 @@ import * as Curve from "./curve.js";
 import * as Dx from "./diagnoses.js";
 import * as Sg from "./signs.js";
 import * as Labs from "./labs.js";
+import * as LabPick from "./labpick.js";
 import * as Cmp from "./complaints.js";
 import * as Talk from "./talk.js";
 import { articleUrl } from "./articles.js";
@@ -116,6 +117,12 @@ const isFilled = (f, v) => f && f.type === "files" ? Array.isArray(v) && v.lengt
         : v !== undefined && v !== null && String(v).trim() !== "";
 const counts = (f) => !f.computed && !f.hidden && f.type !== "aiimport"; // участвует в «заполнено N из M»
 function progress(c, step) {
+    // Анализы: только уже появившиеся показатели (не весь пустой бланк)
+    if (step.id === "labs") {
+        const fs = labFieldsOf(c).filter(f => f.type !== "files" && f.type !== "aiimport");
+        const filled = fs.filter(f => isFilled(f, c.values[f.code])).length;
+        return { filled, total: fs.length };
+    }
     const fs = fieldsOf(step).filter(counts);
     const filled = fs.filter(f => isFilled(f, c.values[f.code])).length;
     return { filled, total: fs.length };
@@ -434,7 +441,7 @@ function drawDxTab(c, err) {
         ${down.length ? `<p><span class="dxt-lbl">Против</span>${down.map(chip).join("")}</p>` : ""}
         ${miss.length ? `<p><span class="dxt-lbl">Досдать</span>${miss.map(code => `<button type="button" class="dxt-chip miss" data-dx-add="${esc(code)}" title="добавить в бланк анализов и перейти к нему">${esc(Dx.labName(code))}</button>`).join("")}</p>` : ""}
         ${look.length ? `<p><span class="dxt-lbl">Проверить</span><span class="dxt-look">${look.map(x => esc(x.name)).join(" · ")}</span></p>` : ""}
-        <p class="muted dxt-meta">без анализов ${pct(r.prior)}% → по анализам ${pct(r.score.p)}% · признаков-анализов ${Sg.labSigns(r.signs).length} · <a href="#/settings/diagnoses/${esc(r.item.sections[0] || "")}">признаки в настройках</a></p>
+        <p class="muted dxt-meta">без анализов ${pct(r.prior)}% → по анализам ${pct(r.score.p)}% · признаков-анализов ${Sg.labSigns(r.signs).length} · <a href="#/settings/diagnoses/${esc(r.item.sections[0] || "")}/${encodeURIComponent(r.name)}">признаки в настройках</a></p>
       </div></details>`;
     };
     box.innerHTML = head(true) + `<div class="dx-chips dxt-filter" role="group" aria-label="Раздел"><button type="button" class="dx-chip on" data-sec="">Все ${list.length}</button>${secs.map(s => `<button type="button" class="dx-chip" data-sec="${esc(s)}">${esc(Dx.sectionTitle(s))} ${list.filter(r => r.item.sections.includes(s)).length}</button>`).join("")}</div>
@@ -477,13 +484,13 @@ function drawDxTab(c, err) {
         apply();
     }));
     box.querySelector("#dxtmorebtn").addEventListener("click", () => { showAll = true; apply(); });
-    // «Досдать» → строка в бланке анализов (если анализа там ещё нет) и переход к ней
+    // «Досдать» → пустая строка показателя на вкладке «Анализы» и переход к ней
     box.addEventListener("click", ev => {
         const b = ev.target.closest("[data-dx-add]");
         if (!b)
             return;
         const code = b.dataset.dxAdd;
-        if (isExtraCode(code))
+        if (isLabValueCode(code) || Labs.has(code))
             (labAdded[c.id] = labAdded[c.id] || new Set()).add(code);
         labFocus = code;
         location.hash = "#/client/" + c.id + "/labs";
@@ -493,10 +500,11 @@ function drawDxTab(c, err) {
     apply();
 }
 // ---------- анализы по датам ----------
-// Поля вкладки «Анализы» в c.values — открытый бланк. Сохранённые сдачи лежат в c.labs; открыть сдачу —
-// значит скопировать её значения в бланк. Так всё остальное (критичность, ИИ, выгрузка) работает как раньше.
+// На вкладке «Анализы» пустой бланк не показывают: только даты, загрузка через ИИ и показатели,
+// которые уже появились (ИИ, справочник). Сохранённые сдачи — в c.labs; открыть сдачу = подставить
+// значения в c.values. fields.ts по-прежнему задаёт коды бланка для ИИ/норм/каталога (inForm).
 const LAB_STEP = STEPS.find(s => s.id === "labs");
-const LAB_FIELDS = LAB_STEP ? fieldsOf(LAB_STEP).filter(f => f.type !== "aiimport") : [];
+const LAB_FIELDS = LAB_STEP ? fieldsOf(LAB_STEP).filter(f => f.type !== "aiimport" && f.type !== "files") : [];
 const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const ruDate = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : iso || "без даты"; };
 const ruDateShort = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1].slice(2)}` : iso || "без даты"; };
@@ -508,17 +516,26 @@ function labDateLabel(c, s) {
     const i = same.findIndex(x => x.id === s.id);
     return ruDateShort(s.date) + (i > 0 ? "-" + (i + 1) : "");
 }
-// Анализы из справочника, которых нет в бланке, но они есть у клиента (или только что добавлены кнопкой)
 const OTHER_STEP_CODES = new Set(STEPS.filter(s => s.id !== "labs").flatMap(s => fieldsOf(s).map(f => f.code)));
 const LAB_FORM_CODES = new Set(LAB_FIELDS.map(f => f.code));
 const isExtraCode = (code) => Labs.has(code) && !LAB_FORM_CODES.has(code) && !OTHER_STEP_CODES.has(code);
+const isLabValueCode = (code) => LAB_FORM_CODES.has(code) || isExtraCode(code);
 const labAdded = {}; // добавлены, но ещё без значения — до перезагрузки страницы
 let labFocus = ""; // какое поле открыть и подсветить после перерисовки
-function extraCodes(c) {
-    const set = new Set([...Object.keys(c.values).filter(isExtraCode), ...(labAdded[c.id] || [])]);
-    return [...set].sort((a, b) => Labs.LABS[a].name.localeCompare(Labs.LABS[b].name, "ru"));
+/** Поля анализов, которые уже есть у клиента (значения или только что добавленные из справочника). */
+function labFieldsOf(c) {
+    const codes = new Set([...(labAdded[c.id] || [])]);
+    for (const code of Object.keys(c.values))
+        if (isLabValueCode(code))
+            codes.add(code);
+    const out = [];
+    for (const code of codes) {
+        const f = LAB_FIELDS.find(x => x.code === code) || Labs.fieldFor(code);
+        if (f && f.type !== "aiimport" && f.type !== "files")
+            out.push(f);
+    }
+    return out.sort((a, b) => a.label.localeCompare(b.label, "ru"));
 }
-const labFieldsOf = (c) => [...LAB_FIELDS, ...extraCodes(c).map(Labs.fieldFor).filter((f) => !!f)];
 function bufValues(c) {
     const out = {};
     for (const f of labFieldsOf(c)) {
@@ -529,10 +546,15 @@ function bufValues(c) {
     return out;
 }
 function loadBuf(c, values) {
-    for (const f of labFieldsOf(c))
-        delete c.values[f.code];
-    for (const [k, v] of Object.entries(values))
+    for (const code of Object.keys(c.values))
+        if (isLabValueCode(code))
+            delete c.values[code];
+    labAdded[c.id]?.clear();
+    for (const [k, v] of Object.entries(values)) {
         c.values[k] = JSON.parse(JSON.stringify(v));
+        if (isExtraCode(k))
+            (labAdded[c.id] = labAdded[c.id] || new Set()).add(k);
+    }
 }
 const sameVals = (a, b) => {
     const ka = Object.keys(a).sort(), kb = Object.keys(b).sort();
@@ -566,12 +588,13 @@ function migrateLabs(c) {
 // Самая высокая критичность в сдаче — цвет столбика в полосе дат
 function worstCls(c, values) {
     let k = -1;
-    for (const f of LAB_FIELDS)
-        if (f.type === "number" && Norms.hasNorm(f.code)) {
-            const r = Norms.criticality(f.code, values[f.code], c);
-            if (r.k !== undefined && r.k > k)
-                k = r.k;
-        }
+    for (const [code, v] of Object.entries(values)) {
+        if (!isLabValueCode(code) || !Norms.hasNorm(code))
+            continue;
+        const r = Norms.criticality(code, v, c);
+        if (r.k !== undefined && r.k > k)
+            k = r.k;
+    }
     return k < 0 ? "" : k <= 10 ? "k0" : k <= 35 ? "k1" : k <= 65 ? "k2" : k < 90 ? "k3" : "k4";
 }
 function labDatesHtml(c) {
@@ -581,24 +604,42 @@ function labDatesHtml(c) {
         const label = labDateLabel(c, s);
         return `<button type="button" class="ld-chip ${cls}${s.id === c.labSel ? " on" : ""}" data-ld="${esc(s.id)}" title="анализы от ${esc(ruDate(s.date))}${s.time ? " " + esc(s.time) : ""} · показателей: ${n}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
     }).join("");
-    const cap = sel ? `Анализы от <b>${esc(labDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые анализы</b> — заполните или загрузите через ИИ, затем сохраните внизу`;
+    const cap = sel ? `Анализы от <b>${esc(labDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые анализы</b> — загрузите через ИИ или выберите из справочника, затем сохраните внизу`;
     return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-ld="" title="новый бланк анализов">+ Новые</button>
     <div class="ld-scroll" id="ldscroll">${chips || `<span class="muted ld-none">сохранённых анализов пока нет</span>`}</div></div>
     <p class="ld-cap">${cap} <span class="ld-state" id="ldstate"></span></p>`;
 }
-// Доп. анализы у клиента: выбор только из справочника (каталог + свои из Настройки → Анализы). Новый код в справочник — там же.
-function labExtraHtml(c) {
-    const rows = extraCodes(c).map(code => {
-        const f = Labs.fieldFor(code);
-        if (!f)
-            return "";
-        return `<div class="lab-extra-row">${fieldHtml(f, c.values[code], c)}<button type="button" class="btn lab-rm" data-rm-extra="${esc(code)}" title="убрать из бланка" aria-label="убрать из бланка">×</button></div>`;
-    }).join("");
-    return `<div class="sec lab-extra" id="labextra">
-    <h3>Дополнительные анализы <small class="muted">из справочника — ${Object.keys(Labs.LABS).length} анализов · новый код — в <a href="#/settings/labs">Настройки → Анализы</a></small></h3>
-    ${rows ? `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Нужного анализа нет в бланке? Выберите его из справочника по названию, сокращению или по-английски.</p>`}
-    <div class="lab-add"><input type="search" id="labadd" placeholder="Выбрать из справочника: например, антитела к ТПО, HLA-B27, посев мочи" aria-label="Выбрать анализ из справочника" autocomplete="off"><div class="lab-add-res" id="labaddres"></div></div>
-  </div>`;
+/** Вкладка «Анализы»: ИИ + список уже появившихся показателей + поиск по справочнику (пустых групп бланка нет). */
+function labSheetHtml(c) {
+    const aiSec = LAB_STEP?.sections.find(s => s.id === "ai");
+    const ai = aiSec ? sectionHtml(LAB_STEP, aiSec, c) : "";
+    const fields = labFieldsOf(c);
+    const head = fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
+        ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
+    const rows = fields.map(f => `<div class="lab-extra-row">${fieldHtml(f, c.values[f.code], c)}<button type="button" class="btn lab-rm" data-rm-lab="${esc(f.code)}" title="убрать" aria-label="убрать">×</button></div>`).join("");
+    const attn = labAttnHtml(c);
+    return `${ai}${attn ? `<div class="attn" id="attn">${attn}</div>` : ""}
+    <div class="sec lab-extra" id="labextra">
+      <h3>Показатели <small class="muted">${fields.length ? fields.length + " · " : ""}справочник — ${Object.keys(Labs.LABS).length} · новый код — в <a href="#/settings/labs">Настройки → Анализы</a></small></h3>
+      ${rows ? head + `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Пока пусто. Загрузите бланк через ИИ выше или выберите анализ из справочника — строка появится здесь.</p>`}
+      <div class="lab-add"><input type="search" id="labadd" placeholder="Добавить из справочника: гемоглобин, ТПО, HLA-B27…" aria-label="Добавить анализ из справочника" autocomplete="off"><div class="lab-add-res" id="labaddres"></div>
+        <button type="button" class="btn" id="labpick">Выбрать анализ…</button>
+      </div>
+    </div>`;
+}
+function labAttnHtml(c) {
+    const rows = [];
+    for (const f of labFieldsOf(c)) {
+        if (f.type !== "number" || !Norms.hasNorm(f.code))
+            continue;
+        const r = Norms.criticality(f.code, c.values[f.code], c);
+        if (r.k !== undefined && r.k > Curve.SAFE_MAX)
+            rows.push({ f, k: r.k, cls: r.cls });
+    }
+    if (!rows.length)
+        return "";
+    rows.sort((a, b) => b.k - a.k);
+    return `<span class="attn-title">Требуют внимания:</span> ${rows.map(({ f, k, cls }) => `<button type="button" class="attn-item ${cls}" data-go="${esc(f.code)}" title="критичность ${k} — показать">${esc(f.label)}</button>`).join('<span class="attn-sep">, </span>')}`;
 }
 function labSaveHtml(c) {
     const sel = selSet(c), m = c.labMeta || { date: todayIso() };
@@ -726,9 +767,10 @@ function renderClient(id, stepId) {
     }).join("")}</div>
     ${labs ? `<div class="card lab-top" id="labtop">${labDatesHtml(c)}</div>` : ""}
     ${params ? `<div class="card lab-top" id="paramtop">${paramDatesHtml(c)}</div>` : ""}
-    <div class="card" id="form">${step.sections.length ? step.sections.map((sec, i) => (step.id === "labs" && step.sections.findIndex(s => s.fields.some(f => f.type === "number" && Norms.hasNorm(f.code))) === i ? `<div class="attn" id="attn">${attnHtml(step, c)}</div>` : "") + sectionHtml(step, sec, c)).join("")
-        : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">Считаю вероятности диагнозов…</p></div>`
-            : step.id === "other" ? `<div class="other-tab">
+    <div class="card" id="form">${labs ? labSheetHtml(c) + labSaveHtml(c)
+        : step.sections.length ? step.sections.map(sec => sectionHtml(step, sec, c)).join("")
+            : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">Считаю вероятности диагнозов…</p></div>`
+                : step.id === "other" ? `<div class="other-tab">
           <h2>Прочее</h2>
           <p class="muted">Действия с карточкой клиента, которые не относятся к анкете и расчёту.</p>
           <div class="other-danger">
@@ -736,8 +778,7 @@ function renderClient(id, stepId) {
             <p class="muted">Удалит карточку и все её данные на этом компьютере. Отменить нельзя.</p>
           </div>
         </div>`
-                : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
-      ${labs ? labExtraHtml(c) + labSaveHtml(c) : ""}
+                    : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
       ${params ? paramSaveHtml(c) : ""}
     </div>
     <div class="nav2">
@@ -843,11 +884,13 @@ function renderClient(id, stepId) {
         bindLabs();
         bindExtra();
     }
-    if (params)
+    if (params) {
         bindParams();
+        bindTalk("params");
+    }
     if (step.id === "general") {
         bindComplaints();
-        bindTalk();
+        bindTalk("general");
     }
     if (step.id === "diagnoses")
         Dx.ready().then(err => drawDxTab(c, err));
@@ -870,9 +913,9 @@ function renderClient(id, stepId) {
             });
         });
     }
-    /** Подтянуть видимые поля и чипы жалоб после правок из чата с доктором. */
-    function syncGeneralFromClient() {
-        for (const f of Talk.talkFields()) {
+    /** Подтянуть видимые поля (и чипы жалоб на «Общем») после правок из чата с доктором. */
+    function syncTalkFields(stepId) {
+        for (const f of Talk.talkFields(STEPS, stepId)) {
             const v = c.values[f.code];
             const s = v === undefined || v === null || v === "" ? "" : String(v);
             const el = form.querySelector(`[data-code="${f.code}"]`);
@@ -886,63 +929,68 @@ function renderClient(id, stepId) {
                 });
             }
         }
-        const list = document.getElementById("cmplist");
-        if (list)
-            list.innerHTML = Cmp.complaintsListHtml(c);
-        const title = document.getElementById("title");
-        if (title)
-            title.textContent = (!getClient(id) && !c.values.NAME) ? "Новый клиент" : displayName(c);
+        if (stepId === "general") {
+            const list = document.getElementById("cmplist");
+            if (list)
+                list.innerHTML = Cmp.complaintsListHtml(c);
+            const title = document.getElementById("title");
+            if (title)
+                title.textContent = (!getClient(id) && !c.values.NAME) ? "Новый клиент" : displayName(c);
+        }
+        if (stepId === "params")
+            paramState();
     }
-    function bindTalk() {
+    function bindTalk(stepId) {
         const btn = document.getElementById("talk-doctor");
         if (!btn)
             return;
         btn.addEventListener("click", () => {
             Talk.openTalkDialog(c, {
-                onChange: () => { clearTimeout(timer); save(); syncGeneralFromClient(); },
+                stepId,
+                onChange: () => { clearTimeout(timer); save(); syncTalkFields(stepId); },
             });
         });
     }
-    // Выбор из справочника и убрать из бланка (создать новый анализ в справочнике — Настройки → Анализы)
+    // Добавить из справочника (поиск или окно по разделам) / убрать строку
     function bindExtra() {
         const box = document.getElementById("labextra");
         if (!box)
             return;
         const q = box.querySelector("#labadd"), res = box.querySelector("#labaddres");
-        const exclude = (code) => LAB_FORM_CODES.has(code) || OTHER_STEP_CODES.has(code) || extraCodes(c).includes(code);
+        const have = () => new Set(labFieldsOf(c).map(f => f.code));
+        const exclude = (code) => OTHER_STEP_CODES.has(code) || have().has(code);
+        const addCode = (code) => {
+            (labAdded[c.id] = labAdded[c.id] || new Set()).add(code);
+            labFocus = code;
+            clearTimeout(timer);
+            save();
+            renderClient(id, step.id);
+        };
         const draw = () => {
             const found = Labs.search(q.value, exclude);
-            const inForm = q.value.trim().length >= 2 ? LAB_FIELDS.filter(f => f.label.toLowerCase().includes(q.value.trim().toLowerCase())).slice(0, 3) : [];
-            res.innerHTML = q.value.trim().length < 2 ? "" : (found.length || inForm.length)
-                ? inForm.map(f => `<button type="button" class="lab-res" data-go-form="${esc(f.code)}"><b>${esc(f.label)}</b> <small class="muted">уже в бланке — перейти</small></button>`).join("")
-                    + found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""}${l.type === "qual" ? ` <small class="muted">положительно / отрицательно</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
+            res.innerHTML = q.value.trim().length < 2 ? "" : found.length
+                ? found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""}${l.type === "qual" ? ` <small class="muted">положительно / отрицательно</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
                 : `<p class="muted">В справочнике ничего не нашлось. Новый анализ добавляют в <a href="#/settings/labs">Настройки → Анализы</a>.</p>`;
         };
         q.addEventListener("input", draw);
         q.addEventListener("keydown", ev => { if (ev.key === "Enter") {
             ev.preventDefault();
-            const b = res.querySelector("[data-add], [data-go-form]");
+            const b = res.querySelector("[data-add]");
             if (b)
                 b.click();
         } });
+        box.querySelector("#labpick")?.addEventListener("click", () => {
+            LabPick.openLabPicker({ exclude, onAdd: addCode });
+        });
         box.addEventListener("click", ev => {
             const t = ev.target;
-            const add = t.closest("[data-add]"), goF = t.closest("[data-go-form]"), rm = t.closest("[data-rm-extra]");
-            if (add) {
-                (labAdded[c.id] = labAdded[c.id] || new Set()).add(add.dataset.add);
-                labFocus = add.dataset.add;
-                clearTimeout(timer);
-                save();
-                renderClient(id, step.id);
-            }
-            else if (goF) {
-                labFocus = goF.dataset.goForm;
-                focusLab();
-            }
+            const add = t.closest("[data-add]"), rm = t.closest("[data-rm-lab]");
+            if (add)
+                addCode(add.dataset.add);
             else if (rm) {
-                const code = rm.dataset.rmExtra;
-                const name = (Labs.LABS[code] && Labs.LABS[code].name) || code;
-                if (c.values[code] !== undefined && !confirm(`Убрать «${name}» из бланка? Значение в открытых анализах сотрётся.`))
+                const code = rm.dataset.rmLab;
+                const name = (Labs.LABS[code] && Labs.LABS[code].name) || LAB_FIELDS.find(f => f.code === code)?.label || code;
+                if (c.values[code] !== undefined && !confirm(`Убрать «${name}»? Значение в открытых анализах сотрётся.`))
                     return;
                 delete c.values[code];
                 labAdded[c.id]?.delete(code);
@@ -1216,7 +1264,7 @@ function renderClient(id, stepId) {
     }
     // Сводка «Требуют внимания»: обновляется, когда уходите из поля (а не на каждую цифру); нажатие — к полю
     const refreshAttn = () => { const box = document.getElementById("attn"); if (box)
-        box.innerHTML = attnHtml(step, c); };
+        box.innerHTML = labs ? labAttnHtml(c) : attnHtml(step, c); };
     form.addEventListener("change", ev => { if (ev.target.matches("input[type=number]"))
         refreshAttn(); });
     form.addEventListener("click", ev => {
@@ -1798,6 +1846,10 @@ function sectionHtml(step, sec, c) {
     if (sec.fold && sec.id)
         return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), fields)}</div>`;
     if (step.id === "general" && sec.title === "Клиент") {
+        return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
+      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${fields}</div>`;
+    }
+    if (step.id === "params" && sec.title === "Тело") {
         return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
       <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${fields}</div>`;
     }

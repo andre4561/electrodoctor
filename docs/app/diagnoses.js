@@ -51,7 +51,8 @@ export function plural(n) {
     return "диагнозов";
 }
 export const articleUrl = (name) => "../articles/diagnoses/" + encodeURIComponent(name) + ".html";
-// Настройки → Диагнозы: карточки разделов; #/settings/diagnoses/<раздел> — список диагнозов раздела
+// Настройки → Диагнозы: карточки разделов; #/settings/diagnoses/<раздел> — список;
+// #/settings/diagnoses/<раздел>/<имя файла статьи> — сразу раскрытый диагноз с признаками
 export function draw(main) {
     if ((!data && !loadError) || !signsReady) {
         main.innerHTML = `<p class="muted">Загружаю разделы…</p>`;
@@ -62,10 +63,12 @@ export function draw(main) {
         main.innerHTML = `<div class="card"><p class="err">${esc(loadError)}</p></div>`;
         return;
     }
-    const sub = decodeURIComponent(location.hash.split("/")[3] || "");
+    const parts = location.hash.replace(/^#\/?/, "").split("/");
+    const sub = decodeURIComponent(parts[2] || "");
+    const focusDx = decodeURIComponent(parts[3] || "");
     const sec = data.sections.find(s => s.id === sub);
     if (sec)
-        return drawSection(main, data, sec);
+        return drawSection(main, data, sec, focusDx || undefined);
     const all = Object.values(data.items);
     const cnt = (id) => all.filter(it => it.sections.includes(id)).length;
     const names = Object.keys(data.items);
@@ -219,7 +222,7 @@ function sortSecList(list) {
         ? priorOf(b[0]) - priorOf(a[0]) || a[1].title.localeCompare(b[1].title, "ru")
         : a[1].title.localeCompare(b[1].title, "ru"));
 }
-function drawSection(main, d, sec) {
+function drawSection(main, d, sec, focusDx) {
     const raw = Object.entries(d.items).filter(([, it]) => it.sections.includes(sec.id));
     const list = sortSecList(raw);
     const secTitle = (id) => (d.sections.find(s => s.id === id) || { title: id }).title;
@@ -329,4 +332,15 @@ function drawSection(main, d, sec) {
         main.querySelectorAll("[data-sec-sort]").forEach(x => x.classList.toggle("on", x === b));
         reorder();
     }));
+    // Ссылка с вкладки клиента «признаки в настройках» — сразу раскрыть нужный диагноз
+    if (focusDx) {
+        const det = [...acc.querySelectorAll("details[data-dx]")].find(el => el.dataset.dx === focusDx);
+        if (det) {
+            det.open = true;
+            const body = det.querySelector("[data-dxbody]");
+            if (!body.firstChild)
+                body.innerHTML = dxBody(focusDx);
+            requestAnimationFrame(() => det.scrollIntoView({ block: "start", behavior: "smooth" }));
+        }
+    }
 }

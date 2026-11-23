@@ -670,16 +670,32 @@ body.cv-lock { overflow: hidden; }
 @media (max-width: 640px) { .dxt-lbl { width: 100%; } }
 
 /* «Дополнительные анализы» из справочника */
-.lab-extra { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.lab-extra { margin-top: 12px; }
 .lab-extra h3 { margin: 0 0 8px; font-size: 15px; text-transform: none; letter-spacing: 0; }
 .lab-extra h3 small { font-weight: 400; font-size: 12px; }
 .lab-extra-row { display: flex; align-items: center; gap: 6px; }
 .lab-extra-row .field { flex: 1; min-width: 0; }
 .lab-rm { flex: none; padding: 4px 10px; }
-.lab-add { position: relative; margin-top: 10px; }
-.lab-add input { width: 100%; }
-.lab-add-res { display: grid; gap: 4px; margin-top: 6px; }
+.lab-add { position: relative; margin-top: 10px; display: grid; gap: 8px; }
+.lab-add input[type=search] { width: 100%; }
+.lab-add-res { display: grid; gap: 4px; }
 .lab-add-res:empty { display: none; }
+.lab-add #labpick { justify-self: start; }
+.labpick-dlg { width: min(720px, 100%); display: flex; flex-direction: column; max-height: calc(100vh - 32px); overflow: hidden; padding-bottom: 12px; }
+.labpick-body { overflow: auto; flex: 1; min-height: 0; margin: 0 -4px; padding: 0 4px 4px; }
+.labpick-lead { margin: 0 0 12px; font-size: 13px; }
+.labpick-grid { margin-top: 4px; }
+button.labpick-card { text-align: left; cursor: pointer; font: inherit; }
+.labpick-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.labpick-bar .labpick-secname { font-size: 16px; }
+.labpick-bar input[type=search] { flex: 1 1 140px; min-width: 120px; }
+.labpick-list { display: grid; gap: 4px; }
+.labpick-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+.labpick-row[hidden] { display: none; }
+.labpick-info { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.labpick-info b { font-size: 14px; }
+.labpick-info small { display: block; font-size: 12px; }
+.labpick-add { flex: none; min-width: 36px; padding: 4px 12px; font-size: 18px; line-height: 1; }
 .lab-res { text-align: left; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 7px 10px; font: inherit; font-size: 14px; cursor: pointer; }
 .lab-res:hover, .lab-res:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
 .lab-al { display: block; font-size: 12px; }

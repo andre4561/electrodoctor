@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Электродоктор — чат «Поговорить с доктором»: сбор жалоб и полей вкладки «Общее».
+// Электродоктор — чат «Поговорить с доктором»: сбор полей вкладки (Общее или Параметры).
 // Ответ ИИ — JSON electrodoctor-talk: say (текст пациенту) + set/clear (правки анкеты).
 import type { Client, Field, Step, Value } from "./types.js";
 import * as Settings from "./settings.js";
@@ -7,6 +7,8 @@ import * as Call from "./aicall.js";
 import { STEPS } from "./fields.js";
 
 export const FORMAT = "electrodoctor-talk";
+
+export type TalkStepId = "general" | "params";
 
 export interface TalkSet { code: string; value: string | number }
 export interface TalkReply {
@@ -26,10 +28,13 @@ const esc = (s: unknown) => String(s == null ? "" : s).replace(/[&<>"']/g, c => 
 const str = (v: unknown) => (v == null ? "" : String(v)).trim();
 const PROV_KEY = "ed.talk.provider";
 
-/** Поля вкладки «Общее», которые ИИ может менять (включая скрытые коды жалоб). */
-export function talkFields(steps: Step[] = STEPS): Field[] {
-  const g = steps.find(s => s.id === "general");
-  return g ? g.sections.flatMap(s => s.fields) : [];
+const SKIP_TYPES = new Set(["table", "files", "aiimport"]);
+
+/** Поля вкладки, которые ИИ может менять (без таблиц/файлов). */
+export function talkFields(steps: Step[] = STEPS, stepId: TalkStepId = "general"): Field[] {
+  const g = steps.find(s => s.id === stepId);
+  if (!g) return [];
+  return g.sections.flatMap(s => s.fields).filter(f => !SKIP_TYPES.has(f.type));
 }
 
 export function readyProviders(s: Settings.Settings = Settings.load()): { preset: Settings.ProviderPreset; conf: Settings.ProviderConf }[] {
@@ -57,9 +62,34 @@ function currentSnapshot(c: Client, fields: Field[]): string {
   return lines.length ? lines.join("\n") : "(пусто)";
 }
 
-export function buildSystem(c: Client, steps: Step[] = STEPS): string {
-  const fields = talkFields(steps);
-  return `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать жалобы и базовые сведения о человеке для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.
+function roleBlurb(stepId: TalkStepId): { role: string; rulesExtra: string; hint: string } {
+  if (stepId === "params") {
+    return {
+      role: "Твоя роль — спокойно собрать параметры тела, жизненные показатели и данные осмотра для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.",
+      rulesExtra: `4. Неизвестное или то, чему нет кода — в GEN_NOTES текстом; новые коды не выдумывай. Таблицу генетических тестов (GEN_TESTS) не заполняй через этот чат.
+5. Давление: если человек сказал «120 на 80» — BP_SYS=120, BP_DIA=80.
+6. Рост обычно в см (170), вес в кг. Если назвали рост в метрах (1,7) — переведи в см (170).
+7. Отёки ног EDEMA_LEGS — целое 0…3.
+8. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
+9. Не копируй в анкету ФИО из документов, адреса, телефоны.`,
+      hint: "Назовите рост, вес, давление, пульс или что видели на осмотре — помощник уточнит и заполнит параметры в анкете.",
+    };
+  }
+  return {
+    role: "Твоя роль — спокойно собрать жалобы и базовые сведения о человеке для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.",
+    rulesExtra: `4. Неизвестное или то, чему нет кода — в COMPLAINTS_OTHER или NOTES текстом; новые коды не выдумывай.
+5. Для жалобы «боль в груди»: сначала PAIN_CHEST=1, затем атрибуты (PRESSING, STABBING, IRRAD_LARM, EXERTION, RELIEF_REST) и PAIN_CHEST_NRS 0–100, описание — PAIN_CHEST_NOTE.
+6. Интенсивность боли: если человек сказал «6 из 10» — пиши 60 в шкале 0–100.
+7. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
+8. Не копируй в анкету ФИО из документов, адреса, телефоны — для имени достаточно псевдонима, если человек его дал.`,
+    hint: "Опишите, что беспокоит — помощник уточнит и заполнит жалобы в анкете.",
+  };
+}
+
+export function buildSystem(c: Client, steps: Step[] = STEPS, stepId: TalkStepId = "general"): string {
+  const fields = talkFields(steps, stepId);
+  const { role, rulesExtra } = roleBlurb(stepId);
+  return `Ты помощник кабинета «Электродоктор». ${role}
 
 Отвечай ТОЛЬКО одним JSON-объектом — без markdown, без текста до и после.
 
@@ -73,14 +103,10 @@ export function buildSystem(c: Client, steps: Step[] = STEPS): string {
 }
 
 Правила:
-1. "say" — то, что увидит человек в чате. Без JSON и без кодов вроде PAIN_CHEST.
+1. "say" — то, что увидит человек в чате. Без JSON и без кодов полей.
 2. "set" — только коды из списка ниже, если человек явно сообщил факт. value по типу поля.
 3. "clear" — коды, которые нужно убрать (человек отрёкся или ошибка). Можно [] .
-4. Неизвестное или то, чему нет кода — в COMPLAINTS_OTHER или NOTES текстом; новые коды не выдумывай.
-5. Для жалобы «боль в груди»: сначала PAIN_CHEST=1, затем атрибуты (PRESSING, STABBING, IRRAD_LARM, EXERTION, RELIEF_REST) и PAIN_CHEST_NRS 0–100, описание — PAIN_CHEST_NOTE.
-6. Интенсивность боли: если человек сказал «6 из 10» — пиши 60 в шкале 0–100.
-7. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
-8. Не копируй в анкету ФИО из документов, адреса, телефоны — для имени достаточно псевдонима, если человек его дал.
+${rulesExtra}
 
 Допустимые поля:
 ${fields.map(fieldLine).join("\n")}
@@ -167,8 +193,8 @@ function displayValue(f: Field, v: Value): string {
 }
 
 /** Применить set/clear к клиенту; неизвестные коды пропускаются. */
-export function apply(c: Client, reply: TalkReply, steps: Step[] = STEPS): TalkChange[] {
-  const byCode = new Map(talkFields(steps).map(f => [f.code, f]));
+export function apply(c: Client, reply: TalkReply, steps: Step[] = STEPS, stepId: TalkStepId = "general"): TalkChange[] {
+  const byCode = new Map(talkFields(steps, stepId).map(f => [f.code, f]));
   const changes: TalkChange[] = [];
   for (const code of reply.clear) {
     const f = byCode.get(code); if (!f) continue;
@@ -189,10 +215,13 @@ export function apply(c: Client, reply: TalkReply, steps: Step[] = STEPS): TalkC
 type Hist = Call.ChatMessage[];
 
 export interface TalkOpts {
+  stepId?: TalkStepId;
   onChange: () => void;   // после правок анкеты — сохранить и обновить поля на странице
 }
 
 export function openTalkDialog(c: Client, opts: TalkOpts): void {
+  const stepId: TalkStepId = opts.stepId || "general";
+  const { hint } = roleBlurb(stepId);
   const providers = readyProviders();
   const ov = document.createElement("div");
   ov.className = "cv-overlay";
@@ -215,7 +244,7 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
       </label>
     </div>
     <div class="talk-log" id="talk-log" aria-live="polite">
-      <div class="talk-hint muted">Опишите, что беспокоит — помощник уточнит и заполнит жалобы в анкете.</div>
+      <div class="talk-hint muted">${esc(hint)}</div>
     </div>
     <div class="talk-compose">
       <textarea id="talk-in" rows="2" placeholder="Напишите сообщение…"></textarea>
@@ -259,8 +288,8 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
   };
 
   const bubble = (role: "user" | "assistant" | "meta", html: string) => {
-    const hint = log.querySelector(".talk-hint");
-    if (hint) hint.remove();
+    const h = log.querySelector(".talk-hint");
+    if (h) h.remove();
     const div = document.createElement("div");
     div.className = "talk-msg talk-" + role;
     div.innerHTML = html;
@@ -298,7 +327,7 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
       if (!model) throw new Error("У провайдера не указана модель. Впишите её в Настройках → Провайдеры.");
       const raw = await Call.chat({
         preset, conf, model,
-        system: buildSystem(c),
+        system: buildSystem(c, STEPS, stepId),
         messages: nextHist,
         temperature: 0.3,
         signal: ctrl.signal,
@@ -309,7 +338,7 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
         role: "assistant",
         content: JSON.stringify({ format: FORMAT, version: 1, say: reply.say, set: reply.set, clear: reply.clear }),
       });
-      const changes = apply(c, reply);
+      const changes = apply(c, reply, STEPS, stepId);
       if (changes.length) opts.onChange();
       const meta = changes.length
         ? `<div class="talk-meta">В анкете: ${changes.map(ch => esc(ch.kind === "clear" ? `${ch.label} — снято` : `${ch.label} — ${ch.text}`)).join("; ")}</div>`

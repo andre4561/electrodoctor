@@ -3,7 +3,8 @@
 import * as Labs from "./labs.js";
 import * as Settings from "./settings.js";
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const SECS = [
+/** Разделы каталога по материалу — те же, что в модалке выбора анализа у клиента. */
+export const SECS = [
     {
         id: "blood", title: "Кровь", desc: "Общий анализ, биохимия, гормоны, инфекции и другие показатели крови",
         prefix: "Кровь",
