@@ -85,9 +85,9 @@ electrodoctor/
 
 ## Публикация на хостинг (FTP)
 
-Готовый сайт дополнительно выкладывается на хостинг по явному FTPS (FTP поверх TLS): сервер `45.67.58.17`, порт 21. GitHub Pages при этом не меняется и по-прежнему собирает папку `docs/` с ветки `main`.
+Готовый сайт дополнительно выкладывается на хостинг по явному FTPS (FTP поверх TLS): сервер `32rumba.ru` (адрес `45.67.58.17`), порт 21. Сертификат Let's Encrypt выписан на это имя, и workflow проверяет его. GitHub Pages при этом не меняется и по-прежнему собирает папку `docs/` с ветки `main`.
 
-Workflow — [`.github/workflows/deploy-ftp.yml`](.github/workflows/deploy-ftp.yml). Он собирает кабинет (`npm ci` и `npm run build`: JavaScript из `src/` попадает в `docs/`) и прогоняет Markdown через Jekyll тем же сборщиком, что и GitHub Pages. На хостинг уходит уже готовая папка `_site/` — в каталог, в который FTP-пользователь попадает сразу после входа. Отдельный путь на сервере не задаётся.
+Workflow — [`.github/workflows/deploy-ftp.yml`](.github/workflows/deploy-ftp.yml). Он собирает кабинет (`npm ci` и `npm run build`: JavaScript из `src/` попадает в `docs/`) и прогоняет Markdown через Jekyll тем же сборщиком, что и GitHub Pages. Сборщик в режиме production сам подставляет базовый путь `/electrodoctor`; для корня хостинга workflow на время сборки задаёт пустой `baseurl`, чтобы стили и шапка статей открывались с `https://32rumba.ru/`. На хостинг уходит уже готовая папка `_site/` — в каталог, в который FTP-пользователь попадает сразу после входа. Отдельный путь на сервере не задаётся.
 
 Секреты добавляются в репозитории: **Settings → Secrets and variables → Actions → New repository secret**.
 
