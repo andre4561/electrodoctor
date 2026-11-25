@@ -7,7 +7,7 @@ from urllib.parse import quote
 
 base = sys.argv[1]
 NAMES = {
-    'diagnoses': 'Диагнозы', 'lab-tests': 'Анализы', 'supplements': 'БАДы', 'peptides': 'Пептиды',
+    'diagnoses': 'Диагнозы', 'lab-tests': 'Анализы', 'exams': 'Осмотры', 'supplements': 'БАДы', 'peptides': 'Пептиды',
     'probiotics': 'Пробиотики', 'drugs': 'Лекарства', 'general': 'Общие статьи', 'therapy': 'Терапия',
     'practices': 'Философия и практики', 'education': 'Образование',
 }

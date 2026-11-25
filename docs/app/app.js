@@ -347,18 +347,42 @@ function openOverlayDialog(title, bodyHtml, dlgClass = "") {
 function openDxNote() {
     openOverlayDialog("О расчёте", `<p class="dxt-note">Это подсказка расчёта по анализам, а не диагноз. Сверху — самые вероятные. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href="#/settings/diagnoses">Настройки → Диагнозы</a>.</p>`, "dxt-note-dlg");
 }
-/** Подсказка по признаку осмотра: текст описания как в настройках, без переразбора. */
+/** Короткий текст для подсказки при наведении (~2 строки). Полный — по клику. */
+function examTipPreview(desc, max = 120) {
+    const t = desc.replace(/\s+/g, " ").trim();
+    if (!t)
+        return "";
+    if (t.length <= max)
+        return t;
+    const cut = t.slice(0, max - 1);
+    const sp = cut.lastIndexOf(" ");
+    return ((sp > max * 0.55 ? cut.slice(0, sp) : cut).trimEnd()) + "…";
+}
+/** Подсказка по признаку осмотра: своё описание или статья из exam-descs. */
 function openExamSignHelp(code) {
     const p = Exams.parseLineCode(code);
     const it = p ? Exams.get(p.examId) : undefined;
-    const line = it?.lines.find(l => l.id === p.lineId);
+    const line = it ? Exams.findLine(it, p.lineId) : undefined;
     if (!line)
         return;
-    const text = (line.desc || "").trim();
+    const text = Exams.resolvedDesc(it.id, line).trim();
+    const art = Exams.articleHref(line);
+    const artLink = art
+        ? `<p class="exam-help-art"><a href="${esc(art)}" target="_blank" rel="noopener">Статья об осмотре ↗</a></p>`
+        : "";
     const body = text
-        ? `<p class="exam-help-body">${esc(text)}</p>`
-        : `<p class="muted">Описания пока нет — добавьте в <a href="#/settings/exam">Настройки → Осмотр</a>.</p>`;
+        ? `<p class="exam-help-body">${esc(text)}</p>${artLink}`
+        : `<p class="muted">Описания пока нет — добавьте в <a href="#/settings/exam">Настройки → Осмотр</a> или подтяните файл Markdown.</p>${artLink}`;
     openOverlayDialog(line.label, body, "exam-help-dlg");
+}
+function examSignLinkHtml(code, label) {
+    const p = Exams.parseLineCode(code);
+    const line = p && Exams.get(p.examId) ? Exams.findLine(Exams.get(p.examId), p.lineId) : undefined;
+    const tip = examTipPreview(line && p ? Exams.resolvedDesc(p.examId, line) : "");
+    const tipAttr = tip ? ` data-tip="${esc(tip)}"` : "";
+    const cls = "exam-sign-link" + (tip ? " has-tip" : "");
+    const title = tip ? "" : ` title="как оценивать"`;
+    return `<button type="button" class="${cls}" data-exam-help="${esc(code)}"${tipAttr}${title}><span class="exam-sign-txt">${esc(label)}</span></button>`;
 }
 function bindDxNote(box) {
     box.querySelector(".dxt-info")?.addEventListener("click", openDxNote);
@@ -1952,26 +1976,60 @@ function sectionHtml(step, sec, c) {
     }
     if (step.id === "params" && sec.title === "Осмотр") {
         syncExamCatalog();
+        const signWord = (n) => {
+            if (n % 10 === 1 && n % 100 !== 11)
+                return "признак";
+            if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
+                return "признака";
+            return "признаков";
+        };
+        const itemWord = (n) => {
+            if (n % 10 === 1 && n % 100 !== 11)
+                return "пункт";
+            if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
+                return "пункта";
+            return "пунктов";
+        };
+        const blockFields = (fields) => {
+            if (!fields.length)
+                return "";
+            // шкала и число осмотра — одна сетка: название-ссылка, значение справа
+            const compact = fields.every(f => f.type === "slider" || (f.type === "number" && Exams.isExamLineCode(f.code)));
+            return compact
+                ? `<div class="exam-slider-grid">${fields.map(f => fieldHtml(f, c.values[f.code], c)).join("")}</div>`
+                : fieldsLayoutHtml(fields, c);
+        };
+        // группа систем → пункты; раскрывалка пункта только если признаков больше одного (или есть вложенные группы)
         const blocks = Exams.GROUPS.map(g => {
             const items = Exams.inGroup(g.id);
             if (!items.length)
                 return "";
             const inner = items.map(it => {
-                const fields = Exams.toFields(it);
-                const head = `<h4 class="exam-item-title">${esc(it.name)}</h4>`;
-                if (!fields.length)
-                    return `<div class="exam-item-block">${head}<p class="muted">Строк пока нет — добавьте в <a href="#/settings/exam/${esc(g.id)}">настройках</a>.</p></div>`;
-                // ползунки — по два в ряд; остальное как обычно
-                const allSlider = fields.length > 0 && fields.every(f => f.type === "slider");
-                const body = allSlider
-                    ? `<div class="exam-slider-grid">${fields.map(f => fieldHtml(f, c.values[f.code], c)).join("")}</div>`
-                    : fieldsLayoutHtml(fields, c);
-                return `<div class="exam-item-block">${head}${body}</div>`;
+                const top = Exams.topFields(it);
+                const nests = Exams.nestFields(it);
+                const n = Exams.flatSigns(it).length;
+                const status = n ? `${n} ${signWord(n)}` : "пусто";
+                let body;
+                if (!top.length && !nests.length) {
+                    body = `<p class="muted">Строк пока нет — добавьте в <a href="#/settings/exam/${esc(g.id)}">настройках</a>.</p>`;
+                }
+                else {
+                    const nestHtml = nests.map(({ nest, fields }) => `<details class="exam-nest-card">
+              <summary><span class="exam-nest-mark" aria-hidden="true"></span><span class="exam-nest-title">${esc(nest.name)}</span>
+                <span class="muted">${fields.length}</span></summary>
+              <div class="exam-nest-card-body">${blockFields(fields) || `<p class="muted">Пусто</p>`}</div>
+            </details>`).join("");
+                    body = `${blockFields(top)}${nestHtml}`;
+                }
+                // один признак без вложенных групп — поле сразу, без лишней раскрывалки
+                if (n <= 1 && !nests.length)
+                    return `<div class="exam-flat-item">${body}</div>`;
+                return fold(`exam.${g.id}.${it.id}`, it.name, status, body);
             }).join("");
-            return `<div class="exam-sec"><h3>${esc(g.title)}</h3>${inner}</div>`;
+            return `<div class="exam-sec">${fold(`exam.${g.id}`, g.title, `${items.length} ${itemWord(items.length)}`, `<p class="muted exam-sys-desc">${esc(g.desc)}</p><div class="exam-sys-items">${inner}</div>`)}</div>`;
         }).join("");
         return `<div class="sec"><h2>${esc(sec.title)}</h2>
-      <p class="muted sec-note">Список из <a href="#/settings/exam">Настройки → Осмотр</a> — правки справочника сразу видны здесь.</p>
+      <p class="muted sec-note">Список из <a href="#/settings/exam">Настройки → Осмотр</a> — те же группы и пункты, что в настройках.</p>
       ${blocks || `<p class="muted">В справочнике пока нет пунктов.</p>`}</div>`;
     }
     return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${note}${fields}</div>`;
@@ -1989,7 +2047,11 @@ function fieldHtml(f, v, own) {
     const la = Labs.LABS[f.code]; // название анализа — ссылка на статью о нём, в новой вкладке
     const art = articleUrl(f.code) || (la && la.article ? "../articles/lab-tests/" + encodeURIComponent(la.article) + ".html" : undefined);
     const name = art ? `<a class="art-link" href="${art}" target="_blank" rel="noopener" title="статья «${esc(f.label)}» — откроется в новой вкладке">${esc(f.label)}</a>` : esc(f.label);
-    const lbl = `${name}${f.required ? ' <span class="req">*</span>' : ""}${f.hint ? `<small>${esc(f.hint)}</small>` : ""}`;
+    const exam = Exams.isExamLineCode(f.code);
+    // у осмотра описание — наведение/клик по названию, не <small> под полем
+    const lbl = exam
+        ? examSignLinkHtml(f.code, f.label) + (f.required ? ' <span class="req">*</span>' : "")
+        : `${name}${f.required ? ' <span class="req">*</span>' : ""}${f.hint ? `<small>${esc(f.hint)}</small>` : ""}`;
     const id = "f_" + f.code;
     const s = v === undefined || v === null || v === "" ? "" : String(v);
     let ctl = "";
@@ -1998,6 +2060,12 @@ function fieldHtml(f, v, own) {
             ctl = `<input type="text" id="${id}" data-code="${f.code}" value="${esc(v)}">`;
             break;
         case "textarea":
+            if (exam) {
+                return `<div class="field wide exam-text-field">
+          ${examSignLinkHtml(f.code, f.label)}
+          <textarea id="${id}" data-code="${f.code}" rows="3" placeholder="по описанию признака">${esc(v)}</textarea>
+        </div>`;
+            }
             return `<div class="field wide"><label for="${id}">${lbl}</label><textarea id="${id}" data-code="${f.code}">${esc(v)}</textarea></div>`;
         case "date":
             ctl = `<input type="date" id="${id}" data-code="${f.code}" value="${esc(v)}">`;
@@ -2005,9 +2073,17 @@ function fieldHtml(f, v, own) {
         case "select":
             ctl = `<select id="${id}" data-code="${f.code}"><option value="">—</option>${(f.options || []).map(([val, t]) => `<option value="${esc(val)}"${v === val ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
             break;
-        case "number":
+        case "number": {
             ctl = `<input type="number" inputmode="decimal" id="${id}" data-code="${f.code}" value="${esc(v)}"${f.min != null ? ` min="${f.min}"` : ""}${f.max != null ? ` max="${f.max}"` : ""} step="${f.step || "any"}"${f.computed ? " readonly tabindex=\"-1\" title=\"считается автоматически\"" : ""}>${f.computed ? '<span class="unit">авто</span>' : `<span class="unit">${esc(f.unit || "")}</span>`}${Norms.colsHtml(f.code, f.unit || "", v, own)}`;
+            if (exam) {
+                return `<div class="field wide exam-num-field">
+          <div class="slider-line">
+            ${examSignLinkHtml(f.code, f.label)}
+            <span class="ctl exam-num-ctl">${ctl}</span>
+          </div></div>`;
+            }
             break;
+        }
         case "yesno":
             ctl = `<span class="seg" data-choice="${f.code}" role="group" aria-label="${esc(f.label)}"><button type="button" data-v="" class="${s === "" ? "on" : ""}" title="не спрашивали">?</button><button type="button" data-v="1" class="${s === "1" ? "on" : ""}">да</button><button type="button" data-v="0" class="${s === "0" ? "on" : ""}">нет</button></span>`;
             break;
@@ -2023,9 +2099,9 @@ function fieldHtml(f, v, own) {
             const empty = s === "";
             const num = empty ? lo : Math.min(hi, Math.max(lo, Number(s) || lo));
             const exam = Exams.isExamLineCode(f.code);
-            // у осмотра края и текст — во всплывающем окне по клику на название
+            // у осмотра: наведение — короткий текст; клик — полное описание
             const title = exam
-                ? `<button type="button" class="exam-sign-link" data-exam-help="${esc(f.code)}" title="как оценивать">${esc(f.label)}</button>`
+                ? examSignLinkHtml(f.code, f.label)
                 : `<label for="${id}" class="slider-name">${name}${f.required ? ' <span class="req">*</span>' : ""}</label>`;
             const ends = exam ? "" : `<span class="slider-span">${esc(f.scaleFrom || String(lo))} — ${esc(f.scaleTo || String(hi))}</span>`;
             return `<div class="field wide slider-field">
@@ -2625,7 +2701,7 @@ function download(name, text, type) {
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 window.addEventListener("hashchange", route);
-Promise.all([FS.init().catch(folderError), Settings.Store.init(), Norms.loadNorms(), Labs.loadLabs()])
+Promise.all([FS.init().catch(folderError), Settings.Store.init(), Norms.loadNorms(), Labs.loadLabs(), Exams.loadDescs()])
     .then(() => Labs.applyOwn(Settings.load().labs))
     .finally(route);
 // настройки дочитались из папки, открылся доступ или введён пароль — перерисовать страницу настроек
