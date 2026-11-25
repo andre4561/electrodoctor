@@ -8,6 +8,8 @@ aliases:
   - Odoribacter splanchnicus – бактерия
 ---
 
+# Odoribacter splanchnicus
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Odoribacter splanchnicus* (вид); конкретные штаммы, такие как *Odoribacter splanchnicus* DSM 17738T, выделены и охарактеризованы, но не все имеют коммерческое применение в качестве пробиотиков

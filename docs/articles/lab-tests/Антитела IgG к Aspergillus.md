@@ -8,7 +8,7 @@ aliases:
   - "IgG к Aspergillus"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Антитела IgG к Aspergillus
 
 ## Идентификация и биохимия
 

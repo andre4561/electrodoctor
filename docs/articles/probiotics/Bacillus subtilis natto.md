@@ -8,6 +8,8 @@ aliases:
   - Бациллус субтилис
 ---
 
+# Bacillus subtilis natto
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bacillus subtilis* subsp. *subtilis* штамм natto

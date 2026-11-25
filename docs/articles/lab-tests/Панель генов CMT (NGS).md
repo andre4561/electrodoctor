@@ -8,7 +8,7 @@ aliases:
   - "Charcot‑Marie‑Tooth gene panel"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Панель генов CMT (NGS)
 
 ## Идентификация и биохимия
 

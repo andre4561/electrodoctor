@@ -8,6 +8,8 @@ aliases:
   - Lactococcus lactis
 ---
 
+# Lactococcus lactis Ll-23™
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactococcus lactis* subsp. *lactis* штамм Ll-23™

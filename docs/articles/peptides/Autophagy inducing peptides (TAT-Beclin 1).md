@@ -9,6 +9,8 @@ aliases:
   - TAT-Beclin 1
 ---
 
+# Autophagy inducing peptides (TAT-Beclin 1)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** TAT-Beclin 1

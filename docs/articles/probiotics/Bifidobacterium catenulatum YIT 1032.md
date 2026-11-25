@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium – пробиотик
 ---
 
+# Bifidobacterium catenulatum YIT 1032
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium catenulatum* subsp. *catenulatum* штамм YIT 1032

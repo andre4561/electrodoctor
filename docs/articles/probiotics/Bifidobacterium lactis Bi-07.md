@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium lactis
 ---
 
+# Bifidobacterium lactis Bi-07
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium lactis* Bi-07

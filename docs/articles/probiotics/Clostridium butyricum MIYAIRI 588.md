@@ -8,6 +8,8 @@ aliases:
   - Clostridium butyricum
 ---
 
+# Clostridium butyricum MIYAIRI 588
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Clostridium butyricum* MIYAIRI 588

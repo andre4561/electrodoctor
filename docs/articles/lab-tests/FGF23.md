@@ -8,7 +8,7 @@ aliases:
   - "Fibroblast growth factor 23"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# FGF23
 
 ## Идентификация и биохимия
 

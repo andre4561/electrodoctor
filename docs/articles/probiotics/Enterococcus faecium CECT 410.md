@@ -8,6 +8,8 @@ aliases:
   - Enterococcus faecium
 ---
 
+# Enterococcus faecium CECT 410
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Enterococcus faecium* subsp. *faecium*, штамм CECT 410

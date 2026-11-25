@@ -13,7 +13,7 @@ aliases:
   - "Toxoplasma serology IgG"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Антитела IgG к Toxoplasma gondii
 
 ## Идентификация и биохимия
 

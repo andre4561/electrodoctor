@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus vaginalis
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus vaginalis* (род: *Lactobacillus*, вид: *vaginalis*)

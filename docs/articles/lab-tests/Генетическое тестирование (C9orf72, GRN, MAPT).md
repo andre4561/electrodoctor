@@ -8,7 +8,7 @@ aliases:
   - "Neurodegeneration genetic panel"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Генетическое тестирование (C9orf72, GRN, MAPT)
 
 ## Идентификация и биохимия
 

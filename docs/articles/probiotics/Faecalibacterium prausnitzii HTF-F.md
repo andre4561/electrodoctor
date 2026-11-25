@@ -8,6 +8,8 @@ aliases:
   - Faecalibacterium – пробиотик
 ---
 
+# Faecalibacterium prausnitzii HTF-F
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Faecalibacterium prausnitzii* штамм HTF-F

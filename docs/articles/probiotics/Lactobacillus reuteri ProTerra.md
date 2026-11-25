@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus reuteri
 ---
 
+# Lactobacillus reuteri ProTerra
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus reuteri* штамм ProTerra (часто обозначается как *Limosilactobacillus reuteri* ProTerra в соответствии с актуальной таксономией)

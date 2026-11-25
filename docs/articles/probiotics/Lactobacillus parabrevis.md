@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus parabrevis
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus parabrevis* (род: *Lactobacillus*, вид: *parabrevis*); штаммы могут различаться (например, *L. parabrevis* DSM 18759), но клинически значимые штаммы для человека изучены ограниченно

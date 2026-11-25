@@ -9,6 +9,8 @@ aliases:
   - Lactobacillus casei
 ---
 
+# Lactobacillus casei subsp. shirota
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus casei* subsp. *shirota*

@@ -9,6 +9,8 @@ aliases:
   - DNP
 ---
 
+# Dendroaspis Natriuretic Peptide (DNP)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Dendroaspis Natriuretic Peptide (DNP)

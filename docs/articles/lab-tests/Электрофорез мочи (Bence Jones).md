@@ -9,7 +9,7 @@ aliases:
   - "Urine protein electrophoresis"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Электрофорез мочи (Bence Jones)
 
 ## Идентификация и биохимия
 

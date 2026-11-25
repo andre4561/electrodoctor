@@ -10,7 +10,7 @@ aliases:
   - "scabies PCR"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР Sarcoptes scabiei
 
 ## Идентификация и биохимия
 

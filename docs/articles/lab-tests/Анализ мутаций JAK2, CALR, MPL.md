@@ -10,7 +10,7 @@ aliases:
   - "Myeloproliferative mutation analysis"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Анализ мутаций JAK2, CALR, MPL
 
 ## Идентификация и биохимия
 

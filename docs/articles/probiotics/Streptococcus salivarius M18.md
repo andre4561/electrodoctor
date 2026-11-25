@@ -8,6 +8,8 @@ aliases:
   - Streptococcus salivarius
 ---
 
+# Streptococcus salivarius M18
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Streptococcus salivarius* штамм M18

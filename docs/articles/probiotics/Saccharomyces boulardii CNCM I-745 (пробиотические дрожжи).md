@@ -5,6 +5,8 @@ aliases:
   - Saccharomyces boulardii
 ---
 
+# Saccharomyces boulardii CNCM I-745 (пробиотические дрожжи)
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Saccharomyces cerevisiae* var. *boulardii*, штамм CNCM I-745

@@ -5,6 +5,8 @@ aliases:
   - Propionibacterium
 ---
 
+# Propionibacterium freudenreichii subsp. shermanii JS
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Propionibacterium freudenreichii* subsp. *shermanii* штамм JS

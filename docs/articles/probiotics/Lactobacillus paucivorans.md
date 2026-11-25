@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus paucivorans – Lactobacillus
 ---
 
+# Lactobacillus paucivorans
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus paucivorans* (вид); штаммы могут варьироваться (например, DSM 15674, JCM 11732), но специфические терапевтические штаммы этого вида не выделены массово

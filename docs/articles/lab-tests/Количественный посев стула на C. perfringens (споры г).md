@@ -8,7 +8,7 @@ aliases:
   - "Clostridium perfringens stool count"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Количественный посев стула на C. perfringens (споры/г)
 
 ## Идентификация и биохимия
 

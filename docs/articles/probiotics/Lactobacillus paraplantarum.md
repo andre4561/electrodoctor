@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus paraplantarum
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus paraplantarum* (вид); штаммы могут варьироваться (например, *L. paraplantarum* strain L-ZS9, DSM 19535)

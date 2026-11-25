@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus paracasei DG
 ---
 
+# Lactobacillus paracasei DG (CNCM I-1572)
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus paracasei* subsp. *paracasei* штамм DG (CNCM I-1572)

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus plantarum
 ---
 
+# Lactobacillus plantarum HEAL9
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus plantarum* HEAL9 (штамм HEAL9)

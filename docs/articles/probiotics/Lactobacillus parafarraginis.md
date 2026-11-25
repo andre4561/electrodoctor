@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus parafarraginis
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus parafarraginis* (вид); отдельные штаммы могут быть указаны, например, *L. parafarraginis* strain DSM 106512

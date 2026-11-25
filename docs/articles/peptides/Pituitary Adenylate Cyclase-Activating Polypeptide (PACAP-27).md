@@ -9,6 +9,8 @@ aliases:
   - PACAP-27
 ---
 
+# Pituitary Adenylate Cyclase-Activating Polypeptide (PACAP-27)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Pituitary Adenylate Cyclase-Activating Polypeptide (PACAP-27)

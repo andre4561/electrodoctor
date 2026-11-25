@@ -9,6 +9,8 @@ aliases:
   - FOXO4-DRI
 ---
 
+# Senolytic peptides (FOXO4-DRI)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** FOXO4-DRI (FOXO4-DRI peptide)

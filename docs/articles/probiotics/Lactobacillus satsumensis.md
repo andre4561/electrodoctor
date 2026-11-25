@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus satsumensis
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus satsumensis* (род: *Lactobacillus*, вид: *satsumensis*; штаммы варьируются, например LMG 23526, DSM 23970)

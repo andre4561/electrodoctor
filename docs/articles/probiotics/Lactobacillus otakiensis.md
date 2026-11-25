@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus otakiensis – Lactobacillus
 ---
 
+# Lactobacillus otakiensis
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus otakiensis* (вид); штаммы включают, например, *L. otakiensis* JCM 17278T

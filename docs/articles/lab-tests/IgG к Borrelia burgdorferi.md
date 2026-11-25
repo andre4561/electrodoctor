@@ -9,7 +9,7 @@ aliases:
   - "IgG Lyme disease"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# IgG к Borrelia burgdorferi
 
 ## Идентификация и биохимия
 

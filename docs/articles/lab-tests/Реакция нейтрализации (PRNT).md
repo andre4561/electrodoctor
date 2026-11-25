@@ -9,7 +9,7 @@ aliases:
   - "Plaque reduction neutralization test"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Реакция нейтрализации (PRNT)
 
 ## Идентификация и биохимия
 

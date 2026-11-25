@@ -9,6 +9,8 @@ aliases:
   - каптазы
 ---
 
+# Apoptosis inhibitory peptides (caspase inhibitors)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Apoptosis inhibitory peptides (caspase inhibitors)

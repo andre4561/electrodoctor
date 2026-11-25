@@ -9,6 +9,8 @@ aliases:
   - Бациллус субтилис
 ---
 
+# Bacillus subtilis CU1
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bacillus subtilis* штамм CU1

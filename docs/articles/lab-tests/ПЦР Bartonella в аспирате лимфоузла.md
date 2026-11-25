@@ -8,7 +8,7 @@ aliases:
   - "Bartonella PCR lymph node aspirate"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР Bartonella в аспирате лимфоузла
 
 ## Идентификация и биохимия
 

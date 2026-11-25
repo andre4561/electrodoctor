@@ -9,6 +9,8 @@ aliases:
   - Hepcidin antagonist
 ---
 
+# Hepcidin antagonist (PTG-300)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** PTG-300

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus rhamnosus
 ---
 
+# Lactobacillus rhamnosus HN001
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus rhamnosus* HN001

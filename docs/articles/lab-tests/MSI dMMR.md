@@ -15,7 +15,7 @@ aliases:
   - "deficient Mismatch Repair"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# MSI/dMMR
 
 ## Идентификация и биохимия
 

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus casei
 ---
 
+# Lactobacillus casei LC-11
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus casei* штамм LC-11

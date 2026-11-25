@@ -8,6 +8,8 @@ aliases:
   - Streptococcus K12
 ---
 
+# Streptococcus salivarius K12
+
 ## Streptococcus salivarius K12: пробиотик для здоровья полости рта и верхних дыхательных путей
 
 - **Полное научное название:** Streptococcus salivarius K12 (штамм K12 вида Streptococcus salivarius)

@@ -12,7 +12,7 @@ aliases:
   - "Кал на инфекции (Clostridioides difficile)"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Clostridioides difficile в кале
 
 ## Идентификация и биохимия
 

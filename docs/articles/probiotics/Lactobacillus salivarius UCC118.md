@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus salivarius
 ---
 
+# Lactobacillus salivarius UCC118
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus salivarius* subsp. *salivarius* штамм UCC118

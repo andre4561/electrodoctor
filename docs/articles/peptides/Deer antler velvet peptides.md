@@ -9,6 +9,8 @@ aliases:
   - Пептиды
 ---
 
+# Deer antler velvet peptides
+
 ## Deer antler velvet peptides: научно-популярный анализ препарата
 
 - **Международное непатентованное название (МНН):** не присвоено

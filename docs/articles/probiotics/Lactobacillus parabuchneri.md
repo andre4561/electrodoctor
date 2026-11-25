@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus parabuchneri – Lactobacillus
 ---
 
+# Lactobacillus parabuchneri
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus parabuchneri* (род: *Lactobacillus*, вид: *parabuchneri*; штаммы могут варьироваться, например, DSM 16671, LMG 23139)

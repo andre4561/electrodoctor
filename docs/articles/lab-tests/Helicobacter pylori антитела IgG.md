@@ -6,7 +6,7 @@ status: черновик ИИ (aliceai-llm), вычитано Claude, специ
 length: полная
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Helicobacter pylori: антитела IgG
 
 ## Идентификация и биохимия
 

@@ -8,6 +8,8 @@ aliases:
   - Akkermansia – пробиотик
 ---
 
+# Akkermansia muciniphila ATCC BAA-835
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Akkermansia muciniphila* штамм ATCC BAA-835

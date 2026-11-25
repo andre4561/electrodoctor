@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus zymae
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus zymae* (род: *Lactobacillus*, вид: *zymae*, подвид и штамм — данные отсутствуют)

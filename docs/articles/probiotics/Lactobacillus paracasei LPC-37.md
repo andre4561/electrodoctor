@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus paracasei
 ---
 
+# Lactobacillus paracasei LPC-37
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus paracasei* subsp. *paracasei* штамм LPC-37

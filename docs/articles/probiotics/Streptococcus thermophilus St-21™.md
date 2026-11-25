@@ -8,6 +8,8 @@ aliases:
   - Streptococcus thermophilus
 ---
 
+# Streptococcus thermophilus St-21™
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Streptococcus thermophilus* St-21™

@@ -8,7 +8,7 @@ aliases:
   - "Bartonella henselae serology"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Серология IgG/IgM к Bartonella henselae
 
 ## Идентификация и биохимия
 

@@ -9,6 +9,8 @@ aliases:
   - Copeptin
 ---
 
+# Copeptin (C-terminal fragment of vasopressin precursor)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Copeptin

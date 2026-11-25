@@ -9,6 +9,8 @@ aliases:
   - RBP4
 ---
 
+# Retinol Binding Protein 4 (RBP4)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Retinol Binding Protein 4 (RBP4)

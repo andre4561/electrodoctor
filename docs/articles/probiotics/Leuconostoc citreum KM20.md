@@ -8,6 +8,8 @@ aliases:
   - Leuconostoc citreum
 ---
 
+# Leuconostoc citreum KM20
+
 ## Leuconostoc citreum KM20: пробиотик из группы иных молочнокислых бактерий
 
 - **Полное научное название:** Leuconostoc citreum штамм KM20

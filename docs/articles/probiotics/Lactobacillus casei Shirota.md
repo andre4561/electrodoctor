@@ -9,6 +9,8 @@ aliases:
   - Lactobacillus casei Shirota – пробиотик
 ---
 
+# Lactobacillus casei Shirota
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus casei* strain Shirota

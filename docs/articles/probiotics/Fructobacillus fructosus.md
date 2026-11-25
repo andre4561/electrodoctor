@@ -8,6 +8,8 @@ aliases:
   - Fructobacillus fructosus – бактерия
 ---
 
+# Fructobacillus fructosus
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Fructobacillus fructosus* (род: *Fructobacillus*, вид: *fructosus*); данные о подвидах и конкретных штаммах ограничены

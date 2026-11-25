@@ -8,7 +8,7 @@ aliases:
   - "ПЦР‑тест на Gardnerella, Atopobium, Prevotella"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на Gardnerella, Atopobium, Prevotella
 
 ## Идентификация и биохимия
 

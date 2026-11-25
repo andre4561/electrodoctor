@@ -9,7 +9,7 @@ aliases:
   - "PCR M. genitalium"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на Mycoplasma genitalium
 
 ## Идентификация и биохимия
 

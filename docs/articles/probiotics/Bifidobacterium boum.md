@@ -6,6 +6,8 @@ tags:
   - Бифидобактерии
 ---
 
+# Bifidobacterium boum
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium boum* (вид), штаммы включают, например, *Bifidobacterium boum* DSM 20432T

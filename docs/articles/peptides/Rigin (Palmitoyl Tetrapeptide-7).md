@@ -9,6 +9,8 @@ aliases:
   - Пептид
 ---
 
+# Rigin (Palmitoyl Tetrapeptide-7)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Palmitoyl Tetrapeptide-7

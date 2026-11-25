@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium longum
 ---
 
+# Bifidobacterium longum BB536
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium longum* subsp. *longum* штамм BB536

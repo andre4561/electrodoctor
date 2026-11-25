@@ -9,6 +9,8 @@ aliases:
   - Urotensin II
 ---
 
+# Urotensin II-related peptide
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Уротензин II-связанный пептид (Urotensin II-related peptide, URP)

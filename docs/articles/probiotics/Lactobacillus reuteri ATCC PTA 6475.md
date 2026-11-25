@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus reuteri
 ---
 
+# Lactobacillus reuteri ATCC PTA 6475
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus reuteri* ATCC PTA 6475

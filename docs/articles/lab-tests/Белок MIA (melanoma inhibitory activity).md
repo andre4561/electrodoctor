@@ -10,7 +10,7 @@ aliases:
   - "MIA (melanoma inhibitory activity)"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Белок MIA (melanoma inhibitory activity)
 
 ## Идентификация и биохимия
 

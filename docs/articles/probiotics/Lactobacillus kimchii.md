@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus kimchii
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus kimchii* (род: *Lactobacillus*, вид: *kimchii*)

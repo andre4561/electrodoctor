@@ -63,10 +63,8 @@ def front(code, l, model, short):
     if al:
         lines += ["aliases:"] + [f"  - {yaml_q(a)}" for a in al]
     lines.append("---")
-    banner = f"> **Черновик ИИ** ({model}) — статья не проверена специалистом."
-    if short:
-        banner += f" **Краткое описание** — будет дополнено."
-    return "\n".join(lines) + "\n\n" + banner + "\n\n"
+    # Баннер «Черновик ИИ» в тело статьи не пишем — статус остаётся в YAML.
+    return "\n".join(lines) + "\n\n"
 
 
 def check(text, short):

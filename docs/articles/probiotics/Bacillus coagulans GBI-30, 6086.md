@@ -9,6 +9,8 @@ aliases:
   - Bacillus coagulans
 ---
 
+# Bacillus coagulans GBI-30, 6086
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bacillus coagulans* GBI-30, 6086

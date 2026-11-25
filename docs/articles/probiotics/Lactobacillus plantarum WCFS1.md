@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus plantarum
 ---
 
+# Lactobacillus plantarum WCFS1
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus plantarum* WCFS1

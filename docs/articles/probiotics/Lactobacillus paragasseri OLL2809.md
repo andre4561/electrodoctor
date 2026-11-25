@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus paragasseri
 ---
 
+# Lactobacillus paragasseri OLL2809
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus paragasseri* OLL2809 (род: *Lactobacillus*, вид: *paragasseri*, штамм: OLL2809)

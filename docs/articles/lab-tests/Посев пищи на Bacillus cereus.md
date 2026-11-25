@@ -8,7 +8,7 @@ aliases:
   - "Food Bacillus cereus culture"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Посев пищи на Bacillus cereus
 
 ## Идентификация и биохимия
 

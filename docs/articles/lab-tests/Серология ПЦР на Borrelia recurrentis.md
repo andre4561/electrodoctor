@@ -8,7 +8,7 @@ aliases:
   - "Borrelia recurrentis test"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Серология/ПЦР на Borrelia recurrentis
 
 ## Идентификация и биохимия
 

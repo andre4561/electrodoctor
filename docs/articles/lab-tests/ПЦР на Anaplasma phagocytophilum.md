@@ -10,7 +10,7 @@ aliases:
   - "PCR к Anaplasma phagocytophilum"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на Anaplasma phagocytophilum
 
 ## Идентификация и биохимия
 

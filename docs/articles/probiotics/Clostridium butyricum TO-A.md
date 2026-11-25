@@ -8,6 +8,8 @@ aliases:
   - Clostridium butyricum
 ---
 
+# Clostridium butyricum TO-A
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Clostridium butyricum* TO-A

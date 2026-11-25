@@ -8,6 +8,8 @@ aliases:
   - Хавентоксины
 ---
 
+# Spider venom peptides (huwentoxins)
+
 ## Spider venom peptides (huwentoxins): пептиды из паучьего яда с терапевтическим потенциалом
 
 - **Международное непатентованное название (МНН):** Huwentoxin-I, Huwentoxin-II, Huwentoxin-IV и др. (семейство пептидов)

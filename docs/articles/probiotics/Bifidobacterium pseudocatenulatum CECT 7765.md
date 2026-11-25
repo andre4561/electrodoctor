@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium
 ---
 
+# Bifidobacterium pseudocatenulatum CECT 7765
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium pseudocatenulatum* штамм CECT 7765

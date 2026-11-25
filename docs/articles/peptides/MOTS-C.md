@@ -7,6 +7,8 @@ tags:
   - Пептид
 ---
 
+# MOTS-C
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** MOTS-c (Mitochondrial Open Reading Frame of the 12S rRNA-c)

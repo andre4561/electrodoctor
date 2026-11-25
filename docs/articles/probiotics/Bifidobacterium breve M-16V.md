@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium breve
 ---
 
+# Bifidobacterium breve M-16V
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium breve* M-16V

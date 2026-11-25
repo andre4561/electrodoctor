@@ -8,7 +8,7 @@ aliases:
   - "Familial hypercholesterolemia genetic panel"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Генетическое тестирование (LDLR, APOB, PCSK9)
 
 ## Идентификация и биохимия
 

@@ -9,7 +9,7 @@ aliases:
   - "Real‑time quaking‑induced conversion"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# RT‑QuIC в спинномозговой жидкости
 
 ## Идентификация и биохимия
 

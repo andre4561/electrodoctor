@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus – бактерия
 ---
 
+# Lactobacillus hayakitensis
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus hayakitensis* (род: *Lactobacillus*, вид: *hayakitensis*, подвид и штамм — данные ограничены, клинически значимые штаммы не выделены на данный момент)

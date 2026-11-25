@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus ingluviei
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus ingluviei* (род: *Lactobacillus*, вид: *inguiviei*), штаммы могут варьироваться (например, LMG 19578, DSM 15228)

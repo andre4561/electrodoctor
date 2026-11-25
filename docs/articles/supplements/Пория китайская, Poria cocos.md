@@ -6,6 +6,8 @@ tags:
   - Полисахарид
 ---
 
+# Пория китайская, Poria cocos
+
 ## Таксономия и идентификация
 Poria cocos (Schw.) Wolf — сапротрофный гриб из семейства Polyporaceae, порядка Polyporales, класса Agaricomycetes. Ранее классифицировался как Wolfiporia cocos, Pachyma cocos и Polyporus cocos. Современная таксономия поддерживает название Poria cocos как синоним Wolfiporia cocos (Murrill) Ginns, что отражено в большинстве молекулярных и филогенетических исследований.
 

@@ -9,6 +9,8 @@ aliases:
   - IGF-1 DES
 ---
 
+# IGF-1 DES (1-3)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** IGF-1 DES (Insulin-like Growth Factor 1 Des(1-3))

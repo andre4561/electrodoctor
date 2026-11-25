@@ -5,6 +5,8 @@ aliases:
   - Lactobacillus crispatus
 ---
 
+# Lactobacillus crispatus CTV-05 (вагинальный пробиотик нового поколения)
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus crispatus* CTV-05

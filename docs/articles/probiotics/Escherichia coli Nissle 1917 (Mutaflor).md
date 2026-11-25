@@ -5,6 +5,8 @@ aliases:
   - Escherichia coli
 ---
 
+# Escherichia coli Nissle 1917 (Mutaflor)
+
 ## Escherichia coli Nissle 1917 (Mutaflor): терапевтический патобионт в клинической практике
 
 - **Полное научное название:** *Escherichia coli* subsp. *coli* штамм Nissle 1917

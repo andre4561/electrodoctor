@@ -8,6 +8,8 @@ aliases:
   - Akkermansia – пробиотик
 ---
 
+# Akkermansia muciniphila CIP 107961
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Akkermansia muciniphila* CIP 107961

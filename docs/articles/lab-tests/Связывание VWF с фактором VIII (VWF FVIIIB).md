@@ -8,7 +8,7 @@ aliases:
   - "VWF factor VIII binding"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Связывание VWF с фактором VIII (VWF:FVIIIB)
 
 ## Идентификация и биохимия
 

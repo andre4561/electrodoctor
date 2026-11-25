@@ -9,7 +9,7 @@ aliases:
   - "Clostridioides difficile toxin A/B"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Токсины A/B Clostridioides difficile в кале
 
 ## Идентификация и биохимия
 

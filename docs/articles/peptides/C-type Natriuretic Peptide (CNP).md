@@ -9,6 +9,8 @@ aliases:
   - CNP
 ---
 
+# C-type Natriuretic Peptide (CNP)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** C-type natriuretic peptide (CNP)

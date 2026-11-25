@@ -9,6 +9,8 @@ aliases:
   - BNP
 ---
 
+# B-type Natriuretic Peptide (BNP)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** B-type Natriuretic Peptide (BNP)

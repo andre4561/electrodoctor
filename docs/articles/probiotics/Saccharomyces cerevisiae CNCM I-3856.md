@@ -8,6 +8,8 @@ aliases:
   - Saccharomyces cerevisiae
 ---
 
+# Saccharomyces cerevisiae CNCM I-3856
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Saccharomyces cerevisiae* CNCM I-3856

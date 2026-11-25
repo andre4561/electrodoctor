@@ -8,6 +8,8 @@ aliases:
   - Pediococcus pentosaceus
 ---
 
+# Pediococcus pentosaceus LP28
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Pediococcus pentosaceus* штамм LP28

@@ -9,7 +9,7 @@ aliases:
   - "IgM anti‑chikungunya"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# IgM‑антитела к Chikungunya
 
 ## Идентификация и биохимия
 

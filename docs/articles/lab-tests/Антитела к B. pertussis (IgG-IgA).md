@@ -9,7 +9,7 @@ aliases:
   - "Pertussis serology IgG/IgA"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Антитела к B. pertussis (IgG/IgA)
 
 ## Идентификация и биохимия
 

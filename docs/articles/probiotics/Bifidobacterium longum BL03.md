@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium longum
 ---
 
+# Bifidobacterium longum BL03
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** Bifidobacterium longum subsp. longum BL03

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus poonae – бактерия
 ---
 
+# Lactobacillus poonae
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus poonae* (род: *Lactobacillus*, вид: *poonae*)

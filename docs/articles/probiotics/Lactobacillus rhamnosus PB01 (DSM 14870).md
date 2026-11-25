@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus rhamnosus
 ---
 
+# Lactobacillus rhamnosus PB01 (DSM 14870)
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus rhamnosus* PB01 (DSM 14870)

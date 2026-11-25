@@ -8,7 +8,7 @@ aliases:
   - "Yersinia pestis PCR"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР Yersinia pestis
 
 ## Идентификация и биохимия
 

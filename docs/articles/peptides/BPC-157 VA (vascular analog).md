@@ -9,6 +9,8 @@ aliases:
   - BPC-157
 ---
 
+# BPC-157 VA (vascular analog)
+
 ## Идентификация и происхождение BPC-157 VA
 
 - **Международное непатентованное название (МНН):** BPC-157 Vascular Analog (BPC-157 VA)

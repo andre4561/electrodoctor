@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus rhamnosus
 ---
 
+# Lactobacillus rhamnosus GR-1
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus rhamnosus* strain GR-1

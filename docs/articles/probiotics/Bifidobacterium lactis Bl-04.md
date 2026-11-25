@@ -9,6 +9,8 @@ aliases:
   - Bifidobacterium lactis
 ---
 
+# Bifidobacterium lactis Bl-04
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium lactis* Bl-04

@@ -9,6 +9,8 @@ aliases:
   - MGF
 ---
 
+# MGF (Mechano Growth Factor)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Механо-ростовой фактор (Mechano Growth Factor, MGF)

@@ -6,6 +6,8 @@ tags:
   - Грамотрицательные
 ---
 
+# Alistipes putredinis
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Alistipes putredinis* (вид), штаммы могут варьироваться (например, ATCC 25870); род *Alistipes*, семейство Rikenellaceae

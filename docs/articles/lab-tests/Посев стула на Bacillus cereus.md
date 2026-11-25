@@ -8,7 +8,7 @@ aliases:
   - "Stool Bacillus cereus culture"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Посев стула на Bacillus cereus
 
 ## Идентификация и биохимия
 

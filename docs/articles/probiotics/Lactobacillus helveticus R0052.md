@@ -9,6 +9,8 @@ aliases:
   - Lactobacillus helveticus
 ---
 
+# Lactobacillus helveticus R0052
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus helveticus* R0052

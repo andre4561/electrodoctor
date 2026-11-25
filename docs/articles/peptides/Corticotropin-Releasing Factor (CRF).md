@@ -9,6 +9,8 @@ aliases:
   - CRF
 ---
 
+# Corticotropin-Releasing Factor (CRF)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Corticotropin-Releasing Factor (CRF), также известен как Corticotropin-Releasing Hormone (CRH)

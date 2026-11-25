@@ -221,6 +221,8 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
 .set-add { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .ok { color: var(--ok); }
 .set-saved { font-size: 13px; }
+.site-inject { width: 100%; min-height: 160px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+.articles-css { width: 100%; min-height: 280px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
 @media (max-width: 700px) {
   .set { grid-template-columns: 1fr; gap: 12px; }
   .set-side { flex-direction: row; position: static; }

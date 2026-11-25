@@ -9,7 +9,7 @@ aliases:
   - "PCR Neisseria gonorrhoeae"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на Neisseria gonorrhoeae
 
 ## Идентификация и биохимия
 

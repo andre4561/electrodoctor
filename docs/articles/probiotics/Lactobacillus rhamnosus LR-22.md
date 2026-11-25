@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus rhamnosus
 ---
 
+# Lactobacillus rhamnosus LR-22
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus rhamnosus* LR-22 (штамм)

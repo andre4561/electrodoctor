@@ -8,7 +8,7 @@ aliases:
   - "Capnocytophaga canimorsus test"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Исследование на Capnocytophaga canimorsus
 
 ## Идентификация и биохимия
 

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus salivarius
 ---
 
+# Lactobacillus salivarius Ls-33
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus salivarius* Ls-33

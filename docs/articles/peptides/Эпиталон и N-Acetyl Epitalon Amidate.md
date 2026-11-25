@@ -10,6 +10,8 @@ aliases:
   - Эпиталон
 ---
 
+# Эпиталон и N-Acetyl Epitalon Amidate
+
 ## Эпиталон и N-Acetyl Epitalon Amidate: пептиды регуляции старения и биологической регуляции
 
 - **Международное непатентованное название (МНН):** Эпиталон (Epitalon); для N-Acetyl Epitalon Amidate МНН не присвоено

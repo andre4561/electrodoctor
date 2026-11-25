@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus paracasei
 ---
 
+# Lactobacillus paracasei subsp. tolerans
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus paracasei* subsp. *tolerans*

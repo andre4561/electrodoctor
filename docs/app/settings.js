@@ -17,28 +17,42 @@ import { STEPS } from "./fields.js";
 import { openEditor, safeText, sameCurve } from "./curve.js";
 import { curveFor, baseCurve, normsRaw, normsError } from "./norms.js";
 export { Store };
-export const METRIKA_LS = "electrodoctor.metrika.id";
-/** Достаёт номер счётчика из вставленного кода Метрики или из голого числа. */
-export function parseMetrikaId(raw) {
-    const s = (raw || "").trim();
-    if (!s)
-        return "";
-    if (/^\d{5,}$/.test(s))
-        return s;
-    const m = s.match(/\bym\s*\(\s*(\d{5,})\s*[,)]/) || s.match(/\/watch\/(\d{5,})/) || s.match(/counter[_-]?id["'\s:=]+(\d{5,})/i) || s.match(/\b(\d{6,})\b/);
-    return m ? m[1] : "";
-}
-export function publishMetrikaId(id) {
+export const ARTICLES_CSS_LS = "electrodoctor.articles.css";
+const ARTICLES_CSS_URL = "../assets/articles.css";
+const SITE_INJECT_URL = "../assets/site-inject.html";
+export function publishArticlesCss(css) {
     try {
-        if (id)
-            localStorage.setItem(METRIKA_LS, id);
+        if (css)
+            localStorage.setItem(ARTICLES_CSS_LS, css);
         else
-            localStorage.removeItem(METRIKA_LS);
+            localStorage.removeItem(ARTICLES_CSS_LS);
     }
     catch (e) { /* приватный режим */ }
 }
-export function metrikaConfigFile(id) {
-    return `// SPDX-License-Identifier: AGPL-3.0-or-later\n// Публичный номер счётчика Яндекс.Метрики. Скачан из Настройки → Прочее.\nwindow.ED_METRIKA_ID = ${JSON.stringify(id || "")};\n`;
+async function fetchDefaultArticlesCss() {
+    const r = await fetch(ARTICLES_CSS_URL, { cache: "no-store" });
+    if (!r.ok)
+        throw new Error("не удалось загрузить " + ARTICLES_CSS_URL);
+    return (await r.text()).replace(/^\uFEFF/, "");
+}
+async function fetchSiteInject() {
+    const r = await fetch(SITE_INJECT_URL, { cache: "no-store" });
+    if (!r.ok)
+        throw new Error("не удалось загрузить " + SITE_INJECT_URL);
+    return (await r.text()).replace(/^\uFEFF/, "");
+}
+async function saveSiteInject(html) {
+    const r = await fetch(SITE_INJECT_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+        body: html,
+    });
+    if (r.ok)
+        return;
+    if (r.status === 404 || r.status === 405 || r.status === 501)
+        throw new Error("запись только через локальный preview.py (python tools/preview.py)");
+    const t = await r.text().catch(() => "");
+    throw new Error(t || ("ошибка сохранения: " + r.status));
 }
 export const PROVIDERS = [
     { id: "openai", name: "OpenAI (ChatGPT)", kind: "cloud", baseUrl: "https://api.openai.com/v1", model: "", keyUrl: "https://platform.openai.com/api-keys" },
@@ -96,7 +110,7 @@ export function load() {
     if (!d)
         return blank();
     const s = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, metrikaId: d.metrikaId || "" }));
+        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, articlesCss: d.articlesCss || "" }));
     // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
     if ((s.agentsRev || 1) < AGENTS_REV) {
         const have = new Set(s.agents.map(a => a.id));
@@ -113,13 +127,13 @@ export function load() {
             s.agents.push(...add);
         s.agentsRev = AGENTS_REV;
     }
-    publishMetrikaId(s.metrikaId || "");
+    publishArticlesCss(s.articlesCss || "");
     return s;
 }
 export function save(s) {
-    s.metrikaId = parseMetrikaId(s.metrikaId || "");
-    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, metrikaId: s.metrikaId || "" });
-    publishMetrikaId(s.metrikaId || "");
+    s.articlesCss = (s.articlesCss || "").trim() ? s.articlesCss : "";
+    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, articlesCss: s.articlesCss || "" });
+    publishArticlesCss(s.articlesCss || "");
 }
 // Чем распознаются анализы по фото: свой провайдер распознавания или общий провайдер агентов
 export function recognizerRuntime(s = load()) {
@@ -704,77 +718,124 @@ export function bindGate(root, after) {
 }
 function drawMisc(main) {
     const s = load();
-    const id = s.metrikaId || "";
+    const ownCss = s.articlesCss || "";
     main.innerHTML = `<div class="set-head"><h2>Прочее</h2></div>
     <div class="card">
-      <h3>Яндекс.Метрика</h3>
-      <p class="muted">Вставьте номер счётчика или весь код установки из кабинета Метрики — номер подставится сам. После сохранения счётчик заработает на главной, в статьях и в кабинете <b>в этом браузере</b>.</p>
-      <label for="metrika">Код или номер счётчика</label>
-      <textarea id="metrika" rows="8" placeholder="Номер, например 103456789 — или вставьте весь код установки из Метрики">${esc(id)}</textarea>
-      <p class="muted small" data-parsed>${id ? `Сейчас активен счётчик <code>${esc(id)}</code>.` : "Счётчик не задан."}</p>
+      <h3>Скрипты сайта</h3>
+      <p class="muted">Код в шапке каждой страницы — как в WordPress header: Яндекс.Метрика, Google Analytics или любой HTML/<code>&lt;script&gt;</code>. Сохраняется в файл <code>assets/site-inject.html</code> (через локальный <code>preview.py</code>); после выгрузки на GitHub его видят все посетители.</p>
+      <label for="site-inject">Код</label>
+      <textarea id="site-inject" class="site-inject" rows="12" spellcheck="false" disabled>Загрузка…</textarea>
+      <p class="muted small" data-inj-hint></p>
       <div class="grp">
-        <button type="button" class="btn primary" data-act="save">Сохранить</button>
-        <button type="button" class="btn" data-act="clear">Очистить</button>
-        <button type="button" class="btn" data-act="download" ${id ? "" : "disabled"}>Скачать analytics-config.js для хостинга</button>
-        <span class="muted" data-flash></span>
+        <button type="button" class="btn primary" data-inj="save" disabled>Сохранить</button>
+        <button type="button" class="btn" data-inj="clear" disabled>Очистить</button>
+        <span class="muted" data-inj-flash></span>
       </div>
-      <p class="muted small">Чтобы Метрику видели <b>все посетители</b> вашего сайта на хостинге, скачайте файл и положите его в папку <code>assets/</code> на хостинге (рядом с <code>analytics.js</code>), затем снова залейте сайт. Настройка в кабинете сама на сервер не попадает — она хранится у вас локально.</p>
+    </div>
+    <div class="card store-card">
+      <h3>Стили статей</h3>
+      <p class="muted">CSS страниц статей (и шапки). Ниже — исходник по умолчанию из <code>assets/articles.css</code>; правки сохраняются в этом браузере. Кабинет этими стилями не трогаем.</p>
+      <label for="articles-css">CSS</label>
+      <textarea id="articles-css" class="articles-css" rows="18" spellcheck="false" disabled>Загрузка…</textarea>
+      <p class="muted small" data-css-hint></p>
+      <div class="grp">
+        <button type="button" class="btn primary" data-css="save" disabled>Сохранить</button>
+        <button type="button" class="btn" data-css="reset" disabled>Сбросить к исходному</button>
+        <span class="muted" data-css-flash></span>
+      </div>
+      <p class="muted small">Правки здесь — только в этом браузере. Для всех посетителей сайта меняйте <code>assets/articles.css</code> в репозитории и выгружайте на хостинг.</p>
     </div>`;
-    const ta = q(main, "#metrika");
-    const parsed = q(main, "[data-parsed]");
-    const flash = q(main, "[data-flash]");
-    const dl = q(main, '[data-act="download"]');
-    const refreshHint = () => {
-        const n = parseMetrikaId(ta.value);
-        parsed.innerHTML = n ? `Будет сохранён счётчик <code>${esc(n)}</code>.` : (ta.value.trim() ? `<span class="err">Не вижу номер счётчика в тексте.</span>` : "Счётчик не задан.");
-        dl.disabled = !n && !load().metrikaId;
+    const injTa = q(main, "#site-inject");
+    const injHint = q(main, "[data-inj-hint]");
+    const injFlash = q(main, "[data-inj-flash]");
+    const injSave = q(main, '[data-inj="save"]');
+    const injClear = q(main, '[data-inj="clear"]');
+    let injectLoaded = "";
+    const blankInject = "<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->\n<!-- Код в шапке сайта: Яндекс.Метрика, Google Analytics и любой другой HTML/скрипт. -->\n";
+    fetchSiteInject().then(t => {
+        injectLoaded = t;
+        injTa.value = t;
+        injTa.disabled = false;
+        injSave.disabled = false;
+        injClear.disabled = false;
+        injHint.textContent = "Файл assets/site-inject.html";
+    }).catch(e => {
+        injTa.value = blankInject;
+        injTa.disabled = false;
+        injSave.disabled = false;
+        injClear.disabled = false;
+        injHint.innerHTML = `<span class="err">${esc((e && e.message) || "не удалось загрузить")}</span>`;
+    });
+    injSave.onclick = () => {
+        injSave.disabled = true;
+        saveSiteInject(injTa.value).then(() => {
+            injectLoaded = injTa.value;
+            injHint.textContent = "Записано в assets/site-inject.html — после git push будет на сайте у всех.";
+            savedFlash(injFlash);
+        }).catch(e => {
+            injHint.innerHTML = `<span class="err">${esc((e && e.message) || String(e))}</span>`;
+        }).finally(() => { injSave.disabled = false; });
     };
-    ta.oninput = refreshHint;
-    q(main, '[data-act="save"]').onclick = () => {
-        const n = parseMetrikaId(ta.value);
-        if (ta.value.trim() && !n) {
-            parsed.innerHTML = `<span class="err">Не вижу номер счётчика в тексте.</span>`;
+    injClear.onclick = () => {
+        injTa.value = blankInject;
+        injSave.click();
+    };
+    const cssTa = q(main, "#articles-css");
+    const cssHint = q(main, "[data-css-hint]");
+    const cssFlash = q(main, "[data-css-flash]");
+    const cssSave = q(main, '[data-css="save"]');
+    const cssReset = q(main, '[data-css="reset"]');
+    let defaultCss = "";
+    const norm = (t) => t.replace(/\r\n/g, "\n").trimEnd() + "\n";
+    const cssStatus = () => {
+        const saved = load().articlesCss || "";
+        const cur = norm(cssTa.value);
+        const def = defaultCss ? norm(defaultCss) : "";
+        const savedN = saved ? norm(saved) : "";
+        if (def && cur === def && !saved)
+            cssHint.textContent = "Исходный CSS.";
+        else if (savedN && cur === savedN)
+            cssHint.textContent = "Свой CSS (сохранён в этом браузере).";
+        else if (def && cur === def && saved)
+            cssHint.textContent = "В поле исходник; в браузере ещё свой — «Сбросить» или «Сохранить».";
+        else
+            cssHint.textContent = "Изменён — нажмите «Сохранить», чтобы применить в этом браузере.";
+    };
+    fetchDefaultArticlesCss().then(def => {
+        defaultCss = norm(def);
+        cssTa.value = ownCss ? ownCss : defaultCss;
+        cssTa.disabled = false;
+        cssSave.disabled = false;
+        cssReset.disabled = false;
+        cssStatus();
+    }).catch(e => {
+        cssTa.value = ownCss || "";
+        cssTa.disabled = false;
+        cssSave.disabled = false;
+        cssReset.disabled = !ownCss;
+        cssHint.innerHTML = `<span class="err">${esc((e && e.message) || "не удалось загрузить исходный CSS")}</span>`;
+    });
+    cssTa.oninput = cssStatus;
+    cssSave.onclick = () => {
+        const text = cssTa.value;
+        const st = load();
+        if (!defaultCss || norm(text) !== norm(defaultCss))
+            st.articlesCss = text;
+        else
+            st.articlesCss = "";
+        save(st);
+        cssStatus();
+        savedFlash(cssFlash);
+    };
+    cssReset.onclick = () => {
+        if (!defaultCss)
             return;
-        }
+        cssTa.value = defaultCss;
         const st = load();
-        st.metrikaId = n;
+        st.articlesCss = "";
         save(st);
-        ta.value = n;
-        refreshHint();
-        savedFlash(flash);
-        // подхватить без перезагрузки, если analytics.js уже на странице
-        try {
-            if (n && !window.__edMetrika) {
-                const s1 = document.createElement("script");
-                s1.src = "../assets/analytics-config.js";
-                const s2 = document.createElement("script");
-                s2.src = "../assets/analytics.js";
-                document.head.appendChild(s1);
-                s1.onload = () => { window.ED_METRIKA_ID = n; document.head.appendChild(s2); };
-            }
-            else if (n) {
-                window.ED_METRIKA_ID = n;
-            }
-        }
-        catch (e) { /* не страшно */ }
-    };
-    q(main, '[data-act="clear"]').onclick = () => {
-        const st = load();
-        st.metrikaId = "";
-        save(st);
-        ta.value = "";
-        refreshHint();
-        savedFlash(flash);
-    };
-    dl.onclick = () => {
-        const n = parseMetrikaId(ta.value) || load().metrikaId || "";
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(new Blob([metrikaConfigFile(n)], { type: "text/javascript;charset=utf-8" }));
-        a.download = "analytics-config.js";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        cssStatus();
+        savedFlash(cssFlash);
     };
 }
 function drawStorage(main, redraw) {

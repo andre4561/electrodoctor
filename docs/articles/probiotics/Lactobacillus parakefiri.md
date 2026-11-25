@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus parakefiri
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus parakefiri* (род: *Lactobacillus*, вид: *parakefiri*, подвид не установлен, штаммы могут различаться, например: MIMLH5, JCM 8573)

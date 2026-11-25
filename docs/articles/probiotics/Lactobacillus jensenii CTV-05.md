@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus jensenii
 ---
 
+# Lactobacillus jensenii CTV-05
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus jensenii* CTV-05

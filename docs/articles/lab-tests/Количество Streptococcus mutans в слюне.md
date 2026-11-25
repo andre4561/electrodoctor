@@ -9,7 +9,7 @@ aliases:
   - "Streptococcus mutans count in saliva"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Количество Streptococcus mutans в слюне
 
 ## Идентификация и биохимия
 

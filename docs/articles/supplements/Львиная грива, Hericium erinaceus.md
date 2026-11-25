@@ -7,6 +7,8 @@ tags:
   - Полисахарид
 ---
 
+# Львиная грива, Hericium erinaceus
+
 ## Таксономия и идентификация
 Львиная грива, известная в научной литературе как Hericium erinaceus (Bull.) Pers., относится к царству Fungi, отделу Basidiomycota, классу Agaricomycetes, порядку Cantharellales, семейству Hericaceae. Синонимы включают Hydnum erinaceus Bull., Clavaria erinaceus (Bull.) Fr., Hericium caput-medusae (Bull.) Gray.
 

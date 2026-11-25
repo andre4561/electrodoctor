@@ -8,6 +8,8 @@ aliases:
   - Parabacteroides goldsteinii – бактерия
 ---
 
+# Parabacteroides goldsteinii
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Parabacteroides goldsteinii* (вид), штаммы могут варьироваться (например, DSM 17995, ATCC BAA-2055); на данный момент не все штаммы выделены на уровне подвидов

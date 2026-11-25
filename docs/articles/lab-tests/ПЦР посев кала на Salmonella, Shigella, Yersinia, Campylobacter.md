@@ -9,7 +9,7 @@ aliases:
   - "Stool bacterial panel"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР/посев кала на Salmonella, Shigella, Yersinia, Campylobacter
 
 ## Идентификация и биохимия
 

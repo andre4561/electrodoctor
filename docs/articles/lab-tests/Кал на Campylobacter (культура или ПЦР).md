@@ -9,7 +9,7 @@ aliases:
   - "Campylobacter stool culture"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Кал на Campylobacter (культура или ПЦР)
 
 ## Идентификация и биохимия
 

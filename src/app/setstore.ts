@@ -19,8 +19,8 @@ const ITER = 250000;
 
 export interface Vault { salt: string; iv: string; data: string; iter: number }
 // Сохранённый вид: ключи провайдеров вынуты в vault, если включено шифрование
-export interface StoredFile { format: string; version: 1; providers: Record<string, any>; agents: any[]; norms?: Record<string, number>; curves?: Record<string, any>; agentDefaults?: any; agentsRev?: number; signs?: Record<string, any>; signMethod?: string; recognizer?: any; labs?: Record<string, any>; metrikaId?: string; vault?: Vault; savedAt?: string }
-export interface Data { providers: Record<string, any>; agents: any[]; norms?: Record<string, number>; curves?: Record<string, any>; agentDefaults?: any; agentsRev?: number; signs?: Record<string, any>; signMethod?: string; recognizer?: any; labs?: Record<string, any>; metrikaId?: string }
+export interface StoredFile { format: string; version: 1; providers: Record<string, any>; agents: any[]; norms?: Record<string, number>; curves?: Record<string, any>; agentDefaults?: any; agentsRev?: number; signs?: Record<string, any>; signMethod?: string; recognizer?: any; labs?: Record<string, any>; articlesCss?: string; vault?: Vault; savedAt?: string }
+export interface Data { providers: Record<string, any>; agents: any[]; norms?: Record<string, number>; curves?: Record<string, any>; agentDefaults?: any; agentsRev?: number; signs?: Record<string, any>; signMethod?: string; recognizer?: any; labs?: Record<string, any>; articlesCss?: string }
 
 type Dir = FileSystemDirectoryHandle;
 export const folderSupported = typeof window.showDirectoryPicker === "function" && typeof indexedDB !== "undefined";
@@ -64,7 +64,7 @@ async function open(v: Vault, key: CryptoKey): Promise<Record<string, string>> {
 async function toFile(): Promise<StoredFile> {
   const d = data || { providers: {}, agents: [] };
   const providers: Record<string, any> = JSON.parse(JSON.stringify(d.providers));
-  const out: StoredFile = { format: FORMAT, version: 1, providers, agents: d.agents, norms: d.norms || {}, curves: d.curves || {}, agentDefaults: d.agentDefaults, agentsRev: d.agentsRev, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer, labs: d.labs || {}, metrikaId: d.metrikaId || "", savedAt: new Date().toISOString() };
+  const out: StoredFile = { format: FORMAT, version: 1, providers, agents: d.agents, norms: d.norms || {}, curves: d.curves || {}, agentDefaults: d.agentDefaults, agentsRev: d.agentsRev, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer, labs: d.labs || {}, articlesCss: d.articlesCss || "", savedAt: new Date().toISOString() };
   if (state.encrypted) {
     if (state.locked) out.vault = lockedVault || undefined;        // ключи не знаем — оставляем старые зашифрованными
     else {
@@ -78,7 +78,7 @@ async function toFile(): Promise<StoredFile> {
 }
 function fromFile(f: StoredFile): void {
   if (!f || !f.providers || !Array.isArray(f.agents)) throw new Error("это не файл настроек Электродоктора");
-  data = { providers: f.providers, agents: f.agents, norms: f.norms || {}, curves: f.curves || {}, agentDefaults: f.agentDefaults, agentsRev: f.agentsRev, signs: f.signs || {}, signMethod: f.signMethod, recognizer: f.recognizer, labs: f.labs || {}, metrikaId: f.metrikaId || "" };
+  data = { providers: f.providers, agents: f.agents, norms: f.norms || {}, curves: f.curves || {}, agentDefaults: f.agentDefaults, agentsRev: f.agentsRev, signs: f.signs || {}, signMethod: f.signMethod, recognizer: f.recognizer, labs: f.labs || {}, articlesCss: f.articlesCss || "" };
   cryptoKey = null; salt = null;
   if (f.vault) { state.encrypted = true; state.locked = true; lockedVault = f.vault; salt = unb64(f.vault.salt); }
   else { state.encrypted = false; state.locked = false; lockedVault = null; }

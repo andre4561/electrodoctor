@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium adolescentis
 ---
 
+# Bifidobacterium adolescentis SBT2020
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium adolescentis* штамм SBT2020

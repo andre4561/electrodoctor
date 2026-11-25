@@ -6,6 +6,8 @@ tags:
   - Молочнокислые
 ---
 
+# Pediococcus pentosaceus
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Pediococcus pentosaceus* (вид); конкретные штаммы включают *P. pentosaceus* CECT 8330, *P. pentosaceus* LMG 11484, *P. pentosaceus* KCTC 3783

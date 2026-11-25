@@ -6,6 +6,8 @@ tags:
   - Грамположительные
 ---
 
+# Clostridium tyrobutyricum
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Clostridium tyrobutyricum* (вид), штаммы включают, например, *C. tyrobutyricum* MI403, *C. tyrobutyricum* NRRL B-41009

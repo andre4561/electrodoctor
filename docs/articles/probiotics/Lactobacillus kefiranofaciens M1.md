@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus kefiranofaciens
 ---
 
+# Lactobacillus kefiranofaciens M1
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus kefiranofaciens* M1

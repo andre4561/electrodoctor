@@ -8,6 +8,8 @@ aliases:
   - Propionibacterium – штамм
 ---
 
+# Propionibacterium freudenreichii subsp. shermanii
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Propionibacterium freudenreichii* subsp. *shermanii*

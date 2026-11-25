@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus indicus
 ---
 
+# Lactobacillus delbrueckii subsp. indicus
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus delbrueckii* subsp. *indicus*

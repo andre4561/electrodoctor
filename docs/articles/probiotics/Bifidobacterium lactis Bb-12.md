@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium Bb-12
 ---
 
+# Bifidobacterium lactis Bb-12
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium animalis* subsp. *lactis* штамм Bb-12

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus gasseri
 ---
 
+# Lactobacillus gasseri SBT2055
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus gasseri* SBT2055

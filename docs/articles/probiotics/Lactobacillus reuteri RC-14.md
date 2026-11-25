@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus reuteri
 ---
 
+# Lactobacillus reuteri RC-14
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus reuteri* RC-14 (ныне переклассифицирован как *Limosilactobacillus reuteri* RC-14)

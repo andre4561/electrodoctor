@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium lactis
 ---
 
+# Bifidobacterium lactis HN019™
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium lactis* HN019™

@@ -5,6 +5,8 @@ aliases:
   - Bifidobacterium longum
 ---
 
+# Bifidobacterium longum APC1472 (штамм с доказанным влиянием на ось «кишечник-мозг»)
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium longum* subsp. *longum* штамм APC1472

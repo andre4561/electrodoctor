@@ -8,7 +8,7 @@ aliases:
   - "PD‑L1 combined positive score"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# PD‑L1 CPS
 
 ## Идентификация и биохимия
 

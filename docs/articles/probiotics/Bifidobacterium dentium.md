@@ -6,6 +6,8 @@ tags:
   - Бифидобактерии
 ---
 
+# Bifidobacterium dentium
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** Bifidobacterium dentium (вид), штаммы включают B. dentium BD1, B. dentium INIA 200, B. dentium DSM 20436 и другие

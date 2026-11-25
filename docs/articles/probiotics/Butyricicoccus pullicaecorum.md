@@ -8,6 +8,8 @@ aliases:
   - Butyricicoccus
 ---
 
+# Butyricicoccus pullicaecorum
+
 ## Butyricicoccus pullicaecorum: перспективный бутерат-продуцирующий пробиотик следующего поколения
 
 - **Полное научное название:** *Butyricicoccus pullicaecorum* (вид), штаммы: 25-3T, 25-4, 30-3, 30-4

@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus nantensis
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus nantensis* (вид); конкретные штаммы могут обозначаться как *L. nantensis* DSM 19869, *L. nantensis* LMG 18312

@@ -9,6 +9,8 @@ aliases:
   - MR-proADM
 ---
 
+# Mid-regional pro-adrenomedullin (MR-proADM)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Mid-regional pro-adrenomedullin (MR-proADM)

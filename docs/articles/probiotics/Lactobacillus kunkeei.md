@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus kunkeei
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus kunkeei* (род: *Lactobacillus*, вид: *kunkeei*; подвид и штаммы варьируются, например, штамм LF2)

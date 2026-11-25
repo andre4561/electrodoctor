@@ -10,6 +10,8 @@ aliases:
   - VIP
 ---
 
+# Vasoactive Intestinal Peptide (VIP)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Вазоактивный кишечный пептид (Vasoactive Intestinal Peptide, VIP)

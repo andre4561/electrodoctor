@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus reuteri
 ---
 
+# Lactobacillus reuteri DSM 17938
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus reuteri* DSM 17938

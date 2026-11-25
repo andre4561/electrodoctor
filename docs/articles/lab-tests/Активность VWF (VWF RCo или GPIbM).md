@@ -9,7 +9,7 @@ aliases:
   - "VWF activity (VWF:RCo или GPIbM)"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Активность VWF (VWF:RCo или GPIbM)
 
 ## Идентификация и биохимия
 

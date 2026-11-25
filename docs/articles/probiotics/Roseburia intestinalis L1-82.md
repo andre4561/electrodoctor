@@ -8,6 +8,8 @@ aliases:
   - Roseburia intestinalis
 ---
 
+# Roseburia intestinalis L1-82
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Roseburia intestinalis* штамм L1-82

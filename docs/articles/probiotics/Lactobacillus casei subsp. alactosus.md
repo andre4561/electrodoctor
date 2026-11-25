@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus casei
 ---
 
+# Lactobacillus casei subsp. alactosus
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus casei* subsp. *alactosus*

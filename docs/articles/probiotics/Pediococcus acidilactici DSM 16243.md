@@ -8,6 +8,8 @@ aliases:
   - Pediococcus – пробиотик
 ---
 
+# Pediococcus acidilactici DSM 16243
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Pediococcus acidilactici* DSM 16243 (штамм)

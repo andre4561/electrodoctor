@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium – пробиотик
 ---
 
+# Bifidobacterium animalis subsp. lactis CECT 8145
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium animalis* subsp. *lactis* CECT 8145

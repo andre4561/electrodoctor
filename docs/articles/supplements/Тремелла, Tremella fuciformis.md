@@ -7,6 +7,8 @@ tags:
   - Полисахарид
 ---
 
+# Тремелла, Tremella fuciformis
+
 ## Таксономия и идентификация
 Tremella fuciformis Berk., 1856 — базидиомицетный гриб из отдела Basidiomycota, порядок Tremellales, семейство Tremellaceae. Ранее классифицировался как Hirneola fuciformis или Naematelia aurantia (в паразитической стадии на Annulohypoxylon archeri), но современные молекулярные данные подтверждают его текущее название как Tremella fuciformis. Гриб широко известен под народными названиями «белое облако» (кит. báiyúnshù), «серебряное ухо», «гриб красоты».
 

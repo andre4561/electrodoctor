@@ -1,0 +1,8 @@
+# Сайт статей без темы GitHub Pages — свой layout и assets/articles.css
+title: Электродоктор
+lang: ru
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

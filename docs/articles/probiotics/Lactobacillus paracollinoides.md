@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus paracollinoides
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus paracollinoides* (вид), штаммы могут варьироваться (например, DSM 15202, LMG 11568)

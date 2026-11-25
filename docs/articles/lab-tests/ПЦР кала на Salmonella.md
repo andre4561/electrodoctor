@@ -10,7 +10,7 @@ aliases:
   - "Salmonella PCR stool"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР кала на Salmonella
 
 ## Идентификация и биохимия
 

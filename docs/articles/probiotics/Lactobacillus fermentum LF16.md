@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus fermentum
 ---
 
+# Lactobacillus fermentum LF16
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus fermentum* штамм LF16

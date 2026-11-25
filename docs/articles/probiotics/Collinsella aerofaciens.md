@@ -8,6 +8,8 @@ aliases:
   - Collinsella
 ---
 
+# Collinsella aerofaciens
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Collinsella aerofaciens* (вид); отдельные штаммы, такие как *C. aerofaciens* ATCC 25986, изучены в научной литературе

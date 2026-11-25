@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium – штамм
 ---
 
+# Bifidobacterium longum subsp. infantis EVC001
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium longum* subsp. *infantis* штамм EVC001

@@ -9,6 +9,8 @@ aliases:
   - STa
 ---
 
+# STa (heat-stable enterotoxin)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Heat-stable enterotoxin (STa)

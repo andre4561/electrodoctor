@@ -9,6 +9,8 @@ aliases:
   - KRAS-пептиды
 ---
 
+# KRAS inhibitory peptides (G12C, G12D, G12V specific)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** KRAS inhibitory peptides (G12C, G12D, G12V specific)

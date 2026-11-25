@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus acidophilus
 ---
 
+# Lactobacillus acidophilus LA-14
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus acidophilus* LA-14

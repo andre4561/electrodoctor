@@ -8,7 +8,7 @@ aliases:
   - "PCR for Treponema pallidum"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на Treponema pallidum из язвы/высыпаний
 
 ## Идентификация и биохимия
 

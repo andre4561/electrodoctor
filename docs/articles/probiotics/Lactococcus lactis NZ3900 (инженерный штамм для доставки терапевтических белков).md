@@ -5,6 +5,8 @@ aliases:
   - Lactococcus lactis
 ---
 
+# Lactococcus lactis NZ3900 (инженерный штамм для доставки терапевтических белков)
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactococcus lactis* subsp. *lactis* штамм NZ3900

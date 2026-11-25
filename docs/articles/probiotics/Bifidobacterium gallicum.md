@@ -8,6 +8,8 @@ aliases:
   - Бифидобактерия
 ---
 
+# Bifidobacterium gallicum
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** Bifidobacterium gallicum

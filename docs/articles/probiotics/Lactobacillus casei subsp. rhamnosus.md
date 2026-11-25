@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus rhamnosus
 ---
 
+# Lactobacillus casei subsp. rhamnosus
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus casei* subsp. *rhamnosus* (часто используется как *Lacticaseibacillus rhamnosus* в рамках ревизии таксономии рода *Lactobacillus*)

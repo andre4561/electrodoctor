@@ -11,7 +11,7 @@ aliases:
   - "Toxoplasma IgM"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Антитела IgM к Toxoplasma gondii
 
 ## Идентификация и биохимия
 

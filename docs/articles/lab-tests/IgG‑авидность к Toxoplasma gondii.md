@@ -10,7 +10,7 @@ aliases:
   - "Toxoplasma IgG avidity"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# IgG‑авидность к Toxoplasma gondii
 
 ## Идентификация и биохимия
 

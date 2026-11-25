@@ -9,7 +9,7 @@ aliases:
   - "Histoplasma serum antigen"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Антиген Histoplasma в сыворотке
 
 ## Идентификация и биохимия
 

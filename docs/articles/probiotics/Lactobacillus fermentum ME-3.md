@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus fermentum
 ---
 
+# Lactobacillus fermentum ME-3
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus fermentum* ME-3

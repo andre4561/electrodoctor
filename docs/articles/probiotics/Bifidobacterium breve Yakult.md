@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium breve
 ---
 
+# Bifidobacterium breve Yakult
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium breve* Yakult

@@ -8,7 +8,7 @@ aliases:
   - "Candida and Staphylococcus culture"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Посев на Candida и стафилококк
 
 ## Идентификация и биохимия
 

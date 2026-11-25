@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus acidophilus
 ---
 
+# Lactobacillus acidophilus NCFM
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus acidophilus* NCFM

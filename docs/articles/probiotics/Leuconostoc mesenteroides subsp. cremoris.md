@@ -8,6 +8,8 @@ aliases:
   - Leuconostoc – бактерия
 ---
 
+# Leuconostoc mesenteroides subsp. cremoris
+
 ## Leuconostoc mesenteroides subsp. cremoris: пробиотик из мира ферментированных продуктов
 
 - **Полное научное название:** Leuconostoc mesenteroides subsp. cremoris

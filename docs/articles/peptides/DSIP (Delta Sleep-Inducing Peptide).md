@@ -9,6 +9,8 @@ aliases:
   - DSIP – пептид сна
 ---
 
+# DSIP (Delta Sleep-Inducing Peptide)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Delta Sleep-Inducing Peptide (DSIP)

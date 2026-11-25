@@ -8,6 +8,8 @@ aliases:
   - Бациллус субтилис
 ---
 
+# Bacillus subtilis DE111
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bacillus subtilis* DE111

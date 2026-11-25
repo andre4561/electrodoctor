@@ -10,7 +10,7 @@ aliases:
   - "PCR на M. tuberculosis в мокроте"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на Mycobacterium tuberculosis в мокроте
 
 ## Идентификация и биохимия
 

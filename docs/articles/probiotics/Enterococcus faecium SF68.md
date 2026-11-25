@@ -8,6 +8,8 @@ aliases:
   - Enterococcus faecium
 ---
 
+# Enterococcus faecium SF68
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Enterococcus faecium* SF68

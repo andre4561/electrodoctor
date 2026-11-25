@@ -8,6 +8,8 @@ aliases:
   - Бифидобактерия
 ---
 
+# Bifidobacterium angulatum
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium angulatum* (вид); отдельные штаммы, такие как *B. angulatum* DMB21, могут быть указаны при наличии данных

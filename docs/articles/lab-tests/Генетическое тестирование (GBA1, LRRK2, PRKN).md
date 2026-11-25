@@ -8,7 +8,7 @@ aliases:
   - "Parkinson disease gene panel"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Генетическое тестирование (GBA1, LRRK2, PRKN)
 
 ## Идентификация и биохимия
 

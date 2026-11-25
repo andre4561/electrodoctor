@@ -8,7 +8,7 @@ aliases:
   - "STI multiplex NAAT"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# NAAT (ПЦР) на Chlamydia trachomatis, Neisseria gonorrhoeae, Mycoplasma genitalium
 
 ## Идентификация и биохимия
 

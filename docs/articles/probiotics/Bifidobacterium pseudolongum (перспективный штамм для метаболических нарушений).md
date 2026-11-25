@@ -5,6 +5,8 @@ aliases:
   - Bifidobacterium pseudolongum
 ---
 
+# Bifidobacterium pseudolongum (перспективный штамм для метаболических нарушений)
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium pseudolongum* (вид), с подвидами *B. pseudolongum* subsp. *pseudolongum* и *B. pseudolongum* subsp. *globosum*. Определённые штаммы, например *B. pseudolongum* CECT 7657 или DSM 20098, активно изучаются.

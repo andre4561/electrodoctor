@@ -6,6 +6,8 @@ tags:
   - Бутират-продуцент
 ---
 
+# Agathobacter rectalis
+
 ## Agathobacter rectalis: перспективный представитель микробиоты толстого кишечника
 
 - **Полное научное название:** Agathobacter rectalis (ранее Eubacterium rectale)

@@ -8,7 +8,7 @@ aliases:
   - "Rickettsia prowazekii serology"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Серология на Rickettsia prowazekii
 
 ## Идентификация и биохимия
 

@@ -9,7 +9,7 @@ aliases:
   - "Antithrombin, Protein C, Protein S deficiency test"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Дефицит антитромбина, протеинов C и S
 
 ## Идентификация и биохимия
 

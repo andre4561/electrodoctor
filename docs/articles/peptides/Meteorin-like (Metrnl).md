@@ -9,6 +9,8 @@ aliases:
   - Metrnl
 ---
 
+# Meteorin-like (Metrnl)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Meteorin-like (Metrnl)

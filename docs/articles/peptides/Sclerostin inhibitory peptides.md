@@ -8,6 +8,8 @@ aliases:
   - Склеростин
 ---
 
+# Sclerostin inhibitory peptides
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Пептиды-ингибиторы склеростина (Sclerostin inhibitory peptides)

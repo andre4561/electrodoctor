@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus brevis
 ---
 
+# Lactobacillus brevis CD2
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus brevis* CD2 (штамм CD2 вида *Lactobacillus brevis*)

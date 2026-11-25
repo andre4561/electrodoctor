@@ -9,6 +9,8 @@ aliases:
   - Дисинтегрины
 ---
 
+# Snake venom peptides (disintegrins)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Дисинтегрины (snake venom disintegrins)

@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium
 ---
 
+# Bifidobacterium bifidum Bb-02
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium bifidum* subsp. *bifidum* штамм Bb-02

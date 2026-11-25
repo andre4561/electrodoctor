@@ -10,7 +10,7 @@ aliases:
   - "Histoplasma urine antigen"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Антиген Histoplasma в моче
 
 ## Идентификация и биохимия
 

@@ -6,6 +6,8 @@ tags:
   - Бифидобактерии
 ---
 
+# Bifidobacterium asteroides
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium asteroides* (род: *Bifidobacterium*, вид: *asteroides*)

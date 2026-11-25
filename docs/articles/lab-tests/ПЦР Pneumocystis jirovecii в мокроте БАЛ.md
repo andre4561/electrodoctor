@@ -9,7 +9,7 @@ aliases:
   - "PCR Pneumocystis jirovecii в мокроте/бронхоальвеолярном лаваже"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР Pneumocystis jirovecii в мокроте/БАЛ
 
 ## Идентификация и биохимия
 

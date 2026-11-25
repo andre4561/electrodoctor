@@ -8,6 +8,8 @@ aliases:
   - Christensenella minuta
 ---
 
+# Christensenella minuta ATCC 29799
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Christensenella minuta* ATCC 29799 (род: *Christensenella*, вид: *minuta*, штамм: ATCC 29799)

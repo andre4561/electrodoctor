@@ -8,7 +8,7 @@ aliases:
   - "Genetic panel PRSS1 SPINK1 CFTR CTRC"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Генетическое тестирование (PRSS1, SPINK1, CFTR, CTRC)
 
 ## Идентификация и биохимия
 

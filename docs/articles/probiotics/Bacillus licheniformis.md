@@ -6,6 +6,8 @@ tags:
   - Бациллы
 ---
 
+# Bacillus licheniformis
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bacillus licheniformis* (вид); конкретные пробиотические штаммы включают, например, *Bacillus licheniformis* DSM 5749, *Bacillus licheniformis* ATCC 14580

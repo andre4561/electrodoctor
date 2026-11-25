@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus plantarum
 ---
 
+# Lactobacillus plantarum 299v
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus plantarum* 299v

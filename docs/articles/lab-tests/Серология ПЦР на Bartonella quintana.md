@@ -8,7 +8,7 @@ aliases:
   - "Bartonella quintana test"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Серология/ПЦР на Bartonella quintana
 
 ## Идентификация и биохимия
 

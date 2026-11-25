@@ -8,6 +8,8 @@ aliases:
   - Faecalibacterium
 ---
 
+# Faecalibacterium prausnitzii A2-165
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Faecalibacterium prausnitzii* штамм A2-165

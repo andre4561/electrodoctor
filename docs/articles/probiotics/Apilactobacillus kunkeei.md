@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Apilactobacillus kunkeei
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** Apilactobacillus kunkeei (ранее Lactobacillus kunkeei), вид: kunkeei, штаммы изучены фрагментарно (например, штамм YB38)

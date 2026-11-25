@@ -6,6 +6,8 @@ tags:
   - Полисахарид
 ---
 
+# Чага, Inonotus obliquus
+
 ## Таксономия и идентификация
 Chaga — народное название гриба Inonotus obliquus (Pers.) Pilát, относящегося к семейству Hymenochaetaceae порядка Hymenochaetales, класса Agaricomycetes, подцарства Basidiomycota. Является паразитическим аскомикозом, преимущественно поражающим берёзу (Betula spp.), хотя может встречаться и на других лиственных породах (ольха, вяз, граб).
 

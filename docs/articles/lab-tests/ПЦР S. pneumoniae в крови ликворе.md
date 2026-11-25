@@ -8,7 +8,7 @@ aliases:
   - "Streptococcus pneumoniae PCR"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР S. pneumoniae в крови/ликворе
 
 ## Идентификация и биохимия
 

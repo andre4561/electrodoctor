@@ -6,6 +6,8 @@ tags:
   - Лактобактерии
 ---
 
+# Lactobacillus paralimentarius
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus paralimentarius* (род: *Lactobacillus*, вид: *paralimentarius*; штаммы включают, например, Lb. paralimentarius CCUG 45772, LMG P-21680)

@@ -13,7 +13,7 @@ aliases:
   - "Ubiquitin carboxy‑terminal hydrolase L1"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# UCH-L1 (убиквитин-C-концевая гидролаза L1)
 
 ## Идентификация и биохимия
 

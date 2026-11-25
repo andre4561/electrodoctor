@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus gasseri
 ---
 
+# Lactobacillus gasseri BNR17
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus gasseri* BNR17

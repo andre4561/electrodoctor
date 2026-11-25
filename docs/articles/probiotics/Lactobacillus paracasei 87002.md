@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus paracasei
 ---
 
+# Lactobacillus paracasei 8700:2
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus paracasei* subsp. *paracasei* штамм 8700:2

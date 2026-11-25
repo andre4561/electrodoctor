@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus amylovorus
 ---
 
+# Lactobacillus amylovorus DSM 16698
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus amylovorus* DSM 16698 (штамм)

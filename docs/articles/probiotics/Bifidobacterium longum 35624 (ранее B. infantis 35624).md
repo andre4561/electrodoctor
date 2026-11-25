@@ -5,6 +5,8 @@ aliases:
   - Bifidobacterium longum
 ---
 
+# Bifidobacterium longum 35624 (ранее B. infantis 35624)
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium longum* subsp. *longum* штамм 35624 (ранее классифицировался как *Bifidobacterium infantis* 35624)

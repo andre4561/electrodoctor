@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium breve
 ---
 
+# Bifidobacterium breve Bb-03
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium breve* штамм Bb-03

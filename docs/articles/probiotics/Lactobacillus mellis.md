@@ -8,6 +8,8 @@ aliases:
   - Лактобациллы – Lactobacillus
 ---
 
+# Lactobacillus mellis
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus mellis* (вид), штаммы: например, LMG 11486, DSM 14369

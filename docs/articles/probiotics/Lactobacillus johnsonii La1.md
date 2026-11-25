@@ -9,6 +9,8 @@ aliases:
   - Lactobacillus johnsonii
 ---
 
+# Lactobacillus johnsonii La1
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus johnsonii* La1 (также известен как *Lactobacillus johnsonii* NCC 533)

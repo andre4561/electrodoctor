@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium indicum – Bifidobacterium
 ---
 
+# Bifidobacterium indicum
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bifidobacterium indicum* (вид); конкретные штаммы в научной литературе обозначаются, например, как *B. indicum* DSM 20094, *B. indicum* ATCC 15697

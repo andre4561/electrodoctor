@@ -8,7 +8,7 @@ aliases:
   - "Anti‑RNA polymerase III antibodies"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Анти‑RNA полимераза III антитела
 
 ## Идентификация и биохимия
 

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus gasseri
 ---
 
+# Lactobacillus gasseri Lg-36
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus gasseri* штамм Lg-36

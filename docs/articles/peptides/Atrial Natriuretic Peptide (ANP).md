@@ -9,6 +9,8 @@ aliases:
   - ANP
 ---
 
+# Atrial Natriuretic Peptide (ANP)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Атриалуретический пептид (Atrial Natriuretic Peptide, ANP)

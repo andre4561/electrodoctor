@@ -9,6 +9,8 @@ aliases:
   - MR-proANP
 ---
 
+# Mid-regional pro-atrial natriuretic peptide (MR-proANP)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Mid-regional pro-atrial natriuretic peptide (MR-proANP)

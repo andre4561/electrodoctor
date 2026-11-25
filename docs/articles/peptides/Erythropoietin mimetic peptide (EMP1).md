@@ -9,6 +9,8 @@ aliases:
   - EMP1
 ---
 
+# Erythropoietin mimetic peptide (EMP1)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Erythropoietin mimetic peptide (EMP1)

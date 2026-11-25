@@ -6,6 +6,8 @@ tags:
   - Бутират-продуцент
 ---
 
+# Anaerobutyricum soehngenii
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Anaerobutyricum soehngenii* (ранее *Butyricicoccus pullicaecorum* 25-3T, штамм 25-3)

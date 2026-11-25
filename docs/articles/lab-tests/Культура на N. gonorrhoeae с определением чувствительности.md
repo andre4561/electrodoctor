@@ -8,7 +8,7 @@ aliases:
   - "Neisseria gonorrhoeae culture with susceptibility"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Культура на N. gonorrhoeae с определением чувствительности
 
 ## Идентификация и биохимия
 

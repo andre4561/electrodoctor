@@ -9,6 +9,8 @@ aliases:
   - Adrenomedullin 2
 ---
 
+# Adrenomedullin 2 (Intermedin)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Adrenomedullin 2 (Intermedin)

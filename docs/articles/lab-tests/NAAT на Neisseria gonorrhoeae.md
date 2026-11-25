@@ -9,7 +9,7 @@ aliases:
   - "Gonorrhea NAAT"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# NAAT на Neisseria gonorrhoeae
 
 ## Идентификация и биохимия
 

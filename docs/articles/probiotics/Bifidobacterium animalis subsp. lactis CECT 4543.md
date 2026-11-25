@@ -8,6 +8,8 @@ aliases:
   - Bifidobacterium
 ---
 
+# Bifidobacterium animalis subsp. lactis CECT 4543
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Bifidobacterium animalis* subsp. *lactis* CECT 4543

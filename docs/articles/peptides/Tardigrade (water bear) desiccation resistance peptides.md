@@ -9,6 +9,8 @@ aliases:
   - Пептиды устойчивости
 ---
 
+# Tardigrade (water bear) desiccation resistance peptides
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Tardigrade desiccation resistance peptides (TDPs); отдельные представители: CAHS, SAHS, MAHS (Cytoplasmic, Secretory, Mitochondrial Abundant Heat Soluble proteins)

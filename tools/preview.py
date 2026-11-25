@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Локальный просмотр сайта Электродоктора (папка docs/) так, как его показывает GitHub Pages.
+# Локальный просмотр сайта Электродоктора (папка docs/).
 #
 # GitHub собирает страницы из Markdown сборщиком Jekyll. Этот сервер делает то же на лету:
 # адрес …/статья.html открывает статья.md, адрес папки — её index.md; HTML, JS и CSS
@@ -8,9 +8,10 @@
 # Запуск:  python tools/preview.py            → http://localhost:8000/
 #          python tools/preview.py 8080       → на другом порту
 #
-# Посредник для провайдеров ИИ, которые не принимают запросы прямо из браузера (YandexGPT):
-#   /proxy/<хост>/<путь> → https://<хост>/<путь>. Пересылаются только хосты из PROXY_HOSTS,
-#   сервер слушает только этот компьютер (127.0.0.1), ничего не записывает и не хранит.
+# Посредник для провайдеров ИИ (YandexGPT и др.):
+#   /proxy/<хост>/<путь> → https://<хост>/<путь>. Только хосты из PROXY_HOSTS, только 127.0.0.1.
+#
+# Запись кода шапки (Настройки → Прочее): PUT /assets/site-inject.html — только 127.0.0.1.
 import html, os, re, sys, urllib.error, urllib.parse, urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -18,36 +19,11 @@ import markdown
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs"))
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+INJECT = os.path.join(ROOT, "assets", "site-inject.html")
+INJECT_MAX = 200_000  # байт
 
 PROXY_HOSTS = {"ai.api.cloud.yandex.net", "llm.api.cloud.yandex.net", "gigachat.devices.sberbank.ru"}
 PASS_HEADERS = {"authorization", "content-type", "openai-project", "x-folder-id", "x-data-logging-enabled", "accept"}
-
-CSS = """
-:root { color-scheme: light dark; }
-body { margin: 0; font: 16px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #24292e; background: #fff; }
-.pv-top { border-bottom: 1px solid #e1e4e8; padding: 14px 16px; }
-.pv-top a { font-weight: 600; color: #24292e; text-decoration: none; }
-.pv-wrap { max-width: 1012px; margin: 0 auto; padding: 24px 16px 48px; }
-a { color: #0366d6; }
-h1, h2 { border-bottom: 1px solid #eaecef; padding-bottom: .3em; }
-table { border-collapse: collapse; display: block; overflow-x: auto; margin: 16px 0; }
-th, td { border: 1px solid #dfe2e5; padding: 6px 13px; }
-tr:nth-child(2n) { background: #f6f8fa; }
-code { background: rgba(27,31,35,.05); padding: .2em .4em; border-radius: 3px; font-size: 85%; }
-pre { background: #f6f8fa; padding: 16px; overflow: auto; border-radius: 6px; }
-pre code { background: none; padding: 0; }
-blockquote { margin: 0; padding: 0 1em; color: #6a737d; border-left: .25em solid #dfe2e5; }
-img { max-width: 100%; }
-.pv-note { font-size: 12px; color: #6a737d; border-top: 1px solid #e1e4e8; margin-top: 40px; padding-top: 12px; }
-@media (prefers-color-scheme: dark) {
-  body { background: #0d1117; color: #c9d1d9; }
-  .pv-top a { color: #c9d1d9; }
-  .pv-top, h1, h2, .pv-note { border-color: #30363d; }
-  a { color: #58a6ff; }
-  th, td { border-color: #30363d; }
-  tr:nth-child(2n), pre { background: #161b22; }
-}
-"""
 
 def front_matter(text):
     m = re.match(r"﻿?---\r?\n(.*?)\r?\n---\r?\n", text, re.S)
@@ -62,16 +38,16 @@ def front_matter(text):
 
 def render(path):
     meta, body = front_matter(open(path, encoding="utf-8").read())
-    # как в Jekyll: ссылки на .md-статьи работают и как .html
     content = markdown.markdown(body, extensions=["tables", "fenced_code", "sane_lists"])
     title = meta.get("title") or meta.get("Title") or os.path.splitext(os.path.basename(path))[0]
     return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{html.escape(title)}</title>
-<style>{CSS}</style></head><body>
-<main class="pv-wrap">{content}
-<p class="pv-note">Локальный просмотр (tools/preview.py). На GitHub Pages оформление чуть другое.</p></main>
-<script src="/assets/analytics-config.js"></script>
-<script src="/assets/analytics.js" defer></script>
+<link rel="stylesheet" href="/assets/articles.css" id="ed-articles-css-link">
+<script src="/assets/articles-config.js"></script>
+<script src="/assets/articles-style.js" defer></script>
+<script src="/assets/site-inject.js" defer></script>
+</head><body>
+<main class="pv-wrap">{content}</main>
 <script src="/assets/totop.js" defer></script>
 <script src="/assets/sitenav.js" defer></script>
 </body></html>""".encode("utf-8")
@@ -81,7 +57,7 @@ class Handler(SimpleHTTPRequestHandler):
         super().__init__(*a, directory=ROOT, **kw)
 
     def end_headers(self):
-        self.send_header("Cache-Control", "no-store")   # правки видны сразу после F5
+        self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
     def md_for(self):
@@ -101,7 +77,6 @@ class Handler(SimpleHTTPRequestHandler):
             return None
         return cand if os.path.isfile(cand) else None
 
-    # ---------- посредник ----------
     def proxy(self, method):
         rest = self.path[len("/proxy/"):]
         host, _, tail = rest.partition("/")
@@ -130,7 +105,30 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def save_inject(self):
+        n = int(self.headers.get("Content-Length") or 0)
+        if n > INJECT_MAX:
+            return self.reply(413, b'{"error":"too large"}', "application/json")
+        raw = self.rfile.read(n) if n else b""
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return self.reply(400, b'{"error":"utf-8 only"}', "application/json")
+        os.makedirs(os.path.dirname(INJECT), exist_ok=True)
+        with open(INJECT, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+        return self.reply(200, b'{"ok":true}', "application/json")
+
+    def do_PUT(self):
+        path = urllib.parse.urlsplit(self.path).path
+        if path == "/assets/site-inject.html":
+            return self.save_inject()
+        self.send_error(405)
+
     def do_POST(self):
+        path = urllib.parse.urlsplit(self.path).path
+        if path == "/assets/site-inject.html":
+            return self.save_inject()
         if self.path.startswith("/proxy/"):
             return self.proxy("POST")
         self.send_error(405)

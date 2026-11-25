@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus – бактерия
 ---
 
+# Lactobacillus helsingborgensis
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Lactobacillus helsingborgensis* (род: *Lactobacillus*, вид: *helsingborgensis*, подвид и штамм — данные отсутствуют)

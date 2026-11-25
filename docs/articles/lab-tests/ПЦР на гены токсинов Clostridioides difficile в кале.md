@@ -9,7 +9,7 @@ aliases:
   - "C. difficile toxin gene PCR"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# ПЦР на гены токсинов Clostridioides difficile в кале
 
 ## Идентификация и биохимия
 

@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus crispatus
 ---
 
+# Lactobacillus crispatus CTV-05
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus crispatus* CTV-05

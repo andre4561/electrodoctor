@@ -8,7 +8,7 @@ aliases:
   - "Clostridioides difficile toxin PCR"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Тест на токсин C. difficile (ПЦР + токсин)
 
 ## Идентификация и биохимия
 

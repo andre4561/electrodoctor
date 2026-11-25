@@ -8,7 +8,7 @@ aliases:
   - "Multiplex PCR respiratory viruses"
 ---
 
-> **Черновик ИИ** (aliceai-llm) — статья вычитана Claude, но специалистом не проверена.
+# Экспресс‑тест / ПЦР на грипп, COVID‑19, RSV
 
 ## Идентификация и биохимия
 

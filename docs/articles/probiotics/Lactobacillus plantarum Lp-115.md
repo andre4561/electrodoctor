@@ -8,6 +8,8 @@ aliases:
   - Lactobacillus plantarum
 ---
 
+# Lactobacillus plantarum Lp-115
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Lactobacillus plantarum* штамм Lp-115

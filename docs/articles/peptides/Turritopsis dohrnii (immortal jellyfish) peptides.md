@@ -9,6 +9,8 @@ aliases:
   - Immortal jellyfish
 ---
 
+# Turritopsis dohrnii (immortal jellyfish) peptides
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** отсутствует — Turritopsis dohrnii peptides не имеют официального МНН, поскольку не зарегистрированы как лекарственные средства

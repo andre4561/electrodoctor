@@ -8,6 +8,8 @@ aliases:
   - Bacillus coagulans
 ---
 
+# Bacillus coagulans Unique IS-2
+
 ## Идентификация и таксономия
 
 - **Полное научное название**: *Bacillus coagulans* Unique IS-2

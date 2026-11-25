@@ -9,6 +9,8 @@ aliases:
   - Ipamorelin
 ---
 
+# Ipamorelin acetate
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Ipamorelin acetate

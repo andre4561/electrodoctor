@@ -8,6 +8,8 @@ aliases:
   - Weissella cibaria
 ---
 
+# Weissella cibaria CMU
+
 ## Идентификация и таксономия
 
 - **Полное научное название:** *Weissella cibaria* CMU

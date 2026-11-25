@@ -9,6 +9,8 @@ aliases:
   - BMP-7
 ---
 
+# BMP-7 (Bone Morphogenetic Protein-7)
+
 ## Идентификация и происхождение
 
 - **Международное непатентованное название (МНН):** Bone morphogenetic protein-7 (BMP-7)
