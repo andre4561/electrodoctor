@@ -1,0 +1,263 @@
+/** Разделитель кода поля в анкете: examId__lineId */
+export const LINE_SEP = "__";
+export function lineCode(examId, lineId) {
+    return examId + LINE_SEP + lineId;
+}
+export function parseLineCode(code) {
+    const i = code.indexOf(LINE_SEP);
+    if (i <= 0)
+        return null;
+    return { examId: code.slice(0, i), lineId: code.slice(i + LINE_SEP.length) };
+}
+/** Группы по системам / зонам — канонический индекс без привязки к врачам. */
+export const GROUPS = [
+    { id: "general", title: "Общий вид и жизненные показатели", desc: "Состояние, сознание, телосложение, базовые замеры" },
+    { id: "skin", title: "Кожа и слизистые", desc: "Цвет, влажность, сыпь, желтуха, цианоз" },
+    { id: "lymph", title: "Лимфоузлы", desc: "Увеличение, болезненность, локализация" },
+    { id: "head", title: "Голова, ЛОР, глаза, шея", desc: "Зев, миндалины, глаза, щитовидная железа" },
+    { id: "resp", title: "Дыхательная система", desc: "ЧДД, аускультация, хрипы, одышка" },
+    { id: "cardio", title: "Сердечно-сосудистая", desc: "Тоны, шумы, ритм, отёки, пульс на периферии" },
+    { id: "abdomen", title: "Живот и ЖКТ", desc: "Пальпация, печень, селезёнка, перистальтика" },
+    { id: "urine", title: "Мочевыделительная", desc: "Поколачивание, отёки лица" },
+    { id: "neuro", title: "Неврологический скрининг", desc: "Сознание, менингеальные знаки, сила, Ромберг" },
+    { id: "msk", title: "Опорно-двигательная", desc: "Суставы, объём движений, деформация" },
+    { id: "other", title: "Локальный статус и прочее", desc: "Свободное описание и пользовательские пункты" },
+];
+/** Разбор первой строки desc: «здоров — срочно в больницу». */
+export function parseScaleEnds(desc) {
+    if (!desc)
+        return null;
+    const first = desc.split(/\r?\n/, 1)[0].trim();
+    if (!first)
+        return null;
+    const m = first.match(/^(.+?)\s*[—–−-]\s*(.+)$/);
+    if (!m)
+        return null;
+    const from = m[1].trim();
+    const to = m[2].trim();
+    return from && to ? { from, to } : null;
+}
+/** Текст описания без строки краёв шкалы (если она есть). */
+export function descBody(desc) {
+    if (!desc)
+        return "";
+    if (!parseScaleEnds(desc))
+        return desc.trim();
+    const i = desc.search(/\r?\n/);
+    return i < 0 ? "" : desc.slice(i).replace(/^\r?\n/, "").trim();
+}
+/** Края шкалы: из первой строки desc, иначе из устаревших from/to. */
+export function scaleEnds(line) {
+    const fromDesc = parseScaleEnds(line.desc);
+    if (fromDesc)
+        return fromDesc;
+    const from = (line.from || "").trim();
+    const to = (line.to || "").trim();
+    return from && to ? { from, to } : null;
+}
+/** Включён ли ползунок (галочка «1» или старые from+to). */
+export function usesSlider(line) {
+    if (line.scale === 1)
+        return true;
+    return !!(line.from && line.to);
+}
+/** Описание для редактора: если края только в from/to — поднимаем в первую строку. */
+export function editorDesc(line) {
+    const body = line.desc || "";
+    if (parseScaleEnds(body))
+        return body;
+    const from = (line.from || "").trim();
+    const to = (line.to || "").trim();
+    if (!from || !to)
+        return body;
+    const rest = body.trim();
+    return rest ? `${from} — ${to}\n${rest}` : `${from} — ${to}`;
+}
+function L(id, label, scale, desc) {
+    const line = { id, label, desc };
+    if (scale === 1)
+        line.scale = 1;
+    return line;
+}
+function E(id, group, name, lines = []) {
+    return { id, group, name, lines };
+}
+/** Встроенный набор. Шкала 0…100 пока только у «Общее состояние»; остальные — по мере правки. */
+export const BUILTIN = [
+    E("gen_state", "general", "Общее состояние", [
+        L("severity", "Тяжесть состояния", 1, "здоров — срочно в больницу\nОбщее впечатление: насколько человек сам справляется и нужна ли срочная помощь."),
+        L("position", "Положение", 1, "сам активен — не двигается\nМожет ли сам сесть, встать, лечь; или лежит / сидит только вынужденно."),
+        L("contact", "Контактность", 1, "полный контакт — нет контакта\nОтвечает ли на вопросы, удерживает ли внимание, понимает ли обращение."),
+        L("face", "Выражение лица", 1, "спокойное — крайне тяжёлое\nСпокойное, страдальческое, маскообразное, испуганное — что видно по лицу."),
+        L("weakness", "Слабость", 1, "нет слабости — полная адинамия\nНасколько выраженная слабость: от обычной бодрости до полной адинамии."),
+    ]),
+    E("gen_consciousness", "general", "Сознание"),
+    E("gen_build", "general", "Телосложение и питание"),
+    E("gen_rr", "general", "Частота дыхания"),
+    E("skin_color", "skin", "Цвет кожи"),
+    E("skin_moisture", "skin", "Влажность кожи"),
+    E("skin_rash", "skin", "Сыпь"),
+    E("skin_jaundice", "skin", "Желтуха"),
+    E("skin_cyanosis", "skin", "Цианоз"),
+    E("lymph_enlarged", "lymph", "Увеличение лимфоузлов"),
+    E("lymph_note", "lymph", "Лимфоузлы: описание"),
+    E("head_pharynx", "head", "Зев и миндалины"),
+    E("head_eyes", "head", "Глаза и склеры"),
+    E("head_thyroid", "head", "Щитовидная железа"),
+    E("resp_dyspnea", "resp", "Одышка в покое"),
+    E("resp_auscultation", "resp", "Аускультация лёгких"),
+    E("resp_rales", "resp", "Хрипы"),
+    E("resp_percussion", "resp", "Перкуссия грудной клетки"),
+    E("cardio_sounds", "cardio", "Тоны сердца"),
+    E("cardio_murmur", "cardio", "Шумы сердца"),
+    E("cardio_rhythm", "cardio", "Ритм"),
+    E("cardio_edema_legs", "cardio", "Отёки ног"),
+    E("cardio_peripheral", "cardio", "Пульс на периферии"),
+    E("abd_soft", "abdomen", "Живот"),
+    E("abd_tenderness", "abdomen", "Болезненность живота"),
+    E("abd_liver", "abdomen", "Печень"),
+    E("abd_spleen", "abdomen", "Селезёнка"),
+    E("abd_bowel", "abdomen", "Перистальтика"),
+    E("urine_tapping", "urine", "Поколачивание по пояснице"),
+    E("urine_face_edema", "urine", "Отёки лица"),
+    E("neuro_meningeal", "neuro", "Менингеальные знаки"),
+    E("neuro_strength", "neuro", "Сила в конечностях"),
+    E("neuro_romberg", "neuro", "Проба Ромберга"),
+    E("neuro_pupils", "neuro", "Зрачки"),
+    E("msk_joints", "msk", "Суставы"),
+    E("msk_rom", "msk", "Объём движений"),
+    E("msk_deformity", "msk", "Деформация / осанка"),
+    E("other_local", "other", "Локальный статус"),
+    E("other_note", "other", "Прочие находки осмотра"),
+];
+const byId = new Map(BUILTIN.map(x => [x.id, x]));
+let own = {};
+export function applyOwn(src) {
+    own = {};
+    if (!src)
+        return;
+    for (const [id, raw] of Object.entries(src)) {
+        if (!raw || typeof raw !== "object")
+            continue;
+        own[id] = { ...raw, id: raw.id || id };
+    }
+}
+function normLines(raw, fallback) {
+    if (!Array.isArray(raw))
+        return fallback.map(l => ({ ...l }));
+    const out = [];
+    for (const row of raw) {
+        if (!row || typeof row !== "object")
+            continue;
+        const r = row;
+        const id = String(r.id || "").trim();
+        const label = String(r.label || "").trim();
+        if (!id || !label)
+            continue;
+        const from = r.from != null ? String(r.from).trim() : "";
+        const to = r.to != null ? String(r.to).trim() : "";
+        let desc = r.desc != null ? String(r.desc).trim() : "";
+        const scaleRaw = r.scale != null ? Number(r.scale) : NaN;
+        const line = { id, label };
+        // старые сохранённые from/to без строки краёв в desc — поднимаем в desc
+        if (from && to && !parseScaleEnds(desc)) {
+            desc = desc ? `${from} — ${to}\n${desc}` : `${from} — ${to}`;
+        }
+        if (desc)
+            line.desc = desc;
+        if (scaleRaw === 1 || (from && to))
+            line.scale = 1;
+        out.push(line);
+    }
+    return out;
+}
+function lineToField(examId, line) {
+    const code = lineCode(examId, line.id);
+    if (usesSlider(line)) {
+        const ends = scaleEnds(line) || { from: "0", to: "100" };
+        const hint = descBody(line.desc) || undefined;
+        return { code, label: line.label, type: "slider", min: 0, max: 100, scaleFrom: ends.from, scaleTo: ends.to, hint };
+    }
+    const full = (line.desc || "").trim() || undefined;
+    return { code, label: line.label, type: "text", hint: full };
+}
+function mergeOne(id, base, o) {
+    if (o.deleted)
+        return null;
+    if (!base && !o.name)
+        return null;
+    const name = (o.name != null && String(o.name).trim()) ? String(o.name).trim() : (base ? base.name : id);
+    const group = (o.group != null && String(o.group)) || (base ? base.group : "other");
+    const lines = o.lines !== undefined ? normLines(o.lines, []) : (base ? base.lines.map(l => ({ ...l })) : []);
+    const item = {
+        id,
+        name,
+        group: GROUPS.some(g => g.id === group) ? group : "other",
+        lines,
+        own: true,
+    };
+    if (o.tags || (base && base.tags))
+        item.tags = o.tags || base.tags;
+    return item;
+}
+export function all() {
+    const ids = new Set([...byId.keys(), ...Object.keys(own)]);
+    const out = [];
+    for (const id of ids) {
+        const base = byId.get(id);
+        const o = own[id];
+        if (o) {
+            const m = mergeOne(id, base, o);
+            if (m)
+                out.push(m);
+        }
+        else if (base) {
+            out.push({ ...base, lines: base.lines.map(l => ({ ...l })), own: false });
+        }
+    }
+    return out.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+}
+export function inGroup(groupId) {
+    return all().filter(x => x.group === groupId)
+        .sort((a, b) => a.name.localeCompare(b.name, "ru"));
+}
+export function get(id) {
+    return all().find(x => x.id === id);
+}
+export function groupOf(id) {
+    return GROUPS.find(g => g.id === id);
+}
+export function newOwnId() {
+    return "own_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+export function newLineId() {
+    return "ln_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+}
+/** Строки пункта → поля анкеты (код examId__lineId). */
+export function toFields(it) {
+    return it.lines.map(line => lineToField(it.id, line));
+}
+/** Все поля осмотра для анкеты / истории. */
+export function allFields() {
+    return all().flatMap(toFields);
+}
+/** Поле по коду строки осмотра, если код вида exam__line. */
+export function fieldByLineCode(code) {
+    const p = parseLineCode(code);
+    if (!p)
+        return null;
+    const it = get(p.examId);
+    if (!it)
+        return null;
+    const line = it.lines.find(l => l.id === p.lineId);
+    if (!line)
+        return null;
+    return lineToField(it.id, line);
+}
+export function isExamLineCode(code) {
+    const p = parseLineCode(code);
+    if (!p)
+        return false;
+    const it = get(p.examId);
+    return !!(it && it.lines.some(l => l.id === p.lineId));
+}

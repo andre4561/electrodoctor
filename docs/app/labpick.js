@@ -2,6 +2,7 @@
 // Электродоктор — выбор анализа из каталога по разделам (всплывающее окно на вкладке «Анализы»).
 import * as Labs from "./labs.js";
 import { SECS } from "./setlabs.js";
+import { lockScroll, unlockScroll } from "./ui.js";
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const S = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
 const ico = (paths, size = 36) => `<svg class="dx-ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" ${S}>${paths}</svg>`;
@@ -32,7 +33,7 @@ export function openLabPicker(opts) {
     <div class="labpick-body" id="labpick-body"></div>
   </div>`;
     document.body.appendChild(ov);
-    document.body.classList.add("cv-lock");
+    lockScroll();
     const body = ov.querySelector("#labpick-body");
     let sec = null;
     let group = "";
@@ -40,7 +41,7 @@ export function openLabPicker(opts) {
     const close = () => {
         document.removeEventListener("keydown", onKey);
         ov.remove();
-        document.body.classList.remove("cv-lock");
+        unlockScroll();
     };
     const onKey = (e) => {
         if (e.key === "Escape") {

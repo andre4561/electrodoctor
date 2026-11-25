@@ -1,6 +1,8 @@
 import * as Settings from "./settings.js";
 import * as Call from "./aicall.js";
+import * as Exams from "./exams.js";
 import { STEPS } from "./fields.js";
+import { lockScroll, unlockScroll } from "./ui.js";
 export const FORMAT = "electrodoctor-talk";
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const str = (v) => (v == null ? "" : String(v)).trim();
@@ -11,6 +13,12 @@ export function talkFields(steps = STEPS, stepId = "general") {
     const g = steps.find(s => s.id === stepId);
     if (!g)
         return [];
+    // Осмотр на вкладке params — из справочника Настройки → Осмотр
+    if (stepId === "params") {
+        Exams.applyOwn(Settings.load().exams);
+        const staticF = g.sections.filter(s => s.title !== "Осмотр").flatMap(s => s.fields);
+        return [...staticF, ...Exams.allFields()].filter(f => !SKIP_TYPES.has(f.type) && !f.computed);
+    }
     return g.sections.flatMap(s => s.fields).filter(f => !SKIP_TYPES.has(f.type));
 }
 export function readyProviders(s = Settings.load()) {
@@ -27,6 +35,8 @@ function fieldLine(f) {
         return `${f.code} — ${f.label}${f.unit ? `, ${f.unit}` : ""}; число${f.min != null ? `, от ${f.min}` : ""}${f.max != null ? ` до ${f.max}` : ""}`;
     if (f.type === "scale")
         return `${f.code} — ${f.label}; целое 0…${f.max ?? 0}`;
+    if (f.type === "slider")
+        return `${f.code} — ${f.label}; число 0…100 (ползунок${f.scaleFrom || f.scaleTo ? `: «${f.scaleFrom || 0}» → «${f.scaleTo || 100}»` : ""})`;
     if (f.type === "textarea")
         return `${f.code} — ${f.label}; свободный текст`;
     return `${f.code} — ${f.label}; текст`;
@@ -48,7 +58,7 @@ function roleBlurb(stepId) {
             rulesExtra: `4. Неизвестное или то, чему нет кода — в GEN_NOTES текстом; новые коды не выдумывай. Таблицу генетических тестов (GEN_TESTS) не заполняй через этот чат.
 5. Давление: если человек сказал «120 на 80» — BP_SYS=120, BP_DIA=80.
 6. Рост обычно в см (170), вес в кг. Если назвали рост в метрах (1,7) — переведи в см (170).
-7. Отёки ног EDEMA_LEGS — целое 0…3.
+7. Пункты осмотра — только коды из списка полей ниже (из справочника Настройки → Осмотр).
 8. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
 9. Не копируй в анкету ФИО из документов, адреса, телефоны.`,
             hint: "Назовите рост, вес, давление, пульс или что видели на осмотре — помощник уточнит и заполнит параметры в анкете.",
@@ -162,15 +172,16 @@ function coerce(f, raw) {
             return f.max;
         return n;
     }
-    if (f.type === "scale") {
+    if (f.type === "scale" || f.type === "slider") {
         let n = typeof raw === "number" ? raw : Number(String(raw).replace(",", "."));
         if (!isFinite(n))
             return null;
-        const max = f.max ?? 0;
+        const max = f.max ?? (f.type === "slider" ? 100 : 0);
+        const min = f.min ?? 0;
         // «6 из 10» при шкале 0–100
         if (max === 100 && n > 0 && n <= 10 && !String(raw).includes("."))
             n = n * 10;
-        return Math.max(0, Math.min(max, Math.round(n)));
+        return Math.max(min, Math.min(max, Math.round(n)));
     }
     if (f.type === "select") {
         const s = str(raw);
@@ -251,13 +262,13 @@ export function openTalkDialog(c, opts) {
     ${providers.length ? bodyAi : bodyNoAi}
   </div>`;
     document.body.appendChild(ov);
-    document.body.classList.add("cv-lock");
+    lockScroll();
     const close = () => {
         if (ctrl)
             ctrl.abort();
         document.removeEventListener("keydown", onKey);
         ov.remove();
-        document.body.classList.remove("cv-lock");
+        unlockScroll();
     };
     const onKey = (e) => {
         if (e.key === "Escape" && !busy)

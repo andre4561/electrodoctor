@@ -9,9 +9,11 @@
 // Ключ уходит только своему провайдеру — когда кабинет отправляет ему фото анализов (aicall.ts).
 import * as Dx from "./diagnoses.js";
 import * as SetLabs from "./setlabs.js";
+import * as SetExams from "./setexams.js";
 import { fold } from "./ui.js";
 import * as M from "./models.js";
 import * as Store from "./setstore.js";
+import * as Exams from "./exams.js";
 import { NORMS, defaultNorm, fmtNum } from "./norms.js";
 import { STEPS } from "./fields.js";
 import { openEditor, safeText, sameCurve } from "./curve.js";
@@ -110,7 +112,7 @@ export function load() {
     if (!d)
         return blank();
     const s = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, articlesCss: d.articlesCss || "" }));
+        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "" }));
     // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
     if ((s.agentsRev || 1) < AGENTS_REV) {
         const have = new Set(s.agents.map(a => a.id));
@@ -128,12 +130,14 @@ export function load() {
         s.agentsRev = AGENTS_REV;
     }
     publishArticlesCss(s.articlesCss || "");
+    Exams.applyOwn(s.exams);
     return s;
 }
 export function save(s) {
     s.articlesCss = (s.articlesCss || "").trim() ? s.articlesCss : "";
-    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, articlesCss: s.articlesCss || "" });
+    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "" });
     publishArticlesCss(s.articlesCss || "");
+    Exams.applyOwn(s.exams);
 }
 // Чем распознаются анализы по фото: свой провайдер распознавания или общий провайдер агентов
 export function recognizerRuntime(s = load()) {
@@ -194,7 +198,7 @@ const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "
 const q = (root, s) => root.querySelector(s);
 const newId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 export function render(view, tab, steps) {
-    const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "labs" ? "labs" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
+    const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "labs" ? "labs" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
     view.innerHTML = `
     <h1>Настройки</h1>
     <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
@@ -205,6 +209,7 @@ export function render(view, tab, steps) {
         <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">Консилиум</a>
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
         <a class="set-tab${t === "labs" ? " on" : ""}" href="#/settings/labs">Анализы</a>
+        <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">Осмотр</a>
         <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">Диагнозы</a>
         <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">Хранение</a>
         <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">Прочее</a>
@@ -228,6 +233,15 @@ export function render(view, tab, steps) {
             return;
         }
         SetLabs.draw(main);
+        return;
+    }
+    if (t === "exam") {
+        if (Store.state.where === "folder" && !Store.state.loaded) {
+            main.innerHTML = gateHtml();
+            bindGate(main, redraw);
+            return;
+        }
+        SetExams.draw(main);
         return;
     }
     if (t === "diagnoses") {

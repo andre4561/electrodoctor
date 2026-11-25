@@ -1,3 +1,4 @@
+import { lockScroll, unlockScroll } from "./ui.js";
 export const COMPLAINTS = [
     {
         id: "chest",
@@ -121,13 +122,13 @@ export function openComplaintDialog(c, def, done) {
     </div>
   </div>`;
     document.body.appendChild(ov);
-    document.body.classList.add("cv-lock");
+    lockScroll();
     const box = ov.querySelector(".cmp-body");
     const redraw = () => { box.innerHTML = body(); };
     const close = () => {
         document.removeEventListener("keydown", onKey);
         ov.remove();
-        document.body.classList.remove("cv-lock");
+        unlockScroll();
     };
     const onKey = (e) => { if (e.key === "Escape")
         close(); };

@@ -58,7 +58,7 @@ async function open(v, key) {
 async function toFile() {
     const d = data || { providers: {}, agents: [] };
     const providers = JSON.parse(JSON.stringify(d.providers));
-    const out = { format: FORMAT, version: 1, providers, agents: d.agents, norms: d.norms || {}, curves: d.curves || {}, agentDefaults: d.agentDefaults, agentsRev: d.agentsRev, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer, labs: d.labs || {}, articlesCss: d.articlesCss || "", savedAt: new Date().toISOString() };
+    const out = { format: FORMAT, version: 1, providers, agents: d.agents, norms: d.norms || {}, curves: d.curves || {}, agentDefaults: d.agentDefaults, agentsRev: d.agentsRev, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "", savedAt: new Date().toISOString() };
     if (state.encrypted) {
         if (state.locked)
             out.vault = lockedVault || undefined; // ключи не знаем — оставляем старые зашифрованными
@@ -78,7 +78,7 @@ async function toFile() {
 function fromFile(f) {
     if (!f || !f.providers || !Array.isArray(f.agents))
         throw new Error("это не файл настроек Электродоктора");
-    data = { providers: f.providers, agents: f.agents, norms: f.norms || {}, curves: f.curves || {}, agentDefaults: f.agentDefaults, agentsRev: f.agentsRev, signs: f.signs || {}, signMethod: f.signMethod, recognizer: f.recognizer, labs: f.labs || {}, articlesCss: f.articlesCss || "" };
+    data = { providers: f.providers, agents: f.agents, norms: f.norms || {}, curves: f.curves || {}, agentDefaults: f.agentDefaults, agentsRev: f.agentsRev, signs: f.signs || {}, signMethod: f.signMethod, recognizer: f.recognizer, labs: f.labs || {}, exams: f.exams || {}, articlesCss: f.articlesCss || "" };
     cryptoKey = null;
     salt = null;
     if (f.vault) {

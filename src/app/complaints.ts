@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Жалобы: на списке — чип, детали — во всплывающем окне. Коды полей те же, что в fields.ts.
 import type { Client, Value } from "./types.js";
+import { lockScroll, unlockScroll } from "./ui.js";
 
 export interface ComplaintAttr { code: string; label: string }
 export interface ComplaintDef {
@@ -127,14 +128,14 @@ export function openComplaintDialog(c: Client, def: ComplaintDef, done: () => vo
     </div>
   </div>`;
   document.body.appendChild(ov);
-  document.body.classList.add("cv-lock");
+  lockScroll();
 
   const box = ov.querySelector<HTMLElement>(".cmp-body")!;
   const redraw = () => { box.innerHTML = body(); };
 
   const close = () => {
     document.removeEventListener("keydown", onKey);
-    ov.remove(); document.body.classList.remove("cv-lock");
+    ov.remove(); unlockScroll();
   };
   const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
   document.addEventListener("keydown", onKey);

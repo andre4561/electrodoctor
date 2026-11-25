@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Электродоктор — общие типы кабинета.
 
-export type FieldType = "text" | "textarea" | "date" | "select" | "number" | "yesno" | "scale" | "table" | "files" | "aiimport";
+export type FieldType = "text" | "textarea" | "date" | "select" | "number" | "yesno" | "scale" | "slider" | "table" | "files" | "aiimport";
 
 export interface Column { key: string; label: string; type: "text"; placeholder?: string }
 
@@ -19,9 +19,18 @@ export interface Field {
   columns?: Column[];             // для table
   computed?: "bmi";               // считается автоматически
   hidden?: boolean;               // поле есть в коде, но выключено: вместо него короткая пометка
+  row?: string;                   // одинаковый id — соседние поля в одну строку (параметры)
+  scaleFrom?: string;             // подпись у 0 для type: "slider"
+  scaleTo?: string;               // подпись у 100 для type: "slider"
 }
 
-export interface Section { id?: string; title: string; fold?: boolean; fields: Field[] }
+export interface Section {
+  id?: string;
+  title: string;
+  fold?: boolean;
+  note?: string;                  // пояснение под заголовком (черновик раздела и т.п.)
+  fields: Field[];
+}
 export interface Step { id: string; title: string; sections: Section[] }
 
 export type TableRow = Record<string, string>;

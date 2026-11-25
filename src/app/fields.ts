@@ -44,22 +44,23 @@ export const STEPS: Step[] = [
     id: "params", title: "Параметры",
     sections: [
       { title: "Тело", fields: [
-        { code: "HEIGHT", label: "Рост", type: "number", unit: "см", min: 50, max: 250, step: 1 },
-        { code: "WEIGHT", label: "Вес", type: "number", unit: "кг", min: 2, max: 400, step: 0.1 },
-        { code: "BMI", label: "Индекс массы тела", type: "number", unit: "кг/м²", computed: "bmi" },
+        { code: "HEIGHT", label: "Рост", type: "number", unit: "см", min: 50, max: 250, step: 1, row: "hw" },
+        { code: "WEIGHT", label: "Вес", type: "number", unit: "кг", min: 2, max: 400, step: 0.1, row: "hw" },
+        { code: "BMI", label: "ИМТ", type: "number", unit: "кг/м²", computed: "bmi", row: "hw" },
         { code: "WAIST", label: "Окружность талии", type: "number", unit: "см", min: 30, max: 250, step: 1 }
       ]},
       { title: "Жизненные показатели", fields: [
-        { code: "BP_SYS", label: "Давление систолическое", type: "number", unit: "мм рт. ст.", min: 50, max: 300, step: 1 },
-        { code: "BP_DIA", label: "Давление диастолическое", type: "number", unit: "мм рт. ст.", min: 30, max: 200, step: 1 },
-        { code: "PULSE", label: "Пульс", type: "number", unit: "уд/мин", min: 20, max: 250, step: 1 },
-        { code: "TEMP", label: "Температура", type: "number", unit: "°C", min: 30, max: 45, step: 0.1 },
+        { code: "BP_SYS", label: "Систолическое", type: "number", unit: "мм рт. ст.", min: 50, max: 300, step: 1, row: "bp" },
+        { code: "BP_DIA", label: "Диастолическое", type: "number", unit: "мм рт. ст.", min: 30, max: 200, step: 1, row: "bp" },
+        { code: "PULSE", label: "Пульс", type: "number", unit: "уд/мин", min: 20, max: 250, step: 1, row: "pt" },
+        { code: "TEMP", label: "Температура", type: "number", unit: "°C", min: 30, max: 45, step: 0.1, row: "pt" },
         { code: "SPO2", label: "Сатурация", type: "number", unit: "%", min: 50, max: 100, step: 1 }
       ]},
-      { title: "Осмотр", fields: [
-        { code: "EDEMA_LEGS", label: "Отёки ног", type: "scale", max: 3 }
-      ]},
-      { title: "Генетика", fields: [
+      // поля подставляются из Настройки → Осмотр (exams.ts), см. fieldsOf / sectionHtml в app.ts
+      { title: "Осмотр", fields: [] },
+      { title: "Генетика",
+        note: "Нужно доработать. Сейчас это свободная таблица «ген → генотип» без связи с расчётом диагнозов и без каталога маркеров. Непонятно, что сюда вносить на приёме и как это потом использовать.",
+        fields: [
         { code: "GEN_TESTS", label: "Результаты", type: "table", columns: [
           { key: "test", label: "Ген / маркер", type: "text", placeholder: "MTHFR C677T" },
           { key: "result", label: "Результат (генотип)", type: "text" },

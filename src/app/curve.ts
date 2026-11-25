@@ -7,6 +7,8 @@
 // Между точками — монотонный кубический сплайн (Фрич–Карлсон, PCHIP): плавный, проходит ровно
 // через точки и не выходит за их значения. За краями критичность равна крайней точке.
 // 100 — «уже скорая», выше кривая не поднимается.
+import { lockScroll, unlockScroll } from "./ui.js";
+
 export interface Curve { L: number; R: number; pts: [number, number][]; linear?: boolean }
 
 export const SAFE_MAX = 10;            // безопасно — пока критичность не выше 10
@@ -136,7 +138,7 @@ export function openEditor(o: EditorOpts): void {
     </ul></div></details>
   </div>`;
   document.body.appendChild(ov);
-  document.body.classList.add("cv-lock");
+  lockScroll();
   const $ = <T extends Element = HTMLElement>(s: string) => ov.querySelector(s) as unknown as T;
   const svg = $<SVGSVGElement>(".cv-svg"), ns = "http://www.w3.org/2000/svg";
   const mk = (parent: Element, n: string, a: Record<string, string | number>, t?: string) => {
@@ -221,7 +223,7 @@ export function openEditor(o: EditorOpts): void {
   $<HTMLButtonElement>("[data-nreset]").addEventListener("click", () => { norm = o.normBase; ni.value = fmt(norm, 3); ni.classList.remove("bad"); draw(); });
   const close = () => {
     document.removeEventListener("keydown", onKey);
-    ov.remove(); document.body.classList.remove("cv-lock");
+    ov.remove(); unlockScroll();
     o.onClose(copy(c), sameCurve(c, o.base), norm);
   };
   const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };

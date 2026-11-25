@@ -4,7 +4,7 @@
 // (см. folder.ts); есть выгрузка в CSV, Markdown и JSON.
 import { STEPS } from "./fields.js";
 import * as FS from "./folder.js";
-import { fold } from "./ui.js";
+import { fold, lockScroll, unlockScroll } from "./ui.js";
 import * as Files from "./files.js";
 import * as AI from "./aiimport.js";
 import * as Settings from "./settings.js";
@@ -17,6 +17,7 @@ import * as Labs from "./labs.js";
 import * as LabPick from "./labpick.js";
 import * as Cmp from "./complaints.js";
 import * as Talk from "./talk.js";
+import * as Exams from "./exams.js";
 import { articleUrl } from "./articles.js";
 const KEY = "electrodoctor.clients.v1";
 const $ = (s) => document.querySelector(s);
@@ -110,7 +111,14 @@ async function syncFolder() {
     return changed;
 }
 // ---------- поля ----------
-const fieldsOf = (step) => step.sections.flatMap(s => s.fields);
+function syncExamCatalog() {
+    Exams.applyOwn(Settings.load().exams);
+}
+function examFields() {
+    syncExamCatalog();
+    return Exams.allFields();
+}
+const fieldsOf = (step) => step.sections.flatMap(s => step.id === "params" && s.title === "Осмотр" ? examFields() : s.fields);
 const isFilled = (f, v) => f && f.type === "files" ? Array.isArray(v) && v.length > 0
     : f && f.type === "table"
         ? Array.isArray(v) && v.some(r => Object.values(r).some(x => String(x).trim() !== ""))
@@ -312,20 +320,20 @@ const DX_LIFT_MIN = 10; // выросшей по анализам хотя бы 
 const DX_PAGE = 25;
 const pct = (p) => p >= 99.5 ? ">99" : p >= 10 ? String(Math.round(p)) : p >= 1 ? p.toFixed(1).replace(".", ",") : "<1";
 const pctCls = (p) => p >= 70 ? "p4" : p >= 40 ? "p3" : p >= 20 ? "p2" : "p1";
-function openDxNote() {
+function openOverlayDialog(title, bodyHtml, dlgClass = "") {
     const ov = document.createElement("div");
     ov.className = "cv-overlay";
-    ov.innerHTML = `<div class="cv-dialog dxt-note-dlg" role="dialog" aria-modal="true" aria-labelledby="dxt-note-title">
-    <div class="cv-head"><b id="dxt-note-title">О расчёте</b>
+    ov.innerHTML = `<div class="cv-dialog${dlgClass ? " " + dlgClass : ""}" role="dialog" aria-modal="true" aria-labelledby="ov-dlg-title">
+    <div class="cv-head"><b id="ov-dlg-title">${esc(title)}</b>
       <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
-    <p class="dxt-note">Это подсказка расчёта по анализам, а не диагноз. Сверху — самые вероятные. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href="#/settings/diagnoses">Настройки → Диагнозы</a>.</p>
+    ${bodyHtml}
   </div>`;
     document.body.appendChild(ov);
-    document.body.classList.add("cv-lock");
+    lockScroll();
     const close = () => {
         document.removeEventListener("keydown", onKey);
         ov.remove();
-        document.body.classList.remove("cv-lock");
+        unlockScroll();
     };
     const onKey = (e) => { if (e.key === "Escape")
         close(); };
@@ -335,6 +343,22 @@ function openDxNote() {
     const x = ov.querySelector("[data-close]");
     x.addEventListener("click", close);
     x.focus();
+}
+function openDxNote() {
+    openOverlayDialog("О расчёте", `<p class="dxt-note">Это подсказка расчёта по анализам, а не диагноз. Сверху — самые вероятные. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href="#/settings/diagnoses">Настройки → Диагнозы</a>.</p>`, "dxt-note-dlg");
+}
+/** Подсказка по признаку осмотра: текст описания как в настройках, без переразбора. */
+function openExamSignHelp(code) {
+    const p = Exams.parseLineCode(code);
+    const it = p ? Exams.get(p.examId) : undefined;
+    const line = it?.lines.find(l => l.id === p.lineId);
+    if (!line)
+        return;
+    const text = (line.desc || "").trim();
+    const body = text
+        ? `<p class="exam-help-body">${esc(text)}</p>`
+        : `<p class="muted">Описания пока нет — добавьте в <a href="#/settings/exam">Настройки → Осмотр</a>.</p>`;
+    openOverlayDialog(line.label, body, "exam-help-dlg");
 }
 function bindDxNote(box) {
     box.querySelector(".dxt-info")?.addEventListener("click", openDxNote);
@@ -655,9 +679,17 @@ function labSaveHtml(c) {
 // ---------- параметры тела по датам ----------
 // В историю входят меняющиеся поля; рост и генетика всегда в c.values без дат.
 const PARAM_STEP = STEPS.find(s => s.id === "params");
-const PARAM_HIST_CODES = new Set(["WEIGHT", "WAIST", "BMI", "BP_SYS", "BP_DIA", "PULSE", "TEMP", "SPO2", "EDEMA_LEGS"]);
-const PARAM_HIST_FIELDS = PARAM_STEP ? fieldsOf(PARAM_STEP).filter(f => PARAM_HIST_CODES.has(f.code)) : [];
-const isParamHistCode = (code) => PARAM_HIST_CODES.has(code);
+const PARAM_BASE_HIST = new Set(["WEIGHT", "WAIST", "BMI", "BP_SYS", "BP_DIA", "PULSE", "TEMP", "SPO2"]);
+const isParamHistCode = (code) => {
+    if (PARAM_BASE_HIST.has(code))
+        return true;
+    syncExamCatalog();
+    return Exams.isExamLineCode(code);
+};
+function paramHistFields() {
+    const base = PARAM_STEP ? PARAM_STEP.sections.flatMap(s => s.fields).filter(f => PARAM_BASE_HIST.has(f.code)) : [];
+    return [...base, ...examFields()];
+}
 const sortedParamSets = (c) => [...(c.params || [])].sort((a, b) => setKey(a).localeCompare(setKey(b)) || a.savedAt.localeCompare(b.savedAt));
 function paramDateLabel(c, s) {
     const same = sortedParamSets(c).filter(x => x.date === s.date);
@@ -667,7 +699,7 @@ function paramDateLabel(c, s) {
 const selParamSet = (c) => (c.params || []).find(s => s.id === c.paramSel);
 function paramBufValues(c) {
     const out = {};
-    for (const f of PARAM_HIST_FIELDS) {
+    for (const f of paramHistFields()) {
         const v = c.values[f.code];
         if (v !== undefined && isFilled(f, v))
             out[f.code] = JSON.parse(JSON.stringify(v));
@@ -675,7 +707,7 @@ function paramBufValues(c) {
     return out;
 }
 function loadParamBuf(c, values) {
-    for (const f of PARAM_HIST_FIELDS)
+    for (const f of paramHistFields())
         delete c.values[f.code];
     for (const [k, v] of Object.entries(values))
         if (isParamHistCode(k))
@@ -864,6 +896,16 @@ function renderClient(id, stepId) {
         if (!el.dataset.code)
             return;
         const f = fieldByCode(el.dataset.code);
+        if (el.dataset.slider) {
+            el.removeAttribute("data-empty");
+            const n = Number(el.value);
+            set(el.dataset.code, n);
+            const val = form.querySelector(`[data-slider-val="${el.dataset.code}"]`);
+            if (val)
+                val.textContent = String(n);
+            el.setAttribute("aria-valuenow", String(n));
+            return;
+        }
         const v = f && f.type === "number" && el.value !== "" ? Number(el.value) : el.value;
         set(el.dataset.code, v);
         const dev = form.querySelector(`[data-dev="${el.dataset.code}"]`);
@@ -879,6 +921,28 @@ function renderClient(id, stepId) {
             crit.className = "crit " + k.cls;
             crit.title = k.tip;
         }
+    });
+    form.addEventListener("click", ev => {
+        const help = ev.target.closest("[data-exam-help]");
+        if (help) {
+            ev.preventDefault();
+            openExamSignHelp(help.dataset.examHelp || "");
+            return;
+        }
+        const clr = ev.target.closest("[data-slider-clear]");
+        if (!clr)
+            return;
+        const code = clr.dataset.sliderClear;
+        set(code, "");
+        const range = form.querySelector(`input[data-code="${code}"][data-slider]`);
+        if (range) {
+            range.value = String(range.min || "0");
+            range.setAttribute("data-empty", "1");
+            range.setAttribute("aria-valuenow", range.value);
+        }
+        const val = form.querySelector(`[data-slider-val="${code}"]`);
+        if (val)
+            val.textContent = "";
     });
     if (labs) {
         bindLabs();
@@ -919,8 +983,22 @@ function renderClient(id, stepId) {
             const v = c.values[f.code];
             const s = v === undefined || v === null || v === "" ? "" : String(v);
             const el = form.querySelector(`[data-code="${f.code}"]`);
-            if (el && el.value !== s)
-                el.value = s;
+            if (el && el.value !== s) {
+                if (f.type === "slider") {
+                    const range = el;
+                    const empty = s === "";
+                    range.value = empty ? String(range.min || "0") : s;
+                    if (empty)
+                        range.setAttribute("data-empty", "1");
+                    else
+                        range.removeAttribute("data-empty");
+                    const val = form.querySelector(`[data-slider-val="${f.code}"]`);
+                    if (val)
+                        val.textContent = empty ? "" : s;
+                }
+                else
+                    el.value = s;
+            }
             const seg = form.querySelector(`[data-choice="${f.code}"]`);
             if (seg) {
                 seg.querySelectorAll("button").forEach(b => {
@@ -1832,28 +1910,71 @@ function foldStatus(sec, c) {
     const n = fs.filter(f => isFilled(f, c.values[f.code])).length;
     return n ? `заполнено ${n} из ${fs.length}` : "не заполнено";
 }
+/** Соседние поля с одним `row` — в одну линию; остальные по одному. */
+function fieldsLayoutHtml(fields, c) {
+    const parts = [];
+    for (let i = 0; i < fields.length;) {
+        const f = fields[i];
+        if (f.row) {
+            const group = [];
+            while (i < fields.length && fields[i].row === f.row)
+                group.push(fields[i++]);
+            parts.push(`<div class="field-row" data-row="${esc(f.row)}">${group.map(x => fieldHtml(x, c.values[x.code], c)).join("")}</div>`);
+        }
+        else {
+            parts.push(fieldHtml(f, c.values[f.code], c));
+            i++;
+        }
+    }
+    return parts.join("");
+}
 function sectionHtml(step, sec, c) {
     // над колонкой норм — заголовок «Норма» (если в разделе есть показатели с нормой)
     const head = sec.fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
         ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
+    const note = sec.note ? `<p class="sec-note">${esc(sec.note)}</p>` : "";
     if (step.id === "general" && sec.title === "Жалобы") {
-        const plain = sec.fields.filter(f => !Cmp.isComplaintCode(f.code)).map(f => fieldHtml(f, c.values[f.code], c)).join("");
-        return `<div class="sec"><h2>${esc(sec.title)}</h2>
+        const plain = fieldsLayoutHtml(sec.fields.filter(f => !Cmp.isComplaintCode(f.code)), c);
+        return `<div class="sec"><h2>${esc(sec.title)}</h2>${note}
       <div class="cmp-list" id="cmplist">${Cmp.complaintsListHtml(c)}</div>
       ${plain}</div>`;
     }
-    const fields = head + sec.fields.map(f => fieldHtml(f, c.values[f.code], c)).join("");
+    const fields = head + fieldsLayoutHtml(sec.fields, c);
     if (sec.fold && sec.id)
-        return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), fields)}</div>`;
+        return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), note + fields)}</div>`;
     if (step.id === "general" && sec.title === "Клиент") {
         return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
-      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${fields}</div>`;
+      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${note}${fields}</div>`;
     }
     if (step.id === "params" && sec.title === "Тело") {
         return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
-      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${fields}</div>`;
+      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${note}${fields}</div>`;
     }
-    return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${fields}</div>`;
+    if (step.id === "params" && sec.title === "Осмотр") {
+        syncExamCatalog();
+        const blocks = Exams.GROUPS.map(g => {
+            const items = Exams.inGroup(g.id);
+            if (!items.length)
+                return "";
+            const inner = items.map(it => {
+                const fields = Exams.toFields(it);
+                const head = `<h4 class="exam-item-title">${esc(it.name)}</h4>`;
+                if (!fields.length)
+                    return `<div class="exam-item-block">${head}<p class="muted">Строк пока нет — добавьте в <a href="#/settings/exam/${esc(g.id)}">настройках</a>.</p></div>`;
+                // ползунки — по два в ряд; остальное как обычно
+                const allSlider = fields.length > 0 && fields.every(f => f.type === "slider");
+                const body = allSlider
+                    ? `<div class="exam-slider-grid">${fields.map(f => fieldHtml(f, c.values[f.code], c)).join("")}</div>`
+                    : fieldsLayoutHtml(fields, c);
+                return `<div class="exam-item-block">${head}${body}</div>`;
+            }).join("");
+            return `<div class="exam-sec"><h3>${esc(g.title)}</h3>${inner}</div>`;
+        }).join("");
+        return `<div class="sec"><h2>${esc(sec.title)}</h2>
+      <p class="muted sec-note">Список из <a href="#/settings/exam">Настройки → Осмотр</a> — правки справочника сразу видны здесь.</p>
+      ${blocks || `<p class="muted">В справочнике пока нет пунктов.</p>`}</div>`;
+    }
+    return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${note}${fields}</div>`;
 }
 function filesListHtml(refs) {
     if (!refs.length)
@@ -1897,6 +2018,27 @@ function fieldHtml(f, v, own) {
             ctl = `<span class="scale" data-choice="${f.code}" role="group" aria-label="${esc(f.label)}">${b}<button type="button" data-v="" class="clr" title="очистить">—</button></span>`;
             break;
         }
+        case "slider": {
+            const lo = f.min ?? 0, hi = f.max ?? 100;
+            const empty = s === "";
+            const num = empty ? lo : Math.min(hi, Math.max(lo, Number(s) || lo));
+            const exam = Exams.isExamLineCode(f.code);
+            // у осмотра края и текст — во всплывающем окне по клику на название
+            const title = exam
+                ? `<button type="button" class="exam-sign-link" data-exam-help="${esc(f.code)}" title="как оценивать">${esc(f.label)}</button>`
+                : `<label for="${id}" class="slider-name">${name}${f.required ? ' <span class="req">*</span>' : ""}</label>`;
+            const ends = exam ? "" : `<span class="slider-span">${esc(f.scaleFrom || String(lo))} — ${esc(f.scaleTo || String(hi))}</span>`;
+            return `<div class="field wide slider-field">
+        <div class="slider-line">
+          ${title}
+          ${ends}
+          <span class="slider-control">
+            <input type="range" id="${id}" data-code="${f.code}" data-slider="1" min="${lo}" max="${hi}" step="1" value="${num}"${empty ? ` data-empty="1"` : ""} aria-valuemin="${lo}" aria-valuemax="${hi}" aria-valuenow="${num}" aria-label="${esc(f.label)}">
+            <span class="slider-val" data-slider-val="${esc(f.code)}">${empty ? "" : esc(num)}</span>
+            <button type="button" class="btn slider-reset" data-slider-clear="${esc(f.code)}" title="сбросить" aria-label="сбросить">↩</button>
+          </span>
+        </div></div>`;
+        }
         case "files": {
             const refs = Array.isArray(v) ? v : [];
             return `<div class="field wide"><div class="dropzone" data-files="${f.code}">
@@ -1923,10 +2065,24 @@ const SOURCE = { general: "опрос", params: "осмотр", labs: "анал�
 const FIELD_BY_CODE = {};
 const STEP_OF_CODE = {};
 for (const step of STEPS)
-    for (const f of fieldsOf(step)) {
-        FIELD_BY_CODE[f.code] = f;
-        STEP_OF_CODE[f.code] = step.id;
+    for (const sec of step.sections) {
+        // Осмотр подставляется динамически — в статичный индекс не кладём
+        if (step.id === "params" && sec.title === "Осмотр")
+            continue;
+        for (const f of sec.fields) {
+            FIELD_BY_CODE[f.code] = f;
+            STEP_OF_CODE[f.code] = step.id;
+        }
     }
+const fieldByAny = (code) => {
+    if (FIELD_BY_CODE[code])
+        return FIELD_BY_CODE[code];
+    const lab = Labs.fieldFor(code);
+    if (lab)
+        return lab;
+    syncExamCatalog();
+    return Exams.fieldByLineCode(code);
+};
 const isLabCode = (code) => STEP_OF_CODE[code] === "labs" || isExtraCode(code);
 // Дата в файле: ISO / дд.мм.гггг → ISO; day0, пусто, относительные — сегодня
 function parseExportDate(raw) {
@@ -1984,7 +2140,7 @@ function paramExportSets(c) {
     return out;
 }
 function pushCsvValue(lines, code, v, date, src) {
-    const f = FIELD_BY_CODE[code] || Labs.fieldFor(code) || null;
+    const f = fieldByAny(code);
     if (f && f.type === "files")
         return;
     if (f && f.type === "table") {
@@ -2031,9 +2187,9 @@ const mdShow = (f, v) => f.type === "yesno" ? (String(v) === "1" ? "да" : "н�
 function mdValuesTable(values) {
     let out = "";
     const codes = Object.keys(values);
-    const simple = codes.map(code => FIELD_BY_CODE[code] || Labs.fieldFor(code)).filter((f) => !!f && f.type !== "table" && f.type !== "files" && isFilled(f, values[f.code]));
-    const tables = codes.map(code => FIELD_BY_CODE[code]).filter((f) => !!f && f.type === "table" && isFilled(f, values[f.code]));
-    const extras = codes.filter(code => !FIELD_BY_CODE[code] && !Labs.fieldFor(code));
+    const simple = codes.map(code => fieldByAny(code)).filter((f) => !!f && f.type !== "table" && f.type !== "files" && isFilled(f, values[f.code]));
+    const tables = codes.map(code => fieldByAny(code)).filter((f) => !!f && f.type === "table" && isFilled(f, values[f.code]));
+    const extras = codes.filter(code => !fieldByAny(code));
     if (simple.length) {
         out += "| Поле | Код | Значение |\n|---|---|---|\n";
         for (const f of simple)
@@ -2137,14 +2293,14 @@ function openExportDialog(c) {
     </div>
   </div>`;
     document.body.appendChild(ov);
-    document.body.classList.add("cv-lock");
+    lockScroll();
     let fmt = "csv", scope = "all";
     const labsBox = ov.querySelector("[data-labs]");
     const sync = () => { labsBox.hidden = scope !== "labs"; };
     const close = () => {
         document.removeEventListener("keydown", onKey);
         ov.remove();
-        document.body.classList.remove("cv-lock");
+        unlockScroll();
     };
     const onKey = (e) => { if (e.key === "Escape")
         close(); };
@@ -2282,7 +2438,7 @@ function putImported(data, code, raw, date, unit = "") {
         vals.LABS_OTHER = rows;
         return;
     }
-    const f = FIELD_BY_CODE[code] || Labs.fieldFor(code);
+    const f = fieldByAny(code);
     const v = coerceImportValue(f, raw);
     if (v === undefined)
         return;
@@ -2383,7 +2539,7 @@ function fromMarkdown(text) {
                 continue;
             const code = cells[1];
             const rawVal = cells[2].replace(/<br\s*\/?>/gi, "\n").trim();
-            const f = FIELD_BY_CODE[code] || Labs.fieldFor(code);
+            const f = fieldByAny(code);
             let vraw = rawVal;
             if (f && (f.type === "number" || f.type === "scale")) {
                 const num = rawVal.match(/-?\d+(?:[.,]\d+)?/);

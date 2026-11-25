@@ -1,6 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Электродоктор — общие элементы интерфейса кабинета.
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+/** Блокировка прокрутки фона под всплывающим окном без дёрганья вправо (компенсация полосы). */
+export function lockScroll() {
+    const w = window.innerWidth - document.documentElement.clientWidth;
+    if (w > 0)
+        document.documentElement.style.setProperty("--cv-sbw", w + "px");
+    document.body.classList.add("cv-lock");
+}
+export function unlockScroll() {
+    document.body.classList.remove("cv-lock");
+    document.documentElement.style.removeProperty("--cv-sbw");
+}
 // Раскрывающийся блок.
 // Пример: fold("store", "Где хранятся данные", "в этом браузере", "<p>…</p>")
 //   title  — текст на широкой кнопке; status — короткое состояние рядом (HTML, уже экранированный);

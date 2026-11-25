@@ -9,9 +9,11 @@
 // Ключ уходит только своему провайдеру — когда кабинет отправляет ему фото анализов (aicall.ts).
 import * as Dx from "./diagnoses.js";
 import * as SetLabs from "./setlabs.js";
+import * as SetExams from "./setexams.js";
 import { fold } from "./ui.js";
 import * as M from "./models.js";
 import * as Store from "./setstore.js";
+import * as Exams from "./exams.js";
 import { NORMS, defaultNorm, parseNum, fmtNum } from "./norms.js";
 import { STEPS } from "./fields.js";
 import { openEditor, safeText, sameCurve, type Curve } from "./curve.js";
@@ -66,6 +68,7 @@ export interface Settings {
   signMethod?: string;              // как считать силу отклонения: "crit" | "dev"
   recognizer?: AgentDefaults;       // распознавание анализов по фото: провайдер ("" — общий провайдер агентов) и модель
   labs?: Record<string, any>;       // свои анализы поверх docs/data/labs.json (Настройки → Анализы)
+  exams?: Record<string, any>;      // свои / правки пунктов осмотра (Настройки → Осмотр)
   articlesCss?: string;             // свой CSS статей; пусто — docs/assets/articles.css
 }
 
@@ -164,7 +167,7 @@ export function load(): Settings {
   const d = Store.getData();
   if (!d) return blank();
   const s: Settings = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-    agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, articlesCss: d.articlesCss || "" }));
+    agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "" }));
   // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
   if ((s.agentsRev || 1) < AGENTS_REV) {
     const have = new Set(s.agents.map(a => a.id));
@@ -175,12 +178,14 @@ export function load(): Settings {
     s.agentsRev = AGENTS_REV;
   }
   publishArticlesCss(s.articlesCss || "");
+  Exams.applyOwn(s.exams);
   return s;
 }
 export function save(s: Settings): void {
   s.articlesCss = (s.articlesCss || "").trim() ? s.articlesCss! : "";
-  Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, articlesCss: s.articlesCss || "" });
+  Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "" });
   publishArticlesCss(s.articlesCss || "");
+  Exams.applyOwn(s.exams);
 }
 // Чем распознаются анализы по фото: свой провайдер распознавания или общий провайдер агентов
 export function recognizerRuntime(s: Settings = load()): { preset?: ProviderPreset; conf?: ProviderConf; model: string; shared: boolean } {
@@ -245,7 +250,7 @@ const newId = (p: string) => p + Date.now().toString(36) + Math.random().toStrin
 export interface StepInfo { id: string; title: string }
 
 export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void {
-  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "labs" ? "labs" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
+  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "labs" ? "labs" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
   view.innerHTML = `
     <h1>Настройки</h1>
     <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
@@ -256,6 +261,7 @@ export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void 
         <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">Консилиум</a>
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
         <a class="set-tab${t === "labs" ? " on" : ""}" href="#/settings/labs">Анализы</a>
+        <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">Осмотр</a>
         <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">Диагнозы</a>
         <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">Хранение</a>
         <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">Прочее</a>
@@ -269,6 +275,10 @@ export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void 
   if (t === "labs") {
     if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
     SetLabs.draw(main); return;
+  }
+  if (t === "exam") {
+    if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
+    SetExams.draw(main); return;
   }
   if (t === "diagnoses") {
     if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }

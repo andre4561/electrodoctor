@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Электродоктор — кривая критичности показателя: отклонение от нормы в % → критичность 0–100.
+//
+// Кривая задаётся точками, как кривая вентилятора в BIOS. Горизонталь — отклонение в процентах,
+// левый и правый края задаются отдельно (L < 0 < R). Точки хранятся долями своей стороны:
+// x = −1 — левый край, 0 — норма, +1 — правый край, поэтому при смене края форма сохраняется.
+// Между точками — монотонный кубический сплайн (Фрич–Карлсон, PCHIP): плавный, проходит ровно
+// через точки и не выходит за их значения. За краями критичность равна крайней точке.
+// 100 — «уже скорая», выше кривая не поднимается.
+import { lockScroll, unlockScroll } from "./ui.js";
 export const SAFE_MAX = 10; // безопасно — пока критичность не выше 10
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const pctOf = (c, q) => q < 0 ? q * -c.L : q * c.R;
@@ -135,7 +145,7 @@ export function openEditor(o) {
     </ul></div></details>
   </div>`;
     document.body.appendChild(ov);
-    document.body.classList.add("cv-lock");
+    lockScroll();
     const $ = (s) => ov.querySelector(s);
     const svg = $(".cv-svg"), ns = "http://www.w3.org/2000/svg";
     const mk = (parent, n, a, t) => {
@@ -280,7 +290,7 @@ export function openEditor(o) {
     const close = () => {
         document.removeEventListener("keydown", onKey);
         ov.remove();
-        document.body.classList.remove("cv-lock");
+        unlockScroll();
         o.onClose(copy(c), sameCurve(c, o.base), norm);
     };
     const onKey = (e) => { if (e.key === "Escape")

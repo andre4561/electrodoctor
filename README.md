@@ -62,7 +62,7 @@ python tools/preview.py   # → http://localhost:8000/
 electrodoctor/
 ├── README.md              этот файл
 ├── AGENTS.md              контекст проекта для ИИ-агентов
-├── .github/workflows/     проверка CI и публикация сайта на FTP
+├── .github/workflows/     проверка CI
 ├── DISCLAIMER.md          ограничения и предупреждения
 ├── CONTRIBUTING.md        как предлагать веса, диагнозы, код
 ├── Читать.md              как открыть сайт локально
@@ -83,18 +83,22 @@ electrodoctor/
 └── tools/                 просмотр сайта и конвейер данных
 ```
 
-## Публикация на хостинг (FTP)
+## Публикация на хостинг (32rumba.ru)
 
-Готовый сайт дополнительно выкладывается на хостинг по обычному FTP без шифрования: сервер `32rumba.ru` (адрес `45.67.58.17`), порт 21. Логин и пароль при этом идут открытым текстом. GitHub Pages не меняется и по-прежнему собирает папку `docs/` с ветки `main`.
+На хостинг уходит **готовая статика** (как локальный `tools/preview.py`), не сырой
+Markdown и не сборка Jekyll с GitHub Pages. GitHub Pages по-прежнему может отдавать
+`docs/` с `main`; боевой корень `32rumba.ru` обновляется отдельно.
 
-Workflow — [`.github/workflows/deploy-ftp.yml`](.github/workflows/deploy-ftp.yml). Он собирает кабинет (`npm ci` и `npm run build`: JavaScript из `src/` попадает в `docs/`) и прогоняет Markdown через Jekyll тем же сборщиком, что и GitHub Pages. Сборщик в режиме production сам подставляет базовый путь `/electrodoctor`; для корня хостинга workflow на время сборки задаёт пустой `baseurl`, чтобы стили и шапка статей открывались с `https://32rumba.ru/`. На хостинг уходит уже готовая папка `_site/` — в каталог, в который FTP-пользователь попадает сразу после входа. Отдельный путь на сервере не задаётся.
+```bash
+python tools/build_site.py          # HTML из статей + архивы в tools/out/
+python tools/ftp_upload_zip.py      # заливает electrodoctor-site.tar.gz по FTP
+```
 
-Секреты добавляются в репозитории: **Settings → Secrets and variables → Actions → New repository secret**.
-
-- `FTP_USERNAME` — логин FTP
-- `FTP_PASSWORD` — пароль FTP
-
-По расписанию выкладка идёт в 00:00 UTC (03:00 по Москве) в такие дни месяца: 1, 4, 7, 10, 13, 16, 19, 22, 25, 28 и 31. Вручную: вкладка **Actions** → **Публикация на FTP** → **Run workflow**.
+Учётка FTP — в `secrets/ftp.json` (не в git). В панели хостинга распаковать
+**`electrodoctor-site.tar.gz`** в корень сайта: так сохраняются UTF-8 имена файлов
+с кириллицей. Zip для этого хоста лучше не использовать — имена статей часто
+ломаются при распаковке. Подробности для агентов — в `AGENTS.md`, раздел
+«Выкладка на 32rumba.ru».
 
 ## Лицензия
 
