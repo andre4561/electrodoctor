@@ -36,7 +36,7 @@ title: Осмотры — Электродоктор
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%91">Б<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
-<li data-k="Болезненность живота"><a href="%D0%91%D0%BE%D0%BB%D0%B5%D0%B7%D0%BD%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C%20%D0%B6%D0%B8%D0%B2%D0%BE%D1%82%D0%B0.html">Болезненность живота</a></li>
+<li data-k="Болезненность живота болезненная пальпация живота боли при пальпации"><a href="%D0%91%D0%BE%D0%BB%D0%B5%D0%B7%D0%BD%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C%20%D0%B6%D0%B8%D0%B2%D0%BE%D1%82%D0%B0.html">Болезненность живота</a> <small>болезненная пальпация живота, боли при пальпации</small></li>
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%92">В<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
@@ -50,12 +50,12 @@ title: Осмотры — Электродоктор
 <div class="ed-group"><h3 id="l-%D0%94">Д<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
 <li data-k="Двигательный ответ"><a href="%D0%94%D0%B2%D0%B8%D0%B3%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D0%BE%D1%82%D0%B2%D0%B5%D1%82.html">Двигательный ответ</a></li>
-<li data-k="Деформация / осанка"><a href="%D0%94%D0%B5%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D1%8F%20%E2%80%94%20%D0%BE%D1%81%D0%B0%D0%BD%D0%BA%D0%B0.html">Деформация / осанка</a></li>
+<li data-k="Деформация — осанка"><a href="%D0%94%D0%B5%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D1%8F%20%E2%80%94%20%D0%BE%D1%81%D0%B0%D0%BD%D0%BA%D0%B0.html">Деформация — осанка</a></li>
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%96">Ж<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
 <li data-k="Желтуха"><a href="%D0%96%D0%B5%D0%BB%D1%82%D1%83%D1%85%D0%B0.html">Желтуха</a></li>
-<li data-k="Живот"><a href="%D0%96%D0%B8%D0%B2%D0%BE%D1%82.html">Живот</a></li>
+<li data-k="Живот мягкость живота защитное напряжение мышц живота напряжение брюшной стенки"><a href="%D0%96%D0%B8%D0%B2%D0%BE%D1%82.html">Живот</a> <small>мягкость живота, защитное напряжение мышц живота, напряжение брюшной стенки</small></li>
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%97">З<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
@@ -68,7 +68,7 @@ title: Осмотры — Электродоктор
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%9B">Л<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
-<li data-k="Лимфоузлы: описание"><a href="%D0%9B%D0%B8%D0%BC%D1%84%D0%BE%D1%83%D0%B7%D0%BB%D1%8B%20%E2%80%94%20%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B5.html">Лимфоузлы: описание</a></li>
+<li data-k="Лимфоузлы — описание"><a href="%D0%9B%D0%B8%D0%BC%D1%84%D0%BE%D1%83%D0%B7%D0%BB%D1%8B%20%E2%80%94%20%D0%BE%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B5.html">Лимфоузлы — описание</a></li>
 <li data-k="Локальный статус"><a href="%D0%9B%D0%BE%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D1%81%D1%82%D0%B0%D1%82%D1%83%D1%81.html">Локальный статус</a></li>
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%9C">М<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
@@ -80,16 +80,16 @@ title: Осмотры — Электродоктор
 <li data-k="Объём движений"><a href="%D0%9E%D0%B1%D1%8A%D1%91%D0%BC%20%D0%B4%D0%B2%D0%B8%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9.html">Объём движений</a></li>
 <li data-k="Одышка в покое"><a href="%D0%9E%D0%B4%D1%8B%D1%88%D0%BA%D0%B0%20%D0%B2%20%D0%BF%D0%BE%D0%BA%D0%BE%D0%B5.html">Одышка в покое</a></li>
 <li data-k="Ориентация"><a href="%D0%9E%D1%80%D0%B8%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F.html">Ориентация</a></li>
-<li data-k="Отёки лица"><a href="%D0%9E%D1%82%D1%91%D0%BA%D0%B8%20%D0%BB%D0%B8%D1%86%D0%B0.html">Отёки лица</a></li>
+<li data-k="Отёки лица перiorbital edema отёки век пастозность лица одутловатое лицо"><a href="%D0%9E%D1%82%D1%91%D0%BA%D0%B8%20%D0%BB%D0%B8%D1%86%D0%B0.html">Отёки лица</a> <small>перiorbital edema, отёки век, пастозность лица, одутловатое лицо</small></li>
 <li data-k="Отёки ног"><a href="%D0%9E%D1%82%D1%91%D0%BA%D0%B8%20%D0%BD%D0%BE%D0%B3.html">Отёки ног</a></li>
 <li data-k="Открывание глаз"><a href="%D0%9E%D1%82%D0%BA%D1%80%D1%8B%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%B3%D0%BB%D0%B0%D0%B7.html">Открывание глаз</a></li>
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%9F">П<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
-<li data-k="Перистальтика"><a href="%D0%9F%D0%B5%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%BB%D1%8C%D1%82%D0%B8%D0%BA%D0%B0.html">Перистальтика</a></li>
+<li data-k="Перистальтика перистальтические шумы аускультация живота работа кишечника"><a href="%D0%9F%D0%B5%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%BB%D1%8C%D1%82%D0%B8%D0%BA%D0%B0.html">Перистальтика</a> <small>перистальтические шумы, аускультация живота, работа кишечника</small></li>
 <li data-k="Перкуссия грудной клетки"><a href="%D0%9F%D0%B5%D1%80%D0%BA%D1%83%D1%81%D1%81%D0%B8%D1%8F%20%D0%B3%D1%80%D1%83%D0%B4%D0%BD%D0%BE%D0%B9%20%D0%BA%D0%BB%D0%B5%D1%82%D0%BA%D0%B8.html">Перкуссия грудной клетки</a></li>
-<li data-k="Печень"><a href="%D0%9F%D0%B5%D1%87%D0%B5%D0%BD%D1%8C.html">Печень</a></li>
-<li data-k="Поколачивание по пояснице"><a href="%D0%9F%D0%BE%D0%BA%D0%BE%D0%BB%D0%B0%D1%87%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%BE%20%D0%BF%D0%BE%D1%8F%D1%81%D0%BD%D0%B8%D1%86%D0%B5.html">Поколачивание по пояснице</a></li>
+<li data-k="Печень пальпация печени край печени гепатомегалия (увеличение печени)"><a href="%D0%9F%D0%B5%D1%87%D0%B5%D0%BD%D1%8C.html">Печень</a> <small>пальпация печени, край печени, гепатомегалия (увеличение печени)</small></li>
+<li data-k="Поколачивание по пояснице симптом поколачивания симптом Пастернацкого болезненность при поколачивании в области почек"><a href="%D0%9F%D0%BE%D0%BA%D0%BE%D0%BB%D0%B0%D1%87%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%BF%D0%BE%20%D0%BF%D0%BE%D1%8F%D1%81%D0%BD%D0%B8%D1%86%D0%B5.html">Поколачивание по пояснице</a> <small>симптом поколачивания, симптом Пастернацкого, болезненность при поколачивании в области почек</small></li>
 <li data-k="Положение"><a href="%D0%9F%D0%BE%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5.html">Положение</a></li>
 <li data-k="Проба Ромберга"><a href="%D0%9F%D1%80%D0%BE%D0%B1%D0%B0%20%D0%A0%D0%BE%D0%BC%D0%B1%D0%B5%D1%80%D0%B3%D0%B0.html">Проба Ромберга</a></li>
 <li data-k="Прочие находки осмотра"><a href="%D0%9F%D1%80%D0%BE%D1%87%D0%B8%D0%B5%20%D0%BD%D0%B0%D1%85%D0%BE%D0%B4%D0%BA%D0%B8%20%D0%BE%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B0.html">Прочие находки осмотра</a></li>
@@ -104,7 +104,7 @@ title: Осмотры — Электродоктор
 </ul></div>
 <div class="ed-group"><h3 id="l-%D0%A1">С<a class="ed-top" href="#ed-q">↑ наверх</a></h3>
 <ul>
-<li data-k="Селезёнка"><a href="%D0%A1%D0%B5%D0%BB%D0%B5%D0%B7%D1%91%D0%BD%D0%BA%D0%B0.html">Селезёнка</a></li>
+<li data-k="Селезёнка пальпация селезёнки спленомегалия (увеличение селезёнки)"><a href="%D0%A1%D0%B5%D0%BB%D0%B5%D0%B7%D1%91%D0%BD%D0%BA%D0%B0.html">Селезёнка</a> <small>пальпация селезёнки, спленомегалия (увеличение селезёнки)</small></li>
 <li data-k="Сила в конечностях"><a href="%D0%A1%D0%B8%D0%BB%D0%B0%20%D0%B2%20%D0%BA%D0%BE%D0%BD%D0%B5%D1%87%D0%BD%D0%BE%D1%81%D1%82%D1%8F%D1%85.html">Сила в конечностях</a></li>
 <li data-k="Слабость"><a href="%D0%A1%D0%BB%D0%B0%D0%B1%D0%BE%D1%81%D1%82%D1%8C.html">Слабость</a></li>
 <li data-k="Суставы"><a href="%D0%A1%D1%83%D1%81%D1%82%D0%B0%D0%B2%D1%8B.html">Суставы</a></li>

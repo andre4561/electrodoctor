@@ -308,7 +308,8 @@ reasoning/free) через API; для остальных (Anthropic, OpenAI, De
 — ползунок 0…100, число или свободный текст; для шкалы края — `from`/`to` (или первая
 строка `desc`). Тексты встроенных признаков — статьи `docs/articles/exams/*.md` (раздел
 «Осмотры» на сайте); тела для кабинета — `docs/data/exam-descs.json` (сборка
-`tools/exam_recover_descs.py` + каркас `tools/exam_write_ts.py`).
+`tools/exam_recover_descs.py` / каркас `tools/exam_write_ts.py`; тела из
+готовых статей — `tools/exam_descs_from_md.py`).
 У признака поле `article` — имя файла без `.md`. В кабинете описание только
 просматривается; правки — локально в Markdown. Код поля: `examId__lineId`.
 Vitals пока в `fields.ts`.
