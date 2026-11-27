@@ -10,8 +10,6 @@
 #
 # Посредник для провайдеров ИИ (YandexGPT и др.):
 #   /proxy/<хост>/<путь> → https://<хост>/<путь>. Только хосты из PROXY_HOSTS, только 127.0.0.1.
-#
-# Запись кода шапки (Настройки → Прочее): PUT /assets/site-inject.html — только 127.0.0.1.
 import html, os, re, sys, urllib.error, urllib.parse, urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
@@ -19,8 +17,6 @@ import markdown
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs"))
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
-INJECT = os.path.join(ROOT, "assets", "site-inject.html")
-INJECT_MAX = 200_000  # байт
 
 PROXY_HOSTS = {"ai.api.cloud.yandex.net", "llm.api.cloud.yandex.net", "gigachat.devices.sberbank.ru"}
 PASS_HEADERS = {"authorization", "content-type", "openai-project", "x-folder-id", "x-data-logging-enabled", "accept"}
@@ -105,30 +101,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def save_inject(self):
-        n = int(self.headers.get("Content-Length") or 0)
-        if n > INJECT_MAX:
-            return self.reply(413, b'{"error":"too large"}', "application/json")
-        raw = self.rfile.read(n) if n else b""
-        try:
-            text = raw.decode("utf-8")
-        except UnicodeDecodeError:
-            return self.reply(400, b'{"error":"utf-8 only"}', "application/json")
-        os.makedirs(os.path.dirname(INJECT), exist_ok=True)
-        with open(INJECT, "w", encoding="utf-8", newline="\n") as f:
-            f.write(text)
-        return self.reply(200, b'{"ok":true}', "application/json")
-
-    def do_PUT(self):
-        path = urllib.parse.urlsplit(self.path).path
-        if path == "/assets/site-inject.html":
-            return self.save_inject()
-        self.send_error(405)
-
     def do_POST(self):
-        path = urllib.parse.urlsplit(self.path).path
-        if path == "/assets/site-inject.html":
-            return self.save_inject()
         if self.path.startswith("/proxy/"):
             return self.proxy("POST")
         self.send_error(405)

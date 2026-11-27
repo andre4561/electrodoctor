@@ -57,6 +57,19 @@ export function plural(n: number): string {
 }
 export const articleUrl = (name: string) => "../articles/diagnoses/" + encodeURIComponent(name) + ".html";
 
+/** Диагнозы, в признаках которых есть анализ с этим кодом (файл статьи → заголовок → раздел). */
+export function diagnosesUsingLab(code: string): { file: string; title: string; section: string }[] {
+  if (!data || !code) return [];
+  const own = (Settings.load().signs || {}) as Record<string, Sg.Signs>;
+  const out: { file: string; title: string; section: string }[] = [];
+  for (const [file, item] of Object.entries(data.items)) {
+    const s = own[file] || Sg.FILE_SIGNS[file];
+    if (!s || !Sg.labSigns(s).some(l => l.code === code)) continue;
+    out.push({ file, title: item.title, section: item.sections[0] || "" });
+  }
+  return out.sort((a, b) => a.title.localeCompare(b.title, "ru"));
+}
+
 // Настройки → Диагнозы: карточки разделов; #/settings/diagnoses/<раздел> — список;
 // #/settings/diagnoses/<раздел>/<имя файла статьи> — сразу раскрытый диагноз с признаками
 export function draw(main: HTMLElement): void {

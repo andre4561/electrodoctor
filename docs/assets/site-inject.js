@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Вставляет assets/site-inject.html на каждую страницу (скрипты пересоздаются, чтобы выполнились).
+// Вставляет docs/assets/site-inject.html на каждую страницу (скрипты пересоздаются, чтобы выполнились).
+// Код счётчиков правится в том HTML-файле вручную, не из кабинета.
 (function () {
   if (window.__edSiteInject) return;
   window.__edSiteInject = true;

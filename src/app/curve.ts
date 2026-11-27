@@ -75,13 +75,19 @@ export function defaultCurve(norm: number, range: string): Curve {
 }
 
 // ---------- окно-редактор ----------
+/** Как считать показатель: числовая норма, наличие, или текст (в карточке клиента). */
+export type ValueKind = "norm" | "presence" | "text";
+
 export interface EditorOpts {
   title: string; unit: string;
   norm: number; normBase: number;            // текущая норма и встроенная (для ↺)
   curve: Curve; base: Curve;                 // текущая и исходная (для «Вернуть исходную»)
   subtitle?: string;                         // например «для клиента: Иван»
   baseLabel?: string;                        // подпись кнопки возврата кривой
-  onClose: (c: Curve, isBase: boolean, norm: number) => void;
+  /** Показать выбор типа (Норма / Наличие / Текст) — в Настройках; у клиента не нужно. */
+  showKind?: boolean;
+  kind?: ValueKind;
+  onClose: (c: Curve, isBase: boolean, norm: number, kind: ValueKind) => void;
 }
 const esc = (s: unknown) => String(s == null ? "" : s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[ch]);
 const fmt = (n: number, d = 1) => (Math.round(n * 10 ** d) / 10 ** d).toString().replace(".", ",");
@@ -99,6 +105,8 @@ export function safeText(c: Curve, norm: number, unit: string): { mid: string; r
 
 export function openEditor(o: EditorOpts): void {
   let c = copy(o.curve), drag = -1, probeP = Math.round(c.L / 3), norm = o.norm;
+  let kind: ValueKind = o.kind === "presence" || o.kind === "text" ? o.kind : "norm";
+  const showKind = !!o.showKind;
   const W = 700, H = 380, X0 = 60, X1 = 680, Y0 = 290, Y1 = 20, XM = (X0 + X1) / 2;
   const sx = (p: number) => p < 0 ? X0 + (p - c.L) / -c.L * (XM - X0) : XM + p / c.R * (X1 - XM);
   const ix = (x: number) => x < XM ? c.L + (x - X0) / (XM - X0) * -c.L : (x - XM) / (X1 - XM) * c.R;
@@ -106,11 +114,19 @@ export function openEditor(o: EditorOpts): void {
   const frac = (p: number) => p < 0 ? p / -c.L : p / c.R;
   const isFixed = (i: number) => i === 0 || i === c.pts.length - 1 || c.pts[i][0] === 0;
 
+  const kindsHtml = showKind ? `<div class="cv-kinds" role="radiogroup" aria-label="Тип показателя">
+      <label class="cv-kind"><input type="radio" name="cv-kind" value="norm"${kind === "norm" ? " checked" : ""}> Норма</label>
+      <label class="cv-kind"><input type="radio" name="cv-kind" value="presence"${kind === "presence" ? " checked" : ""}> Наличие</label>
+      <label class="cv-kind"><input type="radio" name="cv-kind" value="text"${kind === "text" ? " checked" : ""}> Текст</label>
+    </div>` : "";
+
   const ov = document.createElement("div");
   ov.className = "cv-overlay";
-  ov.innerHTML = `<div class="cv-dialog" role="dialog" aria-modal="true" aria-label="Кривая критичности: ${esc(o.title)}">
+  ov.innerHTML = `<div class="cv-dialog" role="dialog" aria-modal="true" aria-label="Настройка показателя: ${esc(o.title)}">
     <div class="cv-head"><div><b>${esc(o.title)}</b>${o.subtitle ? ` <span class="muted cv-sub">${esc(o.subtitle)}</span>` : ""}<div class="cv-safe" data-safe></div></div>
       <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    ${kindsHtml}
+    <div data-kind-panel="norm">
     <div class="cv-norm"><label>Норма <input type="text" inputmode="decimal" data-norm value="${fmt(norm, 3)}" aria-label="норма"></label><span class="muted">${esc(o.unit)}</span>
       <button type="button" class="btn cv-nreset" data-nreset title="вернуть норму ${fmt(o.normBase, 3)}">↺ ${fmt(o.normBase, 3)}</button>
       <span class="muted cv-nhint">точка 0% на графике; кривая задана в процентах от неё</span></div>
@@ -136,10 +152,35 @@ export function openEditor(o: EditorOpts): void {
       <li>Безопасно — там, где критичность не выше ${SAFE_MAX}. 100 — «уже скорая», выше кривая не поднимается.</li>
       <li>Закрыть окно — крестик, Esc или щелчок мимо окна. Всё сохраняется само.</li>
     </ul></div></details>
+    </div>
+    <div data-kind-panel="presence" hidden>
+      <p class="muted">Качественный анализ по наличию: в карточке клиента выбирают «обнаружено», «не обнаружено» или «сомнительно». Значение заводится там — вручную, через ИИ или импортом, не в этом окне.</p>
+    </div>
+    <div data-kind-panel="text" hidden>
+      <p class="muted">Текстовый результат (свободное описание). Текст заводится в карточке клиента — вручную, через ИИ или импортом, не в этом окне.</p>
+    </div>
   </div>`;
   document.body.appendChild(ov);
   lockScroll();
   const $ = <T extends Element = HTMLElement>(s: string) => ov.querySelector(s) as unknown as T;
+  const applyKind = () => {
+    ov.querySelectorAll<HTMLElement>("[data-kind-panel]").forEach(p => {
+      p.hidden = p.dataset.kindPanel !== kind;
+    });
+    const safe = $("[data-safe]");
+    if (kind === "presence") safe.textContent = "Тип: наличие (значение — в карточке клиента)";
+    else if (kind === "text") safe.textContent = "Тип: текст (значение — в карточке клиента)";
+    else if (kind === "norm") draw();
+  };
+  if (showKind) {
+    ov.querySelectorAll<HTMLInputElement>('input[name="cv-kind"]').forEach(r => {
+      r.addEventListener("change", () => {
+        const v = r.value;
+        kind = v === "presence" || v === "text" ? v : "norm";
+        applyKind();
+      });
+    });
+  }
   const svg = $<SVGSVGElement>(".cv-svg"), ns = "http://www.w3.org/2000/svg";
   const mk = (parent: Element, n: string, a: Record<string, string | number>, t?: string) => {
     const e = document.createElementNS(ns, n); for (const k in a) e.setAttribute(k, String(a[k])); if (t != null) e.textContent = t; parent.appendChild(e); return e;
@@ -224,12 +265,13 @@ export function openEditor(o: EditorOpts): void {
   const close = () => {
     document.removeEventListener("keydown", onKey);
     ov.remove(); unlockScroll();
-    o.onClose(copy(c), sameCurve(c, o.base), norm);
+    o.onClose(copy(c), sameCurve(c, o.base), norm, kind);
   };
   const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
   document.addEventListener("keydown", onKey);
   ov.addEventListener("click", e => { if (e.target === ov) close(); });
   $<HTMLButtonElement>("[data-close]").addEventListener("click", close);
   grid(); draw();
+  applyKind();
   $<HTMLButtonElement>("[data-close]").focus();
 }

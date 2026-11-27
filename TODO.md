@@ -58,7 +58,7 @@
 В признаках диагнозов есть блок «Нужны анализы, которых нет в анкете» (`nolist` в `signs.json`).
 Сводка сверки с каталогом: **`docs/articles/nolist-gap.md`** (обновить: `python tools/nolist_gap.py`).
 - [ ] **Нет в каталоге — похоже на анализы** (раздел в `nolist-gap.md`) — завести коды в
-  `labs.json` / конвейер (`labs_catalog_ai.py` + `labs_catalog_build.py` / Настройки → Анализы)
+  `labs.json` / конвейер (`labs_catalog_ai.py` + `labs_catalog_build.py` / Настройки → Нормы и веса)
   и проставить `code` в `nolist`.
 - [ ] **Статьи** по этому же списку лабораторных пробелов: `docs/articles/lab-tests/`,
   привязка `article` / `src/app/articles.ts` (`tools/ai_articles.py`).

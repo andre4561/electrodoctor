@@ -8,7 +8,7 @@ from collections import Counter
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 LABS = os.path.join(ROOT, "docs", "data", "labs.json")
 
-# Материалы (префиксы Настройки → Анализы)
+# Материалы (префиксы Настройки → Нормы и веса / setlabs.SECS)
 URINE = "Моча — прочее"
 STOOL = "Кал — прочее"
 SWAB = "Мазки — прочее"

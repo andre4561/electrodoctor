@@ -2001,7 +2001,7 @@
     "Эластаза-1 кала"
    ],
    "type": "number",
-   "unit": "µg/g",
+   "unit": "мкг/г",
    "inForm": false,
    "refs": 5,
    "article": "Кал на эластазу-1",
@@ -2746,7 +2746,7 @@
     "витамин B1"
    ],
    "type": "number",
-   "unit": "µg/L",
+   "unit": "нмоль/л",
    "inForm": false,
    "refs": 3,
    "article": "Витамин B1 - тиамин",
@@ -3612,7 +3612,7 @@
     "Гепцидин сыворотки"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 2,
    "article": "Гепсидин",
@@ -4231,7 +4231,7 @@
     "Trypsin"
    ],
    "type": "number",
-   "unit": "U/L",
+   "unit": "мкг/л",
    "inForm": false,
    "refs": 2,
    "article": "Триптаза",
@@ -4248,7 +4248,7 @@
     "Уридин‑конъюгат гидролаза‑Л1"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 2,
    "article": "UCH-L1 (убиквитин-C-концевая гидролаза L1)",
@@ -4308,7 +4308,7 @@
     "метанефрин"
    ],
    "type": "number",
-   "unit": "мг/24ч",
+   "unit": "мг/сут",
    "inForm": false,
    "refs": 2,
    "article": "Метаболиты катехоламинов в моче (VMA, HVA)",
@@ -4458,7 +4458,7 @@
     "Maternal serum AFP"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "МЕ/мл",
    "inForm": false,
    "refs": 1,
    "article": "Альфа‑фетопротеин в сыворотке матери",
@@ -4471,7 +4471,7 @@
     "Neonatal AFP"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Альфа‑фетопротеин в крови новорождённого",
@@ -4483,7 +4483,7 @@
     "Platelet aggregation test",
     "Агрегометрия (функция тромбоцитов)"
    ],
-   "type": "number",
+   "type": "text",
    "unit": "%",
    "inForm": false,
    "refs": 1,
@@ -4509,7 +4509,7 @@
     "α-synuclein CSF assay"
    ],
    "type": "number",
-   "unit": "pg/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "α‑синуклеин в спинномозговой жидкости",
@@ -4662,7 +4662,7 @@
     "Титр анти-D"
    ],
    "type": "number",
-   "unit": "IU/mL",
+   "unit": "МЕ/мл",
    "inForm": false,
    "refs": 1,
    "article": "Титр анти‑D",
@@ -4898,7 +4898,7 @@
     "anti‑Xa activity"
    ],
    "type": "number",
-   "unit": "IU/mL",
+   "unit": "МЕ/мл",
    "inForm": false,
    "refs": 1,
    "article": "Анти‑Xa",
@@ -4925,7 +4925,7 @@
     "Аryl sulfataze A activity"
    ],
    "type": "number",
-   "unit": "U/L",
+   "unit": "нмоль/ч/мг",
    "inForm": false,
    "refs": 1,
    "article": "Активность арилсульфатазы A",
@@ -4963,7 +4963,7 @@
    "aliases": [
     "IgG к Aspergillus"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/mL",
    "inForm": false,
    "refs": 1,
@@ -5868,7 +5868,7 @@
     "IgG к Coccidioides",
     "Серология IgG к Coccidioides"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/ml",
    "inForm": false,
    "refs": 1,
@@ -5882,7 +5882,7 @@
     "IgM к Coccidioides",
     "Серология IgM к Coccidioides"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/ml",
    "inForm": false,
    "refs": 1,
@@ -6275,7 +6275,7 @@
     "Clostridium perfringens stool count"
    ],
    "type": "number",
-   "unit": "CFU/g",
+   "unit": "КОЕ/г",
    "inForm": false,
    "refs": 1,
    "article": "Количественный посев стула на C. perfringens (споры г)",
@@ -6306,7 +6306,7 @@
    "aliases": [
     "Dengue IgG"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/ml",
    "inForm": false,
    "refs": 1,
@@ -6318,7 +6318,7 @@
    "aliases": [
     "Dengue IgM"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/ml",
    "inForm": false,
    "refs": 1,
@@ -6623,7 +6623,7 @@
     "eGFR"
    ],
    "type": "number",
-   "unit": "мл/мин/1.73м2",
+   "unit": "мл/мин/1,73м²",
    "inForm": false,
    "refs": 1,
    "article": "Расчётная СКФ (eGFR)",
@@ -6901,7 +6901,7 @@
     "Fibroblast Growth Factor 19"
    ],
    "type": "number",
-   "unit": "pg/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "FGF19 в сыворотке",
@@ -6915,7 +6915,7 @@
     "FGF‑21 (Fibroblast Growth Factor‑21)"
    ],
    "type": "number",
-   "unit": "pg/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "FGF-21 (фактор роста фибробластов 21)",
@@ -6952,7 +6952,7 @@
     "Fibulin‑3"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Фибулин‑3",
@@ -7156,7 +7156,7 @@
     "Активность GALC"
    ],
    "type": "number",
-   "unit": "U/L",
+   "unit": "нмоль/ч/мг",
    "inForm": false,
    "refs": 1,
    "article": "Активность галактоцереброзидазы (GALC)",
@@ -7302,7 +7302,7 @@
     "eGFR calculation"
    ],
    "type": "number",
-   "unit": "мл/мин",
+   "unit": "мл/мин/1,73м²",
    "inForm": false,
    "refs": 1,
    "article": "СКФ (расчёт по креатинину)",
@@ -7397,7 +7397,7 @@
     "Glucocerebrosidase activity"
    ],
    "type": "number",
-   "unit": "U/L",
+   "unit": "нмоль/ч/мг",
    "inForm": false,
    "refs": 1,
    "article": "Активность глюкоцереброзидазы",
@@ -7831,7 +7831,7 @@
     "Hexosaminidase A activity"
    ],
    "type": "number",
-   "unit": "U/L",
+   "unit": "%",
    "inForm": false,
    "refs": 1,
    "article": "Активность гексозаминидазы A (лейкоциты)",
@@ -8156,7 +8156,7 @@
     "HRD‑score",
     "HRD‑score (доминирование репарации ДНК)"
    ],
-   "type": "number",
+   "type": "text",
    "unit": "",
    "inForm": false,
    "refs": 1,
@@ -8343,7 +8343,7 @@
     "уровень IL‑17 в плазме"
    ],
    "type": "number",
-   "unit": "pg/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "IL‑17 в плазме",
@@ -8756,7 +8756,7 @@
     "Mesothelin"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нМ",
    "inForm": false,
    "refs": 1,
    "article": "Мезотелин",
@@ -8793,7 +8793,7 @@
     "Метанефрин"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Метанефрины в моче крови",
@@ -8844,7 +8844,7 @@
     "mHTT в ликворе"
    ],
    "type": "number",
-   "unit": "pg/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "mHTT в спинномозговой жидкости",
@@ -8887,7 +8887,7 @@
   "MIR_371A_3P": {
    "name": "miR-371a-3p",
    "aliases": [],
-   "type": "number",
+   "type": "text",
    "unit": "copies/mL",
    "inForm": false,
    "refs": 1,
@@ -8901,7 +8901,7 @@
     "MMP‑9 в слезе"
    ],
    "type": "number",
-   "unit": "ng/ml",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 1,
    "article": "MMP-9 в слёзной жидкости",
@@ -9292,7 +9292,7 @@
     "Тест на никель в крови"
    ],
    "type": "number",
-   "unit": "µg/L",
+   "unit": "мкг/л",
    "inForm": false,
    "refs": 1,
    "article": "Никель в крови",
@@ -9504,7 +9504,7 @@
     "Уровень окситоцина в плазме"
    ],
    "type": "number",
-   "unit": "pg/mL",
+   "unit": "пг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Окситоцин в плазме",
@@ -9593,7 +9593,7 @@
     "Paracetamol plasma concentration"
    ],
    "type": "number",
-   "unit": "µg/mL",
+   "unit": "мкг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Концентрация парацетамола в крови",
@@ -9953,7 +9953,7 @@
     "Phosphatidylethanol"
    ],
    "type": "number",
-   "unit": "µg/L",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Фосфатидилэтанол в крови новорождённого",
@@ -10183,7 +10183,7 @@
    "name": "Програнулин в плазме",
    "aliases": [],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Програнулин в плазме",
@@ -10209,7 +10209,7 @@
     "Лейкоциты в секрете простаты после массажа (двухстаканная проба)"
    ],
    "type": "number",
-   "unit": "10⁶/ml",
+   "unit": "в п/зр",
    "inForm": false,
    "refs": 1,
    "article": "Лейкоциты в секрете простаты после массажа",
@@ -10259,7 +10259,7 @@
     "Psychosin"
    ],
    "type": "number",
-   "unit": "",
+   "unit": "нмоль/л",
    "inForm": false,
    "refs": 1,
    "article": "Психозин",
@@ -10309,7 +10309,7 @@
     "Пируват"
    ],
    "type": "number",
-   "unit": "µmol/L",
+   "unit": "мкмоль/л",
    "inForm": false,
    "refs": 1,
    "article": "Пируват в сыворотке",
@@ -10523,7 +10523,7 @@
     "IgG Rubella",
     "Rubella IgG"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/ml",
    "inForm": false,
    "refs": 1,
@@ -10537,7 +10537,7 @@
     "IgM к паротитному вирусу (краснуха)",
     "Rubella IgM"
    ],
-   "type": "number",
+   "type": "qual",
    "unit": "IU/ml",
    "inForm": false,
    "refs": 1,
@@ -10565,7 +10565,7 @@
     "Salicylates (blood level)"
    ],
    "type": "number",
-   "unit": "mg/L",
+   "unit": "мг/л",
    "inForm": false,
    "refs": 1,
    "article": "Салицилаты (уровень в крови)",
@@ -10750,7 +10750,7 @@
     "Plasma serotonin"
    ],
    "type": "number",
-   "unit": "ng/mL",
+   "unit": "нг/мл",
    "inForm": false,
    "refs": 1,
    "article": "Серотонин (в плазме)",
@@ -10972,7 +10972,7 @@
     "Генетический анализ SMN1 (количественный) и определение копий SMN2"
    ],
    "type": "number",
-   "unit": "copies",
+   "unit": "копий",
    "inForm": false,
    "refs": 1,
    "article": "Количественный анализ копий генов SMN1 и SMN2",
@@ -10985,7 +10985,7 @@
     "Колония Streptococcus mutans в слюне"
    ],
    "type": "number",
-   "unit": "CFU/mL",
+   "unit": "КОЕ/мл",
    "inForm": false,
    "refs": 1,
    "article": "Количество Streptococcus mutans в слюне",
@@ -11491,7 +11491,7 @@
     "Тест на длину теломер"
    ],
    "type": "number",
-   "unit": "kb",
+   "unit": "т.п.н.",
    "inForm": false,
    "refs": 1,
    "article": "Длина теломер",
@@ -11504,7 +11504,7 @@
     "Титр к тетанусу"
    ],
    "type": "number",
-   "unit": "IU/mL",
+   "unit": "МЕ/мл",
    "inForm": false,
    "refs": 1,
    "article": "Титр антител к тетанотоксину",
@@ -11769,7 +11769,7 @@
    "aliases": [
     "Tyrosinase mRNA"
    ],
-   "type": "number",
+   "type": "text",
    "unit": "copies/µg RNA",
    "inForm": false,
    "refs": 1,
@@ -11839,7 +11839,7 @@
     "Urine citrate"
    ],
    "type": "number",
-   "unit": "mmol/L",
+   "unit": "мг/сут",
    "inForm": false,
    "refs": 1,
    "article": "Цитрат мочи",
@@ -11954,7 +11954,7 @@
     "Urinary metanephrines"
    ],
    "type": "number",
-   "unit": "µg/24h",
+   "unit": "мкг/сут",
    "inForm": false,
    "refs": 1,
    "article": "Метанефрины в суточной моче (фракционированные)",
@@ -11966,7 +11966,7 @@
     "N‑acetylaspartate urine"
    ],
    "type": "number",
-   "unit": "мкмоль/сут",
+   "unit": "мкмоль/ммоль креат.",
    "inForm": false,
    "refs": 1,
    "article": "N‑ацетиласпартат в моче",
@@ -12004,7 +12004,7 @@
     "птерины в моче"
    ],
    "type": "number",
-   "unit": "µmol/mol creatinine",
+   "unit": "мкмоль/моль креат.",
    "inForm": false,
    "refs": 1,
    "article": "Птерины в моче",

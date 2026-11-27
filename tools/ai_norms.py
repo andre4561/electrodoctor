@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Предложения норм для числовых анализов справочника, у которых нормы нет (docs/data/norms.json).
-# ИИ предлагает → tools/out/norms_proposed.json; в norms.json попадает только после проверки (tools/norms_apply.py).
+# Предложения норм для числовых анализов справочника без записи в docs/data/norms.json.
+# ИИ предлагает → tools/out/norms_proposed.json; перенос: python tools/norms_apply.py (без ручного ревью).
 # Запуск:  python tools/ai_norms.py [--model gpt-oss-120b] [--chunk 30]
 import argparse, json, os, re, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -9,9 +9,9 @@ from ai_articles import ask
 
 SYS = """Ты — врач клинической лабораторной диагностики. Для каждого анализа из списка предложи норму для взрослых.
 Отвечай ТОЛЬКО JSON-объектом {"items": [ { "code": "КОД как дан", "unit": "единицы по-русски, как в российских лабораториях (г/л, ммоль/л, мкмоль/л, Ед/л, нг/мл, пг/мл, %, ×10⁹/л…)",
-  "low": число или null, "high": число или null, "note": "коротко: различия по полу, возрасту, методу, если важны", "confidence": "high" | "medium" | "low" } ] }
-low и high — типичный референсный интервал взрослых в указанных единицах. Если есть только верхняя граница — low = null. Если нормы нет (анализ описательный, интервал сильно зависит от метода) — low и high = null и объясни в note.
-Не выдумывай: если не уверен — confidence "low"."""
+  "low": число или null, "high": число или null, "note": "коротко", "confidence": "high" | "medium" | "low" } ] }
+low и high — типичный референсный интервал взрослых в указанных единицах. Если есть только верхняя граница — low = null. Если нормы нет — low и high = null.
+Не выдумывай сверх меры: если не уверен — confidence "low"."""
 
 
 def main():

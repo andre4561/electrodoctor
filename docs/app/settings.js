@@ -10,18 +10,68 @@
 import * as Dx from "./diagnoses.js";
 import * as SetLabs from "./setlabs.js";
 import * as SetExams from "./setexams.js";
-import { fold } from "./ui.js";
+import { fold, lockScroll, unlockScroll } from "./ui.js";
 import * as M from "./models.js";
 import * as Store from "./setstore.js";
 import * as Exams from "./exams.js";
+import * as Labs from "./labs.js";
+import * as Sg from "./signs.js";
 import { NORMS, defaultNorm, fmtNum } from "./norms.js";
-import { STEPS } from "./fields.js";
-import { openEditor, safeText, sameCurve } from "./curve.js";
+import { openEditor, safeText, sameCurve, defaultCurve } from "./curve.js";
 import { curveFor, baseCurve, normsRaw, normsError } from "./norms.js";
 export { Store };
+/** Все анализы каталога (по материалу и подгруппам). */
+function weightFields() {
+    return Object.entries(Labs.LABS)
+        .map(([code, l]) => ({
+        code, label: l.name, unit: l.unit || undefined,
+        group: l.group || "Прочее — прочее",
+    }))
+        .sort((a, b) => a.group.localeCompare(b.group, "ru") || a.label.localeCompare(b.label, "ru"));
+}
+function groupLabel(group, sec) {
+    const p = sec.prefix + " — ";
+    return group.startsWith(p) ? group.slice(p.length) : group;
+}
+function weightArtUrl(code) {
+    const name = Labs.LABS[code] && Labs.LABS[code].article;
+    return name ? "../articles/lab-tests/" + encodeURIComponent(name) + ".html" : null;
+}
+/** Раздел материала по group из каталога; нет группы / нет в каталоге → «Прочее». */
+function weightSecOf(code) {
+    const g = (Labs.LABS[code] && Labs.LABS[code].group) || "";
+    return SetLabs.SECS.find(s => g.startsWith(s.prefix)) || SetLabs.SECS.find(s => s.id === "other");
+}
+function weightFieldsIn(sec) {
+    return weightFields().filter(f => weightSecOf(f.code).id === sec.id)
+        .sort((a, b) => a.label.localeCompare(b.label, "ru"));
+}
+function pluralPok(n) {
+    if (n % 10 === 1 && n % 100 !== 11)
+        return "показатель";
+    if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
+        return "показателя";
+    return "показателей";
+}
+function valueKindOf(code) {
+    const t = Labs.LABS[code]?.type;
+    return t === "qual" ? "presence" : t === "text" ? "text" : "norm";
+}
+/** Тип показателя в каталоге (свои настройки поверх labs.json). */
+function saveLabKind(code, kind) {
+    const type = kind === "presence" ? "qual" : kind === "text" ? "text" : "number";
+    const cur = Labs.LABS[code];
+    if (!cur)
+        return;
+    if (cur.type === type)
+        return;
+    const st = load();
+    st.labs = { ...(st.labs || {}), [code]: { ...cur, type } };
+    save(st);
+    Labs.applyOwn(st.labs);
+}
 export const ARTICLES_CSS_LS = "electrodoctor.articles.css";
 const ARTICLES_CSS_URL = "../assets/articles.css";
-const SITE_INJECT_URL = "../assets/site-inject.html";
 export function publishArticlesCss(css) {
     try {
         if (css)
@@ -36,25 +86,6 @@ async function fetchDefaultArticlesCss() {
     if (!r.ok)
         throw new Error("не удалось загрузить " + ARTICLES_CSS_URL);
     return (await r.text()).replace(/^\uFEFF/, "");
-}
-async function fetchSiteInject() {
-    const r = await fetch(SITE_INJECT_URL, { cache: "no-store" });
-    if (!r.ok)
-        throw new Error("не удалось загрузить " + SITE_INJECT_URL);
-    return (await r.text()).replace(/^\uFEFF/, "");
-}
-async function saveSiteInject(html) {
-    const r = await fetch(SITE_INJECT_URL, {
-        method: "PUT",
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-        body: html,
-    });
-    if (r.ok)
-        return;
-    if (r.status === 404 || r.status === 405 || r.status === 501)
-        throw new Error("запись только через локальный preview.py (python tools/preview.py)");
-    const t = await r.text().catch(() => "");
-    throw new Error(t || ("ошибка сохранения: " + r.status));
 }
 export const PROVIDERS = [
     { id: "openai", name: "OpenAI (ChatGPT)", kind: "cloud", baseUrl: "https://api.openai.com/v1", model: "", keyUrl: "https://platform.openai.com/api-keys" },
@@ -198,7 +229,12 @@ const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "
 const q = (root, s) => root.querySelector(s);
 const newId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 export function render(view, tab, steps) {
-    const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "labs" ? "labs" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
+    // старые закладки #/settings/labs → нормы и веса
+    if (tab === "labs") {
+        location.replace(location.hash.replace(/^#\/settings\/labs/, "#/settings/weights"));
+        return;
+    }
+    const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
     view.innerHTML = `
     <h1>Настройки</h1>
     <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
@@ -208,7 +244,6 @@ export function render(view, tab, steps) {
         <a class="set-tab${t === "agents" ? " on" : ""}" href="#/settings/agents">Агенты</a>
         <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">Консилиум</a>
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
-        <a class="set-tab${t === "labs" ? " on" : ""}" href="#/settings/labs">Анализы</a>
         <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">Осмотр</a>
         <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">Диагнозы</a>
         <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">Хранение</a>
@@ -224,15 +259,6 @@ export function render(view, tab, steps) {
     }
     if (t === "misc") {
         drawMisc(main);
-        return;
-    }
-    if (t === "labs") {
-        if (Store.state.where === "folder" && !Store.state.loaded) {
-            main.innerHTML = gateHtml();
-            bindGate(main, redraw);
-            return;
-        }
-        SetLabs.draw(main);
         return;
     }
     if (t === "exam") {
@@ -730,127 +756,156 @@ export function bindGate(root, after) {
             Store.unlock(pw).then(after).catch(e => { err.textContent = (e instanceof Error && e.message) || String(e); });
         };
 }
-function drawMisc(main) {
-    const s = load();
-    const ownCss = s.articlesCss || "";
-    main.innerHTML = `<div class="set-head"><h2>Прочее</h2></div>
-    <div class="card">
-      <h3>Скрипты сайта</h3>
-      <p class="muted">Код в шапке каждой страницы — как в WordPress header: Яндекс.Метрика, Google Analytics или любой HTML/<code>&lt;script&gt;</code>. Сохраняется в файл <code>assets/site-inject.html</code> (через локальный <code>preview.py</code>); после выгрузки на GitHub его видят все посетители.</p>
-      <label for="site-inject">Код</label>
-      <textarea id="site-inject" class="site-inject" rows="12" spellcheck="false" disabled>Загрузка…</textarea>
-      <p class="muted small" data-inj-hint></p>
-      <div class="grp">
-        <button type="button" class="btn primary" data-inj="save" disabled>Сохранить</button>
-        <button type="button" class="btn" data-inj="clear" disabled>Очистить</button>
-        <span class="muted" data-inj-flash></span>
-      </div>
+function articlesCssStatusText() {
+    return load().articlesCss ? "Свой CSS в этом браузере." : "Исходный CSS из репозитория.";
+}
+function openArticlesCssEditor(onDone) {
+    const own = load().articlesCss || "";
+    const ov = document.createElement("div");
+    ov.className = "cv-overlay";
+    ov.innerHTML = `<div class="cv-dialog articles-css-dlg" role="dialog" aria-modal="true" aria-labelledby="articles-css-title">
+    <div class="cv-head"><b id="articles-css-title">Стили статей</b>
+      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <p class="muted small">Правки только в этом браузере. Для всех посетителей меняйте <code>docs/assets/articles.css</code> в репозитории и выгружайте сайт. Кабинет этими стилями не трогаем.</p>
+    <textarea class="articles-css" spellcheck="false" disabled>Загрузка…</textarea>
+    <p class="muted small" data-css-hint></p>
+    <div class="grp">
+      <button type="button" class="btn primary" data-css="save" disabled>Сохранить</button>
+      <button type="button" class="btn" data-css="reset" disabled>Сбросить к исходному</button>
+      <button type="button" class="btn" data-close>Отмена</button>
+      <span class="muted" data-css-flash></span>
     </div>
-    <div class="card store-card">
-      <h3>Стили статей</h3>
-      <p class="muted">CSS страниц статей (и шапки). Ниже — исходник по умолчанию из <code>assets/articles.css</code>; правки сохраняются в этом браузере. Кабинет этими стилями не трогаем.</p>
-      <label for="articles-css">CSS</label>
-      <textarea id="articles-css" class="articles-css" rows="18" spellcheck="false" disabled>Загрузка…</textarea>
-      <p class="muted small" data-css-hint></p>
-      <div class="grp">
-        <button type="button" class="btn primary" data-css="save" disabled>Сохранить</button>
-        <button type="button" class="btn" data-css="reset" disabled>Сбросить к исходному</button>
-        <span class="muted" data-css-flash></span>
-      </div>
-      <p class="muted small">Правки здесь — только в этом браузере. Для всех посетителей сайта меняйте <code>assets/articles.css</code> в репозитории и выгружайте на хостинг.</p>
-    </div>`;
-    const injTa = q(main, "#site-inject");
-    const injHint = q(main, "[data-inj-hint]");
-    const injFlash = q(main, "[data-inj-flash]");
-    const injSave = q(main, '[data-inj="save"]');
-    const injClear = q(main, '[data-inj="clear"]');
-    let injectLoaded = "";
-    const blankInject = "<!-- SPDX-License-Identifier: AGPL-3.0-or-later -->\n<!-- Код в шапке сайта: Яндекс.Метрика, Google Analytics и любой другой HTML/скрипт. -->\n";
-    fetchSiteInject().then(t => {
-        injectLoaded = t;
-        injTa.value = t;
-        injTa.disabled = false;
-        injSave.disabled = false;
-        injClear.disabled = false;
-        injHint.textContent = "Файл assets/site-inject.html";
-    }).catch(e => {
-        injTa.value = blankInject;
-        injTa.disabled = false;
-        injSave.disabled = false;
-        injClear.disabled = false;
-        injHint.innerHTML = `<span class="err">${esc((e && e.message) || "не удалось загрузить")}</span>`;
-    });
-    injSave.onclick = () => {
-        injSave.disabled = true;
-        saveSiteInject(injTa.value).then(() => {
-            injectLoaded = injTa.value;
-            injHint.textContent = "Записано в assets/site-inject.html — после git push будет на сайте у всех.";
-            savedFlash(injFlash);
-        }).catch(e => {
-            injHint.innerHTML = `<span class="err">${esc((e && e.message) || String(e))}</span>`;
-        }).finally(() => { injSave.disabled = false; });
-    };
-    injClear.onclick = () => {
-        injTa.value = blankInject;
-        injSave.click();
-    };
-    const cssTa = q(main, "#articles-css");
-    const cssHint = q(main, "[data-css-hint]");
-    const cssFlash = q(main, "[data-css-flash]");
-    const cssSave = q(main, '[data-css="save"]');
-    const cssReset = q(main, '[data-css="reset"]');
+  </div>`;
+    document.body.appendChild(ov);
+    lockScroll();
+    const ta = q(ov, "textarea.articles-css");
+    const hint = q(ov, "[data-css-hint]");
+    const flash = q(ov, "[data-css-flash]");
+    const saveBtn = q(ov, '[data-css="save"]');
+    const resetBtn = q(ov, '[data-css="reset"]');
     let defaultCss = "";
+    let dirty = false;
     const norm = (t) => t.replace(/\r\n/g, "\n").trimEnd() + "\n";
-    const cssStatus = () => {
+    const refreshHint = () => {
         const saved = load().articlesCss || "";
-        const cur = norm(cssTa.value);
+        const cur = norm(ta.value);
         const def = defaultCss ? norm(defaultCss) : "";
         const savedN = saved ? norm(saved) : "";
         if (def && cur === def && !saved)
-            cssHint.textContent = "Исходный CSS.";
+            hint.textContent = "Исходный CSS.";
         else if (savedN && cur === savedN)
-            cssHint.textContent = "Свой CSS (сохранён в этом браузере).";
+            hint.textContent = "Свой CSS (сохранён в этом браузере).";
         else if (def && cur === def && saved)
-            cssHint.textContent = "В поле исходник; в браузере ещё свой — «Сбросить» или «Сохранить».";
+            hint.textContent = "В поле исходник; в браузере ещё свой — «Сбросить» или «Сохранить».";
         else
-            cssHint.textContent = "Изменён — нажмите «Сохранить», чтобы применить в этом браузере.";
+            hint.textContent = "Изменён — нажмите «Сохранить», чтобы применить в этом браузере.";
     };
+    const close = () => {
+        document.removeEventListener("keydown", onKey);
+        ov.remove();
+        unlockScroll();
+    };
+    const onKey = (e) => {
+        if (e.key !== "Escape")
+            return;
+        if (dirty && !confirm("Закрыть без сохранения?"))
+            return;
+        close();
+    };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", e => {
+        if (e.target !== ov)
+            return;
+        if (dirty && !confirm("Закрыть без сохранения?"))
+            return;
+        close();
+    });
+    ov.querySelectorAll("[data-close]").forEach(b => {
+        b.onclick = () => {
+            if (dirty && !confirm("Закрыть без сохранения?"))
+                return;
+            close();
+        };
+    });
     fetchDefaultArticlesCss().then(def => {
         defaultCss = norm(def);
-        cssTa.value = ownCss ? ownCss : defaultCss;
-        cssTa.disabled = false;
-        cssSave.disabled = false;
-        cssReset.disabled = false;
-        cssStatus();
+        ta.value = own || defaultCss;
+        ta.disabled = false;
+        saveBtn.disabled = false;
+        resetBtn.disabled = false;
+        refreshHint();
+        ta.focus();
     }).catch(e => {
-        cssTa.value = ownCss || "";
-        cssTa.disabled = false;
-        cssSave.disabled = false;
-        cssReset.disabled = !ownCss;
-        cssHint.innerHTML = `<span class="err">${esc((e && e.message) || "не удалось загрузить исходный CSS")}</span>`;
+        ta.value = own || "";
+        ta.disabled = false;
+        saveBtn.disabled = false;
+        resetBtn.disabled = !own;
+        hint.innerHTML = `<span class="err">${esc((e && e.message) || "не удалось загрузить исходный CSS")}</span>`;
+        ta.focus();
     });
-    cssTa.oninput = cssStatus;
-    cssSave.onclick = () => {
-        const text = cssTa.value;
+    ta.oninput = () => { dirty = true; refreshHint(); };
+    saveBtn.onclick = () => {
+        const text = ta.value;
         const st = load();
         if (!defaultCss || norm(text) !== norm(defaultCss))
             st.articlesCss = text;
         else
             st.articlesCss = "";
         save(st);
-        cssStatus();
-        savedFlash(cssFlash);
+        dirty = false;
+        refreshHint();
+        savedFlash(flash);
+        onDone();
     };
-    cssReset.onclick = () => {
+    resetBtn.onclick = () => {
         if (!defaultCss)
             return;
-        cssTa.value = defaultCss;
+        ta.value = defaultCss;
         const st = load();
         st.articlesCss = "";
         save(st);
-        cssStatus();
-        savedFlash(cssFlash);
+        dirty = false;
+        refreshHint();
+        savedFlash(flash);
+        onDone();
     };
+}
+function drawMisc(main) {
+    const paint = () => {
+        main.innerHTML = `<div class="set-head"><h2>Прочее</h2></div>
+    <div class="card store-card">
+      <h2>Счётчики сайта</h2>
+      <p class="muted">Яндекс.Метрику, Google Analytics и другой код шапки вставляйте в <code>docs/assets/site-inject.html</code> в репозитории (или на хостинге), затем выгружайте сайт. Из кабинета это не пишется — на статическом хосте нет защиты от правок гостей.</p>
+    </div>
+    <div class="card store-card">
+      <h2>Стили статей</h2>
+      <p class="muted">CSS страниц статей и шапки. Правки здесь — только в этом браузере; для всех посетителей меняйте <code>docs/assets/articles.css</code> в репозитории.</p>
+      <p class="muted small" data-css-status>${esc(articlesCssStatusText())}</p>
+      <div class="grp">
+        <button type="button" class="btn primary" data-css="edit">Редактировать</button>
+        <button type="button" class="btn" data-css="reset-card"${load().articlesCss ? "" : " disabled"}>Сбросить к исходному</button>
+        <span class="muted" data-css-flash></span>
+      </div>
+    </div>
+    <div class="card store-card">
+      <h2>Аудит проекта</h2>
+      <p class="muted">Проверка кода и данных без правок: инструкция для ИИ — файл <code>AUDIT.md</code> в корне репозитория. Заключения складывайте в <code>audit/reports/</code> по шаблону <code>audit/REPORT_TEMPLATE.md</code>, потом по ним чините в IDE.</p>
+    </div>`;
+        q(main, '[data-css="edit"]').onclick = () => openArticlesCssEditor(paint);
+        const resetCard = q(main, '[data-css="reset-card"]');
+        resetCard.onclick = () => {
+            if (!load().articlesCss)
+                return;
+            if (!confirm("Сбросить свой CSS статей в этом браузере к исходному из репозитория?"))
+                return;
+            const st = load();
+            st.articlesCss = "";
+            save(st);
+            paint();
+            savedFlash(q(main, "[data-css-flash]"));
+        };
+    };
+    paint();
 }
 function drawStorage(main, redraw) {
     const st = Store.state;
@@ -969,94 +1024,13 @@ function drawStorage(main, redraw) {
 // Все числовые показатели анализов (качественные «обнаружено / не обнаружено» не считаются).
 // Норма — значение по умолчанию для всех клиентов (у клиента её можно изменить в анкете).
 // Кривая критичности — отклонение от нормы в % → 0–100; безопасный диапазон считается по ней.
-function drawWeights(main) {
-    const labs = STEPS.find(s => s.id === "labs");
-    const secs = (labs ? labs.sections : []).map(sec => ({ title: sec.title, fields: sec.fields.filter(f => f.type === "number" && NORMS[f.code]) }))
-        .filter(s => s.fields.length);
-    const s = load();
-    const own = s.norms || {}, curves = s.curves || {};
-    const safeCell = (code, unit) => {
-        const nv = defaultNorm(code), c = curveFor(code), mine = typeof (load().norms || {})[code] === "number";
-        const nb = `<b class="${mine ? "own" : ""}" title="${mine ? "норма изменена; встроенная " + fmtNum(NORMS[code].v) : "встроенная норма"}">${fmtNum(nv)}</b>`;
-        if (nv === 0)
-            return `${nb}<small>кривая не применяется — норма 0</small>`;
-        return `${nb}<small>безопасно ${esc(safeText(c, nv, unit).range)}</small>`;
-    };
-    const row = (f) => {
-        const n = NORMS[f.code], mine = typeof own[f.code] === "number", myCurve = !!curves[f.code];
-        return `<tr data-w="${esc(f.code)}" data-k="${esc((f.label + " " + f.code).toLowerCase())}">
-      <td>${esc(f.label)}<small>${esc(f.code)}${n.note ? " · " + esc(n.note) : ""}</small></td>
-      <td class="muted">${esc(f.unit || "")}</td>
-      <td class="w-safe" title="норма и безопасный диапазон (где критичность не выше 10) — по кривой критичности; интервал из справочника ${esc(n.range)}" data-safe>${safeCell(f.code, f.unit || "")}</td>
-      <td><span class="w-curvecell"><button type="button" class="btn w-curve${myCurve || mine ? " own" : ""}" data-curve>Настроить</button>${myCurve || mine ? '<span class="w-own" title="норма или кривая изменены">своя</span>' : ""}</span></td>
-    </tr>`;
-    };
-    const counts = () => {
-        const st = load();
-        const nn = Object.keys(st.norms || {}).filter(k => NORMS[k]).length, nc = Object.keys(st.curves || {}).filter(k => NORMS[k]).length;
-        return nn || nc ? `изменено норм: ${nn}, кривых: ${nc}` : "всё исходное";
-    };
-    main.innerHTML = `
-    <div class="set-head"><h2>Нормы и веса</h2><span class="muted" id="wcount">${counts()}</span></div>
-    <p class="muted set-hint">Норма и кривая критичности каждого показателя — по умолчанию для всех клиентов. Норму у конкретного клиента можно изменить нажатием на её число в анкете. «Безопасный диапазон» считается по кривой: где критичность не выше 10. Качественные анализы («обнаружено / не обнаружено») здесь не показаны.</p>
-    ${normsError ? `<div class="note err">${esc(normsError)}</div>` : ""}
-    <div class="w-bar"><input type="search" class="search" id="wq" placeholder="Поиск показателя" aria-label="поиск показателя">
-      <span class="grp w-files">
-        <button type="button" class="btn" id="wdlbase" title="файл docs/data/norms.json как есть">Скачать исходные</button>
-        <button type="button" class="btn" id="wdlcur" title="тот же формат, но с вашими нормами и кривыми">Скачать текущие</button>
-        <label class="btn" title="применить нормы и кривые из файла как свои">Загрузить из файла<input type="file" id="wimport" accept=".json,application/json" hidden></label>
-        <button type="button" class="btn" id="wresetall">Вернуть всё исходное</button>
-      </span></div>
-    <div class="card tblwrap w-card"><table class="w-table">
-      <thead><tr><th>Показатель</th><th>Ед. изм.</th><th>Норма и безопасный диапазон</th><th>Кривая критичности</th></tr></thead>
-      ${secs.map(sec => `<tbody data-wsec><tr class="w-sec"><th colspan="4">${esc(sec.title)}</th></tr>${sec.fields.map(row).join("")}</tbody>`).join("")}
-    </table><p class="muted empty" id="wempty" hidden>Ничего не найдено</p></div>`;
-    const refreshCounts = () => { q(main, "#wcount").textContent = counts(); };
-    const setNorm = (code, v) => {
-        const st = load();
-        const norms = { ...(st.norms || {}) };
-        if (v === null || v === NORMS[code].v)
-            delete norms[code];
-        else
-            norms[code] = v;
-        st.norms = norms;
-        save(st);
-    };
-    main.querySelectorAll("tr[data-w]").forEach(tr => {
-        const code = tr.dataset.w;
-        const f = secs.flatMap(x => x.fields).find(x => x.code === code);
-        const safe = tr.querySelector("[data-safe]");
-        const show = () => {
-            const st = load();
-            const changed = typeof (st.norms || {})[code] === "number" || !!(st.curves || {})[code];
-            safe.innerHTML = safeCell(code, f.unit || "");
-            const cb = tr.querySelector("[data-curve]");
-            cb.classList.toggle("own", changed);
-            const tag = tr.querySelector(".w-own");
-            if (changed && !tag)
-                cb.insertAdjacentHTML("afterend", '<span class="w-own" title="норма или кривая изменены">своя</span>');
-            if (!changed && tag)
-                tag.remove();
-            refreshCounts();
-        };
-        tr.querySelector("[data-curve]").onclick = () => openEditor({
-            title: f.label, unit: f.unit || "", norm: defaultNorm(code), normBase: NORMS[code].v,
-            curve: curveFor(code), base: baseCurve(code),
-            onClose: (c, isBase, nv) => {
-                setNorm(code, nv);
-                const st = load();
-                const cs = { ...(st.curves || {}) };
-                if (isBase)
-                    delete cs[code];
-                else
-                    cs[code] = c;
-                st.curves = cs;
-                save(st);
-                show();
-                tr.querySelector("[data-curve]").focus();
-            },
-        });
-    });
+function weightsOwnCounts() {
+    const st = load();
+    const nn = Object.keys(st.norms || {}).filter(k => NORMS[k]).length;
+    const nc = Object.keys(st.curves || {}).filter(k => NORMS[k]).length;
+    return nn || nc ? `изменено норм: ${nn}, кривых: ${nc}` : "всё исходное";
+}
+function bindWeightsFiles(main) {
     const download = (name, text) => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
@@ -1153,18 +1127,317 @@ function drawWeights(main) {
         save(st);
         drawWeights(main);
     };
-    const qi = q(main, "#wq");
+}
+function bindWeightsTable(main, fields, onChanged, skipSearch = false) {
+    const byCode = new Map(fields.map(f => [f.code, f]));
+    const safeCell = (code, unit) => {
+        if (valueKindOf(code) !== "norm" || !NORMS[code]) {
+            return `<span class="muted">${esc(weightKindLabel(code))}</span>`;
+        }
+        const nv = defaultNorm(code), c = curveFor(code), mine = typeof (load().norms || {})[code] === "number";
+        const nb = `<b class="${mine ? "own" : ""}" title="${mine ? "норма изменена; встроенная " + fmtNum(NORMS[code].v) : "встроенная норма"}">${fmtNum(nv)}</b>`;
+        if (nv === 0)
+            return `${nb}<small>кривая не применяется — норма 0</small>`;
+        return `${nb}<small>безопасно ${esc(safeText(c, nv, unit).range)}</small>`;
+    };
+    const setNorm = (code, v) => {
+        if (!NORMS[code])
+            return;
+        const st = load();
+        const norms = { ...(st.norms || {}) };
+        if (v === null || v === NORMS[code].v)
+            delete norms[code];
+        else
+            norms[code] = v;
+        st.norms = norms;
+        save(st);
+    };
+    const dummyCurve = () => defaultCurve(1, "до 1");
+    main.querySelectorAll("tr[data-w]").forEach(tr => {
+        const code = tr.dataset.w;
+        const f = byCode.get(code);
+        if (!f)
+            return;
+        const safe = tr.querySelector("[data-safe]");
+        const show = () => {
+            const st = load();
+            const changed = typeof (st.norms || {})[code] === "number" || !!(st.curves || {})[code];
+            safe.innerHTML = safeCell(code, f.unit || "");
+            const cb = tr.querySelector("[data-curve]");
+            cb.classList.toggle("own", changed);
+            const tag = tr.querySelector(".w-own");
+            if (changed && !tag)
+                cb.insertAdjacentHTML("afterend", '<span class="w-own" title="норма или кривая изменены">своя</span>');
+            if (!changed && tag)
+                tag.remove();
+            onChanged && onChanged();
+        };
+        tr.querySelector("[data-curve]").onclick = () => {
+            const hasN = !!NORMS[code];
+            const base = hasN ? baseCurve(code) : dummyCurve();
+            openEditor({
+                title: f.label, unit: f.unit || "",
+                norm: hasN ? defaultNorm(code) : 1,
+                normBase: hasN ? NORMS[code].v : 1,
+                curve: hasN ? curveFor(code) : dummyCurve(),
+                base,
+                showKind: true, kind: valueKindOf(code),
+                onClose: (c, isBase, nv, kind) => {
+                    saveLabKind(code, kind);
+                    if (kind === "norm" && hasN) {
+                        setNorm(code, nv);
+                        const st = load();
+                        const cs = { ...(st.curves || {}) };
+                        if (isBase)
+                            delete cs[code];
+                        else
+                            cs[code] = c;
+                        st.curves = cs;
+                        save(st);
+                    }
+                    show();
+                    tr.querySelector("[data-curve]").focus();
+                },
+            });
+        };
+    });
+    if (skipSearch)
+        return;
+    const qi = main.querySelector("#wq");
+    if (!qi)
+        return;
     qi.addEventListener("input", () => {
         const k = qi.value.trim().toLowerCase();
         let any = false;
-        main.querySelectorAll("tbody[data-wsec]").forEach(tb => {
-            let vis = 0;
-            tb.querySelectorAll("tr[data-w]").forEach(tr => { const ok = !k || tr.dataset.k.includes(k); tr.hidden = !ok; if (ok)
-                vis++; });
-            tb.hidden = !vis;
-            if (vis)
+        main.querySelectorAll("tr[data-w]").forEach(tr => {
+            const ok = !k || (tr.dataset.k || "").includes(k);
+            tr.hidden = !ok;
+            if (ok)
                 any = true;
         });
-        q(main, "#wempty").hidden = any;
+        const empty = main.querySelector("#wempty");
+        if (empty)
+            empty.hidden = any;
     });
+}
+function weightKindLabel(code) {
+    const k = valueKindOf(code);
+    return k === "presence" ? "наличие" : k === "text" ? "текст" : "норма";
+}
+function weightRowHtml(f) {
+    const own = load().norms || {}, curves = load().curves || {};
+    const kind = valueKindOf(f.code);
+    const n = NORMS[f.code], mine = typeof own[f.code] === "number", myCurve = !!curves[f.code];
+    const art = weightArtUrl(f.code);
+    const artLink = art ? `<a class="dx-art" href="${esc(art)}" target="_blank" rel="noopener" title="статья об анализе" aria-label="статья">↗</a>` : "";
+    const unit = f.unit ? `<span class="lab-unit">${esc(f.unit)}</span>` : "";
+    const dxN = Dx.diagnosesUsingLab(f.code).length;
+    const refsBtn = dxN
+        ? `<button type="button" class="lab-refs" data-refs="${esc(f.code)}" title="в скольких диагнозах используется">${dxN}</button>`
+        : `<span class="lab-refs zero" title="нет в признаках диагнозов">0</span>`;
+    const search = ((Labs.LABS[f.code]?.aliases || []).join(" ") + " " + f.label + " " + f.code).toLowerCase();
+    let mid;
+    if (kind !== "norm" || !n) {
+        mid = `<span class="muted">${esc(weightKindLabel(f.code))}</span>`;
+    }
+    else {
+        const nv = defaultNorm(f.code), c = curveFor(f.code);
+        const nb = `<b class="${mine ? "own" : ""}" title="${mine ? "норма изменена; встроенная " + fmtNum(NORMS[f.code].v) : "встроенная норма"}">${fmtNum(nv)}</b>`;
+        mid = nv === 0 ? `${nb}<small>кривая не применяется — норма 0</small>`
+            : `${nb}<small>безопасно ${esc(safeText(c, nv, f.unit || "").range)}</small>`;
+    }
+    const tip = n
+        ? `норма и безопасный диапазон; интервал ${esc(n.range)}`
+        : `тип: ${esc(weightKindLabel(f.code))}`;
+    return `<tr data-w="${esc(f.code)}" data-g="${esc(f.group)}" data-k="${esc(search)}">
+    <td><span class="lab-name"><b>${esc(f.label)}</b>${artLink}${unit}${refsBtn}</span><small>${esc(f.code)}${n && n.note ? " · " + esc(n.note) : ""}</small></td>
+    <td class="w-safe" title="${tip}" data-safe>${mid}</td>
+    <td><span class="w-curvecell"><button type="button" class="btn w-curve${myCurve || mine ? " own" : ""}" data-curve>Настроить</button>${myCurve || mine ? '<span class="w-own" title="норма или кривая изменены">своя</span>' : ""}</span></td>
+  </tr>`;
+}
+function openDxRefsPopup(code, label) {
+    const list = Dx.diagnosesUsingLab(code);
+    const ov = document.createElement("div");
+    ov.className = "cv-overlay";
+    const body = list.length
+        ? `<ul class="w-dxrefs">${list.map(d => {
+            const href = d.section
+                ? `#/settings/diagnoses/${encodeURIComponent(d.section)}/${encodeURIComponent(d.file)}`
+                : Dx.articleUrl(d.file);
+            return `<li><a href="${esc(href)}" target="_blank" rel="noopener">${esc(d.title)}</a></li>`;
+        }).join("")}</ul>`
+        : `<p class="muted">Этот анализ пока не входит в признаки ни одного диагноза.</p>`;
+    ov.innerHTML = `<div class="cv-dialog w-dxrefs-dlg" role="dialog" aria-modal="true" aria-labelledby="w-dxrefs-title">
+    <div class="cv-head"><b id="w-dxrefs-title">${esc(label)} · в диагнозах (${list.length})</b>
+      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    ${body}
+    <div class="grp" style="margin-top:12px"><button type="button" class="btn" data-close>Закрыть</button></div>
+  </div>`;
+    document.body.appendChild(ov);
+    lockScroll();
+    const close = () => {
+        document.removeEventListener("keydown", onKey);
+        ov.remove();
+        unlockScroll();
+    };
+    const onKey = (e) => { if (e.key === "Escape")
+        close(); };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", e => { if (e.target === ov)
+        close(); });
+    ov.querySelectorAll("[data-close]").forEach(b => b.onclick = close);
+    ov.querySelector("[data-close]")?.focus();
+}
+function drawWeightsSection(main, sec) {
+    Labs.applyOwn(load().labs);
+    const fields = weightFieldsIn(sec);
+    const counts = new Map();
+    for (const f of fields)
+        counts.set(f.group, (counts.get(f.group) || 0) + 1);
+    const groups = [...counts.keys()].sort((a, b) => (counts.get(b) - counts.get(a))
+        || groupLabel(a, sec).localeCompare(groupLabel(b, sec), "ru"));
+    const chip = (g, label, n, on = false) => `<button type="button" class="dx-chip${on ? " on" : ""}" data-g="${esc(g)}">${esc(label)} <span class="dx-chip-n">${n}</span></button>`;
+    main.innerHTML = `<div class="dx-secbar">
+      <a href="#/settings/weights">← Все разделы</a>
+      ${SetLabs.secIcon(sec, 32)}
+      <h2>${esc(sec.title)}</h2>
+      <span class="muted" id="wcount">${fields.length} ${pluralPok(fields.length)}</span>
+      <button type="button" class="btn primary" id="lab-new">+ Добавить анализ</button>
+      <input type="search" id="wq" placeholder="Поиск по названию, коду, синониму" aria-label="поиск показателя">
+    </div>
+    <div class="lab-chips" role="group" aria-label="Группы">
+      ${chip("", "Все", fields.length, true)}
+      ${groups.map(g => chip(g, groupLabel(g, sec), counts.get(g) || 0)).join("")}
+    </div>
+    <div class="lab-newform card" id="labnewform" hidden>
+      <div class="lab-newgrid">
+        <label>Название <input name="name" required placeholder="например, Витамин B12"></label>
+        <label>Код <input name="code" required placeholder="B12" pattern="[A-Za-z][A-Za-z0-9_]*" title="латиница, цифры, подчёркивание"></label>
+        <label>Единица <input name="unit" placeholder="пмоль/л"></label>
+        <label>Тип <select name="type"><option value="number">норма (число)</option><option value="qual">наличие</option><option value="text">текст</option></select></label>
+        <label>Группа <select name="group">${groups.map(g => `<option value="${esc(g)}">${esc(groupLabel(g, sec))} (${counts.get(g) || 0})</option>`).join("")}
+          <option value="${esc(sec.prefix + " — прочее")}">прочее</option></select></label>
+      </div>
+      <p class="muted">Анализ попадёт в справочник и станет доступен в кабинете и признаках диагнозов.</p>
+      <div class="grp"><button type="button" class="btn primary" data-lab-save>Сохранить</button><button type="button" class="btn" data-lab-cancel>Отмена</button><span class="err" data-lab-err></span></div>
+    </div>
+    <p class="muted set-hint">Тип показателя — «Настроить». Цифра у названия — в скольких диагнозах анализ в признаках (клик — список со ссылками на статьи).</p>
+    ${normsError ? `<div class="note err">${esc(normsError)}</div>` : ""}
+    <div class="card tblwrap w-card"><table class="w-table">
+      <thead><tr><th>Показатель</th><th>Норма / тип</th><th></th></tr></thead>
+      <tbody>${fields.map(weightRowHtml).join("")}</tbody>
+    </table>
+    <p class="muted empty" id="wempty"${fields.length ? " hidden" : ""}>${fields.length ? "Ничего не найдено" : "В этом разделе пока нет анализов."}</p></div>`;
+    const form = main.querySelector("#labnewform");
+    let group = "";
+    const applyFilter = () => {
+        const s = (main.querySelector("#wq")?.value || "").trim().toLowerCase();
+        let n = 0;
+        main.querySelectorAll("tr[data-w]").forEach(tr => {
+            const ok = (!group || tr.dataset.g === group) && (!s || (tr.dataset.k || "").includes(s));
+            tr.hidden = !ok;
+            if (ok)
+                n++;
+        });
+        const empty = main.querySelector("#wempty");
+        if (empty) {
+            empty.hidden = n > 0;
+            empty.textContent = fields.length ? "Ничего не найдено" : "В этом разделе пока нет анализов.";
+        }
+        const wc = main.querySelector("#wcount");
+        if (wc)
+            wc.textContent = `${n} ${pluralPok(n)}${n !== fields.length ? " из " + fields.length : ""}`;
+    };
+    main.querySelectorAll(".lab-chips .dx-chip").forEach(b => b.addEventListener("click", () => {
+        group = b.dataset.g || "";
+        main.querySelectorAll(".lab-chips .dx-chip").forEach(x => x.classList.toggle("on", x === b));
+        const gs = form.querySelector("[name=group]");
+        if (gs && group)
+            gs.value = group;
+        applyFilter();
+    }));
+    main.querySelector("#lab-new").onclick = () => {
+        form.hidden = false;
+        const gs = form.querySelector("[name=group]");
+        if (gs && group)
+            gs.value = group;
+        form.querySelector("[name=name]").focus();
+    };
+    form.querySelector("[data-lab-cancel]").onclick = () => {
+        form.hidden = true;
+        form.querySelector("[data-lab-err]").textContent = "";
+    };
+    form.querySelector("[data-lab-save]").onclick = () => {
+        const err = form.querySelector("[data-lab-err]");
+        const name = form.querySelector("[name=name]").value.trim();
+        let code = form.querySelector("[name=code]").value.trim().toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+        const unit = form.querySelector("[name=unit]").value.trim();
+        const type = form.querySelector("[name=type]").value;
+        const g = form.querySelector("[name=group]").value || `${sec.prefix} — прочее`;
+        if (!name) {
+            err.textContent = "Укажите название.";
+            return;
+        }
+        if (!code || !/^[A-Z][A-Z0-9_]*$/.test(code)) {
+            err.textContent = "Код: латиница, можно цифры и _ , начинается с буквы.";
+            return;
+        }
+        Labs.applyOwn(load().labs);
+        if (Labs.has(code)) {
+            err.textContent = `Код ${code} уже есть в справочнике.`;
+            return;
+        }
+        const lab = { name, aliases: [], type, unit, group: g, inForm: false, refs: 0 };
+        const st = load();
+        st.labs = { ...(st.labs || {}), [code]: lab };
+        save(st);
+        Labs.applyOwn(st.labs);
+        drawWeightsSection(main, sec);
+    };
+    bindWeightsTable(main, fields, undefined, true);
+    main.querySelector("#wq")?.addEventListener("input", applyFilter);
+    main.querySelectorAll("[data-refs]").forEach(b => {
+        b.onclick = ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const code = b.dataset.refs;
+            const f = fields.find(x => x.code === code);
+            openDxRefsPopup(code, (f && f.label) || code);
+        };
+    });
+}
+let weightsDxReady = false;
+function drawWeights(main) {
+    if (!Object.keys(Labs.LABS).length) {
+        main.innerHTML = `<p class="muted">Загружаю каталог анализов…</p>`;
+        Labs.loadLabs().then(() => { Labs.applyOwn(load().labs); drawWeights(main); });
+        return;
+    }
+    Labs.applyOwn(load().labs);
+    if (!weightsDxReady) {
+        main.innerHTML = `<p class="muted">Загружаю признаки диагнозов…</p>`;
+        Promise.all([Sg.loadSigns(), Dx.loadDiagnoses()]).then(() => { weightsDxReady = true; drawWeights(main); });
+        return;
+    }
+    const sub = decodeURIComponent(location.hash.split("/")[3] || "");
+    const sec = SetLabs.SECS.find(s => s.id === sub);
+    if (sec) {
+        drawWeightsSection(main, sec);
+        return;
+    }
+    const all = weightFields();
+    const counts = SetLabs.SECS.map(s => ({ s, n: weightFieldsIn(s).length }));
+    main.innerHTML = `
+    <div class="set-head"><h2>Нормы и веса</h2><span class="muted" id="wcount">${weightsOwnCounts()}</span></div>
+    <p class="muted set-hint">Каталог анализов по материалу. Внутри раздела — подгруппы, добавление анализа, тип (норма / наличие / текст) и нормы. Новый код также доступен в кабинете.</p>
+    ${normsError ? `<div class="note err">${esc(normsError)}</div>` : ""}
+    <div class="w-bar"><span class="muted">${all.length} ${pluralPok(all.length)} в каталоге</span>
+      <span class="grp w-files">
+        <button type="button" class="btn" id="wdlbase" title="файл docs/data/norms.json как есть">Скачать исходные</button>
+        <button type="button" class="btn" id="wdlcur" title="тот же формат, но с вашими нормами и кривыми">Скачать текущие</button>
+        <label class="btn" title="применить нормы и кривые из файла как свои">Загрузить из файла<input type="file" id="wimport" accept=".json,application/json" hidden></label>
+        <button type="button" class="btn" id="wresetall">Вернуть всё исходное</button>
+      </span></div>
+    <div class="dx-grid">${counts.map(({ s, n }) => `<a class="dx-card" href="#/settings/weights/${esc(s.id)}">${SetLabs.secIcon(s)}<span class="dx-name">${esc(s.title)}</span><span class="dx-desc">${esc(s.desc)}</span><span class="dx-count">${n} ${pluralPok(n)}</span></a>`).join("")}</div>`;
+    bindWeightsFiles(main);
 }

@@ -578,7 +578,7 @@ function labFieldsOf(c) {
             codes.add(code);
     const out = [];
     for (const code of codes) {
-        const f = LAB_FIELDS.find(x => x.code === code) || Labs.fieldFor(code);
+        const f = Labs.resolveField(code, LAB_FIELDS.find(x => x.code === code));
         if (f && f.type !== "aiimport" && f.type !== "files")
             out.push(f);
     }
@@ -668,7 +668,7 @@ function labSheetHtml(c) {
     const attn = labAttnHtml(c);
     return `${ai}${attn ? `<div class="attn" id="attn">${attn}</div>` : ""}
     <div class="sec lab-extra" id="labextra">
-      <h3>Показатели <small class="muted">${fields.length ? fields.length + " · " : ""}справочник — ${Object.keys(Labs.LABS).length} · новый код — в <a href="#/settings/labs">Настройки → Анализы</a></small></h3>
+      <h3>Показатели <small class="muted">${fields.length ? fields.length + " · " : ""}справочник — ${Object.keys(Labs.LABS).length} · новый код — в <a href="#/settings/weights">Настройки → Нормы и веса</a></small></h3>
       ${rows ? head + `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Пока пусто. Загрузите бланк через ИИ выше или выберите анализ из справочника — строка появится здесь.</p>`}
       <div class="lab-add"><input type="search" id="labadd" placeholder="Добавить из справочника: гемоглобин, ТПО, HLA-B27…" aria-label="Добавить анализ из справочника" autocomplete="off"><div class="lab-add-res" id="labaddres"></div>
         <button type="button" class="btn" id="labpick">Выбрать анализ…</button>
@@ -911,7 +911,13 @@ function renderClient(id, stepId) {
         if (saveBtn)
             saveBtn.classList.toggle("primary", dirty);
     };
-    const fieldByCode = (code) => fieldsOf(step).find(x => x.code === code) || (labs && code && isExtraCode(code) ? Labs.fieldFor(code) || undefined : undefined);
+    const fieldByCode = (code) => {
+        if (!code)
+            return undefined;
+        if (labs)
+            return Labs.resolveField(code, LAB_FIELDS.find(x => x.code === code)) || undefined;
+        return fieldsOf(step).find(x => x.code === code);
+    };
     const form = $("#form");
     form.addEventListener("input", ev => {
         const el = ev.target;
@@ -1072,7 +1078,7 @@ function renderClient(id, stepId) {
             const found = Labs.search(q.value, exclude);
             res.innerHTML = q.value.trim().length < 2 ? "" : found.length
                 ? found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""}${l.type === "qual" ? ` <small class="muted">положительно / отрицательно</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
-                : `<p class="muted">В справочнике ничего не нашлось. Новый анализ добавляют в <a href="#/settings/labs">Настройки → Анализы</a>.</p>`;
+                : `<p class="muted">В справочнике ничего не нашлось. Новый анализ добавляют в <a href="#/settings/weights">Настройки → Нормы и веса</a>.</p>`;
         };
         q.addEventListener("input", draw);
         q.addEventListener("keydown", ev => { if (ev.key === "Enter") {
@@ -2151,11 +2157,12 @@ for (const step of STEPS)
         }
     }
 const fieldByAny = (code) => {
+    // анализы: тип/имя из каталога (Настройки), даже если код есть в бланке fields.ts
+    if (Labs.has(code) || LAB_FORM_CODES.has(code)) {
+        return Labs.resolveField(code, FIELD_BY_CODE[code] || null);
+    }
     if (FIELD_BY_CODE[code])
         return FIELD_BY_CODE[code];
-    const lab = Labs.fieldFor(code);
-    if (lab)
-        return lab;
     syncExamCatalog();
     return Exams.fieldByLineCode(code);
 };

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Электродоктор — Настройки → Анализы: каталог docs/data/labs.json по разделам (как карточки статей).
+// Электродоктор — разделы каталога анализов по материалу (SECS, иконки).
+// UI каталога живёт в Настройки → Нормы и веса (settings.ts); этот модуль — карточки и helpers.
 import * as Labs from "./labs.js";
 import * as Settings from "./settings.js";
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -58,13 +59,16 @@ const TYPE_MARK = {
 };
 const S = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
 const ico = (paths, size = 40) => `<svg class="dx-ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" ${S}>${paths}</svg>`;
-function plural(n) {
+/** Иконка раздела материала — та же, что на карточках «Анализы» / «Нормы и веса». */
+export const secIcon = (sec, size = 40) => ico(sec.icon, size);
+export function pluralLabs(n) {
     if (n % 10 === 1 && n % 100 !== 11)
         return "анализ";
     if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
         return "анализа";
     return "анализов";
 }
+const plural = pluralLabs;
 function syncOwn() {
     Labs.applyOwn(Settings.load().labs);
 }
@@ -88,7 +92,6 @@ function groupLabel(group, sec) {
 }
 function row(code, l) {
     const art = artUrl(l);
-    const aliases = (l.aliases || []).length ? esc(l.aliases.join(", ")) : "—";
     const g = l.group || "";
     const tm = TYPE_MARK[l.type] || TYPE_MARK.text;
     const artLink = art ? `<a class="dx-art" href="${esc(art)}" target="_blank" rel="noopener" title="статья об анализе" aria-label="статья">↗</a>` : "";
@@ -97,7 +100,6 @@ function row(code, l) {
     const own = !!(Settings.load().labs || {})[code];
     return `<tr data-lab="${esc(code)}" data-g="${esc(g)}" data-k="${esc((l.name + " " + code + " " + (l.aliases || []).join(" ")).toLowerCase())}">
     <td><span class="lab-name"><b>${esc(l.name)}</b>${artLink}${typeBadge}${unit}${own ? `<span class="lab-own" title="добавлен в настройках">своё</span>` : ""}</span><small>${esc(code)}${l.inForm ? " · в бланке" : ""}</small></td>
-    <td class="muted">${aliases}</td>
     <td>${l.refs != null ? esc(l.refs) : "—"}</td>
   </tr>`;
 }
@@ -112,8 +114,8 @@ function drawSection(main, sec) {
         || groupLabel(a, sec).localeCompare(groupLabel(b, sec), "ru"));
     const chip = (g, label, n, on = false) => `<button type="button" class="dx-chip${on ? " on" : ""}" data-g="${esc(g)}">${esc(label)} <span class="dx-chip-n">${n}</span></button>`;
     main.innerHTML = `<div class="dx-secbar">
-      <a href="#/settings/labs">← Все разделы</a>
-      ${ico(sec.icon, 32)}
+      <a href="#/settings/weights">← Все разделы</a>
+      ${secIcon(sec, 32)}
       <h2>${esc(sec.title)}</h2>
       <span class="muted" id="labcount">${list.length} ${plural(list.length)}</span>
       <button type="button" class="btn primary" id="lab-new">+ Добавить анализ</button>
@@ -136,7 +138,7 @@ function drawSection(main, sec) {
       <div class="grp"><button type="button" class="btn primary" data-lab-save>Сохранить</button><button type="button" class="btn" data-lab-cancel>Отмена</button><span class="err" data-lab-err></span></div>
     </div>
     <div class="card tblwrap lab-card"><table class="lab-table">
-      <thead><tr><th>Название</th><th>Синонимы</th><th>В диагнозах</th></tr></thead>
+      <thead><tr><th>Название</th><th>В диагнозах</th></tr></thead>
       <tbody>${list.map(([c, l]) => row(c, l)).join("")}</tbody>
     </table><p class="muted empty" id="labempty" hidden>Ничего не найдено</p></div>`;
     const qi = main.querySelector("#labq");
@@ -214,5 +216,5 @@ export function draw(main) {
     const total = counts.reduce((a, x) => a + x.n, 0);
     main.innerHTML = `<div class="set-head"><h2>Анализы</h2><span class="muted">${total} ${plural(total)} в каталоге по выбранным разделам</span></div>
     <p class="muted dx-lead">Справочник из <code>docs/data/labs.json</code> плюс свои анализы из настроек. Новые анализы добавляются внутри раздела.</p>
-    <div class="dx-grid">${counts.map(({ s, n }) => `<a class="dx-card" href="#/settings/labs/${esc(s.id)}">${ico(s.icon)}<span class="dx-name">${esc(s.title)}</span><span class="dx-desc">${esc(s.desc)}</span><span class="dx-count">${n} ${plural(n)}</span></a>`).join("")}</div>`;
+    <div class="dx-grid">${counts.map(({ s, n }) => `<a class="dx-card" href="#/settings/weights/${esc(s.id)}">${secIcon(s)}<span class="dx-name">${esc(s.title)}</span><span class="dx-desc">${esc(s.desc)}</span><span class="dx-count">${n} ${plural(n)}</span></a>`).join("")}</div>`;
 }

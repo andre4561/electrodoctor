@@ -68,7 +68,7 @@ export function openLabPicker(opts: LabPickOpts): void {
   const drawHome = () => {
     const counts = SECS.map(s => ({ s, n: entriesFor(s).length }));
     const total = counts.reduce((a, x) => a + x.n, 0);
-    body.innerHTML = `<p class="muted labpick-lead">Разделы каталога · ${total} ${plural(total)}. Новый код — в <a href="#/settings/labs">Настройки → Анализы</a>.</p>
+    body.innerHTML = `<p class="muted labpick-lead">Разделы каталога · ${total} ${plural(total)}. Новый код — в <a href="#/settings/weights">Настройки → Нормы и веса</a>.</p>
       <div class="dx-grid labpick-grid">${counts.map(({ s, n }) =>
         `<button type="button" class="dx-card labpick-card" data-sec="${esc(s.id)}">${ico(s.icon)}<span class="dx-name">${esc(s.title)}</span><span class="dx-desc">${esc(s.desc)}</span><span class="dx-count">${n} ${plural(n)}</span></button>`
       ).join("")}</div>`;

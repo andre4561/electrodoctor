@@ -12,7 +12,7 @@ export function loadLabs() {
     })
         .catch(e => { console.error("справочник анализов не загрузился", e); loading = null; }));
 }
-/** Свои анализы из настроек поверх файла каталога (добавленные в Настройки → Анализы). */
+/** Свои анализы из настроек поверх файла каталога (добавленные в Нормы и веса). */
 export function applyOwn(own) {
     Object.keys(LABS).forEach(k => delete LABS[k]);
     Object.assign(LABS, baseLabs, own || {});
@@ -46,7 +46,15 @@ export function fieldFor(code) {
         return { code, label: l.name, type: "number", unit: l.unit, step: "any" };
     if (l.type === "qual")
         return { code, label: l.name, type: "select", options: QUAL_OPTIONS };
-    return { code, label: l.name, type: "text" };
+    // текст — многострочное поле: описания и свободные формулировки вводятся в карточке клиента
+    return { code, label: l.name, type: "textarea" };
+}
+/** Поле бланка с типом/именем из каталога (в т.ч. свои правки в Настройках), поверх записи из fields.ts. */
+export function resolveField(code, formField) {
+    const fromCat = fieldFor(code);
+    if (fromCat)
+        return fromCat;
+    return formField || null;
 }
 // Поиск по названию, синонимам и коду; чаще встречающиеся в признаках диагнозов — выше
 const norm = (s) => s.toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9]+/g, "");
