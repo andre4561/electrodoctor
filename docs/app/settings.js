@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Электродоктор — настройки кабинета: провайдеры ИИ и агенты.
 //
-// Провайдер — сервис, который отвечает на запросы (OpenAI, Claude, DeepSeek, локальный Ollama…):
+// Провайдер — сервис ИИ: OpenAI-совместимый (DeepSeek, Ollama…), Anthropic, Gemini, YandexGPT.
 //   адрес API, ключ, модель по умолчанию.
 // Агент — роль со своей инструкцией (терапевт, психолог…): какой провайдер и модель использует,
 //   какие этапы анкеты клиента читает.
@@ -83,14 +83,27 @@ async function fetchDefaultArticlesCss() {
         throw new Error("не удалось загрузить " + ARTICLES_CSS_URL);
     return (await r.text()).replace(/^\uFEFF/, "");
 }
+/** Готовые адреса для пресета OpenAI-совместимый — кнопки подставляют baseUrl. */
+export const OPENAI_COMPAT_TPL = [
+    { label: "OpenAI", baseUrl: "https://api.openai.com/v1", keyUrl: "https://platform.openai.com/api-keys" },
+    { label: "DeepSeek", baseUrl: "https://api.deepseek.com/v1", keyUrl: "https://platform.deepseek.com/api_keys" },
+    { label: "Mistral", baseUrl: "https://api.mistral.ai/v1", keyUrl: "https://console.mistral.ai/api-keys" },
+    { label: "OpenRouter", baseUrl: "https://openrouter.ai/api/v1", keyUrl: "https://openrouter.ai/keys" },
+    { label: "Ollama", baseUrl: "http://localhost:11434/v1", noKey: true },
+    { label: "LM Studio", baseUrl: "http://localhost:1234/v1", noKey: true },
+];
 export const PROVIDERS = [
-    { id: "openai", name: "OpenAI (ChatGPT)", kind: "cloud", baseUrl: "https://api.openai.com/v1", model: "", keyUrl: "https://platform.openai.com/api-keys" },
+    { id: "openai", name: "OpenAI-совместимый (OpenAI, DeepSeek, Mistral, OpenRouter, Ollama, LM Studio)", kind: "cloud",
+        baseUrl: "https://api.openai.com/v1", model: "", keyUrl: "https://platform.openai.com/api-keys" },
     { id: "anthropic", name: "Anthropic (Claude)", kind: "cloud", baseUrl: "https://api.anthropic.com/v1", model: "", keyUrl: "https://console.anthropic.com/settings/keys" },
     { id: "gemini", name: "Google Gemini", kind: "cloud", baseUrl: "https://generativelanguage.googleapis.com/v1beta", model: "", keyUrl: "https://aistudio.google.com/apikey" },
+    { id: "yandexgpt", name: "YandexGPT", kind: "cloud", baseUrl: "https://ai.api.cloud.yandex.net/v1", model: "", keyUrl: "https://aistudio.yandex.ru/docs/ru/ai-studio/quickstart/", note: "Нужны ключ API сервисного аккаунта и идентификатор каталога (folder ID). Модели выглядят так: gpt://<каталог>/yandexgpt/latest." },
+];
+/** Старые отдельные пресеты: показываем, только если уже есть в сохранённых настройках. */
+const LEGACY_PROVIDERS = [
     { id: "deepseek", name: "DeepSeek", kind: "cloud", baseUrl: "https://api.deepseek.com/v1", model: "", keyUrl: "https://platform.deepseek.com/api_keys" },
     { id: "mistral", name: "Mistral", kind: "cloud", baseUrl: "https://api.mistral.ai/v1", model: "", keyUrl: "https://console.mistral.ai/api-keys" },
     { id: "openrouter", name: "OpenRouter", kind: "cloud", baseUrl: "https://openrouter.ai/api/v1", model: "", keyUrl: "https://openrouter.ai/keys", note: "Один ключ — доступ к моделям разных компаний." },
-    { id: "yandexgpt", name: "YandexGPT", kind: "cloud", baseUrl: "https://ai.api.cloud.yandex.net/v1", model: "", keyUrl: "https://aistudio.yandex.ru/docs/ru/ai-studio/quickstart/", note: "Нужны ключ API сервисного аккаунта и идентификатор каталога (folder ID). Модели выглядят так: gpt://<каталог>/yandexgpt/latest." },
     { id: "gigachat", name: "GigaChat (Сбер)", kind: "cloud", baseUrl: "https://gigachat.devices.sberbank.ru/api/v1", model: "", keyUrl: "https://developers.sber.ru/studio" },
     { id: "ollama", name: "Ollama (на своём компьютере)", kind: "local", baseUrl: "http://localhost:11434/v1", model: "", note: "Ключ не нужен. Модель должна быть скачана в Ollama." },
     { id: "lmstudio", name: "LM Studio (на своём компьютере)", kind: "local", baseUrl: "http://localhost:1234/v1", model: "", note: "Ключ не нужен. Включите сервер в LM Studio." },
@@ -101,11 +114,31 @@ const A = (id, name, steps, prompt, section) => ({ id, name, enabled: true, prov
 // Врач по разделу диагнозов: одна и та же схема инструкции, своя область
 const D = (id, name, role, section, focus, steps = DOC_STEPS) => A(id, name, steps, `Ты — ${role}. Изучи анкету клиента: жалобы, параметры, анализы. Оцени всё, что относится к твоей специальности: ${focus}. Укажи отклонения и что они могут означать, предположи вероятные состояния из своей области с объяснением, какие данные на это указывают, перечисли, какие анализы и обследования добавить, и отметь, когда нужен очный приём или срочная помощь. Не назначай лечение и дозировки.`, section);
 // Номер стандартного набора: при росте недостающие стандартные агенты добавляются к сохранённым один раз
-export const AGENTS_REV = 2;
+export const AGENTS_REV = 3;
+/** Id агентов-помощников по анкете (чат на вкладках Общее / Параметры). */
+export const TALK_AGENT_IDS = { general: "intake-general", params: "intake-params" };
 export const DEFAULT_AGENTS = [
     A("therapist", "Терапевт", STEP_IDS_ALL, "Ты — врач-терапевт. Изучи анкету клиента целиком: жалобы, параметры, анализы. Выдели отклонения, предположи 3–4 вероятных состояния с объяснением, какие показатели на это указывают, и перечисли, какие анализы или осмотры стоит сделать дальше. Не назначай лечение и дозировки."),
     A("psychologist", "Психолог", ["general", "psych"], "Ты — психолог. По ответам клиента оцени эмоциональное состояние, уровень стресса, сон и поведенческие факторы, которые могут влиять на здоровье. Пиши бережно и без диагнозов психиатрического уровня; отметь, когда стоит обратиться к специалисту очно."),
     A("nutritionist", "Нутрициолог", ["general", "params", "labs"], "Ты — нутрициолог. По параметрам тела и анализам оцени питание и возможные дефициты (железо, витамины, минералы). Дай общие рекомендации по рациону и образу жизни. Не назначай БАДы и дозировки."),
+    // помощники чата «Помощник по анкете» на вкладках Общее и Параметры (talk.ts)
+    A("intake-general", "Помощник (Общее)", ["general"], `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать жалобы и базовые сведения о человеке для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.
+
+Дополнительно к общим правилам формата ответа:
+4. Неизвестное или то, чему нет кода — в COMPLAINTS_OTHER или NOTES текстом; новые коды не выдумывай.
+5. Для жалобы «боль в груди»: сначала PAIN_CHEST=1, затем атрибуты (PRESSING, STABBING, IRRAD_LARM, EXERTION, RELIEF_REST) и PAIN_CHEST_NRS 0–100, описание — PAIN_CHEST_NOTE.
+6. Интенсивность боли: если человек сказал «6 из 10» — пиши 60 в шкале 0–100.
+7. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
+8. Не копируй в анкету ФИО из документов, адреса, телефоны — для имени достаточно псевдонима, если человек его дал.`),
+    A("intake-params", "Помощник (Параметры)", ["params"], `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать параметры тела, жизненные показатели и данные осмотра для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.
+
+Дополнительно к общим правилам формата ответа:
+4. Неизвестное или то, чему нет кода — в GEN_NOTES текстом; новые коды не выдумывай. Таблицу генетических тестов (GEN_TESTS) не заполняй через этот чат.
+5. Давление: если человек сказал «120 на 80» — BP_SYS=120, BP_DIA=80.
+6. Рост обычно в см (170), вес в кг. Если назвали рост в метрах (1,7) — переведи в см (170).
+7. Пункты осмотра — только коды из списка полей ниже (из справочника Настройки → Осмотр).
+8. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
+9. Не копируй в анкету ФИО из документов, адреса, телефоны.`),
     // врачи — по разделам диагнозов (Настройки → Диагнозы)
     D("cardiologist", "Кардиолог", "кардиолог", "cardio", "давление, пульс, липидный профиль, маркеры воспаления, сердечно-сосудистые риски"),
     D("pulmonologist", "Пульмонолог", "пульмонолог", "pulmo", "дыхание, кашель, одышка, сатурация, воспалительные маркеры"),
@@ -194,6 +227,11 @@ export function agentsForSections(sections, s = load()) {
     }
     return out;
 }
+/** Агент-помощник вкладки Общее или Параметры (чат заполнения анкеты). */
+export function talkAgent(stepId, s = load()) {
+    const id = TALK_AGENT_IDS[stepId];
+    return s.agents.find(a => a.id === id) || DEFAULT_AGENTS.find(a => a.id === id);
+}
 // Ключи пока недоступны: зашифрованы и пароль не введён, или нет доступа к папке настроек
 export const blocked = () => Store.state.locked || (Store.state.where === "folder" && !Store.state.loaded);
 export function providerConf(s, p) {
@@ -202,9 +240,11 @@ export function providerConf(s, p) {
 // Свои провайдеры (совместимые с OpenAI API) хранятся с id "custom-…".
 export function allProviders(s) {
     const custom = Object.entries(s.providers).filter(([id]) => id.startsWith("custom-")).map(([id, c]) => ({ id, name: c.name || "Свой провайдер", kind: "custom", baseUrl: c.baseUrl, model: c.model, note: "Любой сервис, совместимый с OpenAI API." }));
-    return [...PROVIDERS, ...custom];
+    const legacy = LEGACY_PROVIDERS.filter(p => !!s.providers[p.id]);
+    return [...PROVIDERS, ...legacy, ...custom];
 }
-export const isReady = (p, c) => c.enabled && !!c.baseUrl.trim() && (p.kind === "local" || !!c.apiKey.trim()) && (p.id !== "yandexgpt" || !!(c.folder || "").trim());
+export const needsApiKey = (p, c) => p.kind !== "local" && !M.isLocalUrl(c.baseUrl || p.baseUrl);
+export const isReady = (p, c) => c.enabled && !!c.baseUrl.trim() && (!needsApiKey(p, c) || !!c.apiKey.trim()) && (p.id !== "yandexgpt" || !!(c.folder || "").trim());
 // Переключатель «вкл/выкл» вместо галочки
 export const switchHtml = (name, on, label) => `<label class="sw"><input type="checkbox" role="switch" name="${name}"${on ? " checked" : ""} aria-label="${label}"><span class="sw-track" aria-hidden="true"><span class="sw-knob"></span></span></label>`;
 // Записать результат проверки связи (вызывается и после распознавания анализов)
@@ -317,6 +357,32 @@ export function render(view, tab, steps) {
     else
         drawAgents(main, steps);
 }
+/** `#/settings/agents/<id>` — сразу раскрыть и подсветить агента (как строка анализа в Нормах и весах). */
+function agentFocusId() {
+    const parts = location.hash.replace(/^#\/?/, "").split("/");
+    if (parts[0] === "settings" && parts[1] === "agents" && parts[2]) {
+        try {
+            return decodeURIComponent(parts[2]);
+        }
+        catch {
+            return parts[2];
+        }
+    }
+    return "";
+}
+function focusAgentCard(main, id) {
+    if (!id)
+        return;
+    const d = main.querySelector(`details[data-fold="agent-${CSS.escape(id)}"]`);
+    if (!d)
+        return;
+    d.open = true;
+    requestAnimationFrame(() => {
+        d.scrollIntoView({ block: "center", behavior: "smooth" });
+        d.classList.add("moved");
+        window.setTimeout(() => d.classList.remove("moved"), 1200);
+    });
+}
 function savedFlash(el) {
     if (!el)
         return;
@@ -379,7 +445,15 @@ function drawProviders(main, focus = "") {
             if (cnt)
                 cnt.textContent = provCount(allProviders(st).filter(x => isReady(x, providerConf(st, x))).length);
         };
-        box.querySelectorAll("input").forEach(i => i.addEventListener("change", store));
+        const syncKeyRow = () => {
+            const row = box.querySelector("[data-keyrow]");
+            if (!row)
+                return;
+            const url = q(box, "[name=baseUrl]").value.trim();
+            const need = p.kind !== "local" && !M.isLocalUrl(url);
+            row.hidden = !need;
+        };
+        box.querySelectorAll("input").forEach(i => i.addEventListener("change", () => { store(); syncKeyRow(); }));
         // включили или выключили — перестраиваем список, блок едет на своё место и остаётся на виду
         q(box, "[name=enabled]").addEventListener("change", () => {
             try {
@@ -387,6 +461,24 @@ function drawProviders(main, focus = "") {
             }
             catch (e) { /* не страшно */ }
             window.setTimeout(() => drawProviders(main, id), 220);
+        });
+        box.querySelectorAll("[data-oa-tpl]").forEach(btn => {
+            btn.onclick = () => {
+                const url = btn.dataset.oaTpl || "";
+                q(box, "[name=baseUrl]").value = url;
+                const link = box.querySelector("[data-keylink]");
+                if (link) {
+                    const ku = btn.dataset.oaKeyurl || "";
+                    if (ku) {
+                        link.href = ku;
+                        link.hidden = false;
+                    }
+                    else
+                        link.hidden = true;
+                }
+                store();
+                syncKeyRow();
+            };
         });
         const picker = box.querySelector("[data-mp]");
         M.bindPicker(picker, () => providerConf(load(), p).models);
@@ -493,17 +585,22 @@ function provStatus(p, c) {
         const conn = !k ? `<span class="conn"><i class="dot"></i>связь не проверена</span>` : k.ok ? `<span class="conn ok"><i class="dot"></i>связь есть</span>` : `<span class="conn bad"><i class="dot"></i>нет связи</span>`;
         return `включён · ${conn}${c.model ? " · " + esc(c.model) : ""}`;
     }
-    return `<span class="err">${!c.baseUrl ? "нет адреса" : p.kind !== "local" && !c.apiKey ? "нет ключа" : "нет каталога"}</span>`;
+    return `<span class="err">${!c.baseUrl ? "нет адреса" : needsApiKey(p, c) && !c.apiKey ? "нет ключа" : "нет каталога"}</span>`;
 }
 function providerBlock(s, p) {
     const c = providerConf(s, p);
     const custom = p.kind === "custom";
+    const wantKey = needsApiKey(p, c);
+    const tpls = p.id === "openai"
+        ? `<p class="muted set-tpls">Подставить адрес: ${OPENAI_COMPAT_TPL.map(t => `<button type="button" class="btn" data-oa-tpl="${esc(t.baseUrl)}"${t.keyUrl ? ` data-oa-keyurl="${esc(t.keyUrl)}"` : ""}>${esc(t.label)}</button>`).join(" ")}</p>`
+        : "";
     const body = `<div class="set-form" data-prov="${esc(p.id)}">
     ${p.note ? `<p class="muted">${esc(p.note)}</p>` : ""}
+    ${tpls}
     <div class="set-row"><span>Включён</span><span>${switchHtml("enabled", c.enabled, "Включён")}</span></div>
     <div class="set-row"><span>Связь с провайдером<small class="err" data-connerr>${esc(c.check && !c.check.ok ? c.check.msg || "" : "")}</small></span><span class="mp-row"><span data-conn>${connHtml(c)}</span><button type="button" class="btn" data-act="check">Проверить связь</button></span></div>
     ${custom ? `<label class="set-row"><span>Название</span><input type="text" name="pname" value="${esc(c.name || "")}"></label>` : ""}
-    ${p.kind === "local" ? "" : `<label class="set-row"><span>Ключ API${p.keyUrl ? ` <a href="${esc(p.keyUrl)}" target="_blank" rel="noopener">где взять</a>` : ""}</span>
+    ${p.kind === "local" ? "" : `<label class="set-row" data-keyrow${wantKey ? "" : " hidden"}><span>Ключ API${p.keyUrl ? ` <a href="${esc(p.keyUrl)}" target="_blank" rel="noopener" data-keylink>где взять</a>` : `<a href="#" target="_blank" rel="noopener" data-keylink hidden>где взять</a>`}</span>
       <span class="ctl"><input type="password" name="apiKey" value="${esc(c.apiKey)}" autocomplete="off" spellcheck="false"${Store.state.locked ? ' disabled placeholder="зашифрован — введите пароль"' : ""}><button class="btn" type="button" data-act="show">Показать</button></span></label>`}
     ${p.kind === "local" ? `<input type="hidden" name="apiKey" value="">` : ""}
     ${p.id === "yandexgpt" ? `<label class="set-row"><span>Каталог (folder ID)<small>в консоли Yandex Cloud, вида b1g…</small></span><input type="text" name="folder" value="${esc(c.folder || "")}" spellcheck="false" placeholder="b1g…"></label>` : ""}
@@ -518,6 +615,13 @@ function providerBlock(s, p) {
 function drawAgents(main, steps) {
     const s = load();
     const provs = allProviders(s);
+    const focusId = agentFocusId();
+    if (focusId) {
+        try {
+            localStorage.setItem("electrodoctor.fold.agent-" + focusId, "1");
+        }
+        catch (e) { /* */ }
+    }
     main.innerHTML = `
     <div class="set-head"><h2>Агенты</h2><span class="muted" id="agentcount">${s.agents.filter(a => a.enabled).length} из ${s.agents.length} включены</span></div>
     <p class="muted set-hint">Агент — роль со своей инструкцией. Провайдер и модель задаются один раз ниже — для всех агентов; у отдельного агента их можно заменить своими.</p>
@@ -634,6 +738,7 @@ function drawAgents(main, steps) {
         save(st);
         drawAgents(main, steps);
     };
+    focusAgentCard(main, focusId);
 }
 function agentStatus(a, provs, s) {
     if (!a.enabled)
@@ -674,11 +779,15 @@ function recognizerBlock(s, provs) {
     <div class="set-foot"><span class="set-saved ok"></span></div>
   </div>`;
 }
-// Агенты двумя группами: общие роли и врачи по разделам диагнозов
+// Агенты: помощники анкеты, прочие общие роли, врачи по разделам
 function agentGroups(s, provs, steps) {
-    const docs = s.agents.filter(a => a.section), rest = s.agents.filter(a => !a.section);
+    const intakeIds = new Set(Object.values(TALK_AGENT_IDS));
+    const intake = s.agents.filter(a => intakeIds.has(a.id));
+    const docs = s.agents.filter(a => a.section);
+    const rest = s.agents.filter(a => !a.section && !intakeIds.has(a.id));
     const list = (xs) => `<div class="set-list">${xs.map(a => agentBlock(a, provs, s, steps)).join("")}</div>`;
-    return (rest.length ? `<h3 class="set-group">Общие <span class="muted">${rest.length}</span></h3>${list(rest)}` : "")
+    return (intake.length ? `<h3 class="set-group">Помощники по анкете <span class="muted">${intake.length}</span></h3>${list(intake)}` : "")
+        + (rest.length ? `<h3 class="set-group">Общие <span class="muted">${rest.length}</span></h3>${list(rest)}` : "")
         + (docs.length ? `<h3 class="set-group">Врачи по разделам диагнозов <span class="muted">${docs.length}</span></h3>${list(docs)}` : "");
 }
 // Выбор провайдера у агента: настроенные — отдельной группой сверху, с галочкой и состоянием связи

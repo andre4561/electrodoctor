@@ -8,6 +8,10 @@
 // иначе определяем по названию модели, и такие значки показываются бледнее с пометкой «по названию».
 import type { ProviderPreset, ProviderConf } from "./settings.js";
 
+/** localhost / 127.0.0.1 — ключ не нужен (Ollama, LM Studio и т.п.). */
+export const isLocalUrl = (url: string) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test((url || "").trim());
+
 export type Cap = "vision" | "pdf" | "tools" | "reasoning" | "free";
 export interface ModelInfo { id: string; name?: string; caps: Cap[]; guessed?: boolean }
 
@@ -112,8 +116,11 @@ export async function fetchModels(p: ProviderPreset, c: ProviderConf): Promise<{
   const base = trim(c.baseUrl);
   if (!base) throw new Error("Сначала укажите адрес API.");
   if (p.id === "gigachat") throw new Error("GigaChat не отдаёт список моделей прямо в браузер — впишите модель вручную (например, GigaChat-Pro).");
-  if (p.kind !== "local" && !c.apiKey && p.id !== "openrouter") throw new Error("Сначала вставьте ключ API.");
+  const openrouter = p.id === "openrouter" || /openrouter\.ai/i.test(base);
+  if (p.kind !== "local" && !isLocalUrl(base) && !c.apiKey && !openrouter) throw new Error("Сначала вставьте ключ API.");
   if (p.id === "yandexgpt" && !c.folder) throw new Error("Для YandexGPT укажите идентификатор каталога (folder ID).");
+  const ollama = p.id === "ollama" || /:11434\b/.test(base);
+  const lmstudio = p.id === "lmstudio" || /:1234\b/.test(base);
   let list: ModelInfo[] = [];
 
   if (p.id === "gemini") {
@@ -127,7 +134,7 @@ export async function fetchModels(p: ProviderPreset, c: ProviderConf): Promise<{
   } else if (p.id === "anthropic") {
     const j = await getJSON(`${base}/models?limit=1000`, authHeaders(p, c));
     list = (j.data || []).map((m: any): ModelInfo => ({ id: m.id, name: m.display_name, caps: guessCaps("anthropic", m.id), guessed: true }));
-  } else if (p.id === "ollama") {
+  } else if (ollama) {
     const root = rootOf(base);
     const j = await getJSON(root + "/api/tags");
     const names: string[] = (j.models || []).map((m: any) => m.name || m.model).filter(Boolean);
@@ -147,7 +154,7 @@ export async function fetchModels(p: ProviderPreset, c: ProviderConf): Promise<{
     list = list.filter(m => m.name !== "не для чата");
   } else {
     let lm: any = null;
-    if (p.id === "lmstudio") { try { lm = await getJSON(rootOf(base) + "/api/v0/models"); } catch (e) { lm = null; } }
+    if (lmstudio) { try { lm = await getJSON(rootOf(base) + "/api/v0/models"); } catch (e) { lm = null; } }
     if (lm && Array.isArray(lm.data)) {
       list = lm.data.filter((m: any) => m.type !== "embeddings").map((m: any): ModelInfo => {
         const caps: Cap[] = [];
@@ -182,7 +189,9 @@ export async function fetchModels(p: ProviderPreset, c: ProviderConf): Promise<{
           if (/magistral/.test(id)) caps.push("reasoning");
           return { id, name: m.name && m.name !== id ? m.name : undefined, caps };
         }
-        return { id, caps: guessCaps(p.id === "openai" || p.id === "deepseek" ? p.id : "other", id), guessed: true };
+        const guessAs = /deepseek/i.test(base) || p.id === "deepseek" ? "deepseek"
+          : p.id === "openai" || /openai\.com/i.test(base) ? "openai" : "other";
+        return { id, caps: guessCaps(guessAs, id), guessed: true };
       });
       list = list.filter(m => m.name !== "не для чата");
     }

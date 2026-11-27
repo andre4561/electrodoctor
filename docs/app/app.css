@@ -574,6 +574,8 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
 .set-head h2 { font-size: 18px; margin: 0; }
 .set-head .muted { font-size: 14px; }
 .set-hint { margin: 6px 0 14px; font-size: 14px; }
+.set-tpls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.set-tpls .btn { padding: 4px 10px; font-size: 13px; }
 .set-list { display: grid; gap: 8px; }
 .set-form { display: grid; gap: 2px; }
 .set-form > p { margin: 0 0 8px; font-size: 14px; }
@@ -1080,6 +1082,8 @@ html[data-theme="dark"] .attn-item.k4 { color: #ff7b72; }
 .dxt-talk { flex: none; padding: 4px 10px; font-size: 12px; margin-left: auto; }
 .talk-who { margin: 0; font-size: 13px; }
 .talk-who b { color: var(--ink); font-weight: 600; }
+.talk-who .talk-prov { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; font-weight: 500; }
+.talk-who .talk-prov select { max-width: 12em; }
 .dxt-p { flex: none; min-width: 52px; text-align: center; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; padding: 3px 6px; border-radius: 8px; }
 .dxt-p.p1 { background: rgba(127,127,127,.12); color: var(--muted); }
 .dxt-p.p2 { background: rgba(234,179,8,.16); color: #8a6d00; }

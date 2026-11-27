@@ -1,3 +1,5 @@
+/** localhost / 127.0.0.1 — ключ не нужен (Ollama, LM Studio и т.п.). */
+export const isLocalUrl = (url) => /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test((url || "").trim());
 export const CAPS = [
     { cap: "vision", label: "понимает фото и изображения", svg: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>' },
     { cap: "pdf", label: "читает PDF", svg: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>' },
@@ -136,10 +138,13 @@ export async function fetchModels(p, c) {
         throw new Error("Сначала укажите адрес API.");
     if (p.id === "gigachat")
         throw new Error("GigaChat не отдаёт список моделей прямо в браузер — впишите модель вручную (например, GigaChat-Pro).");
-    if (p.kind !== "local" && !c.apiKey && p.id !== "openrouter")
+    const openrouter = p.id === "openrouter" || /openrouter\.ai/i.test(base);
+    if (p.kind !== "local" && !isLocalUrl(base) && !c.apiKey && !openrouter)
         throw new Error("Сначала вставьте ключ API.");
     if (p.id === "yandexgpt" && !c.folder)
         throw new Error("Для YandexGPT укажите идентификатор каталога (folder ID).");
+    const ollama = p.id === "ollama" || /:11434\b/.test(base);
+    const lmstudio = p.id === "lmstudio" || /:1234\b/.test(base);
     let list = [];
     if (p.id === "gemini") {
         const j = await getJSON(`${base}/models?pageSize=1000&key=${encodeURIComponent(c.apiKey)}`);
@@ -155,7 +160,7 @@ export async function fetchModels(p, c) {
         const j = await getJSON(`${base}/models?limit=1000`, authHeaders(p, c));
         list = (j.data || []).map((m) => ({ id: m.id, name: m.display_name, caps: guessCaps("anthropic", m.id), guessed: true }));
     }
-    else if (p.id === "ollama") {
+    else if (ollama) {
         const root = rootOf(base);
         const j = await getJSON(root + "/api/tags");
         const names = (j.models || []).map((m) => m.name || m.model).filter(Boolean);
@@ -184,7 +189,7 @@ export async function fetchModels(p, c) {
     }
     else {
         let lm = null;
-        if (p.id === "lmstudio") {
+        if (lmstudio) {
             try {
                 lm = await getJSON(rootOf(base) + "/api/v0/models");
             }
@@ -239,7 +244,9 @@ export async function fetchModels(p, c) {
                         caps.push("reasoning");
                     return { id, name: m.name && m.name !== id ? m.name : undefined, caps };
                 }
-                return { id, caps: guessCaps(p.id === "openai" || p.id === "deepseek" ? p.id : "other", id), guessed: true };
+                const guessAs = /deepseek/i.test(base) || p.id === "deepseek" ? "deepseek"
+                    : p.id === "openai" || /openai\.com/i.test(base) ? "openai" : "other";
+                return { id, caps: guessCaps(guessAs, id), guessed: true };
             });
             list = list.filter(m => m.name !== "не для чата");
         }

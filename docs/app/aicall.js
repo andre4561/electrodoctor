@@ -115,7 +115,7 @@ export async function recognize(o) {
             ? { type: "file", file: { filename: f.name || "analysis.pdf", file_data: `data:${f.type};base64,${f.data}` } }
             : { type: "image_url", image_url: { url: `data:${f.type};base64,${f.data}` } })];
     const headers = authHeaders(o.preset, o.conf);
-    if (o.preset.id === "openrouter")
+    if (o.preset.id === "openrouter" || /openrouter\.ai/i.test(o.conf.baseUrl || ""))
         headers["X-Title"] = "Electrodoctor";
     const j = await post(route(o.preset, o.conf, base + "/chat/completions"), headers, { model, temperature: 0, messages: [{ role: "user", content }] }, o.signal);
     const msg = j.choices && j.choices[0] && j.choices[0].message;
@@ -174,7 +174,7 @@ export async function chat(o) {
         return out;
     }
     const headers = authHeaders(o.preset, o.conf);
-    if (o.preset.id === "openrouter")
+    if (o.preset.id === "openrouter" || /openrouter\.ai/i.test(o.conf.baseUrl || ""))
         headers["X-Title"] = "Electrodoctor";
     const j = await post(route(o.preset, o.conf, base + "/chat/completions"), headers, {
         model, temperature,

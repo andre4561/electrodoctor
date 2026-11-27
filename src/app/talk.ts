@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Электродоктор — чаты с ИИ:
-//   • «Помощник по анкете» (Общее / Параметры) — зашитый промпт сбора полей, не агент из настроек;
+//   • «Помощник по анкете» (Общее / Параметры) — агенты intake-general / intake-params;
 //   • «Поговорить» у диагноза — промпт врача из Настройки → Агенты по section диагноза.
 import type { Client, Field, Step, Value } from "./types.js";
 import * as Settings from "./settings.js";
@@ -30,8 +30,6 @@ export interface TalkChange {
 
 const esc = (s: unknown) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[c]);
 const str = (v: unknown) => (v == null ? "" : String(v)).trim();
-const PROV_KEY = "ed.talk.provider";
-
 const SKIP_TYPES = new Set(["table", "files", "aiimport"]);
 
 /** Поля вкладки, которые ИИ может менять (без таблиц/файлов). */
@@ -73,34 +71,17 @@ function currentSnapshot(c: Client, fields: Field[]): string {
   return lines.length ? lines.join("\n") : "(пусто)";
 }
 
-function roleBlurb(stepId: TalkStepId): { role: string; rulesExtra: string; hint: string } {
-  if (stepId === "params") {
-    return {
-      role: "Твоя роль — спокойно собрать параметры тела, жизненные показатели и данные осмотра для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.",
-      rulesExtra: `4. Неизвестное или то, чему нет кода — в GEN_NOTES текстом; новые коды не выдумывай. Таблицу генетических тестов (GEN_TESTS) не заполняй через этот чат.
-5. Давление: если человек сказал «120 на 80» — BP_SYS=120, BP_DIA=80.
-6. Рост обычно в см (170), вес в кг. Если назвали рост в метрах (1,7) — переведи в см (170).
-7. Пункты осмотра — только коды из списка полей ниже (из справочника Настройки → Осмотр).
-8. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
-9. Не копируй в анкету ФИО из документов, адреса, телефоны.`,
-      hint: "Назовите рост, вес, давление, пульс или что видели на осмотре — помощник уточнит и заполнит параметры в анкете.",
-    };
-  }
-  return {
-    role: "Твоя роль — спокойно собрать жалобы и базовые сведения о человеке для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.",
-    rulesExtra: `4. Неизвестное или то, чему нет кода — в COMPLAINTS_OTHER или NOTES текстом; новые коды не выдумывай.
-5. Для жалобы «боль в груди»: сначала PAIN_CHEST=1, затем атрибуты (PRESSING, STABBING, IRRAD_LARM, EXERTION, RELIEF_REST) и PAIN_CHEST_NRS 0–100, описание — PAIN_CHEST_NOTE.
-6. Интенсивность боли: если человек сказал «6 из 10» — пиши 60 в шкале 0–100.
-7. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
-8. Не копируй в анкету ФИО из документов, адреса, телефоны — для имени достаточно псевдонима, если человек его дал.`,
-    hint: "Опишите, что беспокоит — помощник уточнит и заполнит жалобы в анкете.",
-  };
+function talkHint(stepId: TalkStepId): string {
+  return stepId === "params"
+    ? "Назовите рост, вес, давление, пульс или что видели на осмотре — помощник уточнит и заполнит параметры в анкете."
+    : "Опишите, что беспокоит — помощник уточнит и заполнит жалобы в анкете.";
 }
 
-export function buildSystem(c: Client, steps: Step[] = STEPS, stepId: TalkStepId = "general"): string {
+/** Промпт агента из Настройки → Агенты + жёсткий JSON-формат и список полей вкладки. */
+export function buildSystem(c: Client, steps: Step[] = STEPS, stepId: TalkStepId = "general", agent?: Settings.Agent): string {
+  const a = agent || Settings.talkAgent(stepId);
   const fields = talkFields(steps, stepId);
-  const { role, rulesExtra } = roleBlurb(stepId);
-  return `Ты помощник кабинета «Электродоктор». ${role}
+  return `${a.prompt}
 
 Отвечай ТОЛЬКО одним JSON-объектом — без markdown, без текста до и после.
 
@@ -117,7 +98,6 @@ export function buildSystem(c: Client, steps: Step[] = STEPS, stepId: TalkStepId
 1. "say" — то, что увидит человек в чате. Без JSON и без кодов полей.
 2. "set" — только коды из списка ниже, если человек явно сообщил факт. value по типу поля.
 3. "clear" — коды, которые нужно убрать (человек отрёкся или ошибка). Можно [] .
-${rulesExtra}
 
 Допустимые поля:
 ${fields.map(fieldLine).join("\n")}
@@ -226,6 +206,102 @@ export function apply(c: Client, reply: TalkReply, steps: Step[] = STEPS, stepId
 
 type Hist = Call.ChatMessage[];
 
+/** Запись HTML-лога запросов чата (пока открыт диалог). */
+export type TalkLogKind = "out" | "in" | "err";
+export interface TalkLogEntry {
+  kind: TalkLogKind;
+  at: string;       // ISO
+  title: string;    // короткий заголовок блока
+  body: string;     // полный текст
+}
+
+function fmtTalkTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  } catch { return iso; }
+}
+
+function outBody(meta: { provider: string; model: string; temperature: number }, system: string, messages: Call.ChatMessage[]): string {
+  const lines = [
+    `Провайдер: ${meta.provider}`,
+    `Модель: ${meta.model}`,
+    `Temperature: ${meta.temperature}`,
+    "",
+    "=== system ===",
+    system,
+    "",
+    "=== messages ===",
+  ];
+  messages.forEach((m, i) => {
+    lines.push(`--- [${i + 1}] ${m.role} ---`);
+    lines.push(m.content);
+    lines.push("");
+  });
+  return lines.join("\n").trimEnd();
+}
+
+/** Собрать HTML-страницу лога и открыть в новой вкладке (blob:). */
+export function openTalkLogHtml(entries: TalkLogEntry[], pageTitle: string): void {
+  const kindLabel: Record<TalkLogKind, string> = { out: "Отправка", in: "Ответ", err: "Ошибка" };
+  const blocks = entries.length
+    ? entries.map(e =>
+      `<section class="blk blk-${e.kind}">
+  <header><span class="tag">${esc(kindLabel[e.kind])}</span> <time>${esc(fmtTalkTime(e.at))}</time> · ${esc(e.title)}</header>
+  <pre>${esc(e.body)}</pre>
+</section>`).join("\n")
+    : `<p class="empty">Пока пусто — отправьте сообщение в чате.</p>`;
+  const html = `<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(pageTitle)} — запросы</title>
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #f4f6f8; color: #1a1f24; }
+  header.page { padding: 18px 22px; border-bottom: 1px solid #d8dee6; background: #fff; }
+  header.page h1 { margin: 0 0 4px; font-size: 20px; font-weight: 600; }
+  header.page p { margin: 0; color: #5b6570; font-size: 14px; }
+  main { padding: 18px 22px 40px; display: grid; gap: 16px; max-width: 960px; }
+  .blk { border-radius: 10px; border: 1px solid #d8dee6; background: #fff; overflow: hidden; }
+  .blk header { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid #e5e9ef; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; background: #fafbfc; }
+  .tag { font-weight: 700; text-transform: uppercase; letter-spacing: .03em; font-size: 12px; }
+  .blk-out { border-left: 4px solid #2563eb; }
+  .blk-out .tag { color: #1d4ed8; }
+  .blk-in { border-left: 4px solid #16a34a; }
+  .blk-in .tag { color: #15803d; }
+  .blk-err { border-left: 4px solid #dc2626; }
+  .blk-err .tag { color: #b91c1c; }
+  pre { margin: 0; padding: 14px 16px; white-space: pre-wrap; word-break: break-word; font: 16px/1.5 ui-monospace, Consolas, monospace; background: #f7f8fa; color: #1a1f24; overflow: auto; max-height: 70vh; }
+  .empty { color: #5b6570; }
+  time { color: #5b6570; }
+</style>
+</head><body>
+<header class="page">
+  <h1>${esc(pageTitle)}</h1>
+  <p>Лог запросов к агенту · открыт ${esc(fmtTalkTime(new Date().toISOString()))} · записей: ${entries.length}</p>
+</header>
+<main>${blocks}</main>
+</body></html>`;
+  // about:blank + document.write: надёжнее blob: — у window.open с noopener
+  // браузер возвращает null и прежний код сразу отзывал URL (ERR_FILE_NOT_FOUND).
+  const w = window.open("about:blank", "_blank");
+  if (!w) {
+    alert("Не удалось открыть вкладку — разрешите всплывающие окна для этого сайта.");
+    return;
+  }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function bindTalkLogLink(root: ParentNode, entries: TalkLogEntry[], title: () => string): void {
+  root.querySelectorAll<HTMLAnchorElement>("[data-talk-log]").forEach(a => {
+    a.addEventListener("click", e => {
+      e.preventDefault();
+      openTalkLogHtml(entries, title());
+    });
+  });
+}
+
 export interface TalkOpts {
   stepId?: TalkStepId;
   onChange: () => void;   // после правок анкеты — сохранить и обновить поля на странице
@@ -233,25 +309,23 @@ export interface TalkOpts {
 
 export function openTalkDialog(c: Client, opts: TalkOpts): void {
   const stepId: TalkStepId = opts.stepId || "general";
-  const { hint } = roleBlurb(stepId);
-  const providers = readyProviders();
+  const s = Settings.load();
+  const agent = Settings.talkAgent(stepId, s);
+  const rt = Settings.agentRuntime(s, agent);
+  const agentOk = !!(agent.enabled && rt.preset && rt.conf && Settings.isReady(rt.preset, rt.conf)
+    && rt.model.trim() && !Call.unsupportedReason(rt.preset));
   const ov = document.createElement("div");
   ov.className = "cv-overlay";
   const hist: Hist = [];
+  const reqLog: TalkLogEntry[] = [];
   let busy = false;
   let ctrl: AbortController | null = null;
 
-  const savedProv = sessionStorage.getItem(PROV_KEY) || "";
-  const provOpts = providers.map(({ preset }) =>
-    `<option value="${esc(preset.id)}"${preset.id === savedProv ? " selected" : ""}>${esc(preset.name)}</option>`).join("");
-
   const bodyAi = `<div class="talk-bar">
-      <label class="talk-prov">Модель
-        <select id="talk-prov">${provOpts}</select>
-      </label>
+      <p class="talk-who muted">Агент: <b>${esc(agent.name)}</b> · <a href="#/settings/agents/${encodeURIComponent(agent.id)}" data-go-settings>настройки</a> · <a href="#" data-talk-log>запросы</a></p>
     </div>
     <div class="talk-log" id="talk-log" aria-live="polite">
-      <div class="talk-hint muted">${esc(hint)}</div>
+      <div class="talk-hint muted">${esc(talkHint(stepId))}</div>
     </div>
     <div class="talk-compose">
       <textarea id="talk-in" rows="2" placeholder="Напишите сообщение…"></textarea>
@@ -259,15 +333,20 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
     </div>
     <p class="talk-err err" id="talk-err" hidden></p>`;
 
-  const bodyNoAiForm = `<div class="talk-empty">
-      <p>Чтобы заполнять анкету с помощником, подключите искусственный интеллект в настройках.</p>
-      <p><a class="btn primary" href="#/settings/providers" data-go-settings>Настройки → Провайдеры</a></p>
+  const bodyOff = !agent.enabled
+    ? `<div class="talk-empty">
+      <p>Агент «${esc(agent.name)}» выключен. Включите его в настройках.</p>
+      <p><a class="btn primary" href="#/settings/agents/${encodeURIComponent(agent.id)}" data-go-settings>Настройки → Агенты</a></p>
+    </div>`
+    : `<div class="talk-empty">
+      <p>У помощника не настроен провайдер или модель. Укажите их у агента «${esc(agent.name)}» или общий провайдер агентов.</p>
+      <p><a class="btn primary" href="#/settings/agents/${encodeURIComponent(agent.id)}" data-go-settings>Настройки → Агенты</a></p>
     </div>`;
 
   ov.innerHTML = `<div class="cv-dialog talk-dlg" role="dialog" aria-modal="true" aria-labelledby="talk-title">
-    <div class="cv-head"><b id="talk-title">Помощник по анкете</b>
+    <div class="cv-head"><b id="talk-title">${esc(agent.name)}</b>
       <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
-    ${providers.length ? bodyAi : bodyNoAiForm}
+    ${agentOk ? bodyAi : bodyOff}
   </div>`;
   document.body.appendChild(ov);
   lockScroll();
@@ -285,14 +364,14 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
   ov.addEventListener("click", e => { if (e.target === ov && !busy) close(); });
   ov.querySelector("[data-close]")!.addEventListener("click", () => { if (!busy) close(); });
   ov.querySelector("[data-go-settings]")?.addEventListener("click", () => close());
+  bindTalkLogLink(ov, reqLog, () => agent.name);
 
-  if (!providers.length) return;
+  if (!agentOk) return;
 
   const log = ov.querySelector<HTMLElement>("#talk-log")!;
   const input = ov.querySelector<HTMLTextAreaElement>("#talk-in")!;
   const sendBtn = ov.querySelector<HTMLButtonElement>("#talk-send")!;
   const errEl = ov.querySelector<HTMLElement>("#talk-err")!;
-  const sel = ov.querySelector<HTMLSelectElement>("#talk-prov")!;
 
   const showErr = (msg: string) => {
     errEl.hidden = !msg;
@@ -313,15 +392,7 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
     busy = on;
     sendBtn.disabled = on;
     input.disabled = on;
-    sel.disabled = on;
     sendBtn.textContent = on ? "Ждём…" : "Отправить";
-  };
-
-  const pickProvider = () => {
-    const id = sel.value;
-    sessionStorage.setItem(PROV_KEY, id);
-    const hit = providers.find(p => p.preset.id === id) || providers[0];
-    return hit;
   };
 
   sendBtn.onclick = async () => {
@@ -333,17 +404,30 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
     const nextHist = hist.concat([{ role: "user", content: text }]);
     setBusy(true);
     ctrl = new AbortController();
+    let loggedOut = false;
     try {
-      const { preset, conf } = pickProvider();
-      const model = (conf.model || preset.model || "").trim();
-      if (!model) throw new Error("У провайдера не указана модель. Впишите её в Настройках → Провайдеры.");
+      const live = Settings.talkAgent(stepId);
+      const run = Settings.agentRuntime(Settings.load(), live);
+      if (!run.preset || !run.conf) throw new Error("У агента не выбран провайдер.");
+      if (!Settings.isReady(run.preset, run.conf)) throw new Error("Провайдер агента не готов (ключ, адрес или модель).");
+      const bad = Call.unsupportedReason(run.preset); if (bad) throw new Error(bad);
+      if (!run.model.trim()) throw new Error("У агента не указана модель.");
+      const system = buildSystem(c, STEPS, stepId, live);
+      reqLog.push({
+        kind: "out",
+        at: new Date().toISOString(),
+        title: `${live.name} · ${run.preset.name}`,
+        body: outBody({ provider: run.preset.name, model: run.model, temperature: live.temperature }, system, nextHist),
+      });
+      loggedOut = true;
       const raw = await Call.chat({
-        preset, conf, model,
-        system: buildSystem(c, STEPS, stepId),
+        preset: run.preset, conf: run.conf, model: run.model,
+        system,
         messages: nextHist,
-        temperature: 0.3,
+        temperature: live.temperature,
         signal: ctrl.signal,
       });
+      reqLog.push({ kind: "in", at: new Date().toISOString(), title: live.name, body: raw });
       const reply = parse(raw);
       hist.length = 0;
       hist.push(...nextHist, {
@@ -357,7 +441,9 @@ export function openTalkDialog(c: Client, opts: TalkOpts): void {
         : "";
       bubble("assistant", `<div class="talk-bubble">${esc(reply.say)}</div>${meta}`);
     } catch (e) {
-      showErr(e instanceof Error ? e.message : String(e));
+      const msg = e instanceof Error ? e.message : String(e);
+      if (loggedOut) reqLog.push({ kind: "err", at: new Date().toISOString(), title: agent.name, body: msg });
+      showErr(msg);
     } finally {
       setBusy(false);
       ctrl = null;
@@ -434,12 +520,13 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   const ov = document.createElement("div");
   ov.className = "cv-overlay";
   const hist: Hist = [];
+  const reqLog: TalkLogEntry[] = [];
   let busy = false;
   let ctrl: AbortController | null = null;
   let agentId = agents[0] ? agents[0].id : "";
 
   const noAgent = `<div class="talk-empty">
-      <p>К разделам этого диагноза не привязан врач в <a href="#/settings/agents" data-go-settings>Настройки → Агенты</a> (поле «раздел» у агента).</p>
+      <p>К разделам этого диагноза не привязан врач в <a href="#/settings/agents" data-go-settings>Настройки → Агенты</a>.</p>
       <p class="muted">Так бывает у диагнозов без специальности (раздел «Другое»).</p>
     </div>`;
 
@@ -452,8 +539,13 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   const agentOpts = agents.map(a =>
     `<option value="${esc(a.id)}"${a.id === agentId ? " selected" : ""}>${esc(a.name)}</option>`).join("");
 
+  const agentSetHref = (id: string) => `#/settings/agents/${encodeURIComponent(id)}`;
+  const logLinks = (id: string) =>
+    `<a href="${agentSetHref(id)}" data-go-settings>настройки</a> · <a href="#" data-talk-log>запросы</a>`;
   const bodyAi = `<div class="talk-bar">
-      ${agents.length > 1 ? `<label class="talk-prov">Врач<select id="talk-agent">${agentOpts}</select></label>` : `<p class="talk-who muted">Врач: <b>${esc(agents[0] ? agents[0].name : "")}</b></p>`}
+      ${agents.length > 1
+        ? `<p class="talk-who muted"><label class="talk-prov">Врач <select id="talk-agent">${agentOpts}</select></label> · ${logLinks(agents[0] ? agents[0].id : "")}</p>`
+        : `<p class="talk-who muted">Врач: <b>${esc(agents[0] ? agents[0].name : "")}</b> · ${logLinks(agents[0] ? agents[0].id : "")}</p>`}
     </div>
     <div class="talk-log" id="talk-log" aria-live="polite">
       <div class="talk-hint muted">Спросите про диагноз «${esc(opts.title)}» — ответы по инструкции врача из настроек. Лечение и дозировки не назначает.</div>
@@ -465,7 +557,8 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
     <p class="talk-err err" id="talk-err" hidden></p>`;
 
   const bodyNoProv = `<div class="talk-empty">
-      <p>У врача не настроен провайдер или модель. Укажите их у агента или общий провайдер агентов в <a href="#/settings/agents" data-go-settings>Настройки → Агенты</a>.</p>
+      <p>У врача не настроен провайдер или модель. Укажите их у агента или общий провайдер агентов.</p>
+      <p><a class="btn primary" href="${agentSetHref(agents[0] ? agents[0].id : "")}" data-go-settings>Настройки → Агенты</a></p>
     </div>`;
 
   const titleName = agents[0] ? agents[0].name : "врачом";
@@ -491,7 +584,11 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   document.addEventListener("keydown", onKey);
   ov.addEventListener("click", e => { if (e.target === ov && !busy) close(); });
   ov.querySelector("[data-close]")!.addEventListener("click", () => { if (!busy) close(); });
-  ov.querySelector("[data-go-settings]")?.addEventListener("click", () => close());
+  ov.querySelectorAll("[data-go-settings]").forEach(el => el.addEventListener("click", () => close()));
+  bindTalkLogLink(ov, reqLog, () => {
+    const a = agents.find(x => x.id === agentId) || agents[0];
+    return `${a ? a.name : "Врач"} · ${opts.title}`;
+  });
 
   if (!agents.length || !anyReady) return;
 
@@ -528,8 +625,11 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
     agentSel.onchange = () => {
       agentId = agentSel.value;
       hist.length = 0;
-      log.innerHTML = `<div class="talk-hint muted">Сменили врача на «${esc(curAgent().name)}». История чата сброшена — можно писать снова.</div>`;
-      if (titleEl) titleEl.textContent = `${curAgent().name} · ${opts.title}`;
+      const a = curAgent();
+      const setA = ov.querySelector<HTMLAnchorElement>("[data-go-settings]");
+      if (setA) setA.href = agentSetHref(a.id);
+      log.innerHTML = `<div class="talk-hint muted">Сменили врача на «${esc(a.name)}». История чата сброшена — можно писать снова.</div>`;
+      if (titleEl) titleEl.textContent = `${a.name} · ${opts.title}`;
     };
   }
 
@@ -555,27 +655,39 @@ ${clientBrief(c, a.steps)}
     const nextHist = hist.concat([{ role: "user", content: text }]);
     setBusy(true);
     ctrl = new AbortController();
+    let loggedOut = false;
+    const a = curAgent();
     try {
-      const a = curAgent();
-      const rt = Settings.agentRuntime(s, a);
+      const rt = Settings.agentRuntime(Settings.load(), a);
       if (!rt.preset || !rt.conf) throw new Error("У агента не выбран провайдер.");
       if (!Settings.isReady(rt.preset, rt.conf)) throw new Error("Провайдер агента не готов (ключ, адрес или модель).");
       const bad = Call.unsupportedReason(rt.preset); if (bad) throw new Error(bad);
       if (!rt.model.trim()) throw new Error("У агента не указана модель.");
+      const system = buildDxSystem(a);
+      reqLog.push({
+        kind: "out",
+        at: new Date().toISOString(),
+        title: `${a.name} · ${rt.preset.name}`,
+        body: outBody({ provider: rt.preset.name, model: rt.model, temperature: a.temperature }, system, nextHist),
+      });
+      loggedOut = true;
       const raw = await Call.chat({
         preset: rt.preset, conf: rt.conf, model: rt.model,
-        system: buildDxSystem(a),
+        system,
         messages: nextHist,
         temperature: a.temperature,
         signal: ctrl.signal,
       });
+      reqLog.push({ kind: "in", at: new Date().toISOString(), title: a.name, body: raw });
       const say = assistantPlain(raw);
       if (!say) throw new Error("Провайдер вернул пустой ответ.");
       hist.length = 0;
       hist.push(...nextHist, { role: "assistant", content: say });
       bubble("assistant", `<div class="talk-bubble">${esc(say)}</div>`);
     } catch (e) {
-      showErr(e instanceof Error ? e.message : String(e));
+      const msg = e instanceof Error ? e.message : String(e);
+      if (loggedOut) reqLog.push({ kind: "err", at: new Date().toISOString(), title: a.name, body: msg });
+      showErr(msg);
     } finally {
       setBusy(false);
       ctrl = null;
