@@ -8,6 +8,8 @@ aliases:
   - Long COVID
   - Постковидный синдром
   - PASC
+sections:
+  - infect
 ---
 
 # Постковидное состояние (длительный COVID)

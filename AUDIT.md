@@ -8,7 +8,7 @@
 отчёт с доказательствами), адаптированные под этот репозиторий: статический сайт,
 кабинет в браузере, явные формулы вероятности, JSON-данные, конвейер `tools/`.
 
-Контекст проекта: `AGENTS.md`, `README.md`, `DISCLAIMER.md`, `TODO.md`,
+Контекст проекта: `AGENTS.md`, `docs/help.html`, `DISCLAIMER.md`, `TODO.md`,
 `docs/data-format.md`.
 
 ---

@@ -1,7 +1,10 @@
 import { tx } from "./db.js";
 export const supported = typeof window.showDirectoryPicker === "function" && typeof indexedDB !== "undefined";
 const HKEY = "folder";
-export const state = { handle: null, name: "", granted: false };
+const PKEY = "folderPath"; // полный путь — браузер его не отдаёт, храним то, что вписал человек
+export const state = {
+    handle: null, name: "", path: "", granted: false,
+};
 const idb = (mode, fn) => tx("kv", mode, fn);
 async function permission(handle, ask) {
     if (!handle.queryPermission)
@@ -11,16 +14,41 @@ async function permission(handle, ask) {
         return true;
     return ask && !!handle.requestPermission ? await handle.requestPermission(opts) === "granted" : false;
 }
+async function loadPath() {
+    try {
+        const p = await idb("readonly", s => s.get(PKEY));
+        return typeof p === "string" ? p : "";
+    }
+    catch (e) {
+        return "";
+    }
+}
+/** Сохранить полный путь к папке (для подписи в интерфейсе; API браузера путь не даёт). */
+export async function setPath(path) {
+    const p = String(path || "").trim();
+    state.path = p;
+    try {
+        if (p)
+            await idb("readwrite", s => s.put(p, PKEY));
+        else
+            await idb("readwrite", s => s.delete(PKEY));
+    }
+    catch (e) { /* */ }
+}
 export async function init() {
     if (!supported)
         return state;
     try {
         const h = await idb("readonly", s => s.get(HKEY));
+        const path = await loadPath();
         if (h) {
             state.handle = h;
             state.name = h.name;
+            state.path = path;
             state.granted = await permission(h, false);
         }
+        else
+            state.path = path;
     }
     catch (e) { /* нет доступа к IndexedDB — работаем без папки */ }
     return state;
@@ -30,7 +58,11 @@ export async function choose() {
     if (!await permission(h, true))
         throw new Error("Нет разрешения на запись в папку");
     await idb("readwrite", s => s.put(h, HKEY));
-    Object.assign(state, { handle: h, name: h.name, granted: true });
+    // имя сменилось — старый путь мог быть от другой папки
+    const prev = state.path;
+    const path = prev && prev.replace(/[\\/]+$/, "").endsWith(h.name) ? prev : "";
+    Object.assign(state, { handle: h, name: h.name, granted: true, path });
+    await setPath(path);
     return state;
 }
 export async function requestAccess() {
@@ -44,7 +76,24 @@ export async function disconnect() {
         await idb("readwrite", s => s.delete(HKEY));
     }
     catch (e) { /* ничего */ }
-    Object.assign(state, { handle: null, name: "", granted: false });
+    try {
+        await idb("readwrite", s => s.delete(PKEY));
+    }
+    catch (e) { /* ничего */ }
+    Object.assign(state, { handle: null, name: "", path: "", granted: false });
+}
+/** Вернуть прежний handle (если человек отменил выбор новой папки). */
+export async function restore(prev) {
+    if (!prev.handle) {
+        await disconnect();
+        return;
+    }
+    try {
+        await idb("readwrite", s => s.put(prev.handle, HKEY));
+    }
+    catch (e) { /* */ }
+    Object.assign(state, { handle: prev.handle, name: prev.name, path: prev.path, granted: prev.granted });
+    await setPath(prev.path);
 }
 export const ready = () => !!(state.handle && state.granted);
 const safeName = (s) => String(s || "").replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ").replace(/\s+/g, " ").trim().replace(/[. ]+$/, "").slice(0, 60) || "Без имени";

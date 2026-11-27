@@ -61,6 +61,11 @@ const S = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="
 const ico = (paths, size = 40) => `<svg class="dx-ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" ${S}>${paths}</svg>`;
 /** Иконка раздела материала — та же, что на карточках «Анализы» / «Нормы и веса». */
 export const secIcon = (sec, size = 40) => ico(sec.icon, size);
+/** Раздел материала по group каталога; нет группы → «Прочее». */
+export function secOfLab(code) {
+    const g = (Labs.LABS[code] && Labs.LABS[code].group) || "";
+    return SECS.find(s => g.startsWith(s.prefix)) || SECS.find(s => s.id === "other");
+}
 export function pluralLabs(n) {
     if (n % 10 === 1 && n % 100 !== 11)
         return "анализ";

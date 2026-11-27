@@ -1,15 +1,17 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Разделы диагнозов по врачебным специальностям: docs/data/diagnoses.json
-# Статья попадает в раздел по своим тегам (поле tags в начале .md-файла); одна статья может быть в нескольких разделах.
-# «Дети», «Пожилые», «Неотложно» — не разделы, а пометки у диагноза.
-# Если тегов не хватает, раздел задаётся вручную в OVERRIDES.
+# Статья попадает в раздел так (по убыванию приоритета):
+#   1) явное поле sections: в YAML-шапке (id вроде cardio, endo) — разовая синхронизация: tools/dx_sections_sync.py;
+#   2) OVERRIDES ниже;
+#   3) пересечение tags статьи с тегами раздела;
+#   4) раздел «Другое».
+# «Дети», «Пожилые», «Неотложно» — не разделы, а пометки у диагноза (по tags).
 # Запуск после добавления статей:  python tools/diagnoses_sections.py
 import json, os, re
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 DIR = os.path.join(ROOT, "docs/articles/diagnoses")
 OUT = os.path.join(ROOT, "docs/data/diagnoses.json")
-
 # id, название, подпись, теги
 SECTIONS = [
     ("cardio", "Кардиология", "Сердце и сосуды", ['Сердце', 'Сосуды']),
@@ -48,17 +50,26 @@ OVERRIDES = {
     "Перекрут яичка": ["andro", "nephro"],
 }
 OTHER = ("other", "Другое", "Без специальности")
+SECTION_IDS = {s[0] for s in SECTIONS} | {OTHER[0]}
 
 
 def front(text):
     m = re.match(r"---\r?\n(.*?)\r?\n---", text, re.S)
     if not m:
-        return "", []
+        return "", [], []
     fm = m.group(1)
     title = (re.search(r"^Title:\s*(.+)$", fm, re.M) or re.search(r"^title:\s*(.+)$", fm, re.M))
     tg = re.search(r"^tags:\s*\r?\n((?:[ \t]+- .*\r?\n?)+)", fm, re.M)
     tags = [t.strip() for t in re.findall(r"- (.*)", tg.group(1))] if tg else []
-    return (title.group(1).strip() if title else ""), tags
+    secs = []
+    sm = re.search(r"^sections:\s*\r?\n((?:[ \t]+- .*\r?\n?)+)", fm, re.M)
+    if sm:
+        secs = [t.strip() for t in re.findall(r"- (\S+)", sm.group(1)) if t.strip() in SECTION_IDS]
+    else:
+        inline = re.search(r"^sections:\s*\[([^\]]*)\]", fm, re.M)
+        if inline:
+            secs = [x.strip().strip("\"'") for x in inline.group(1).split(",") if x.strip().strip("\"'") in SECTION_IDS]
+    return (title.group(1).strip() if title else ""), tags, secs
 
 
 def main():
@@ -67,8 +78,8 @@ def main():
         if not f.endswith(".md") or f == "index.md":
             continue
         name = f[:-3]
-        title, tags = front(open(os.path.join(DIR, f), encoding="utf-8").read())
-        secs = OVERRIDES.get(name) or [s[0] for s in SECTIONS if set(s[3]) & set(tags)] or [OTHER[0]]
+        title, tags, fm_secs = front(open(os.path.join(DIR, f), encoding="utf-8").read())
+        secs = fm_secs or OVERRIDES.get(name) or [s[0] for s in SECTIONS if set(s[3]) & set(tags)] or [OTHER[0]]
         flags = [fl[0] for fl in FLAGS if set(fl[2]) & set(tags)]
         items[name] = {"title": title or name, "sections": secs}
         if flags:
@@ -80,7 +91,7 @@ def main():
         sections.append({"id": OTHER[0], "title": OTHER[1], "desc": OTHER[2], "tags": []})
     data = {
         "format": "electrodoctor-diagnoses", "version": 1,
-        "about": "Разделы диагнозов по специальностям врачей. items: имя статьи в docs/articles/diagnoses/ (без .md) → разделы и пометки. Собирается скриптом tools/diagnoses_sections.py по тегам статей.",
+        "about": "Разделы диагнозов по специальностям врачей. items: имя статьи → sections и пометки. Собирается tools/diagnoses_sections.py (приоритет: YAML sections → OVERRIDES → tags).",
         "sections": sections,
         "flags": [{"id": i, "title": t, "tags": tg} for i, t, tg in FLAGS],
         "items": items,

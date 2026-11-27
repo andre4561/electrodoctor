@@ -68,6 +68,12 @@ const ico = (paths: string, size = 40) =>
 /** Иконка раздела материала — та же, что на карточках «Анализы» / «Нормы и веса». */
 export const secIcon = (sec: LabSec, size = 40) => ico(sec.icon, size);
 
+/** Раздел материала по group каталога; нет группы → «Прочее». */
+export function secOfLab(code: string): LabSec {
+  const g = (Labs.LABS[code] && Labs.LABS[code].group) || "";
+  return SECS.find(s => g.startsWith(s.prefix)) || SECS.find(s => s.id === "other")!;
+}
+
 export function pluralLabs(n: number): string {
   if (n % 10 === 1 && n % 100 !== 11) return "анализ";
   if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) return "анализа";

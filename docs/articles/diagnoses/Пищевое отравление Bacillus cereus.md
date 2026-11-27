@@ -11,6 +11,9 @@ aliases:
   - Рвотная и диарейная формы отравления B. cereus
   - Bacillus cereus food poisoning
   - Fried rice syndrome
+sections:
+  - gastro
+  - infect
 ---
 
 # Пищевое отравление Bacillus cereus

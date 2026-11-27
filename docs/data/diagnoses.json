@@ -1,7 +1,7 @@
 {
  "format": "electrodoctor-diagnoses",
  "version": 1,
- "about": "Разделы диагнозов по специальностям врачей. items: имя статьи в docs/articles/diagnoses/ (без .md) → разделы и пометки. Собирается скриптом tools/diagnoses_sections.py по тегам статей.",
+ "about": "Разделы диагнозов по специальностям врачей. items: имя статьи → sections и пометки. Собирается tools/diagnoses_sections.py (приоритет: YAML sections → OVERRIDES → tags).",
  "sections": [
   {
    "id": "cardio",

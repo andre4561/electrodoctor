@@ -15,6 +15,7 @@ import * as Dx from "./diagnoses.js";
 import * as Sg from "./signs.js";
 import * as Labs from "./labs.js";
 import * as LabPick from "./labpick.js";
+import { secOfLab } from "./setlabs.js";
 import * as Cmp from "./complaints.js";
 import * as Talk from "./talk.js";
 import * as Exams from "./exams.js";
@@ -179,7 +180,16 @@ function route() {
     location.hash = "#/clients";
 }
 function renderNav() {
-    $("#nav").innerHTML = `<a class="btn" href="../">Главная</a><a class="btn" href="../articles/">Информация</a><a class="btn" href="#/settings">Настройки</a><a class="btn" href="#/clients">Клиенты</a>`;
+    const h = location.hash || "";
+    const n = (href, label, on) => `<a class="btn${on ? " on" : ""}" href="${href}"${on ? ' aria-current="page"' : ""}>${label}</a>`;
+    const theme = window.EDTheme;
+    $("#nav").innerHTML =
+        n("../", "Главная", false) +
+            n("#/clients", "Клиенты", h.startsWith("#/clients") || h.startsWith("#/client/")) +
+            n("#/settings", "Настройки", h.startsWith("#/settings")) +
+            n("../articles/", "Информация", false) +
+            n("../help.html", "Помощь", false) +
+            (theme ? theme.buttonHtml("btn theme-toggle") : `<button type="button" class="btn theme-toggle" data-theme-toggle title="Тема" aria-label="Тема">◐</button>`);
 }
 // ---------- клиенты ----------
 function renderClients() {
@@ -252,39 +262,79 @@ function renderClients() {
         }
     };
 }
+/** Путь к папке: браузер его не отдаёт, храним то, что человек вписал. Без отдельных кнопок — сохранение по blur/Enter. */
+function storePathHtml(st) {
+    if (!st.handle)
+        return "";
+    return `<label class="store-path-lab">Путь к папке
+    <input type="text" id="folderpath" value="${esc(st.path)}" placeholder="например, D:\\${esc(st.name)} — браузер путь не сообщает, можно вписать сами" spellcheck="false" autocomplete="off">
+  </label>`;
+}
 function drawStore() {
     const box = $("#store");
     if (!box)
         return;
     const st = FS.state;
+    const needPick = !!(st.handle && !FS.ready()); // доступ сброшен — снова выбрать ту же папку
     let html = "";
     if (FS.ready()) {
         html += `<p>Клиенты сохраняются в папку <b>«${esc(st.name)}»</b> на этом компьютере: у каждого клиента своя подпапка с файлами <code>анкета.md</code>, <code>данные.csv</code> и <code>client.json</code>. Копия остаётся и в браузере.</p>
-      <div class="grp"><button class="btn" id="pick">Выбрать другую папку</button><button class="btn" id="unpick">Не сохранять в папку</button></div>`;
+      ${storePathHtml(st)}`;
     }
     else if (st.handle) {
-        html += `<p>Выбрана папка <b>«${esc(st.name)}»</b>, но браузер просит заново подтвердить доступ к ней. Пока данные сохраняются только в браузере.</p>
-      <div class="grp"><button class="btn primary" id="allow">Разрешить доступ к папке</button><button class="btn" id="pick">Выбрать другую папку</button><button class="btn" id="unpick">Не сохранять в папку</button></div>`;
+        html += `<p>Раньше была выбрана папка <b>«${esc(st.name)}»</b>, но браузер снял доступ. Пока данные только в браузере — снова выберите эту папку. Если очистить кэш или данные сайта в браузере, клиенты пропадут.</p>
+      ${storePathHtml(st)}`;
     }
     else if (FS.supported) {
-        html += `<p>По умолчанию данные сохраняются внутри этого браузера, на этом компьютере. Это служебное место браузера: найти эти файлы вручную нельзя, а при очистке истории браузера они удалятся. Вы можете выбрать папку на компьютере — тогда у каждого клиента там будет своя подпапка с файлами.</p>
-      <div class="grp"><button class="btn primary" id="pick">Выбрать папку</button></div>`;
+        html += `<p>Сейчас данные сохраняются внутри этого браузера, на этом компьютере. Найти эти файлы вручную нельзя. Если очистить кэш или данные сайта в браузере — вся информация о клиентах исчезнет. Можно выбрать папку на компьютере: тогда у каждого клиента там будет своя подпапка с файлами, и очистка браузера их не затронет.</p>`;
     }
     else {
-        html += `<p>По умолчанию данные сохраняются внутри этого браузера, на этом компьютере. При очистке истории браузера они удалятся — время от времени нажимайте «Выгрузить всех».</p>
+        html += `<p>Данные сохраняются внутри этого браузера, на этом компьютере. Если очистить кэш или данные сайта в браузере — вся информация о клиентах исчезнет. Время от времени нажимайте «Выгрузить всех».</p>
       <p class="muted">Сохранять в выбранную папку умеют Chrome, Edge, Яндекс.Браузер и Opera на компьютере. В этом браузере такой возможности нет.</p>`;
+    }
+    if (FS.supported) {
+        html += `<div class="grp"><button class="btn${FS.ready() ? "" : " primary"}" id="pick">Выбрать папку</button><button class="btn" id="unpick"${st.handle ? "" : " disabled"} title="${st.handle ? "" : "уже сохраняется в браузере"}">Сохранять в браузере</button></div>`;
     }
     if (folderErr)
         html += `<p class="err">Не удалось записать в папку: ${esc(folderErr)}</p>`;
-    const status = FS.ready() ? `в папке «${esc(st.name)}»` : st.handle ? "нужно разрешить доступ к папке" : "в этом браузере";
-    // Раскрываем сами, если от человека что-то нужно: подтвердить доступ или разобраться с ошибкой.
-    box.innerHTML = fold("store", "Где хранятся данные", status, html, { open: !!folderErr || (!!st.handle && !FS.ready()), warn: !!folderErr || (!!st.handle && !FS.ready()) });
+    const status = FS.ready()
+        ? (st.path ? `в папке «${esc(st.name)}» · ${esc(st.path)}` : `в папке «${esc(st.name)}»`)
+        : needPick ? "нужно снова выбрать папку" : "в этом браузере";
+    box.innerHTML = fold("store", "Где хранятся данные", status, html, {
+        open: !!folderErr || needPick,
+        warn: !!folderErr || needPick,
+    });
     const after = () => syncFolder().then(() => renderClients()).catch(e => { folderError(e); drawStore(); });
-    const pick = $("#pick"), allow = $("#allow"), unpick = $("#unpick");
+    const pathInp = document.querySelector("#folderpath");
+    if (pathInp) {
+        const savePath = () => { void FS.setPath(pathInp.value).then(() => drawStore()); };
+        pathInp.onchange = savePath;
+        pathInp.onkeydown = e => { if (e.key === "Enter") {
+            e.preventDefault();
+            pathInp.blur();
+        } };
+    }
+    const pick = $("#pick"), unpick = $("#unpick");
     if (pick)
         pick.onclick = async () => {
+            const prev = { handle: FS.state.handle, name: FS.state.name, path: FS.state.path, granted: FS.state.granted };
             try {
                 await FS.choose();
+                const inFolder = await FS.readAll();
+                if (inFolder.length) {
+                    const n = inFolder.length;
+                    const word = n === 1 ? "клиент" : n < 5 ? "клиента" : "клиентов";
+                    const ok = confirm(`В папке «${FS.state.name}» уже есть ${n} ${word}.\n\n` +
+                        `• клиенты из браузера запишутся в эту папку;\n` +
+                        `• клиенты только из папки появятся в списке;\n` +
+                        `• если один и тот же клиент есть и там и там — останется более свежая версия, другая перезапишется.\n\n` +
+                        `Продолжить?`);
+                    if (!ok) {
+                        await FS.restore(prev);
+                        drawStore();
+                        return;
+                    }
+                }
                 const data = loadAll(); // в новой папке подпапки создаются заново
                 for (const c of Object.values(data.clients))
                     delete c.folder;
@@ -292,20 +342,17 @@ function drawStore() {
                 after();
             }
             catch (e) {
-                if (!(e instanceof Error && e.name === "AbortError")) {
-                    folderError(e);
-                    drawStore();
-                }
+                if (e instanceof Error && e.name === "AbortError")
+                    return;
+                folderError(e);
+                drawStore();
             }
         };
-    if (allow)
-        allow.onclick = async () => { if (await FS.requestAccess())
-            after();
-        else
-            drawStore(); };
     if (unpick)
         unpick.onclick = async () => {
-            if (!confirm("Перестать сохранять в папку «" + st.name + "»? Файлы в ней останутся, данные продолжат храниться в браузере."))
+            if (!st.handle)
+                return;
+            if (!confirm("Перестать сохранять в папку «" + st.name + "»? Файлы в ней останутся на диске, в браузере останется текущая копия — новые правки в папку больше не пишутся."))
                 return;
             await FS.disconnect();
             renderClients();
@@ -483,7 +530,7 @@ function drawDxTab(c, err) {
         const miss = [...new Set(r.score.missing)].filter(code => weight(code) >= 5).sort((a, b) => weight(b) - weight(a));
         const look = [...(r.signs.exam || []), ...(r.signs.instr || [])].filter(x => (x.w ?? 0) >= 7).sort((a, b) => (b.w ?? 0) - (a.w ?? 0)).slice(0, 5);
         return `<details class="fold dxt-item" data-secs="${esc(r.item.sections.join(" "))}" data-p="${r.score.p}" data-lift="${r.score.p - r.prior}">
-      <summary><span class="dxt-p ${pctCls(r.score.p)}">${pct(r.score.p)}%</span><span class="dx-title"><span class="fold-title">${esc(r.item.title)}</span><a class="dx-art" href="${Dx.articleUrl(r.name)}" target="_blank" rel="noopener" title="статья о диагнозе — в новой вкладке" aria-label="статья">↗</a>${(r.item.flags || []).map(f => `<span class="dx-flag f-${esc(f)}">${esc(Dx.flagTitle(f))}</span>`).join("")}<small class="muted dx-also">${r.item.sections.map(s => esc(Dx.sectionTitle(s))).join(", ")}</small></span><span class="fold-chev" aria-hidden="true"></span></summary>
+      <summary><span class="dxt-p ${pctCls(r.score.p)}">${pct(r.score.p)}%</span><span class="dx-title"><span class="fold-title">${esc(r.item.title)}</span><a class="dx-art" href="${Dx.articleUrl(r.name)}" target="_blank" rel="noopener" title="статья о диагнозе — в новой вкладке" aria-label="статья">↗</a>${(r.item.flags || []).map(f => `<span class="dx-flag f-${esc(f)}">${esc(Dx.flagTitle(f))}</span>`).join("")}<small class="muted dx-also">${r.item.sections.map(s => esc(Dx.sectionTitle(s))).join(", ")}</small></span><button type="button" class="btn dxt-talk" data-dx-talk="${esc(r.name)}" title="Поговорить с врачом по этому диагнозу">Поговорить</button><span class="fold-chev" aria-hidden="true"></span></summary>
       <div class="fold-body dxt-body">
         <p><span class="dxt-lbl">За</span>${up.map(chip).join("")}</p>
         ${down.length ? `<p><span class="dxt-lbl">Против</span>${down.map(chip).join("")}</p>` : ""}
@@ -532,6 +579,24 @@ function drawDxTab(c, err) {
         apply();
     }));
     box.querySelector("#dxtmorebtn").addEventListener("click", () => { showAll = true; apply(); });
+    box.querySelectorAll("[data-dx-talk]").forEach(btn => {
+        btn.addEventListener("click", ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const name = btn.dataset.dxTalk;
+            const r = list.find(x => x.name === name);
+            if (!r)
+                return;
+            const up = r.score.contribs.filter(x => x.c > 0).sort((a, b) => b.c - a.c);
+            const down = r.score.contribs.filter(x => x.c < 0).sort((a, b) => a.c - b.c);
+            const brief = [
+                `${pct(r.score.p)}% (без анализов ${pct(r.prior)}%)`,
+                up.length ? "за: " + up.slice(0, 8).map(x => Dx.labName(x.code)).join(", ") : "",
+                down.length ? "против: " + down.slice(0, 5).map(x => Dx.labName(x.code)).join(", ") : "",
+            ].filter(Boolean).join("; ");
+            Talk.openDxTalkDialog(c, { file: r.name, title: r.item.title, sections: r.item.sections, brief });
+        });
+    });
     // «Досдать» → пустая строка показателя на вкладке «Анализы» и переход к ней
     box.addEventListener("click", ev => {
         const b = ev.target.closest("[data-dx-add]");
@@ -657,16 +722,40 @@ function labDatesHtml(c) {
     <div class="ld-scroll" id="ldscroll">${chips || `<span class="muted ld-none">сохранённых анализов пока нет</span>`}</div></div>
     <p class="ld-cap">${cap} <span class="ld-state" id="ldstate"></span></p>`;
 }
+/** Показатели вне безопасной зоны — те же, что в плашке «Требуют внимания», по убыванию критичности. */
+function labAttnRows(c) {
+    const rows = [];
+    for (const f of labFieldsOf(c)) {
+        if (f.type !== "number" || !Norms.hasNorm(f.code))
+            continue;
+        const r = Norms.criticality(f.code, c.values[f.code], c);
+        if (r.k !== undefined && r.k > Curve.SAFE_MAX)
+            rows.push({ f, k: r.k, cls: r.cls });
+    }
+    return rows.sort((a, b) => b.k - a.k || a.f.label.localeCompare(b.f.label, "ru"));
+}
+/** Список показателей: сначала «требуют внимания», затем остальные по алфавиту. */
+function labFieldsSorted(c) {
+    const attn = labAttnRows(c);
+    const top = new Set(attn.map(r => r.f.code));
+    const rest = labFieldsOf(c).filter(f => !top.has(f.code));
+    return [...attn.map(r => r.f), ...rest];
+}
 /** Вкладка «Анализы»: ИИ + список уже появившихся показателей + поиск по справочнику (пустых групп бланка нет). */
 function labSheetHtml(c) {
     const aiSec = LAB_STEP?.sections.find(s => s.id === "ai");
     const ai = aiSec ? sectionHtml(LAB_STEP, aiSec, c) : "";
-    const fields = labFieldsOf(c);
+    const fields = labFieldsSorted(c);
+    const attnCls = new Map(labAttnRows(c).map(r => [r.f.code, r.cls]));
     const head = fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
         ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
-    const rows = fields.map(f => `<div class="lab-extra-row">${fieldHtml(f, c.values[f.code], c)}<button type="button" class="btn lab-rm" data-rm-lab="${esc(f.code)}" title="убрать" aria-label="убрать">×</button></div>`).join("");
+    const rows = fields.map(f => {
+        const cls = attnCls.get(f.code);
+        const rowCls = cls ? `lab-extra-row lab-attn ${cls}` : "lab-extra-row";
+        return `<div class="${rowCls}" data-lab-code="${esc(f.code)}">${fieldHtml(f, c.values[f.code], c)}<button type="button" class="btn lab-rm" data-rm-lab="${esc(f.code)}" title="убрать" aria-label="убрать">×</button></div>`;
+    }).join("");
     const attn = labAttnHtml(c);
-    return `${ai}${attn ? `<div class="attn" id="attn">${attn}</div>` : ""}
+    return `${ai}${attn ? `<div class="attn" id="attn">${attn}</div>` : `<div class="attn" id="attn" hidden></div>`}
     <div class="sec lab-extra" id="labextra">
       <h3>Показатели <small class="muted">${fields.length ? fields.length + " · " : ""}справочник — ${Object.keys(Labs.LABS).length} · новый код — в <a href="#/settings/weights">Настройки → Нормы и веса</a></small></h3>
       ${rows ? head + `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Пока пусто. Загрузите бланк через ИИ выше или выберите анализ из справочника — строка появится здесь.</p>`}
@@ -676,18 +765,52 @@ function labSheetHtml(c) {
     </div>`;
 }
 function labAttnHtml(c) {
-    const rows = [];
-    for (const f of labFieldsOf(c)) {
-        if (f.type !== "number" || !Norms.hasNorm(f.code))
-            continue;
-        const r = Norms.criticality(f.code, c.values[f.code], c);
-        if (r.k !== undefined && r.k > Curve.SAFE_MAX)
-            rows.push({ f, k: r.k, cls: r.cls });
-    }
+    const rows = labAttnRows(c);
     if (!rows.length)
         return "";
-    rows.sort((a, b) => b.k - a.k);
     return `<span class="attn-title">Требуют внимания:</span> ${rows.map(({ f, k, cls }) => `<button type="button" class="attn-item ${cls}" data-go="${esc(f.code)}" title="критичность ${k} — показать">${esc(f.label)}</button>`).join('<span class="attn-sep">, </span>')}`;
+}
+/** Обновить плашку и порядок/подсветку строк списка (после смены значения). */
+function refreshLabAttnList(c) {
+    const html = labAttnHtml(c);
+    const box = document.getElementById("attn");
+    if (box) {
+        box.innerHTML = html;
+        box.hidden = !html;
+    }
+    const list = document.querySelector(".lab-extra-list");
+    if (!list)
+        return;
+    const attn = labAttnRows(c);
+    const attnCls = new Map(attn.map(r => [r.f.code, r.cls]));
+    const byCode = new Map();
+    list.querySelectorAll(".lab-extra-row").forEach(row => {
+        const code = row.dataset.labCode || row.querySelector("[data-code]")?.dataset.code || "";
+        if (code)
+            byCode.set(code, row);
+        row.className = "lab-extra-row";
+        const cls = code && attnCls.get(code);
+        if (cls)
+            row.classList.add("lab-attn", cls);
+    });
+    for (const { f } of attn) {
+        const row = byCode.get(f.code);
+        if (row) {
+            list.appendChild(row);
+            byCode.delete(f.code);
+        }
+    }
+    for (const f of labFieldsOf(c)) {
+        if (attnCls.has(f.code))
+            continue;
+        const row = byCode.get(f.code);
+        if (row) {
+            list.appendChild(row);
+            byCode.delete(f.code);
+        }
+    }
+    for (const row of byCode.values())
+        list.appendChild(row);
 }
 function labSaveHtml(c) {
     const sel = selSet(c), m = c.labMeta || { date: todayIso() };
@@ -1370,9 +1493,16 @@ function renderClient(id, stepId) {
             paramFlash = "";
         }
     }
-    // Сводка «Требуют внимания»: обновляется, когда уходите из поля (а не на каждую цифру); нажатие — к полю
-    const refreshAttn = () => { const box = document.getElementById("attn"); if (box)
-        box.innerHTML = labs ? labAttnHtml(c) : attnHtml(step, c); };
+    // Сводка «Требуют внимания»: обновляется при уходе из поля; на вкладке анализов — ещё порядок и подсветка строк
+    const refreshAttn = () => {
+        if (labs)
+            refreshLabAttnList(c);
+        else {
+            const box = document.getElementById("attn");
+            if (box)
+                box.innerHTML = attnHtml(step, c);
+        }
+    };
     form.addEventListener("change", ev => { if (ev.target.matches("input[type=number]"))
         refreshAttn(); });
     form.addEventListener("click", ev => {
@@ -1974,11 +2104,11 @@ function sectionHtml(step, sec, c) {
         return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), note + fields)}</div>`;
     if (step.id === "general" && sec.title === "Клиент") {
         return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
-      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${note}${fields}</div>`;
+      <button type="button" class="btn" id="talk-doctor" title="помощник заполняет поля вкладки, это не врач из Настройки → Агенты">Помощник по анкете</button></div>${note}${fields}</div>`;
     }
     if (step.id === "params" && sec.title === "Тело") {
         return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
-      <button type="button" class="btn" id="talk-doctor">Поговорить с доктором</button></div>${note}${fields}</div>`;
+      <button type="button" class="btn" id="talk-doctor" title="помощник заполняет поля вкладки, это не врач из Настройки → Агенты">Помощник по анкете</button></div>${note}${fields}</div>`;
     }
     if (step.id === "params" && sec.title === "Осмотр") {
         syncExamCatalog();
@@ -2050,9 +2180,16 @@ function fieldHtml(f, v, own) {
         return f.type === "files" ? `<p class="muted hidden-note">${esc(f.label)}: ${esc(f.hint || "добавление скрыто")}</p>` : "";
     if (f.type === "aiimport")
         return aiImportHtml();
-    const la = Labs.LABS[f.code]; // название анализа — ссылка на статью о нём, в новой вкладке
+    const la = Labs.LABS[f.code]; // название — статья; рядом иконка — норма/кривая в настройках
     const art = articleUrl(f.code) || (la && la.article ? "../articles/lab-tests/" + encodeURIComponent(la.article) + ".html" : undefined);
-    const name = art ? `<a class="art-link" href="${art}" target="_blank" rel="noopener" title="статья «${esc(f.label)}» — откроется в новой вкладке">${esc(f.label)}</a>` : esc(f.label);
+    const title = art
+        ? `<a class="art-link" href="${art}" target="_blank" rel="noopener" title="статья «${esc(f.label)}» — откроется в новой вкладке">${esc(f.label)}</a>`
+        : esc(f.label);
+    const canEditNorm = !!(la || LAB_FORM_CODES.has(f.code));
+    const edit = canEditNorm
+        ? `<a class="lab-norm-edit" href="#/settings/weights/${encodeURIComponent(secOfLab(f.code).id)}/${encodeURIComponent(f.code)}" title="норма и кривая — Настройки → Нормы и веса" aria-label="настроить норму «${esc(f.label)}»"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a>`
+        : "";
+    const name = edit ? `${title}<span class="lab-name-gap"></span>${edit}` : title;
     const exam = Exams.isExamLineCode(f.code);
     // у осмотра описание — наведение/клик по названию, не <small> под полем
     const lbl = exam

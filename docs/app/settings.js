@@ -37,11 +37,7 @@ function weightArtUrl(code) {
     const name = Labs.LABS[code] && Labs.LABS[code].article;
     return name ? "../articles/lab-tests/" + encodeURIComponent(name) + ".html" : null;
 }
-/** Раздел материала по group из каталога; нет группы / нет в каталоге → «Прочее». */
-function weightSecOf(code) {
-    const g = (Labs.LABS[code] && Labs.LABS[code].group) || "";
-    return SetLabs.SECS.find(s => g.startsWith(s.prefix)) || SetLabs.SECS.find(s => s.id === "other");
-}
+const weightSecOf = (code) => SetLabs.secOfLab(code);
 function weightFieldsIn(sec) {
     return weightFields().filter(f => weightSecOf(f.code).id === sec.id)
         .sort((a, b) => a.label.localeCompare(b.label, "ru"));
@@ -143,7 +139,7 @@ export function load() {
     if (!d)
         return blank();
     const s = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "" }));
+        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, dxSections: d.dxSections || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "" }));
     // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
     if ((s.agentsRev || 1) < AGENTS_REV) {
         const have = new Set(s.agents.map(a => a.id));
@@ -166,7 +162,7 @@ export function load() {
 }
 export function save(s) {
     s.articlesCss = (s.articlesCss || "").trim() ? s.articlesCss : "";
-    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "" });
+    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "" });
     publishArticlesCss(s.articlesCss || "");
     Exams.applyOwn(s.exams);
 }
@@ -187,6 +183,16 @@ export function agentRuntime(s, a) {
     const conf = preset ? providerConf(s, preset) : undefined;
     const model = a.model || (shared ? def.model : "") || (conf ? conf.model : "");
     return { preset, conf, model, shared };
+}
+/** Врачи из настроек по разделам диагноза (порядок разделов сохраняется, без дублей). */
+export function agentsForSections(sections, s = load()) {
+    const out = [];
+    for (const sec of sections) {
+        const a = s.agents.find(x => x.enabled && x.section === sec);
+        if (a && !out.some(o => o.id === a.id))
+            out.push(a);
+    }
+    return out;
 }
 // Ключи пока недоступны: зашифрованы и пароль не введён, или нет доступа к папке настроек
 export const blocked = () => Store.state.locked || (Store.state.where === "folder" && !Store.state.loaded);
@@ -1288,7 +1294,7 @@ function openDxRefsPopup(code, label) {
     ov.querySelectorAll("[data-close]").forEach(b => b.onclick = close);
     ov.querySelector("[data-close]")?.focus();
 }
-function drawWeightsSection(main, sec) {
+function drawWeightsSection(main, sec, focusCode = "") {
     Labs.applyOwn(load().labs);
     const fields = weightFieldsIn(sec);
     const counts = new Map();
@@ -1405,6 +1411,23 @@ function drawWeightsSection(main, sec) {
             openDxRefsPopup(code, (f && f.label) || code);
         };
     });
+    // переход из кабинета: #/settings/weights/<раздел>/<КОД> — прокрутить к строке и подсветить
+    if (focusCode) {
+        const tr = main.querySelector(`tr[data-w="${CSS.escape(focusCode)}"]`);
+        if (tr) {
+            const g = tr.dataset.g || "";
+            if (g) {
+                const chipBtn = [...main.querySelectorAll(".lab-chips .dx-chip")].find(b => b.dataset.g === g);
+                if (chipBtn)
+                    chipBtn.click();
+            }
+            tr.classList.add("w-focus");
+            requestAnimationFrame(() => tr.scrollIntoView({ block: "center", behavior: "smooth" }));
+            const btn = tr.querySelector("[data-curve]");
+            if (btn)
+                btn.focus();
+        }
+    }
 }
 let weightsDxReady = false;
 function drawWeights(main) {
@@ -1419,10 +1442,12 @@ function drawWeights(main) {
         Promise.all([Sg.loadSigns(), Dx.loadDiagnoses()]).then(() => { weightsDxReady = true; drawWeights(main); });
         return;
     }
-    const sub = decodeURIComponent(location.hash.split("/")[3] || "");
+    const parts = location.hash.replace(/^#\/?/, "").split("/");
+    const sub = decodeURIComponent(parts[2] || "");
+    const focusCode = decodeURIComponent(parts[3] || "");
     const sec = SetLabs.SECS.find(s => s.id === sub);
     if (sec) {
-        drawWeightsSection(main, sec);
+        drawWeightsSection(main, sec, focusCode);
         return;
     }
     const all = weightFields();

@@ -9,6 +9,9 @@ aliases:
   - Хеликобактерная инфекция
   - Хеликобактерный гастрит
   - Helicobacter pylori infection
+sections:
+  - gastro
+  - infect
 ---
 
 # Инфекция Helicobacter pylori

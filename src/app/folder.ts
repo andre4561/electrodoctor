@@ -12,8 +12,11 @@ type Dir = FileSystemDirectoryHandle;
 
 export const supported = typeof window.showDirectoryPicker === "function" && typeof indexedDB !== "undefined";
 const HKEY = "folder";
+const PKEY = "folderPath";   // полный путь — браузер его не отдаёт, храним то, что вписал человек
 
-export const state: { handle: Dir | null; name: string; granted: boolean } = { handle: null, name: "", granted: false };
+export const state: { handle: Dir | null; name: string; path: string; granted: boolean } = {
+  handle: null, name: "", path: "", granted: false,
+};
 
 const idb = <T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>) => tx<T>("kv", mode, fn);
 
@@ -24,11 +27,30 @@ async function permission(handle: Dir, ask: boolean): Promise<boolean> {
   return ask && !!handle.requestPermission ? await handle.requestPermission(opts) === "granted" : false;
 }
 
+async function loadPath(): Promise<string> {
+  try {
+    const p = await idb<string | undefined>("readonly", s => s.get(PKEY));
+    return typeof p === "string" ? p : "";
+  } catch (e) { return ""; }
+}
+
+/** Сохранить полный путь к папке (для подписи в интерфейсе; API браузера путь не даёт). */
+export async function setPath(path: string): Promise<void> {
+  const p = String(path || "").trim();
+  state.path = p;
+  try {
+    if (p) await idb("readwrite", s => s.put(p, PKEY));
+    else await idb("readwrite", s => s.delete(PKEY));
+  } catch (e) { /* */ }
+}
+
 export async function init(): Promise<typeof state> {
   if (!supported) return state;
   try {
     const h = await idb<Dir | undefined>("readonly", s => s.get(HKEY));
-    if (h) { state.handle = h; state.name = h.name; state.granted = await permission(h, false); }
+    const path = await loadPath();
+    if (h) { state.handle = h; state.name = h.name; state.path = path; state.granted = await permission(h, false); }
+    else state.path = path;
   } catch (e) { /* нет доступа к IndexedDB — работаем без папки */ }
   return state;
 }
@@ -37,7 +59,11 @@ export async function choose(): Promise<typeof state> {
   const h = await window.showDirectoryPicker!({ id: "electrodoctor", mode: "readwrite" });
   if (!await permission(h, true)) throw new Error("Нет разрешения на запись в папку");
   await idb("readwrite", s => s.put(h, HKEY));
-  Object.assign(state, { handle: h, name: h.name, granted: true });
+  // имя сменилось — старый путь мог быть от другой папки
+  const prev = state.path;
+  const path = prev && prev.replace(/[\\/]+$/, "").endsWith(h.name) ? prev : "";
+  Object.assign(state, { handle: h, name: h.name, granted: true, path });
+  await setPath(path);
   return state;
 }
 
@@ -49,7 +75,16 @@ export async function requestAccess(): Promise<boolean> {
 
 export async function disconnect(): Promise<void> {
   try { await idb("readwrite", s => s.delete(HKEY)); } catch (e) { /* ничего */ }
-  Object.assign(state, { handle: null, name: "", granted: false });
+  try { await idb("readwrite", s => s.delete(PKEY)); } catch (e) { /* ничего */ }
+  Object.assign(state, { handle: null, name: "", path: "", granted: false });
+}
+
+/** Вернуть прежний handle (если человек отменил выбор новой папки). */
+export async function restore(prev: { handle: Dir | null; name: string; path: string; granted: boolean }): Promise<void> {
+  if (!prev.handle) { await disconnect(); return; }
+  try { await idb("readwrite", s => s.put(prev.handle, HKEY)); } catch (e) { /* */ }
+  Object.assign(state, { handle: prev.handle, name: prev.name, path: prev.path, granted: prev.granted });
+  await setPath(prev.path);
 }
 
 export const ready = (): boolean => !!(state.handle && state.granted);

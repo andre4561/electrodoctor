@@ -10,6 +10,9 @@ aliases:
   - Клостридиальная пищевая токсикоинфекция
   - ПТИ клостридиальной этиологии
   - Clostridium perfringens food poisoning
+sections:
+  - gastro
+  - infect
 ---
 
 # Пищевая токсикоинфекция Clostridium perfringens

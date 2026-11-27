@@ -10,6 +10,9 @@ aliases:
   - Фавизм
   - Дефицит G6PD
   - G6PD deficiency
+sections:
+  - hemat
+  - genetic
 ---
 
 # Дефицит глюкозо-6-фосфатдегидрогеназы

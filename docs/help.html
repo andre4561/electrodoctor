@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Помощь — Электродоктор</title>
+<meta name="description" content="Описание проекта Электродоктор: как работает кабинет, быстрый старт, структура, лицензия.">
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/articles.css" id="ed-articles-css-link">
+<script src="assets/articles-config.js"></script>
+<script src="assets/articles-style.js" defer></script>
+<style>
+  /* Свои цвета страницы — не зависят от чужих --ink/--card (иначе светлый текст на белом / тёмный на тёмном) */
+  .help {
+    --help-side: 240px;
+    --help-gap: 28px;
+    --h-ink: #1b1f24;
+    --h-muted: #3d4654;
+    --h-line: #d8dde5;
+    --h-acc: #1d4fbf;
+    --h-soft: #e6eefb;
+    --h-panel: #f3f5f8;
+    --h-code-bg: #eef1f5;
+    --h-code-ink: #1b1f24;
+    --h-note-bg: #fff7e0;
+    --h-note-ink: #6b4e00;
+    max-width: 1100px; margin: 0 auto; padding: 20px 16px 64px;
+    display: grid; grid-template-columns: var(--help-side) minmax(0, 1fr); gap: var(--help-gap);
+    align-items: start; color: var(--h-ink);
+  }
+  html[data-theme="dark"] .help {
+    --h-ink: #e8ebef;
+    --h-muted: #c2cad4;
+    --h-line: #3a4350;
+    --h-acc: #8bb4ff;
+    --h-soft: #1d2a40;
+    --h-panel: #1b2028;
+    --h-code-bg: #161b22;
+    --h-code-ink: #e6edf3;
+    --h-note-bg: #332a12;
+    --h-note-ink: #f1d58a;
+  }
+  .help-nav {
+    position: sticky; top: 64px; max-height: calc(100vh - 80px); overflow: auto;
+    padding: 10px 10px 14px; font-size: 14px; line-height: 1.35;
+    background: var(--h-panel); border: 1px solid var(--h-line); border-radius: 12px;
+    color: var(--h-ink);
+  }
+  .help-nav h1 {
+    margin: 0 0 12px; font-size: 18px; letter-spacing: -0.02em; color: var(--h-ink);
+  }
+  .help-nav details { margin: 0 0 6px; }
+  .help-nav summary {
+    cursor: pointer; list-style: none; font-weight: 600; color: var(--h-ink);
+    padding: 6px 8px; border-radius: 8px;
+  }
+  .help-nav summary::-webkit-details-marker { display: none; }
+  .help-nav summary::before {
+    content: "▸"; display: inline-block; width: 1em; color: var(--h-muted);
+    transition: transform .15s;
+  }
+  .help-nav details[open] > summary::before { transform: rotate(90deg); }
+  .help-nav summary:hover { background: var(--h-soft); }
+  .help-nav ul { list-style: none; margin: 2px 0 8px; padding: 0 0 0 14px; }
+  .help-nav a {
+    display: block; padding: 5px 8px; border-radius: 8px;
+    color: var(--h-ink); text-decoration: none; opacity: 0.88;
+  }
+  .help-nav a:hover, .help-nav a:focus-visible {
+    color: var(--h-acc); opacity: 1; background: var(--h-soft); outline: none;
+  }
+  .help-nav a.on {
+    color: var(--h-acc); opacity: 1; font-weight: 600; background: var(--h-soft);
+  }
+  .help-main { min-width: 0; color: var(--h-ink); }
+  .help-main section {
+    scroll-margin-top: 80px; margin: 0 0 36px; padding: 0 0 28px;
+    border-bottom: 1px solid var(--h-line);
+  }
+  .help-main section:last-child { border-bottom: 0; margin-bottom: 0; }
+  .help-main h2 { margin: 0 0 12px; font-size: 24px; letter-spacing: -0.02em; color: var(--h-ink); border: 0; padding: 0; }
+  .help-main h3 { margin: 20px 0 8px; font-size: 17px; color: var(--h-ink); }
+  .help-main p, .help-main li { font-size: 15px; line-height: 1.55; color: var(--h-ink); }
+  .help-main ol, .help-main ul { padding-left: 1.3em; }
+  .help-main li { margin: 4px 0; }
+  .help-note {
+    margin: 14px 0; padding: 10px 14px; border-radius: 12px;
+    background: var(--h-note-bg); color: var(--h-note-ink); font-size: 14px;
+  }
+  .help-main pre, .help-main .tree {
+    margin: 12px 0; padding: 12px 14px; overflow: auto;
+    border: 1px solid var(--h-line); border-radius: 10px;
+    background: var(--h-code-bg); color: var(--h-code-ink);
+    font: 13px/1.45 ui-monospace, Consolas, monospace;
+  }
+  .help-main code {
+    background: var(--h-code-bg); color: var(--h-code-ink);
+    padding: .15em .4em; border-radius: 4px; font-size: 90%;
+  }
+  .help-main pre code { background: none; padding: 0; color: inherit; }
+  .help-main img {
+    display: block; max-width: min(100%, 560px); height: auto; margin: 12px 0;
+    border: 1px solid var(--h-line); border-radius: 10px;
+  }
+  .help-main a { color: var(--h-acc); }
+  .help-lead { font-size: 17px; color: var(--h-muted); max-width: 42em; }
+  @media (max-width: 820px) {
+    .help { grid-template-columns: 1fr; }
+    .help-nav { position: static; max-height: none; margin-bottom: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="help">
+  <nav class="help-nav" aria-label="Оглавление помощи">
+    <h1>Помощь</h1>
+    <details open>
+      <summary>О проекте</summary>
+      <ul>
+        <li><a href="#about" class="on">Что это</a></li>
+        <li><a href="#how">Как работает кабинет</a></li>
+        <li><a href="#data">Данные расчёта</a></li>
+      </ul>
+    </details>
+    <details open>
+      <summary>Как пользоваться</summary>
+      <ul>
+        <li><a href="#menu">Где что искать</a></li>
+        <li><a href="#start">Быстрый старт</a></li>
+      </ul>
+    </details>
+    <details open>
+      <summary>Для разработчиков</summary>
+      <ul>
+        <li><a href="#structure">Структура репозитория</a></li>
+        <li><a href="#publish">Публикация на хостинг</a></li>
+        <li><a href="#license">Лицензия</a></li>
+      </ul>
+    </details>
+  </nav>
+
+  <div class="help-main">
+    <section id="about">
+      <h2>Что это</h2>
+      <p class="help-lead">Открытый вычислитель дифференциальной диагностики: анализы, жалобы и данные осмотра на входе, 3–4 вероятных диагноза с процентами на выходе.</p>
+      <p>Каждый шаг расчёта — явная формула, и для каждого диагноза видно, какой показатель сколько добавил к вероятности. Искусственный интеллект используется для заполнения данных и трактовки рассчитанных выводов, но не внутри самого расчёта.</p>
+      <p class="help-note">Исследовательский проект. Не медицинское изделие, не для самодиагностики и не для лечебных решений. Все коэффициенты пока условные. Юридическая оговорка — в репозитории: <a href="https://github.com/andre4561/electrodoctor/blob/main/DISCLAIMER.md">DISCLAIMER.md</a>.</p>
+      <p>Сайт: <a href="https://andre4561.github.io/electrodoctor/">andre4561.github.io/electrodoctor</a> · репозиторий: <a href="https://github.com/andre4561/electrodoctor">GitHub</a>. Контекст для ИИ-агентов — <a href="https://github.com/andre4561/electrodoctor/blob/main/AGENTS.md">AGENTS.md</a>.</p>
+    </section>
+
+    <section id="how">
+      <h2>Как работает кабинет</h2>
+      <ol>
+        <li>Данные клиента вносятся в анкету (вручную, через ИИ, чат «Поговорить с доктором» на вкладках Общее и Параметры, или импорт; можно и экспортировать): общее, параметры, анализы, психолог.</li>
+        <li>Для показателей считаются отклонение от нормы и сила (по критичности или по проценту отклонения — переключатель в настройках). Норма здесь — не «среднее по лаборатории», а ориентир <strong>эгоморфа</strong>: форма человека, к которой он рассчитан (генотип, подходящая среда); отклонение от неё — движение к ксеноморфу.</li>
+      </ol>
+      <p><img src="assets/критичность-mcv.png" alt="Кривая критичности MCV: отклонение от нормы и безопасная зона" width="560" height="auto"></p>
+      <p>Врач или исследователь может задать для каждого анализа своё значение нормы и поправить кривую критичности — глобально в <a href="app/#/settings/weights">Настройки → Нормы и веса</a> (там же каталог анализов) или отдельно у конкретного пациента; личная настройка перекрывает общую.</p>
+      <ol start="3">
+        <li>По признакам диагнозов складываются вклады «за» и «против».</li>
+        <li>Вероятность: <code>балл = logit(исходная частота) + сумма вкладов</code>, <code>P = 1 / (1 + e^−балл)</code>.</li>
+        <li>На вкладке «Диагнозы» видны проценты, разбивка вкладов и что досдать; оттуда же можно перейти к признакам диагноза в настройках и запросить консультацию ИИ.</li>
+      </ol>
+    </section>
+
+    <section id="data">
+      <h2>Данные расчёта</h2>
+      <p>Файлы в <code>docs/data/</code>:</p>
+      <ul>
+        <li><code>labs.json</code> — каталог анализов (коды, синонимы, группа по материалу; правки и новые коды — в кабинете: Настройки → Нормы и веса)</li>
+        <li><code>norms.json</code> — нормы и кривые критичности</li>
+        <li><code>signs.json</code> — признаки диагнозов и веса</li>
+        <li><code>diagnoses.json</code> — разделы специальностей и список диагнозов</li>
+      </ul>
+      <p>В Нормах и весах у названия показателя — цифра «в скольких диагнозах»; клик открывает список со ссылками сразу в редактор признаков этого диагноза.</p>
+      <p>Форматы: <a href="data-format.html">data-format</a>. Дорожная карта: <a href="roadmap.html">roadmap</a>. Задачи и аудит — в корне репозитория (<code>TODO.md</code>, <code>AUDIT.md</code>).</p>
+    </section>
+
+    <section id="menu">
+      <h2>Где что искать</h2>
+      <ul>
+        <li><a href="app/#/clients"><strong>Клиенты</strong></a> — кабинет: анкеты, анализы, расчёт диагнозов.</li>
+        <li><a href="app/#/settings"><strong>Настройки</strong></a> — провайдеры ИИ, агенты, нормы и веса, осмотр, признаки диагнозов, хранение.</li>
+        <li><a href="articles/"><strong>Информация</strong></a> — статьи об анализах, диагнозах и смежных темах.</li>
+        <li><a href="./"><strong>Главная</strong></a> — вход на сайт.</li>
+      </ul>
+    </section>
+
+    <section id="start">
+      <h2>Быстрый старт</h2>
+      <p>Нужен Python 3. Сайт лежит в <code>docs/</code> — файлы с диска открывать не надо.</p>
+      <p>Самый простой способ: дважды щёлкните <code>открыть-сайт.bat</code> в корне проекта. Он поставит пакет <code>markdown</code> при необходимости, запустит сервер и откроет браузер.</p>
+      <p>Или вручную:</p>
+      <pre>pip install markdown
+python tools/preview.py   # → http://localhost:8000/</pre>
+      <p>Кабинет: <a href="http://localhost:8000/app/#/clients">http://localhost:8000/app/#/clients</a></p>
+      <p>Подробнее локально — файл <code>Читать.md</code> в корне репозитория.</p>
+    </section>
+
+    <section id="structure">
+      <h2>Структура репозитория</h2>
+      <pre class="tree">electrodoctor/
+├── AGENTS.md              контекст проекта для ИИ-агентов
+├── AUDIT.md               playbook аудита (только проверка)
+├── TODO.md                текущие задачи
+├── DISCLAIMER.md          ограничения и предупреждения
+├── CONTRIBUTING.md        как предлагать веса, диагнозы, код
+├── Читать.md              как открыть сайт локально
+├── открыть-сайт.bat       запуск локального сервера
+├── src/app/               кабинет (TypeScript)
+├── docs/                  сайт (GitHub Pages); *.js собираются из src/
+│   ├── index.html         главная
+│   ├── help.html          эта страница (описание + помощь)
+│   ├── app/               кабинет в браузере
+│   ├── data/              данные расчёта (JSON)
+│   └── articles/          статьи (Markdown)
+├── audit/                 шаблон и отчёты аудита
+├── tests/                 тесты
+└── tools/                 просмотр сайта и конвейер данных</pre>
+    </section>
+
+    <section id="publish">
+      <h2>Публикация на хостинг</h2>
+      <p>На хостинг уходит <strong>готовая статика</strong> (как локальный <code>tools/preview.py</code>), не сырой Markdown и не сборка Jekyll. GitHub Pages может отдавать <code>docs/</code> с <code>main</code>; боевой корень обновляется отдельно.</p>
+      <pre>python tools/build_site.py          # HTML из статей + архивы в tools/out/
+python tools/ftp_upload_zip.py      # заливает electrodoctor-site.tar.gz по FTP</pre>
+      <p>Учётка FTP — в <code>secrets/ftp.json</code> (не в git). В панели хостинга распаковать <strong>electrodoctor-site.tar.gz</strong> в корень сайта. Zip для кириллических имён на части хостингов ломается — предпочтителен tar.gz. Подробности — в <code>AGENTS.md</code>.</p>
+    </section>
+
+    <section id="license">
+      <h2>Лицензия</h2>
+      <p>Код — <a href="https://github.com/andre4561/electrodoctor/blob/main/LICENSE">GNU AGPL v3</a>, данные и документация — <a href="https://github.com/andre4561/electrodoctor/blob/main/LICENSE-DATA">CC BY-SA 4.0</a>.</p>
+    </section>
+  </div>
+</div>
+<script src="assets/totop.js" defer></script>
+<script src="assets/sitenav.js" defer></script>
+<script src="assets/site-inject.js" defer></script>
+<script>
+(function () {
+  var links = document.querySelectorAll(".help-nav a[href^='#']");
+  var sections = [];
+  links.forEach(function (a) {
+    var id = a.getAttribute("href").slice(1);
+    var el = document.getElementById(id);
+    if (el) sections.push({ a: a, el: el });
+  });
+  function setOn() {
+    var y = window.scrollY + 90, cur = sections[0] && sections[0].a;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].el.offsetTop <= y) cur = sections[i].a;
+    }
+    links.forEach(function (a) { a.classList.toggle("on", a === cur); });
+  }
+  window.addEventListener("scroll", setOn, { passive: true });
+  setOn();
+})();
+</script>
+</body>
+</html>

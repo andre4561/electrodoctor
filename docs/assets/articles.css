@@ -26,9 +26,10 @@ blockquote { margin: 0 0 1em; padding: 0 1em; color: #6a737d; border-left: .25em
 img { max-width: 100%; }
 hr { border: 0; border-top: 1px solid #eaecef; margin: 24px 0; }
 
-/* Шапка сайта (sitenav.js) */
+/* Шапка сайта (sitenav.js) — закреплена при прокрутке */
 #ed-sitenav {
   --n-bg: #fff; --n-ink: #1b1f24; --n-line: #e2e5ea; --n-acc: #2563c9; --n-soft: #e6eefb;
+  position: sticky; top: 0; z-index: 200;
   background: var(--n-bg); border-bottom: 1px solid var(--n-line);
   font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -44,8 +45,9 @@ hr { border: 0; border-top: 1px solid #eaecef; margin: 24px 0; }
 #ed-sitenav .n-btn {
   display: inline-block; text-decoration: none; border: 1px solid var(--n-line);
   background: var(--n-bg); color: var(--n-ink); padding: 7px 14px; border-radius: 8px;
-  font-size: 14px; line-height: 1.4; cursor: pointer; font-family: inherit;
+  font-size: 14px; line-height: 1.4; cursor: pointer; font: inherit;
 }
+#ed-sitenav button.n-btn { appearance: none; }
 #ed-sitenav .n-btn:hover { border-color: var(--n-acc); color: var(--n-acc); }
 #ed-sitenav .n-btn.on { border-color: var(--n-acc); background: var(--n-soft); color: var(--n-acc); font-weight: 600; }
 @media (max-width: 560px) {
@@ -53,12 +55,20 @@ hr { border: 0; border-top: 1px solid #eaecef; margin: 24px 0; }
   #ed-sitenav .n-btn { padding: 6px 10px; }
 }
 
-@media (prefers-color-scheme: dark) {
-  body { background: #0d1117; color: #c9d1d9; }
-  h1, h2, hr { border-color: #30363d; }
-  a { color: #58a6ff; }
-  th, td { border-color: #30363d; }
-  tr:nth-child(2n), pre { background: #161b22; }
-  code { background: rgba(240, 246, 252, .1); }
-  blockquote { color: #8b949e; border-left-color: #30363d; }
+html[data-theme="dark"] body,
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
+html[data-theme="dark"] body { background: #0d1117; color: #c9d1d9; }
+html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] hr { border-color: #30363d; }
+html[data-theme="dark"] a { color: #58a6ff; }
+html[data-theme="dark"] th, html[data-theme="dark"] td { border-color: #30363d; }
+html[data-theme="dark"] tr:nth-child(2n), html[data-theme="dark"] pre { background: #161b22; }
+html[data-theme="dark"] code { background: rgba(240, 246, 252, .1); }
+html[data-theme="dark"] blockquote { color: #8b949e; border-left-color: #30363d; }
+
+.theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; padding-left: 0 !important; padding-right: 0 !important; cursor: pointer;
+}
+.theme-toggle svg { display: block; }

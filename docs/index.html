@@ -5,21 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Электродоктор</title>
 <meta name="description" content="Открытая система поддержки диагностики: анализы → прозрачный расчёт → вероятные диагнозы и следующий анализ.">
+<script src="assets/theme.js"></script>
 <style>
-  :root {
+  :root, html[data-theme="light"] {
     --bg: #f6f7f9; --card: #ffffff; --ink: #1b1f24; --muted: #5d6673; --line: #e2e5ea;
     --accent: #2563c9; --accent-soft: #e6eefb; --note-bg: #fff7e0; --note-ink: #6b4e00; --radius: 12px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #12151a; --card: #1b2028; --ink: #e8ebef; --muted: #9aa4b2; --line: #2c333d;
-      --accent: #6aa0ff; --accent-soft: #1d2a40; --note-bg: #332a12; --note-ink: #f1d58a;
-    }
+  html[data-theme="dark"] {
+    --bg: #12151a; --card: #1b2028; --ink: #e8ebef; --muted: #9aa4b2; --line: #2c333d;
+    --accent: #6aa0ff; --accent-soft: #1d2a40; --note-bg: #332a12; --note-ink: #f1d58a;
   }
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; padding-left: 0; padding-right: 0; cursor: pointer;
+  }
+  .theme-toggle svg { display: block; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
     font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-  .top { background: var(--card); border-bottom: 1px solid var(--line); }
+  .top { position: sticky; top: 0; z-index: 200; background: var(--card); border-bottom: 1px solid var(--line); }
   .top-in { max-width: 880px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .brand { font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; }
   .top nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -52,9 +56,11 @@
     <a class="brand" href="./">Электродоктор</a>
     <nav aria-label="Разделы сайта">
       <a class="btn on" href="./" aria-current="page">Главная</a>
-      <a class="btn" href="articles/">Информация</a>
-      <a class="btn" href="app/#/settings">Настройки</a>
       <a class="btn" href="app/#/clients">Клиенты</a>
+      <a class="btn" href="app/#/settings">Настройки</a>
+      <a class="btn" href="articles/">Информация</a>
+      <a class="btn" href="help.html">Помощь</a>
+      <button type="button" class="btn theme-toggle" data-theme-toggle title="Тема" aria-label="Тема">◐</button>
     </nav>
   </div>
 </header>
@@ -79,5 +85,6 @@
 </div>
 <script src="assets/site-inject.js" defer></script>
 <script src="assets/totop.js" defer></script>
+<script>if (window.EDTheme) EDTheme.refreshButtons();</script>
 </body>
 </html>

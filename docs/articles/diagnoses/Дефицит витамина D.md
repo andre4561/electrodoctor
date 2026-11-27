@@ -11,6 +11,9 @@ aliases:
   - Рахит
   - Остеомаляция
   - Vitamin D deficiency
+sections:
+  - endo
+  - ortho
 ---
 
 # Дефицит витамина D

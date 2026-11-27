@@ -8,6 +8,7 @@ import * as Sg from "./signs.js";
 import type * as Norms from "./norms.js";
 import { STEPS } from "./fields.js";
 import * as Labs from "./labs.js";
+import { lockScroll, unlockScroll } from "./ui.js";
 
 export interface DxSection { id: string; title: string; desc: string; tags: string[] }
 export interface DxFlag { id: string; title: string; tags: string[] }
@@ -57,6 +58,29 @@ export function plural(n: number): string {
 }
 export const articleUrl = (name: string) => "../articles/diagnoses/" + encodeURIComponent(name) + ".html";
 
+/** Разделы диагноза: своё в настройках перекрывает docs/data/diagnoses.json. */
+export function sectionsOf(name: string, item?: DxItem): string[] {
+  const own = (Settings.load().dxSections || {})[name];
+  if (own && own.length) return own.slice();
+  const base = item || (data && data.items[name]);
+  return base && base.sections.length ? base.sections.slice() : [];
+}
+function putSections(name: string, secs: string[] | null): void {
+  const st = Settings.load();
+  const own = { ...(st.dxSections || {}) };
+  const fileSecs = (data && data.items[name] && data.items[name].sections) || [];
+  const same = secs && secs.length === fileSecs.length && secs.every((s, i) => s === fileSecs[i]);
+  if (!secs || !secs.length || same) delete own[name];
+  else own[name] = secs;
+  st.dxSections = own;
+  Settings.save(st);
+}
+function sectionsHtml(name: string, item: DxItem): string {
+  const secs = sectionsOf(name, item);
+  if (!secs.length) return `<span class="muted">без специальности</span>`;
+  return secs.map(s => `<a href="#/settings/diagnoses/${esc(s)}">${esc(sectionTitle(s))}</a>`).join(", ");
+}
+
 /** Диагнозы, в признаках которых есть анализ с этим кодом (файл статьи → заголовок → раздел). */
 export function diagnosesUsingLab(code: string): { file: string; title: string; section: string }[] {
   if (!data || !code) return [];
@@ -65,7 +89,7 @@ export function diagnosesUsingLab(code: string): { file: string; title: string; 
   for (const [file, item] of Object.entries(data.items)) {
     const s = own[file] || Sg.FILE_SIGNS[file];
     if (!s || !Sg.labSigns(s).some(l => l.code === code)) continue;
-    out.push({ file, title: item.title, section: item.sections[0] || "" });
+    out.push({ file, title: item.title, section: sectionsOf(file, item)[0] || "" });
   }
   return out.sort((a, b) => a.title.localeCompare(b.title, "ru"));
 }
@@ -80,12 +104,11 @@ export function draw(main: HTMLElement): void {
   const focusDx = decodeURIComponent(parts[3] || "");
   const sec = data.sections.find(s => s.id === sub);
   if (sec) return drawSection(main, data, sec, focusDx || undefined);
-  const all = Object.values(data.items);
-  const cnt = (id: string) => all.filter(it => it.sections.includes(id)).length;
   const names = Object.keys(data.items);
-  const withSigns = (id: string) => names.filter(n => data!.items[n].sections.includes(id) && signCount(n) > 0).length;
+  const cnt = (id: string) => names.filter(n => sectionsOf(n, data!.items[n]).includes(id)).length;
+  const withSigns = (id: string) => names.filter(n => sectionsOf(n, data!.items[n]).includes(id) && signCount(n) > 0).length;
   const m = method();
-  main.innerHTML = `<div class="set-head"><h2>Диагнозы</h2><span class="muted">${all.length} ${plural(all.length)} в ${data.sections.length} ${data.sections.length % 10 === 1 && data.sections.length % 100 !== 11 ? "разделе" : "разделах"}</span></div>
+  main.innerHTML = `<div class="set-head"><h2>Диагнозы</h2><span class="muted">${names.length} ${plural(names.length)} в ${data.sections.length} ${data.sections.length % 10 === 1 && data.sections.length % 100 !== 11 ? "разделе" : "разделах"}</span></div>
     <p class="muted dx-lead">Разделы — по специальностям врачей. Диагноз может быть сразу в нескольких разделах.</p>
     <div class="card dx-method">
       <b>Сила отклонения в расчёте вероятности</b>
@@ -129,7 +152,9 @@ export function rank(values: Record<string, unknown>, ctx: Norms.Ctx): Ranked[] 
   const withSigns = Object.keys(data.items).map(n => ({ n, s: signsFor(n) })).filter(x => x.s && Sg.labSigns(x.s).length) as { n: string; s: Sg.Signs }[];
   const spec = Sg.specificity(withSigns.map(x => x.s));
   for (const { n: name, s } of withSigns) {
-    const item = data.items[name]; if (!sexFits(item, sex)) continue;
+    const base = data.items[name];
+    const item = { ...base, sections: sectionsOf(name, base) };
+    if (!sexFits(item, sex)) continue;
     out.push({ name, item, signs: s, score: Sg.evaluate(s, values, ctx, m, spec), prior: s.prior ?? Sg.DEFAULT_PRIOR });
   }
   return out.sort((a, b) => b.score.p - a.score.p || (b.score.p - b.prior) - (a.score.p - a.prior));
@@ -174,6 +199,7 @@ function dxBody(name: string): string {
   return `<div class="dx-form" data-dxform="${esc(name)}">
     <div class="dx-meta">
       <label>Распространённость <input type="number" name="prior" min="0.01" max="99" step="0.1" value="${esc(s.prior ?? "")}" placeholder="${Sg.DEFAULT_PRIOR}"> %</label>
+      <button type="button" class="btn" data-dx-act="doctors">Привязать врачей</button>
     </div>
     <h4>Анализы <small class="muted">важность 0–10: насколько отклонение указывает на этот диагноз</small></h4>
     <div class="tblwrap"><table class="dx-signs"><thead><tr><th>Показатель</th><th>Направление</th><th>Важность</th><th>Если в норме</th><th></th></tr></thead>
@@ -220,10 +246,72 @@ function sortSecList(list: [string, DxItem][]): [string, DxItem][] {
     : a[1].title.localeCompare(b[1].title, "ru"));
 }
 
+function openDoctorsDialog(name: string, onSaved: (secs: string[]) => void): void {
+  if (!data) return;
+  const item = data.items[name];
+  let picked = sectionsOf(name, item);
+  const catalog = data.sections.filter(s => s.id !== "other");
+  const ov = document.createElement("div");
+  ov.className = "cv-overlay";
+  const drawList = () => {
+    const box = ov.querySelector<HTMLElement>("#dx-doc-list")!;
+    box.innerHTML = picked.length
+      ? picked.map(id => {
+          const title = sectionTitle(id);
+          return `<div class="dx-doc-row" data-id="${esc(id)}"><span>${esc(title)}</span><button type="button" class="btn danger" data-rm="${esc(id)}" title="убрать">×</button></div>`;
+        }).join("")
+      : `<p class="muted">Пока ни одного раздела — добавьте врача ниже.</p>`;
+  };
+  const addOpts = () => catalog
+    .filter(s => !picked.includes(s.id))
+    .map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("");
+  ov.innerHTML = `<div class="cv-dialog dx-doc-dlg" role="dialog" aria-modal="true" aria-labelledby="dx-doc-title">
+    <div class="cv-head"><b id="dx-doc-title">Врачи: ${esc(item ? item.title : name)}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <p class="muted">Разделы специальностей этого диагноза. От них берутся врачи в Настройки → Агенты.</p>
+    <div id="dx-doc-list" class="dx-doc-list"></div>
+    <div class="dx-doc-add">
+      <select id="dx-doc-pick" aria-label="Добавить специальность"><option value="">+ добавить…</option>${addOpts()}</select>
+    </div>
+    <p class="err" id="dx-doc-err" hidden></p>
+    <div class="dx-doc-actions"><button type="button" class="btn primary" id="dx-doc-save">Сохранить</button><button type="button" class="btn" data-close>Отмена</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  lockScroll();
+  drawList();
+  const close = () => { document.removeEventListener("keydown", onKey); ov.remove(); unlockScroll(); };
+  const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onKey);
+  ov.addEventListener("click", e => { if (e.target === ov) close(); });
+  ov.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", close));
+  ov.querySelector("#dx-doc-list")!.addEventListener("click", e => {
+    const rm = (e.target as HTMLElement).closest<HTMLElement>("[data-rm]");
+    if (!rm) return;
+    picked = picked.filter(id => id !== rm.dataset.rm);
+    drawList();
+    const sel = ov.querySelector<HTMLSelectElement>("#dx-doc-pick")!;
+    sel.innerHTML = `<option value="">+ добавить…</option>${addOpts()}`;
+  });
+  ov.querySelector<HTMLSelectElement>("#dx-doc-pick")!.addEventListener("change", e => {
+    const id = (e.target as HTMLSelectElement).value;
+    if (!id) return;
+    if (!picked.includes(id)) picked.push(id);
+    (e.target as HTMLSelectElement).value = "";
+    (e.target as HTMLSelectElement).innerHTML = `<option value="">+ добавить…</option>${addOpts()}`;
+    drawList();
+  });
+  ov.querySelector("#dx-doc-save")!.addEventListener("click", () => {
+    const err = ov.querySelector<HTMLElement>("#dx-doc-err")!;
+    if (!picked.length) { err.hidden = false; err.textContent = "Нужен хотя бы один раздел."; return; }
+    putSections(name, picked);
+    onSaved(picked.slice());
+    close();
+  });
+}
+
 function drawSection(main: HTMLElement, d: DxData, sec: DxSection, focusDx?: string): void {
-  const raw = Object.entries(d.items).filter(([, it]) => it.sections.includes(sec.id));
+  const raw = Object.entries(d.items).filter(([name, it]) => sectionsOf(name, it).includes(sec.id));
   const list = sortSecList(raw);
-  const secTitle = (id: string) => (d.sections.find(s => s.id === id) || { title: id }).title;
   main.innerHTML = `<div class="dx-secbar">
       <a href="#/settings/diagnoses">← Все разделы</a>
       ${icon(sec.id, 32)}
@@ -236,9 +324,8 @@ function drawSection(main: HTMLElement, d: DxData, sec: DxSection, focusDx?: str
       <input type="search" id="dxq" placeholder="Поиск по названию" aria-label="Поиск по названию">
     </div>
     <div class="dx-acc">${list.map(([name, it]) => {
-      const also = it.sections.filter(s => s !== sec.id);
       return `<details class="fold dx-item" data-dx="${esc(name)}" data-k="${esc(it.title.toLowerCase())}" data-prior="${priorOf(name)}" data-title="${esc(it.title)}">
-        <summary><span class="dx-title"><span class="fold-title">${esc(it.title)}</span><a class="dx-art" href="${articleUrl(name)}" target="_blank" rel="noopener" title="статья о диагнозе — откроется в новой вкладке" aria-label="статья">↗</a>${also.length ? `<small class="muted dx-also">также: ${also.map(s => `<a href="#/settings/diagnoses/${esc(s)}">${esc(secTitle(s))}</a>`).join(", ")}</small>` : ""}</span><span class="fold-status" data-dxstatus>${dxStatus(name)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
+        <summary><span class="dx-title"><span class="fold-title">${esc(it.title)}</span><a class="dx-art" href="${articleUrl(name)}" target="_blank" rel="noopener" title="статья о диагнозе — откроется в новой вкладке" aria-label="статья">↗</a><small class="muted dx-also">${sectionsHtml(name, it)}</small></span><span class="fold-status" data-dxstatus>${dxStatus(name)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
         <div class="fold-body" data-dxbody></div></details>`;
     }).join("")}</div><p class="muted empty" id="dxempty" hidden>Ничего не найдено</p>`;
   // Содержимое строки собирается при раскрытии — страница остаётся лёгкой даже на 150 диагнозов
@@ -265,6 +352,20 @@ function drawSection(main: HTMLElement, d: DxData, sec: DxSection, focusDx?: str
   acc.addEventListener("click", ev => {
     const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-dx-act]"); if (!b) return;
     const form = b.closest<HTMLElement>("[data-dxform]")!, name = form.dataset.dxform!;
+    if (b.dataset.dxAct === "doctors") {
+      openDoctorsDialog(name, secs => {
+        const det = form.closest("details")!;
+        const also = det.querySelector<HTMLElement>(".dx-also");
+        if (also) also.innerHTML = sectionsHtml(name, d.items[name] || { title: name, sections: secs });
+        if (!secs.includes(sec.id)) {
+          // убрали текущий раздел — строка больше не из этого списка
+          det.remove();
+          const left = acc.querySelectorAll(".dx-item").length;
+          main.querySelector<HTMLElement>("#dxcount")!.textContent = `${left} ${plural(left)}`;
+        }
+      });
+      return;
+    }
     if (b.dataset.dxAct === "add") {
       form.querySelector("tbody")!.insertAdjacentHTML("beforeend", labRow());
       form.querySelector<HTMLSelectElement>("tr[data-sign]:last-child [name=code]")!.focus();

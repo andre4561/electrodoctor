@@ -11,6 +11,9 @@ aliases:
   - M. genitalium
   - Mycoplasma genitalium infection
   - MG
+sections:
+  - andro
+  - infect
 ---
 
 # Инфекция Mycoplasma genitalium

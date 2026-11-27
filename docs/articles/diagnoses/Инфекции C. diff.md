@@ -11,6 +11,9 @@ aliases:
   - Псевдомембранозный колит
   - Антибиотик-ассоциированный колит
   - Clostridioides difficile infection
+sections:
+  - gastro
+  - infect
 ---
 
 # Инфекция Clostridioides difficile
