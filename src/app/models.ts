@@ -7,6 +7,7 @@
 // Если провайдер сам сообщает возможности (OpenRouter, Mistral, Ollama, LM Studio, Gemini) — берём их;
 // иначе определяем по названию модели, и такие значки показываются бледнее с пометкой «по названию».
 import type { ProviderPreset, ProviderConf } from "./settings.js";
+import * as I18n from "./i18n.js";
 
 /** localhost / 127.0.0.1 — ключ не нужен (Ollama, LM Studio и т.п.). */
 export const isLocalUrl = (url: string) =>
@@ -23,14 +24,18 @@ export const CAPS: { cap: Cap; label: string; svg: string }[] = [
   { cap: "free", label: "бесплатная", svg: '<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.3"/>' },
 ];
 const esc = (s: unknown) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[c]);
+const capLabel = (c: { cap: Cap; label: string }) => I18n.t("set.prov.cap." + c.cap, c.label);
+const guessedHint = () => I18n.t("set.prov.cap.guessed", " (определено по названию модели)");
 
 export function capIcons(m: ModelInfo | undefined): string {
   if (!m) return "";
-  return CAPS.filter(c => m.caps.includes(c.cap)).map(c =>
-    `<svg class="cap cap-${c.cap}${m.guessed && c.cap !== "free" ? " guess" : ""}" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${esc(c.label)}"><title>${esc(c.label)}${m.guessed ? " (определено по названию модели)" : ""}</title>${c.svg}</svg>`).join("");
+  return CAPS.filter(c => m.caps.includes(c.cap)).map(c => {
+    const lbl = capLabel(c);
+    return `<svg class="cap cap-${c.cap}${m.guessed && c.cap !== "free" ? " guess" : ""}" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${esc(lbl)}"><title>${esc(lbl)}${m.guessed ? esc(guessedHint()) : ""}</title>${c.svg}</svg>`;
+  }).join("");
 }
 export function legendHtml(): string {
-  return `<div class="cap-legend">${CAPS.map(c => `<span>${capIcons({ id: "", caps: [c.cap] })} ${esc(c.label)}</span>`).join("")}<span class="muted">приглушённый значок — определено по названию модели</span></div>`;
+  return `<div class="cap-legend">${CAPS.map(c => `<span>${capIcons({ id: "", caps: [c.cap] })} ${esc(capLabel(c))}</span>`).join("")}<span class="muted">${esc(I18n.t("set.prov.cap.legend", "приглушённый значок — определено по названию модели"))}</span></div>`;
 }
 
 // ---------- определение по названию ----------
@@ -207,10 +212,12 @@ export async function fetchModels(p: ProviderPreset, c: ProviderConf): Promise<{
 // и кнопка, раскрывающая список с поиском.
 export function pickerHtml(name: string, value: string, models: ModelInfo[] | undefined, placeholder = "название модели"): string {
   const cur = (models || []).find(m => m.id === value);
+  const pick = I18n.t("set.prov.models.pick", "выбрать из списка");
+  const empty = I18n.t("set.prov.models.empty", "список моделей не загружен");
   return `<span class="mp" data-mp>
     <input type="text" name="${esc(name)}" value="${esc(value)}" spellcheck="false" autocomplete="off" placeholder="${esc(placeholder)}">
     <span class="mp-caps" data-mp-caps>${capIcons(cur)}</span>
-    <button type="button" class="btn mp-open" data-mp-open aria-label="выбрать из списка" title="${models && models.length ? "выбрать из списка" : "список моделей не загружен"}"${models && models.length ? "" : " disabled"}>▾</button>
+    <button type="button" class="btn mp-open" data-mp-open aria-label="${esc(pick)}" title="${esc(models && models.length ? pick : empty)}"${models && models.length ? "" : " disabled"}>▾</button>
     <span class="mp-pop" data-mp-pop hidden></span>
   </span>`;
 }
@@ -224,7 +231,7 @@ export function bindPicker(root: HTMLElement, getModels: () => ModelInfo[] | und
     const ms = getModels() || [];
     caps.innerHTML = capIcons(ms.find(m => m.id === input.value.trim()));
     btn.disabled = !ms.length;
-    btn.title = ms.length ? "выбрать из списка" : "список моделей не загружен";
+    btn.title = ms.length ? I18n.t("set.prov.models.pick", "выбрать из списка") : I18n.t("set.prov.models.empty", "список моделей не загружен");
   };
   const close = () => { pop.hidden = true; document.removeEventListener("click", outside, true); };
   const outside = (ev: Event) => { if (!root.contains(ev.target as Node)) close(); };
@@ -232,11 +239,12 @@ export function bindPicker(root: HTMLElement, getModels: () => ModelInfo[] | und
     const ms = (getModels() || []).filter(m => !q || (m.id + " " + (m.name || "")).toLowerCase().includes(q.toLowerCase()));
     const list = pop.querySelector<HTMLElement>(".mp-list")!;
     list.innerHTML = ms.length ? ms.map(m => `<button type="button" class="mp-item${m.id === input.value ? " on" : ""}" data-id="${esc(m.id)}"><span class="mp-id">${esc(m.id)}${m.name && m.name !== m.id ? `<small>${esc(m.name)}</small>` : ""}</span><span class="mp-caps">${capIcons(m)}</span></button>`).join("")
-      : `<p class="muted mp-empty">Ничего не найдено</p>`;
+      : `<p class="muted mp-empty">${esc(I18n.t("set.prov.models.nofound", "Ничего не найдено"))}</p>`;
   };
   btn.addEventListener("click", () => {
     if (!pop.hidden) { close(); return; }
-    pop.innerHTML = `<input type="search" class="mp-q" placeholder="поиск модели" aria-label="поиск модели"><div class="mp-list"></div>${legendHtml()}`;
+    const search = I18n.t("set.prov.models.search", "поиск модели");
+    pop.innerHTML = `<input type="search" class="mp-q" placeholder="${esc(search)}" aria-label="${esc(search)}"><div class="mp-list"></div>${legendHtml()}`;
     pop.hidden = false;
     const q = pop.querySelector<HTMLInputElement>(".mp-q")!;
     q.addEventListener("input", () => draw(q.value.trim()));

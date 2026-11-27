@@ -217,8 +217,9 @@
 
   function buttonHtml(cls) {
     var loc = get();
-    // onclick дублирует document-listener — на случай, если делегирование не сработало
-    return '<button type="button" class="' + (cls || "btn") + ' locale-toggle" data-locale-toggle title="' + title(loc) + '" aria-label="' + title(loc) + '" onclick="if(window.EDLocale){EDLocale.toggle();return false;}">' + label(loc) + "</button>";
+    // только data-locale-toggle: клик ловит document-listener ниже (как у theme.js).
+    // inline onclick + listener = два toggle подряд → язык «не меняется».
+    return '<button type="button" class="' + (cls || "btn") + ' locale-toggle" data-locale-toggle title="' + title(loc) + '" aria-label="' + title(loc) + '">' + label(loc) + "</button>";
   }
 
   function refreshButtons() {

@@ -38,7 +38,7 @@
     var bar = document.createElement("header");
     bar.id = "ed-sitenav";
     var localeBtn = window.EDLocale ? window.EDLocale.buttonHtml("n-btn locale-toggle") :
-      '<button type="button" class="n-btn locale-toggle" data-locale-toggle title="English" aria-label="English" onclick="if(window.EDLocale){EDLocale.toggle();return false;}">EN</button>';
+      '<button type="button" class="n-btn locale-toggle" data-locale-toggle title="English" aria-label="English">EN</button>';
     var themeBtn = window.EDTheme ? window.EDTheme.buttonHtml("n-btn theme-toggle") :
       '<button type="button" class="n-btn theme-toggle" data-theme-toggle title="Тема" aria-label="Тема">◐</button>';
     var links =

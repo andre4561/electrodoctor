@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Жалобы: на списке — чип, детали — во всплывающем окне. Коды полей те же, что в fields.ts.
 import type { Client, Value } from "./types.js";
+import * as I18n from "./i18n.js";
 import { lockScroll, unlockScroll } from "./ui.js";
 
 export interface ComplaintAttr { code: string; label: string }
@@ -51,17 +52,20 @@ export function complaintActive(c: Client, d: ComplaintDef): boolean {
   return false;
 }
 
+const attrLabel = (a: ComplaintAttr) => I18n.t("fld." + a.code, a.label);
+const cmpTitle = (d: ComplaintDef) => I18n.t("fld." + d.main, d.title);
+
 /** Краткая подпись на чипе: «давящая · 42» или пусто */
 export function complaintSummary(c: Client, d: ComplaintDef): string {
   if (!complaintActive(c, d)) return "";
   const bits: string[] = [];
-  for (const a of d.attrs) if (asStr(c.values[a.code]) === "1") bits.push(a.label);
+  for (const a of d.attrs) if (asStr(c.values[a.code]) === "1") bits.push(attrLabel(a));
   if (d.scale) {
     const n = asStr(c.values[d.scale.code]);
     if (n !== "") bits.push(n);
   }
-  if (d.note && asStr(c.values[d.note]).trim()) bits.push("есть описание");
-  return bits.length ? bits.join(" · ") : "есть";
+  if (d.note && asStr(c.values[d.note]).trim()) bits.push(I18n.t("cmp.has_note", "есть описание"));
+  return bits.length ? bits.join(" · ") : I18n.t("cmp.active", "есть");
 }
 
 export function complaintsListHtml(c: Client): string {
@@ -69,8 +73,8 @@ export function complaintsListHtml(c: Client): string {
     const on = complaintActive(c, d);
     const sum = complaintSummary(c, d);
     return `<button type="button" class="cmp-chip${on ? " on" : ""}" data-cmp="${esc(d.id)}">
-      <span class="cmp-title">${esc(d.title)}</span>
-      ${sum ? `<span class="cmp-sum">${esc(sum)}</span>` : `<span class="cmp-sum muted">настроить</span>`}
+      <span class="cmp-title">${esc(cmpTitle(d))}</span>
+      ${sum ? `<span class="cmp-sum">${esc(sum)}</span>` : `<span class="cmp-sum muted">${esc(I18n.t("cmp.setup", "настроить"))}</span>`}
     </button>`;
   }).join("");
 }
@@ -96,35 +100,36 @@ export function openComplaintDialog(c: Client, def: ComplaintDef, done: () => vo
     const has = draft[def.main] === "1";
     const attrs = def.attrs.map(a => {
       const on = draft[a.code] === "1";
-      return `<button type="button" class="cmp-attr${on ? " on" : ""}" data-attr="${esc(a.code)}" ${has ? "" : "disabled"}>${esc(a.label)}</button>`;
+      return `<button type="button" class="cmp-attr${on ? " on" : ""}" data-attr="${esc(a.code)}" ${has ? "" : "disabled"}>${esc(attrLabel(a))}</button>`;
     }).join("");
     let scale = "";
     if (def.scale) {
       const max = def.scale.max;
       const cur = draft[def.scale.code] === "" ? "0" : draft[def.scale.code];
+      const intLbl = I18n.t("cmp.intensity", "Интенсивность");
       scale = `<div class="cmp-block">
-        <span class="cmp-lbl">Интенсивность</span>
+        <span class="cmp-lbl">${esc(intLbl)}</span>
         <div class="cmp-slide${has ? "" : " off"}">
           <div class="cmp-slide-val" id="cmp-slide-val" aria-live="polite">${esc(cur)}</div>
-          <input type="range" id="cmp-slide" min="0" max="${max}" step="1" value="${esc(cur)}" ${has ? "" : "disabled"} aria-label="Интенсивность от 0 до ${max}">
+          <input type="range" id="cmp-slide" min="0" max="${max}" step="1" value="${esc(cur)}" ${has ? "" : "disabled"} aria-label="${esc(I18n.t("cmp.intensity_aria", "Интенсивность от 0 до {max}", { max }))}">
           <div class="cmp-slide-ends"><span>0</span><span>${max}</span></div>
         </div>
       </div>`;
     }
-    const note = def.note ? `<div class="cmp-block"><label class="cmp-lbl" for="cmp-note">Своими словами</label>
-      <textarea id="cmp-note" rows="3" ${has ? "" : "disabled"} placeholder="если настроек не хватает">${esc(draft[def.note])}</textarea></div>` : "";
-    return `<label class="cmp-check"><input type="checkbox" id="cmp-has" ${has ? "checked" : ""}> <span>есть</span></label>
-      <div class="cmp-block"><span class="cmp-lbl">Характер и условия</span><div class="cmp-attrs">${attrs}</div></div>
+    const note = def.note ? `<div class="cmp-block"><label class="cmp-lbl" for="cmp-note">${esc(I18n.t("cmp.own_words", "Своими словами"))}</label>
+      <textarea id="cmp-note" rows="3" ${has ? "" : "disabled"} placeholder="${esc(I18n.t("cmp.own_ph", "если настроек не хватает"))}">${esc(draft[def.note])}</textarea></div>` : "";
+    return `<label class="cmp-check"><input type="checkbox" id="cmp-has" ${has ? "checked" : ""}> <span>${esc(I18n.t("cmp.active", "есть"))}</span></label>
+      <div class="cmp-block"><span class="cmp-lbl">${esc(I18n.t("cmp.character", "Характер и условия"))}</span><div class="cmp-attrs">${attrs}</div></div>
       ${scale}${note}`;
   };
 
   ov.innerHTML = `<div class="cv-dialog cmp-dlg" role="dialog" aria-modal="true" aria-labelledby="cmp-title">
-    <div class="cv-head"><b id="cmp-title">${esc(def.title)}</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <div class="cv-head"><b id="cmp-title">${esc(cmpTitle(def))}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("cmp.close", "закрыть"))}">✕</button></div>
     <div class="cmp-body">${body()}</div>
     <div class="cmp-actions">
-      <button type="button" class="btn" data-clear>Очистить</button>
-      <button type="button" class="btn primary" data-ok>Готово</button>
+      <button type="button" class="btn" data-clear>${esc(I18n.t("cmp.clear", "Очистить"))}</button>
+      <button type="button" class="btn primary" data-ok>${esc(I18n.t("cmp.done", "Готово"))}</button>
     </div>
   </div>`;
   document.body.appendChild(ov);

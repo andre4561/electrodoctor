@@ -166,13 +166,29 @@ function sessionSet(k, v) { try {
 catch (e) {
     memSession[k] = v;
 } }
+const stepTitle = (s) => I18n.t("step." + s.id, s.title);
+const stepName = (i) => {
+    const raw = STEPS[i].title;
+    if (/^\d+$/.test(raw))
+        return I18n.t("step.numbered", "Этап {n}", { n: raw });
+    return stepTitle(STEPS[i]);
+};
+const SEC_SLUG = {
+    "Клиент": "client", "Жалобы": "complaints", "Заметки": "notes",
+    "Тело": "body", "Жизненные показатели": "vitals", "Осмотр": "exam", "Генетика": "genetics",
+    "Самочувствие": "feeling", "Беседа": "talk", "Загрузить анализы через ИИ": "ai",
+};
+function secTitle(step, sec) {
+    const slug = sec.id || SEC_SLUG[sec.title] || sec.title;
+    return I18n.t("sec." + step.id + "." + slug, sec.title);
+}
 function route() {
     const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
     if (!parts.length || parts[0] === "clients")
         return renderClients();
     if (parts[0] === "settings") {
         renderNav();
-        Settings.render(view, parts[1] || "providers", STEPS.map(s => ({ id: s.id, title: s.title })));
+        Settings.render(view, parts[1] || "providers", STEPS.map(s => ({ id: s.id, title: stepTitle(s) })));
         return;
     }
     if (parts[0] === "client" && parts[1] === "new") {
@@ -380,7 +396,6 @@ function drawStore() {
         };
 }
 // ---------- анкета ----------
-const stepName = (i) => /^\d+$/.test(STEPS[i].title) ? "Этап " + STEPS[i].title : STEPS[i].title;
 // ---------- вкладка «Диагнозы»: вероятные диагнозы по анализам ----------
 // Считается по открытому бланку вкладки «Анализы» и признакам из Настройки → Диагнозы.
 const DX_SHOW_MIN = 5; // показываем диагнозы с вероятностью от 5%,
@@ -837,10 +852,10 @@ function labSaveHtml(c) {
     const sel = selSet(c), m = c.labMeta || { date: todayIso() };
     const dirty = labDirty(c);
     return `<div class="lab-save" id="labsave">
-    <label>Дата <input type="date" name="lsdate" value="${esc(m.date || "")}" required></label>
-    <label>Время <input type="time" name="lstime" value="${esc(m.time || "")}"></label>
+    <label>${esc(I18n.t("labs.date", "Дата"))} <input type="date" name="lsdate" value="${esc(m.date || "")}" required></label>
+    <label>${esc(I18n.t("labs.time", "Время"))} <input type="time" name="lstime" value="${esc(m.time || "")}"></label>
     <span class="ls-msg" id="lsmsg" aria-live="polite"></span>
-    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ls="del">Удалить эти анализы</button>` : ""}<button type="button" class="btn${dirty ? " primary" : ""}" data-ls="save">${sel ? "Сохранить изменения" : "Сохранить анализы"}</button></span>
+    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ls="del">${esc(I18n.t("labs.delete_set", "Удалить эти анализы"))}</button>` : ""}<button type="button" class="btn${dirty ? " primary" : ""}" data-ls="save">${esc(sel ? I18n.t("labs.save_changes", "Сохранить изменения") : I18n.t("labs.save", "Сохранить анализы"))}</button></span>
     <div class="ls-ask" id="lsask" hidden></div>
   </div>`;
 }
@@ -920,10 +935,10 @@ function paramSaveHtml(c) {
     const sel = selParamSet(c), m = c.paramMeta || { date: todayIso() };
     const dirty = paramDirty(c);
     return `<div class="lab-save" id="paramsave">
-    <label>Дата <input type="date" name="psdate" value="${esc(m.date || "")}" required></label>
-    <label>Время <input type="time" name="pstime" value="${esc(m.time || "")}"></label>
+    <label>${esc(I18n.t("params.date", "Дата"))} <input type="date" name="psdate" value="${esc(m.date || "")}" required></label>
+    <label>${esc(I18n.t("params.time", "Время"))} <input type="time" name="pstime" value="${esc(m.time || "")}"></label>
     <span class="ls-msg" id="psmsg" aria-live="polite"></span>
-    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ps="del">Удалить эти замеры</button>` : ""}<button type="button" class="btn${dirty ? " primary" : ""}" data-ps="save">${sel ? "Сохранить изменения" : "Сохранить замеры"}</button></span>
+    <span class="ls-btns">${sel ? `<button type="button" class="btn danger" data-ps="del">${esc(I18n.t("params.delete_set", "Удалить эти замеры"))}</button>` : ""}<button type="button" class="btn${dirty ? " primary" : ""}" data-ps="save">${esc(sel ? I18n.t("params.save_changes", "Сохранить изменения") : I18n.t("params.save", "Сохранить замеры"))}</button></span>
     <div class="ls-ask" id="psask" hidden></div>
   </div>`;
 }
@@ -998,7 +1013,7 @@ function studiesHtml(c) {
       <div class="study-row">
         <label>Дата <input type="date" data-sf="date" value="${esc(s.date || "")}"></label>
         <label>Тип <select data-sf="kind">${opts}</select></label>
-        <button type="button" class="btn danger" data-study-del="${esc(s.id)}" title="удалить">Удалить</button>
+        <button type="button" class="btn danger" data-study-del="${esc(s.id)}" title="${esc(I18n.t("studies.delete", "Удалить"))}">${esc(I18n.t("studies.delete", "Удалить"))}</button>
       </div>
       <label class="study-title">Название <input type="text" data-sf="title" value="${esc(s.title || "")}" placeholder="например: УЗИ щитовидной железы"></label>
       <label class="study-text">Заключение <textarea data-sf="text" rows="6" placeholder="Текст с бланка или своё описание…">${esc(s.text || "")}</textarea></label>
@@ -1012,7 +1027,7 @@ function studiesHtml(c) {
             : `<span class="fold-status err">распознавание не настроено</span>`;
     return `<div class="studies" id="studies">
     <details class="fold study-ai-fold" data-fold="studies.ai">
-      <summary><span class="fold-title">Загрузить через ИИ</span>${recStatus}<span class="fold-chev" aria-hidden="true"></span></summary>
+      <summary><span class="fold-title">${esc(I18n.t("studies.ai_fold", "Загрузить через ИИ"))}</span>${recStatus}<span class="fold-chev" aria-hidden="true"></span></summary>
       <div class="fold-body">${studiesAiHtml()}</div>
     </details>
     <div class="studies-head">
@@ -1026,7 +1041,7 @@ function renderClient(id, stepId) {
     renderNav();
     const c = getClient(id) || drafts[id];
     if (!c) {
-        view.innerHTML = `<p>Клиент не найден. <a href="#/clients">К списку</a></p>`;
+        view.innerHTML = `<p>${esc(I18n.t("client.not_found", "Клиент не найден."))} <a href="#/clients">${esc(I18n.t("client.to_list", "К списку"))}</a></p>`;
         return;
     }
     const si = Math.max(0, STEPS.findIndex(s => s.id === stepId));
@@ -1047,35 +1062,35 @@ function renderClient(id, stepId) {
     const studies = step.id === "studies";
     view.innerHTML = `
     <div class="head">
-      <a class="head-back" href="#/clients">← Клиенты</a>
-      <h1 id="title">${esc(isNew && !c.values.NAME ? "Новый клиент" : displayName(c))}</h1>
+      <a class="head-back" href="#/clients">${esc(I18n.t("client.back", "← Клиенты"))}</a>
+      <h1 id="title">${esc(isNew && !c.values.NAME ? I18n.t("client.new", "Новый клиент") : displayName(c))}</h1>
       <div class="head-actions">
-        <button type="button" class="btn" id="export" ${isNew ? "disabled" : ""}>Выгрузить</button>
-        <button type="button" class="btn" id="import">Загрузить</button>
+        <button type="button" class="btn" id="export" ${isNew ? "disabled" : ""}>${esc(I18n.t("client.export", "Выгрузить"))}</button>
+        <button type="button" class="btn" id="import">${esc(I18n.t("client.import", "Загрузить"))}</button>
         <input type="file" id="import-file" accept=".csv,.md,.markdown,.txt,text/csv,text/markdown,text/plain" hidden>
-        <span class="saved" id="saved">${isNew ? "Ещё не сохранён" : ""}</span>
+        <span class="saved" id="saved">${isNew ? esc(I18n.t("client.unsaved", "Ещё не сохранён")) : ""}</span>
       </div>
     </div>
     <div class="steps" role="tablist">${STEPS.map((s, i) => {
         const p = progress(c, s);
         const full = p.total && p.filled === p.total;
-        return `<a class="step${i === si ? " on" : ""}${full && i !== si ? " full" : ""}" role="tab" aria-selected="${i === si}" href="#/client/${esc(id)}/${s.id}"${full ? ' title="всё заполнено"' : ""}>${esc(s.title)}</a>`;
+        return `<a class="step${i === si ? " on" : ""}${full && i !== si ? " full" : ""}" role="tab" aria-selected="${i === si}" href="#/client/${esc(id)}/${s.id}"${full ? ` title="${esc(I18n.t("step.full", "всё заполнено"))}"` : ""}>${esc(stepTitle(s))}</a>`;
     }).join("")}</div>
     ${labs ? `<div class="card lab-top" id="labtop">${labDatesHtml(c)}</div>` : ""}
     ${params ? `<div class="card lab-top" id="paramtop">${paramDatesHtml(c)}</div>` : ""}
     <div class="card" id="form">${labs ? labSheetHtml(c) + labSaveHtml(c)
         : studies ? studiesHtml(c)
             : step.sections.length ? step.sections.map(sec => sectionHtml(step, sec, c)).join("")
-                : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">Считаю вероятности диагнозов…</p></div>`
+                : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">${esc(I18n.t("client.dx.loading", "Считаю вероятности диагнозов…"))}</p></div>`
                     : step.id === "other" ? `<div class="other-tab">
-          <h2>Прочее</h2>
-          <p class="muted">Действия с карточкой клиента, которые не относятся к анкете и расчёту.</p>
+          <h2>${esc(I18n.t("client.other.title", "Прочее"))}</h2>
+          <p class="muted">${esc(I18n.t("client.other.lead"))}</p>
           <div class="other-danger">
-            <button type="button" class="btn danger" id="del" ${isNew ? "disabled" : ""}>Удалить пациента</button>
-            <p class="muted">Удалит карточку и все её данные на этом компьютере. Отменить нельзя.</p>
+            <button type="button" class="btn danger" id="del" ${isNew ? "disabled" : ""}>${esc(I18n.t("client.other.delete", "Удалить пациента"))}</button>
+            <p class="muted">${esc(I18n.t("client.other.delete_hint"))}</p>
           </div>
         </div>`
-                        : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
+                        : `<div class="empty">${esc(I18n.t("step.empty", "Этап «{title}»: поля пока не заданы.", { title: stepTitle(step) }))}<br><small>${esc(I18n.t("step.empty_hint"))}</small></div>`}
       ${params ? paramSaveHtml(c) : ""}
     </div>
     <div class="nav2">
@@ -1089,7 +1104,7 @@ function renderClient(id, stepId) {
         if (bmi)
             bmi.value = c.values.BMI == null ? "" : String(c.values.BMI);
         if (!isFilled(null, c.values.NAME) && !getClient(id)) {
-            $("#saved").textContent = "Заполните имя, чтобы сохранить";
+            $("#saved").textContent = I18n.t("client.need_name", "Заполните имя, чтобы сохранить");
             return;
         }
         const written = putClient(c);
@@ -1097,15 +1112,18 @@ function renderClient(id, stepId) {
         $("#title").textContent = displayName(c);
         ["export", "del"].forEach(b => { const el = document.querySelector("#" + b); if (el)
             el.disabled = false; });
-        const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-        $("#saved").textContent = storageOk ? "Сохранено " + time : "Не сохраняется в браузере — выгрузите файл";
+        const locTag = I18n.getLocale() === "en" ? "en-GB" : "ru-RU";
+        const time = new Date().toLocaleTimeString(locTag, { hour: "2-digit", minute: "2-digit" });
+        $("#saved").textContent = storageOk
+            ? I18n.t("client.saved", "Сохранено {time}", { time })
+            : I18n.t("client.saved_fail", "Не сохраняется в браузере — выгрузите файл");
         written.then(folder => {
             if (!$("#saved"))
                 return;
             if (folder)
-                $("#saved").textContent = "Сохранено " + time + " · в папку";
+                $("#saved").textContent = I18n.t("client.saved_folder", "Сохранено {time} · в папку", { time });
             else if (FS.ready() && folderErr)
-                $("#saved").textContent = "В папку не записалось: " + folderErr;
+                $("#saved").textContent = I18n.t("client.folder_fail", "В папку не записалось: {err}", { err: folderErr });
         });
         document.querySelectorAll(".step").forEach((el, i) => {
             const p = progress(c, STEPS[i]);
@@ -2379,7 +2397,7 @@ function renderClient(id, stepId) {
     if (delBtn)
         delBtn.addEventListener("click", () => {
             const inFolder = FS.ready() && c.folder ? " Подпапка «" + c.folder + "» в папке «" + FS.state.name + "» тоже будет удалена." : "";
-            if (!confirm("Удалить клиента «" + displayName(c) + "» и все его данные?" + inFolder))
+            if (!confirm(I18n.t("client.delete_confirm", "Удалить клиента «{name}» и все его данные?", { name: displayName(c) }) + inFolder))
                 return;
             deleteClient(id);
             location.hash = "#/clients";
@@ -2515,23 +2533,23 @@ function sectionHtml(step, sec, c) {
     // над колонкой норм — заголовок «Норма» (если в разделе есть показатели с нормой)
     const head = sec.fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
         ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
-    const note = sec.note ? `<p class="sec-note">${esc(sec.note)}</p>` : "";
+    const note = sec.note ? `<p class="sec-note">${esc(I18n.t("sec." + step.id + "." + (sec.id || SEC_SLUG[sec.title] || "note") + ".note", sec.note))}</p>` : "";
     if (step.id === "general" && sec.title === "Жалобы") {
         const plain = fieldsLayoutHtml(sec.fields.filter(f => !Cmp.isComplaintCode(f.code)), c);
-        return `<div class="sec"><h2>${esc(sec.title)}</h2>${note}
+        return `<div class="sec"><h2>${esc(secTitle(step, sec))}</h2>${note}
       <div class="cmp-list" id="cmplist">${Cmp.complaintsListHtml(c)}</div>
       ${plain}</div>`;
     }
     const fields = head + fieldsLayoutHtml(sec.fields, c);
     if (sec.fold && sec.id)
-        return `<div class="sec">${fold(step.id + "." + sec.id, sec.title, foldStatusHtml(sec, c), note + fields)}</div>`;
+        return `<div class="sec">${fold(step.id + "." + sec.id, secTitle(step, sec), foldStatusHtml(sec, c), note + fields)}</div>`;
     if (step.id === "general" && sec.title === "Клиент") {
-        return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
-      <button type="button" class="btn" id="talk-doctor" title="помощник заполняет поля вкладки, это не врач из Настройки → Агенты">Помощник по анкете</button></div>${note}${fields}</div>`;
+        return `<div class="sec"><div class="sec-head"><h2>${esc(secTitle(step, sec))}</h2>
+      <button type="button" class="btn" id="talk-doctor" title="помощник заполняет поля вкладки, это не врач из Настройки → Агенты">${esc(I18n.t("talk.helper", "Помощник по анкете"))}</button></div>${note}${fields}</div>`;
     }
     if (step.id === "params" && sec.title === "Тело") {
-        return `<div class="sec"><div class="sec-head"><h2>${esc(sec.title)}</h2>
-      <button type="button" class="btn" id="talk-doctor" title="помощник заполняет поля вкладки, это не врач из Настройки → Агенты">Помощник по анкете</button></div>${note}${fields}</div>`;
+        return `<div class="sec"><div class="sec-head"><h2>${esc(secTitle(step, sec))}</h2>
+      <button type="button" class="btn" id="talk-doctor" title="помощник заполняет поля вкладки, это не врач из Настройки → Агенты">${esc(I18n.t("talk.helper", "Помощник по анкете"))}</button></div>${note}${fields}</div>`;
     }
     if (step.id === "params" && sec.title === "Осмотр") {
         syncExamCatalog();
@@ -2587,37 +2605,45 @@ function sectionHtml(step, sec, c) {
             }).join("");
             return `<div class="exam-sec">${fold(`exam.${g.id}`, g.title, `${items.length} ${itemWord(items.length)}`, `<p class="muted exam-sys-desc">${esc(g.desc)}</p><div class="exam-sys-items">${inner}</div>`)}</div>`;
         }).join("");
-        return `<div class="sec"><h2>${esc(sec.title)}</h2>
+        return `<div class="sec"><h2>${esc(secTitle(step, sec))}</h2>
       <p class="muted sec-note">Список из <a href="#/settings/exam">Настройки → Осмотр</a> — те же группы и пункты, что в настройках.</p>
       ${blocks || `<p class="muted">В справочнике пока нет пунктов.</p>`}</div>`;
     }
-    return `<div class="sec">${sec.title ? `<h2>${esc(sec.title)}</h2>` : ""}${note}${fields}</div>`;
+    return `<div class="sec">${sec.title ? `<h2>${esc(secTitle(step, sec))}</h2>` : ""}${note}${fields}</div>`;
 }
 function filesListHtml(refs) {
     if (!refs.length)
         return `<p class="muted files-empty">Файлов пока нет.</p>`;
     return `<ul class="files">${refs.map(r => `<li><a href="#" data-openfile="${esc(r.id)}" title="открыть">${esc(r.name)}</a><span class="muted">${Files.sizeText(r.size)} · ${fmtDate(r.addedAt)}${r.savedAs ? " · в папке" : ""}</span><button type="button" class="btn danger" data-rmfile="${esc(r.id)}" title="удалить файл" aria-label="удалить файл ${esc(r.name)}">×</button></li>`).join("")}</ul>`;
 }
+/** Подпись поля анкеты: `fld.<CODE>` в locale, иначе русский из fields.ts. */
+const fieldLabel = (f) => I18n.t("fld." + f.code, f.label);
+const fieldHint = (f) => f.hint ? I18n.t("fld." + f.code + ".hint", f.hint) : "";
+const fieldUnit = (f) => f.unit ? I18n.t("fld." + f.code + ".unit", f.unit) : "";
+const fieldOpt = (code, val, text) => code === "SEX" ? I18n.t("value.sex." + val, text) : I18n.t("fld." + code + ".opt." + val, text);
 function fieldHtml(f, v, own) {
+    const flabel = fieldLabel(f);
+    const fhint = fieldHint(f);
+    const funit = fieldUnit(f);
     if (f.hidden)
-        return f.type === "files" ? `<p class="muted hidden-note">${esc(f.label)}: ${esc(f.hint || "добавление скрыто")}</p>` : "";
+        return f.type === "files" ? `<p class="muted hidden-note">${esc(flabel)}: ${esc(fhint || I18n.t("field.hidden", "добавление скрыто"))}</p>` : "";
     if (f.type === "aiimport")
         return aiImportHtml();
     const la = Labs.LABS[f.code]; // название — статья; рядом иконка — норма/кривая в настройках
     const art = articleUrl(f.code) || (la && la.article ? "../articles/lab-tests/" + encodeURIComponent(la.article) + ".html" : undefined);
     const title = art
-        ? `<a class="art-link" href="${art}" target="_blank" rel="noopener" title="статья «${esc(f.label)}» — откроется в новой вкладке">${esc(f.label)}</a>`
-        : esc(f.label);
+        ? `<a class="art-link" href="${art}" target="_blank" rel="noopener" title="${esc(I18n.t("field.article_title", "статья «{name}» — откроется в новой вкладке", { name: flabel }))}">${esc(flabel)}</a>`
+        : esc(flabel);
     const canEditNorm = !!(la || LAB_FORM_CODES.has(f.code));
     const edit = canEditNorm
-        ? `<a class="lab-norm-edit" href="#/settings/weights/${encodeURIComponent(secOfLab(f.code).id)}/${encodeURIComponent(f.code)}" title="норма и кривая — Настройки → Нормы и веса" aria-label="настроить норму «${esc(f.label)}»"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a>`
+        ? `<a class="lab-norm-edit" href="#/settings/weights/${encodeURIComponent(secOfLab(f.code).id)}/${encodeURIComponent(f.code)}" title="${esc(I18n.t("field.norm_edit", "норма и кривая — Настройки → Нормы и веса"))}" aria-label="${esc(I18n.t("field.norm_aria", "настроить норму «{name}»", { name: flabel }))}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></a>`
         : "";
     const name = edit ? `${title}<span class="lab-name-gap"></span>${edit}` : title;
     const exam = Exams.isExamLineCode(f.code);
     // у осмотра описание — наведение/клик по названию, не <small> под полем
     const lbl = exam
-        ? examSignLinkHtml(f.code, f.label) + (f.required ? ' <span class="req">*</span>' : "")
-        : `${name}${f.required ? ' <span class="req">*</span>' : ""}${f.hint ? `<small>${esc(f.hint)}</small>` : ""}`;
+        ? examSignLinkHtml(f.code, flabel) + (f.required ? ' <span class="req">*</span>' : "")
+        : `${name}${f.required ? ' <span class="req">*</span>' : ""}${fhint ? `<small>${esc(fhint)}</small>` : ""}`;
     const id = "f_" + f.code;
     const s = v === undefined || v === null || v === "" ? "" : String(v);
     let ctl = "";
@@ -2628,8 +2654,8 @@ function fieldHtml(f, v, own) {
         case "textarea":
             if (exam) {
                 return `<div class="field wide exam-text-field">
-          ${examSignLinkHtml(f.code, f.label)}
-          <textarea id="${id}" data-code="${f.code}" rows="3" placeholder="по описанию признака">${esc(v)}</textarea>
+          ${examSignLinkHtml(f.code, flabel)}
+          <textarea id="${id}" data-code="${f.code}" rows="3" placeholder="${esc(I18n.t("field.exam_ph", "по описанию признака"))}">${esc(v)}</textarea>
         </div>`;
             }
             return `<div class="field wide"><label for="${id}">${lbl}</label><textarea id="${id}" data-code="${f.code}">${esc(v)}</textarea></div>`;
@@ -2637,27 +2663,27 @@ function fieldHtml(f, v, own) {
             ctl = `<input type="date" id="${id}" data-code="${f.code}" value="${esc(v)}">`;
             break;
         case "select":
-            ctl = `<select id="${id}" data-code="${f.code}"><option value="">—</option>${(f.options || []).map(([val, t]) => `<option value="${esc(val)}"${v === val ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
+            ctl = `<select id="${id}" data-code="${f.code}"><option value="">—</option>${(f.options || []).map(([val, t]) => `<option value="${esc(val)}"${v === val ? " selected" : ""}>${esc(fieldOpt(f.code, val, t))}</option>`).join("")}</select>`;
             break;
         case "number": {
-            ctl = `<input type="number" inputmode="decimal" id="${id}" data-code="${f.code}" value="${esc(v)}"${f.min != null ? ` min="${f.min}"` : ""}${f.max != null ? ` max="${f.max}"` : ""} step="${f.step || "any"}"${f.computed ? " readonly tabindex=\"-1\" title=\"считается автоматически\"" : ""}>${f.computed ? '<span class="unit">авто</span>' : `<span class="unit">${esc(f.unit || "")}</span>`}${Norms.colsHtml(f.code, f.unit || "", v, own)}`;
+            ctl = `<input type="number" inputmode="decimal" id="${id}" data-code="${f.code}" value="${esc(v)}"${f.min != null ? ` min="${f.min}"` : ""}${f.max != null ? ` max="${f.max}"` : ""} step="${f.step || "any"}"${f.computed ? ` readonly tabindex="-1" title="${esc(I18n.t("field.computed", "считается автоматически"))}"` : ""}>${f.computed ? `<span class="unit">${esc(I18n.t("field.auto", "авто"))}</span>` : `<span class="unit">${esc(funit)}</span>`}${Norms.colsHtml(f.code, f.unit || "", v, own)}`;
             if (exam) {
                 return `<div class="field wide exam-num-field">
           <div class="slider-line">
-            ${examSignLinkHtml(f.code, f.label)}
+            ${examSignLinkHtml(f.code, flabel)}
             <span class="ctl exam-num-ctl">${ctl}</span>
           </div></div>`;
             }
             break;
         }
         case "yesno":
-            ctl = `<span class="seg" data-choice="${f.code}" role="group" aria-label="${esc(f.label)}"><button type="button" data-v="" class="${s === "" ? "on" : ""}" title="не спрашивали">?</button><button type="button" data-v="1" class="${s === "1" ? "on" : ""}">да</button><button type="button" data-v="0" class="${s === "0" ? "on" : ""}">нет</button></span>`;
+            ctl = `<span class="seg" data-choice="${f.code}" role="group" aria-label="${esc(flabel)}"><button type="button" data-v="" class="${s === "" ? "on" : ""}" title="${esc(I18n.t("value.yesno.ask", "не спрашивали"))}">?</button><button type="button" data-v="1" class="${s === "1" ? "on" : ""}">${esc(I18n.t("value.yesno.1", "да"))}</button><button type="button" data-v="0" class="${s === "0" ? "on" : ""}">${esc(I18n.t("value.yesno.0", "нет"))}</button></span>`;
             break;
         case "scale": {
             let b = "";
             for (let i = 0; i <= (f.max || 0); i++)
                 b += `<button type="button" data-v="${i}" class="${s === String(i) ? "on" : ""}">${i}</button>`;
-            ctl = `<span class="scale" data-choice="${f.code}" role="group" aria-label="${esc(f.label)}">${b}<button type="button" data-v="" class="clr" title="очистить">—</button></span>`;
+            ctl = `<span class="scale" data-choice="${f.code}" role="group" aria-label="${esc(flabel)}">${b}<button type="button" data-v="" class="clr" title="${esc(I18n.t("field.clear", "очистить"))}">—</button></span>`;
             break;
         }
         case "slider": {
@@ -2667,7 +2693,7 @@ function fieldHtml(f, v, own) {
             const exam = Exams.isExamLineCode(f.code);
             // у осмотра: наведение — короткий текст; клик — полное описание
             const title = exam
-                ? examSignLinkHtml(f.code, f.label)
+                ? examSignLinkHtml(f.code, flabel)
                 : `<label for="${id}" class="slider-name">${name}${f.required ? ' <span class="req">*</span>' : ""}</label>`;
             const ends = exam ? "" : `<span class="slider-span">${esc(f.scaleFrom || String(lo))} — ${esc(f.scaleTo || String(hi))}</span>`;
             return `<div class="field wide slider-field">
@@ -2675,31 +2701,35 @@ function fieldHtml(f, v, own) {
           ${title}
           ${ends}
           <span class="slider-control">
-            <input type="range" id="${id}" data-code="${f.code}" data-slider="1" min="${lo}" max="${hi}" step="1" value="${num}"${empty ? ` data-empty="1"` : ""} aria-valuemin="${lo}" aria-valuemax="${hi}" aria-valuenow="${num}" aria-label="${esc(f.label)}">
+            <input type="range" id="${id}" data-code="${f.code}" data-slider="1" min="${lo}" max="${hi}" step="1" value="${num}"${empty ? ` data-empty="1"` : ""} aria-valuemin="${lo}" aria-valuemax="${hi}" aria-valuenow="${num}" aria-label="${esc(flabel)}">
             <span class="slider-val" data-slider-val="${esc(f.code)}">${empty ? "" : esc(num)}</span>
-            <button type="button" class="btn slider-reset" data-slider-clear="${esc(f.code)}" title="сбросить" aria-label="сбросить">↩</button>
+            <button type="button" class="btn slider-reset" data-slider-clear="${esc(f.code)}" title="${esc(I18n.t("field.reset", "сбросить"))}" aria-label="${esc(I18n.t("field.reset", "сбросить"))}">↩</button>
           </span>
         </div></div>`;
         }
         case "files": {
             const refs = Array.isArray(v) ? v : [];
             return `<div class="field wide"><div class="dropzone" data-files="${f.code}">
-        <div class="dz-row"><label class="btn primary dz-pick">Добавить фото или файлы<input type="file" multiple accept="${Files.ACCEPT}" hidden></label>
-        <span class="muted">или перетащите сюда, или вставьте картинку (Ctrl+V)</span></div>
-        ${f.hint ? `<small class="muted">${esc(f.hint)}</small>` : ""}
+        <div class="dz-row"><label class="btn primary dz-pick">${esc(I18n.t("field.add_files", "Добавить фото или файлы"))}<input type="file" multiple accept="${Files.ACCEPT}" hidden></label>
+        <span class="muted">${esc(I18n.t("field.drop_hint", "или перетащите сюда, или вставьте картинку (Ctrl+V)"))}</span></div>
+        ${fhint ? `<small class="muted">${esc(fhint)}</small>` : ""}
         <div class="files-msg err" aria-live="polite"></div>
         <div class="files-list">${filesListHtml(refs)}</div>
       </div></div>`;
         }
         case "table": {
             const rows = Array.isArray(v) && v.length ? v : [{}];
-            return `<div class="field wide"><label>${lbl}</label><div class="tblwrap" data-table="${f.code}"><table class="rows"><thead><tr>${(f.columns || []).map(col => `<th>${esc(col.label)}</th>`).join("")}<th></th></tr></thead><tbody>${rows.map(r => rowHtml(f, r)).join("")}</tbody></table><button type="button" class="btn" data-act="add" style="margin-top:6px">+ строка</button></div></div>`;
+            return `<div class="field wide"><label>${lbl}</label><div class="tblwrap" data-table="${f.code}"><table class="rows"><thead><tr>${(f.columns || []).map(col => `<th>${esc(I18n.t("fld." + f.code + ".col." + col.key, col.label))}</th>`).join("")}<th></th></tr></thead><tbody>${rows.map(r => rowHtml(f, r)).join("")}</tbody></table><button type="button" class="btn" data-act="add" style="margin-top:6px">${esc(I18n.t("field.add_row", "+ строка"))}</button></div></div>`;
         }
     }
     return `<div class="field"><label for="${id}">${lbl}</label><div class="ctl">${ctl}</div></div>`;
 }
 function rowHtml(f, r) {
-    return `<tr>${(f.columns || []).map(col => `<td><input type="text" data-row value="${esc(r[col.key])}" placeholder="${esc(col.placeholder || "")}" aria-label="${esc(col.label)}"></td>`).join("")}<td><button type="button" class="btn danger" data-act="rm" title="удалить строку" aria-label="удалить строку">×</button></td></tr>`;
+    return `<tr>${(f.columns || []).map(col => {
+        const cl = I18n.t("fld." + f.code + ".col." + col.key, col.label);
+        const ph = col.placeholder ? I18n.t("fld." + f.code + ".ph." + col.key, col.placeholder) : "";
+        return `<td><input type="text" data-row value="${esc(r[col.key])}" placeholder="${esc(ph)}" aria-label="${esc(cl)}"></td>`;
+    }).join("")}<td><button type="button" class="btn danger" data-act="rm" title="${esc(I18n.t("field.rm_row", "удалить строку"))}" aria-label="${esc(I18n.t("field.rm_row", "удалить строку"))}">×</button></td></tr>`;
 }
 const fileBase = (c) => "client-" + displayName(c).replace(/[^\p{L}\p{N}]+/gu, "_").replace(/^_|_$/g, "").slice(0, 40);
 const csvCell = (v) => { const s = String(v == null ? "" : v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
@@ -3278,6 +3308,6 @@ Settings.Store.onChange(() => { if (location.hash.startsWith("#/settings"))
 window.addEventListener("electrodoctor-locale", () => {
     I18n.syncFromStorage();
     renderNav();
-    if (location.hash.startsWith("#/settings") || location.hash.startsWith("#/clients") || !location.hash || location.hash === "#/")
-        route();
+    // перерисовать текущий экран кабинета (меню, вкладки, настройки)
+    route();
 });

@@ -8,6 +8,7 @@ import * as Sg from "./signs.js";
 import type * as Norms from "./norms.js";
 import { STEPS } from "./fields.js";
 import * as Labs from "./labs.js";
+import * as I18n from "./i18n.js";
 import { lockScroll, unlockScroll } from "./ui.js";
 
 export interface DxSection { id: string; title: string; desc: string; tags: string[] }
@@ -108,7 +109,7 @@ export function draw(main: HTMLElement): void {
   const cnt = (id: string) => names.filter(n => sectionsOf(n, data!.items[n]).includes(id)).length;
   const withSigns = (id: string) => names.filter(n => sectionsOf(n, data!.items[n]).includes(id) && signCount(n) > 0).length;
   const m = method();
-  main.innerHTML = `<div class="set-head"><h2>Диагнозы</h2><span class="muted">${names.length} ${plural(names.length)} в ${data.sections.length} ${data.sections.length % 10 === 1 && data.sections.length % 100 !== 11 ? "разделе" : "разделах"}</span></div>
+  main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.diagnoses", "Диагнозы"))}</h2><span class="muted">${names.length} ${plural(names.length)} в ${data.sections.length} ${data.sections.length % 10 === 1 && data.sections.length % 100 !== 11 ? "разделе" : "разделах"}</span></div>
     <p class="muted dx-lead">Разделы — по специальностям врачей. Диагноз может быть сразу в нескольких разделах.</p>
     <div class="card dx-method">
       <b>Сила отклонения в расчёте вероятности</b>

@@ -3,6 +3,7 @@
 // У пункта — признаки и вложенные группы; у признака — «описание» и тип «шкала»/«поле».
 import * as Exams from "./exams.js";
 import * as Settings from "./settings.js";
+import * as I18n from "./i18n.js";
 import { lockScroll, unlockScroll } from "./ui.js";
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 function syncOwn() {
@@ -404,7 +405,7 @@ export function draw(main) {
     if (group)
         return drawGroup(main, group);
     const total = Exams.all().length;
-    main.innerHTML = `<div class="set-head"><h2>Осмотр</h2><span class="muted">${total} ${plural(total)} в ${Exams.GROUPS.length} группах</span></div>
+    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.exam", "Осмотр"))}</h2><span class="muted">${total} ${plural(total)} в ${Exams.GROUPS.length} группах</span></div>
     <p class="muted dx-lead">Справочник пунктов осмотра по системам. У пункта — признаки и вложенные группы (например ШКГ).</p>
     <div class="dx-grid">${Exams.GROUPS.map(g => {
         const n = Exams.inGroup(g.id).length;

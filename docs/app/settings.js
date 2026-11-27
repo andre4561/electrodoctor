@@ -44,12 +44,16 @@ function weightFieldsIn(sec) {
         .sort((a, b) => a.label.localeCompare(b.label, "ru"));
 }
 function pluralPok(n) {
+    if (I18n.getLocale() === "en")
+        return n === 1 ? "marker" : "markers";
     if (n % 10 === 1 && n % 100 !== 11)
         return "показатель";
     if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
         return "показателя";
     return "показателей";
 }
+const weightSecTitle = (sec) => I18n.t("set.weights.sec." + sec.id, sec.title);
+const weightSecDesc = (sec) => I18n.t("set.weights.sec." + sec.id + ".desc", sec.desc);
 function valueKindOf(code) {
     const t = Labs.LABS[code]?.type;
     return t === "qual" ? "presence" : t === "text" ? "text" : "norm";
@@ -386,7 +390,7 @@ export function providerConf(s, p) {
 }
 // Свои провайдеры (совместимые с OpenAI API) хранятся с id "custom-…".
 export function allProviders(s) {
-    const custom = Object.entries(s.providers).filter(([id]) => id.startsWith("custom-")).map(([id, c]) => ({ id, name: c.name || "Свой провайдер", kind: "custom", baseUrl: c.baseUrl, model: c.model, note: "Любой сервис, совместимый с OpenAI API." }));
+    const custom = Object.entries(s.providers).filter(([id]) => id.startsWith("custom-")).map(([id, c]) => ({ id, name: c.name || I18n.t("set.prov.custom_name", "Свой провайдер"), kind: "custom", baseUrl: c.baseUrl, model: c.model, note: I18n.t("set.prov.note.custom", "Любой сервис, совместимый с OpenAI API.") }));
     const legacy = LEGACY_PROVIDERS.filter(p => !!s.providers[p.id]);
     return [...PROVIDERS, ...legacy, ...custom];
 }
@@ -403,20 +407,27 @@ export function setCheck(id, ok, msg = "") {
     c.check = { ok, at: new Date().toISOString(), msg: msg || undefined };
     save(st);
 }
+const locTag = () => I18n.getLocale() === "en" ? "en-GB" : "ru-RU";
 function connHtml(c) {
     const k = c.check;
     if (!k)
-        return `<span class="conn"><i class="dot"></i>не проверено</span>`;
-    const t = new Date(k.at).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-    return k.ok ? `<span class="conn ok"><i class="dot"></i>связь есть · ${t}</span>`
-        : `<span class="conn bad" title="${esc(k.msg || "")}"><i class="dot"></i>нет связи · ${t}</span>`;
+        return `<span class="conn"><i class="dot"></i>${esc(I18n.t("set.prov.conn.none", "не проверено"))}</span>`;
+    const t = new Date(k.at).toLocaleString(locTag(), { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+    return k.ok ? `<span class="conn ok"><i class="dot"></i>${esc(I18n.t("set.prov.conn.ok", "связь есть"))} · ${t}</span>`
+        : `<span class="conn bad" title="${esc(k.msg || "")}"><i class="dot"></i>${esc(I18n.t("set.prov.conn.bad", "нет связи"))} · ${t}</span>`;
 }
-const fmtWhen = (iso) => iso ? new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+const fmtWhen = (iso) => iso ? new Date(iso).toLocaleString(locTag(), { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
 function modelsStatus(c) {
     if (!c.models)
-        return "список не загружен";
-    return `моделей: ${c.models.length}${c.modelsHidden ? ` (ещё ${c.modelsHidden} не для чата скрыто)` : ""} · ${fmtWhen(c.modelsAt)}`;
+        return I18n.t("set.prov.models.none", "список не загружен");
+    const hidden = c.modelsHidden
+        ? I18n.t("set.prov.models.hidden", " (ещё {n} не для чата скрыто)", { n: c.modelsHidden })
+        : "";
+    return I18n.t("set.prov.models.count", "моделей: {n}", { n: c.models.length }) + hidden + " · " + fmtWhen(c.modelsAt);
 }
+const provName = (p) => I18n.t("set.prov.name." + p.id, p.name);
+const provNote = (p) => p.note ? I18n.t("set.prov.note." + p.id, p.note) : "";
+const customProvName = () => I18n.t("set.prov.custom_name", "Свой провайдер");
 // ---------- страница ----------
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const q = (root, s) => root.querySelector(s);
@@ -430,7 +441,7 @@ export function render(view, tab, steps) {
     const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "lang" ? "lang" : tab === "misc" ? "misc" : "providers";
     view.innerHTML = `
     <h1>${esc(I18n.t("set.title", "Настройки"))}</h1>
-    <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
+    <p class="muted set-lead">${esc(whereText())} ${esc(I18n.t("set.lead.key", "Ключ API отправляется только своему провайдеру."))} <a href="#/settings/storage">${esc(I18n.t("set.lead.storage", "Где хранить →"))}</a></p>
     <div class="set">
       <aside class="set-side" aria-label="${esc(I18n.t("set.side", "Разделы настроек"))}">
         <a class="set-tab${t === "providers" ? " on" : ""}" href="#/settings/providers">${esc(I18n.t("set.tab.providers", "Провайдеры"))}</a>
@@ -483,7 +494,7 @@ export function render(view, tab, steps) {
         return;
     }
     if (t === "council") { // пока пусто
-        main.innerHTML = `<div class="set-head"><h2>Консилиум</h2></div><div class="card"><p class="muted">Раздел в разработке.</p></div>`;
+        main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.council", "Консилиум"))}</h2></div><div class="card"><p class="muted">${esc(I18n.t("set.head.council_stub", "Раздел в разработке."))}</p></div>`;
         return;
     }
     if (t === "weights") {
@@ -559,10 +570,10 @@ function drawProviders(main, focus = "") {
     const list = ordered(s);
     const ready = list.filter(p => isReady(p, providerConf(s, p))).length;
     main.innerHTML = `
-    <div class="set-head"><h2>Провайдеры ИИ</h2><span class="muted" id="provcount">${provCount(ready)}</span></div>
-    <p class="muted set-hint">Провайдер — сервис, к которому будут обращаться агенты. Включите нужные, вставьте ключ и укажите модель.</p>
+    <div class="set-head"><h2>${esc(I18n.t("set.head.providers", "Провайдеры ИИ"))}</h2><span class="muted" id="provcount">${esc(provCount(ready))}</span></div>
+    <p class="muted set-hint">${esc(I18n.t("set.prov.hint", "Провайдер — сервис, к которому будут обращаться агенты. Включите нужные, вставьте ключ и укажите модель."))}</p>
     <div class="set-list">${list.map(p => providerBlock(s, p)).join("")}</div>
-    <div class="grp set-add"><button class="btn" id="addprov">Добавить свой провайдер</button></div>`;
+    <div class="grp set-add"><button class="btn" id="addprov">${esc(I18n.t("set.prov.add", "Добавить свой провайдер"))}</button></div>`;
     main.querySelectorAll("[data-prov]").forEach(box => {
         const id = box.dataset.prov;
         const p = list.find(x => x.id === id);
@@ -656,10 +667,10 @@ function drawProviders(main, focus = "") {
         const probe = async (openList) => {
             store();
             loadBtn.disabled = checkBtn.disabled = true;
-            connBox.innerHTML = `<span class="conn wait"><i class="dot"></i>проверяю…</span>`;
+            connBox.innerHTML = `<span class="conn wait"><i class="dot"></i>${esc(I18n.t("set.prov.conn.wait", "проверяю…"))}</span>`;
             if (openList) {
                 mstat.className = "muted";
-                mstat.textContent = "Загружаю список…";
+                mstat.textContent = I18n.t("set.prov.models.loading", "Загружаю список…");
             }
             try {
                 const r = await M.fetchModels(p, providerConf(load(), p));
@@ -673,7 +684,7 @@ function drawProviders(main, focus = "") {
                 save(st);
                 mstat.className = "muted";
                 mstat.textContent = modelsStatus(c);
-                loadBtn.textContent = "Обновить список";
+                loadBtn.textContent = I18n.t("set.prov.models.refresh", "Обновить список");
                 picker._mpRefresh?.();
                 if (openList && r.models.length)
                     picker.querySelector("[data-mp-open]").click();
@@ -698,12 +709,12 @@ function drawProviders(main, focus = "") {
             show.onclick = () => {
                 const k = q(box, "[name=apiKey]");
                 k.type = k.type === "password" ? "text" : "password";
-                show.textContent = k.type === "password" ? "Показать" : "Скрыть";
+                show.textContent = k.type === "password" ? I18n.t("set.prov.show", "Показать") : I18n.t("set.prov.hide", "Скрыть");
             };
         const del = box.querySelector("[data-act=del]");
         if (del)
             del.onclick = () => {
-                if (!confirm("Удалить этот провайдер?"))
+                if (!confirm(I18n.t("set.prov.del_confirm", "Удалить этот провайдер?")))
                     return;
                 const st = load();
                 delete st.providers[id];
@@ -724,7 +735,7 @@ function drawProviders(main, focus = "") {
     q(main, "#addprov").onclick = () => {
         const st = load();
         const id = newId("custom-");
-        st.providers[id] = { enabled: true, apiKey: "", baseUrl: "", model: "", name: "Свой провайдер", enabledAt: new Date().toISOString() };
+        st.providers[id] = { enabled: true, apiKey: "", baseUrl: "", model: "", name: customProvName(), enabledAt: new Date().toISOString() };
         save(st);
         try {
             localStorage.setItem("electrodoctor.fold.prov-" + id, "1");
@@ -733,41 +744,55 @@ function drawProviders(main, focus = "") {
         drawProviders(main, id);
     };
 }
-const provCount = (n) => n ? `настроено: ${n}` : "пока ни один не настроен";
+const provCount = (n) => n
+    ? I18n.t("set.prov.count", "настроено: {n}", { n })
+    : I18n.t("set.prov.count0", "пока ни один не настроен");
 function provStatus(p, c) {
     if (!c.enabled)
-        return "выключен";
+        return I18n.t("set.prov.off", "выключен");
     if (isReady(p, c)) {
         const k = c.check;
-        const conn = !k ? `<span class="conn"><i class="dot"></i>связь не проверена</span>` : k.ok ? `<span class="conn ok"><i class="dot"></i>связь есть</span>` : `<span class="conn bad"><i class="dot"></i>нет связи</span>`;
-        return `включён · ${conn}${c.model ? " · " + esc(c.model) : ""}`;
+        const conn = !k
+            ? `<span class="conn"><i class="dot"></i>${esc(I18n.t("set.prov.conn.unchecked", "связь не проверена"))}</span>`
+            : k.ok
+                ? `<span class="conn ok"><i class="dot"></i>${esc(I18n.t("set.prov.conn.ok", "связь есть"))}</span>`
+                : `<span class="conn bad"><i class="dot"></i>${esc(I18n.t("set.prov.conn.bad", "нет связи"))}</span>`;
+        return `${esc(I18n.t("set.prov.on", "включён"))} · ${conn}${c.model ? " · " + esc(c.model) : ""}`;
     }
-    return `<span class="err">${!c.baseUrl ? "нет адреса" : needsApiKey(p, c) && !c.apiKey ? "нет ключа" : "нет каталога"}</span>`;
+    const miss = !c.baseUrl
+        ? I18n.t("set.prov.miss.url", "нет адреса")
+        : needsApiKey(p, c) && !c.apiKey
+            ? I18n.t("set.prov.miss.key", "нет ключа")
+            : I18n.t("set.prov.miss.folder", "нет каталога");
+    return `<span class="err">${esc(miss)}</span>`;
 }
 function providerBlock(s, p) {
     const c = providerConf(s, p);
     const custom = p.kind === "custom";
     const wantKey = needsApiKey(p, c);
+    const enabledLbl = I18n.t("set.prov.enabled", "Включён");
     const tpls = p.id === "openai"
-        ? `<p class="muted set-tpls">Подставить адрес: ${OPENAI_COMPAT_TPL.map(t => `<button type="button" class="btn" data-oa-tpl="${esc(t.baseUrl)}"${t.keyUrl ? ` data-oa-keyurl="${esc(t.keyUrl)}"` : ""}>${esc(t.label)}</button>`).join(" ")}</p>`
+        ? `<p class="muted set-tpls">${esc(I18n.t("set.prov.tpl", "Подставить адрес:"))} ${OPENAI_COMPAT_TPL.map(t => `<button type="button" class="btn" data-oa-tpl="${esc(t.baseUrl)}"${t.keyUrl ? ` data-oa-keyurl="${esc(t.keyUrl)}"` : ""}>${esc(t.label)}</button>`).join(" ")}</p>`
         : "";
+    const note = provNote(p);
+    const keyLink = I18n.t("set.prov.key_where", "где взять");
     const body = `<div class="set-form" data-prov="${esc(p.id)}">
-    ${p.note ? `<p class="muted">${esc(p.note)}</p>` : ""}
+    ${note ? `<p class="muted">${esc(note)}</p>` : ""}
     ${tpls}
-    <div class="set-row"><span>Включён</span><span>${switchHtml("enabled", c.enabled, "Включён")}</span></div>
-    <div class="set-row"><span>Связь с провайдером<small class="err" data-connerr>${esc(c.check && !c.check.ok ? c.check.msg || "" : "")}</small></span><span class="mp-row"><span data-conn>${connHtml(c)}</span><button type="button" class="btn" data-act="check">Проверить связь</button></span></div>
-    ${custom ? `<label class="set-row"><span>Название</span><input type="text" name="pname" value="${esc(c.name || "")}"></label>` : ""}
-    ${p.kind === "local" ? "" : `<label class="set-row" data-keyrow${wantKey ? "" : " hidden"}><span>Ключ API${p.keyUrl ? ` <a href="${esc(p.keyUrl)}" target="_blank" rel="noopener" data-keylink>где взять</a>` : `<a href="#" target="_blank" rel="noopener" data-keylink hidden>где взять</a>`}</span>
-      <span class="ctl"><input type="password" name="apiKey" value="${esc(c.apiKey)}" autocomplete="off" spellcheck="false"${Store.state.locked ? ' disabled placeholder="зашифрован — введите пароль"' : ""}><button class="btn" type="button" data-act="show">Показать</button></span></label>`}
+    <div class="set-row"><span>${esc(enabledLbl)}</span><span>${switchHtml("enabled", c.enabled, enabledLbl)}</span></div>
+    <div class="set-row"><span>${esc(I18n.t("set.prov.conn.label", "Связь с провайдером"))}<small class="err" data-connerr>${esc(c.check && !c.check.ok ? c.check.msg || "" : "")}</small></span><span class="mp-row"><span data-conn>${connHtml(c)}</span><button type="button" class="btn" data-act="check">${esc(I18n.t("set.prov.conn.check", "Проверить связь"))}</button></span></div>
+    ${custom ? `<label class="set-row"><span>${esc(I18n.t("set.prov.name_lbl", "Название"))}</span><input type="text" name="pname" value="${esc(c.name || "")}"></label>` : ""}
+    ${p.kind === "local" ? "" : `<label class="set-row" data-keyrow${wantKey ? "" : " hidden"}><span>${esc(I18n.t("set.prov.key", "Ключ API"))}${p.keyUrl ? ` <a href="${esc(p.keyUrl)}" target="_blank" rel="noopener" data-keylink>${esc(keyLink)}</a>` : `<a href="#" target="_blank" rel="noopener" data-keylink hidden>${esc(keyLink)}</a>`}</span>
+      <span class="ctl"><input type="password" name="apiKey" value="${esc(c.apiKey)}" autocomplete="off" spellcheck="false"${Store.state.locked ? ` disabled placeholder="${esc(I18n.t("set.prov.key_locked", "зашифрован — введите пароль"))}"` : ""}><button class="btn" type="button" data-act="show">${esc(I18n.t("set.prov.show", "Показать"))}</button></span></label>`}
     ${p.kind === "local" ? `<input type="hidden" name="apiKey" value="">` : ""}
-    ${p.id === "yandexgpt" ? `<label class="set-row"><span>Каталог (folder ID)<small>в консоли Yandex Cloud, вида b1g…</small></span><input type="text" name="folder" value="${esc(c.folder || "")}" spellcheck="false" placeholder="b1g…"></label>` : ""}
-    ${M.proxyAllowed(p) ? `<div class="set-row"><span>Через посредника<small>для сервисов, которые не принимают запросы прямо из браузера (YandexGPT). Работает, когда кабинет открыт через tools/preview.py</small></span><span>${switchHtml("viaProxy", M.proxyOn(p, c), "Через посредника")}</span></div>` : ""}
-    <label class="set-row"><span>Адрес API</span><input type="text" name="baseUrl" value="${esc(c.baseUrl)}" spellcheck="false" placeholder="https://…"></label>
-    <div class="set-row"><span>Модель по умолчанию<small data-mstat class="muted">${esc(modelsStatus(c))}</small></span>
-      <span class="mp-row">${M.pickerHtml("model", c.model, c.models, "название модели у провайдера")}<button type="button" class="btn" data-act="models">${c.models ? "Обновить список" : "Загрузить список моделей"}</button></span></div>
-    <div class="set-foot"><span class="set-saved ok"></span>${custom ? `<button class="btn danger" type="button" data-act="del">Удалить</button>` : ""}</div>
+    ${p.id === "yandexgpt" ? `<label class="set-row"><span>${esc(I18n.t("set.prov.folder", "Каталог (folder ID)"))}<small>${esc(I18n.t("set.prov.folder_hint", "в консоли Yandex Cloud, вида b1g…"))}</small></span><input type="text" name="folder" value="${esc(c.folder || "")}" spellcheck="false" placeholder="b1g…"></label>` : ""}
+    ${M.proxyAllowed(p) ? `<div class="set-row"><span>${esc(I18n.t("set.prov.proxy", "Через посредника"))}<small>${esc(I18n.t("set.prov.proxy_hint", "для сервисов, которые не принимают запросы прямо из браузера (YandexGPT). Работает, когда кабинет открыт через tools/preview.py"))}</small></span><span>${switchHtml("viaProxy", M.proxyOn(p, c), I18n.t("set.prov.proxy", "Через посредника"))}</span></div>` : ""}
+    <label class="set-row"><span>${esc(I18n.t("set.prov.url", "Адрес API"))}</span><input type="text" name="baseUrl" value="${esc(c.baseUrl)}" spellcheck="false" placeholder="https://…"></label>
+    <div class="set-row"><span>${esc(I18n.t("set.prov.model", "Модель по умолчанию"))}<small data-mstat class="muted">${esc(modelsStatus(c))}</small></span>
+      <span class="mp-row">${M.pickerHtml("model", c.model, c.models, I18n.t("set.prov.model_ph", "название модели у провайдера"))}<button type="button" class="btn" data-act="models">${esc(c.models ? I18n.t("set.prov.models.refresh", "Обновить список") : I18n.t("set.prov.models.load", "Загрузить список моделей"))}</button></span></div>
+    <div class="set-foot"><span class="set-saved ok"></span>${custom ? `<button class="btn danger" type="button" data-act="del">${esc(I18n.t("set.prov.del", "Удалить"))}</button>` : ""}</div>
   </div>`;
-    return fold("prov-" + p.id, p.name, provStatus(p, c), body);
+    return fold("prov-" + p.id, custom ? (c.name || customProvName()) : provName(p), provStatus(p, c), body);
 }
 function drawAgents(main, steps) {
     const s = load();
@@ -780,12 +805,12 @@ function drawAgents(main, steps) {
         catch (e) { /* */ }
     }
     main.innerHTML = `
-    <div class="set-head"><h2>Врачи</h2><span class="muted" id="agentcount">${s.agents.filter(a => a.enabled).length} из ${s.agents.length} включены</span></div>
-    <p class="muted set-hint">Агент — роль со своей инструкцией. Провайдер и модель задаются один раз ниже — для всех агентов; у отдельного агента их можно заменить своими.</p>
+    <div class="set-head"><h2>${esc(I18n.t("set.head.agents", "Врачи"))}</h2><span class="muted" id="agentcount">${esc(I18n.t("set.agents.enabled", "{on} из {total} включены", { on: s.agents.filter(a => a.enabled).length, total: s.agents.length }))}</span></div>
+    <p class="muted set-hint">${esc(I18n.t("set.agents.hint", "Агент — роль со своей инструкцией. Провайдер и модель задаются один раз ниже — для всех агентов; у отдельного агента их можно заменить своими."))}</p>
     ${sharedBlock(s, provs)}
     ${recognizerBlock(s, provs)}
     ${agentGroups(s, provs, steps)}
-    <div class="grp set-add"><button class="btn" id="addagent">Добавить агента</button><button class="btn" id="resetagents">Вернуть стандартных</button></div>`;
+    <div class="grp set-add"><button class="btn" id="addagent">${esc(I18n.t("set.agents.add", "Добавить агента"))}</button><button class="btn" id="resetagents">${esc(I18n.t("set.agents.reset", "Вернуть стандартных"))}</button></div>`;
     // Общий провайдер и модель для всех агентов
     const sh = main.querySelector("[data-shared]");
     const storeShared = () => {
@@ -805,7 +830,7 @@ function drawAgents(main, steps) {
         clr.onclick = () => {
             const st = load();
             const own = st.agents.filter(a => a.provider || a.model).length;
-            if (!own || !confirm(`Убрать свои провайдеры и модели у агентов (${own}) — все будут работать на общем?`))
+            if (!own || !confirm(I18n.t("set.agents.clear_own_confirm", "Убрать свои провайдеры и модели у агентов ({n}) — все будут работать на общем?", { n: own })))
                 return;
             for (const a of st.agents) {
                 a.provider = "";
@@ -834,7 +859,7 @@ function drawAgents(main, steps) {
             const a = st.agents.find(x => x.id === id);
             if (!a)
                 return;
-            a.name = q(box, "[name=name]").value.trim() || "Без названия";
+            a.name = q(box, "[name=name]").value.trim() || I18n.t("set.agents.unnamed", "Без названия");
             a.enabled = q(box, "[name=enabled]").checked;
             a.provider = q(box, "[name=provider]").value;
             box.querySelector("[data-mp]")?._mpRefresh?.();
@@ -849,14 +874,14 @@ function drawAgents(main, steps) {
             const d = box.closest("details");
             const title = d?.querySelector(".fold-title");
             if (title)
-                title.textContent = a.name;
+                title.textContent = agentDisplayName(a);
             const status = d?.querySelector(".fold-status");
             if (status)
                 status.innerHTML = agentStatus(a, provs, st);
             savedFlash(box.querySelector(".set-saved"));
             const cnt = main.querySelector("#agentcount");
             if (cnt)
-                cnt.textContent = `${st.agents.filter(x => x.enabled).length} из ${st.agents.length} включены`;
+                cnt.textContent = I18n.t("set.agents.enabled", "{on} из {total} включены", { on: st.agents.filter(x => x.enabled).length, total: st.agents.length });
         };
         box.querySelectorAll("input, select, textarea").forEach(i => i.addEventListener("change", store));
         M.bindPicker(box.querySelector("[data-mp]"), () => {
@@ -866,7 +891,7 @@ function drawAgents(main, steps) {
             return pr ? providerConf(st, pr).models : undefined;
         });
         q(box, "[data-act=del]").onclick = () => {
-            if (!confirm("Удалить агента?"))
+            if (!confirm(I18n.t("set.agents.del_confirm", "Удалить агента?")))
                 return;
             const st = load();
             st.agents = st.agents.filter(x => x.id !== id);
@@ -876,9 +901,9 @@ function drawAgents(main, steps) {
         box.querySelectorAll("[data-edit]").forEach(btn => {
             btn.onclick = () => {
                 const field = btn.dataset.edit;
-                const title = field === "examMap" ? "Карта обследования"
-                    : field === "protocols" ? "Протоколы"
-                        : "Инструкция агенту";
+                const title = field === "examMap" ? I18n.t("set.agents.exam_map", "Карта обследования")
+                    : field === "protocols" ? I18n.t("set.agents.protocols", "Протоколы")
+                        : I18n.t("set.agents.prompt", "Инструкция агенту");
                 openAgentTextEditor({
                     agentId: id,
                     field,
@@ -893,7 +918,7 @@ function drawAgents(main, steps) {
     q(main, "#addagent").onclick = () => {
         const st = load();
         const id = newId("a");
-        st.agents.push({ id, name: "Новый агент", enabled: true, provider: "", model: "", temperature: 0.3, steps: steps.map(x => x.id), prompt: "" });
+        st.agents.push({ id, name: I18n.t("set.agents.new", "Новый агент"), enabled: true, provider: "", model: "", temperature: 0.3, steps: steps.map(x => x.id), prompt: "" });
         save(st);
         try {
             localStorage.setItem("electrodoctor.fold.agent-" + id, "1");
@@ -902,7 +927,7 @@ function drawAgents(main, steps) {
         drawAgents(main, steps);
     };
     q(main, "#resetagents").onclick = () => {
-        if (!confirm("Вернуть стандартный набор агентов? Ваши изменения в агентах пропадут; провайдеры останутся."))
+        if (!confirm(I18n.t("set.agents.reset_confirm", "Вернуть стандартный набор агентов? Ваши изменения в агентах пропадут; провайдеры останутся.")))
             return;
         const st = load();
         st.agents = blank().agents;
@@ -911,14 +936,21 @@ function drawAgents(main, steps) {
     };
     focusAgentCard(main, focusId);
 }
+const agentDisplayName = (a) => I18n.t("set.agent.name." + a.id, a.name);
+const sharedProvLabel = (dp) => dp
+    ? I18n.t("set.agents.shared_of", "Общий — {name}", { name: provName(dp) })
+    : I18n.t("set.agents.shared_none", "Общий — не выбран");
 function agentStatus(a, provs, s) {
     if (!a.enabled)
-        return "выключен";
+        return I18n.t("set.prov.off", "выключен");
     const r = agentRuntime(s, a);
-    const tag = r.shared ? "общий · " : "";
+    const tag = r.shared ? I18n.t("set.agents.tag_shared", "общий") + " · " : "";
     if (!r.preset)
-        return `<span class="err">${r.shared ? "общий провайдер не выбран" : "провайдер не выбран"}</span>`;
-    return isReady(r.preset, r.conf) ? `${tag}${esc(r.preset.name)}${r.model ? " · " + esc(r.model) : ""}` : `<span class="err">${tag}${esc(r.preset.name)} не настроен</span>`;
+        return `<span class="err">${esc(r.shared ? I18n.t("set.agents.err.shared_unset", "общий провайдер не выбран") : I18n.t("set.agents.err.unset", "провайдер не выбран"))}</span>`;
+    const nm = provName(r.preset);
+    return isReady(r.preset, r.conf)
+        ? `${esc(tag)}${esc(nm)}${r.model ? " · " + esc(r.model) : ""}`
+        : `<span class="err">${esc(tag)}${esc(nm)} ${esc(I18n.t("set.agents.err.not_ready", "не настроен"))}</span>`;
 }
 // Блок «Общий провайдер» над списком агентов
 function sharedBlock(s, provs) {
@@ -927,11 +959,17 @@ function sharedBlock(s, provs) {
     const ready = !!(p && c && isReady(p, c));
     const users = s.agents.filter(a => !a.provider).length;
     const own = s.agents.filter(a => a.provider || a.model).length;
+    const modelHint = c && c.model
+        ? I18n.t("set.agents.model_fallback", "если пусто — модель провайдера: {model}", { model: c.model })
+        : I18n.t("set.agents.model_fallback_def", "если пусто — модель провайдера по умолчанию");
+    const foot = own
+        ? I18n.t("set.agents.own_some", "Свой провайдер или модель — у {n} агентов.", { n: own })
+        : I18n.t("set.agents.own_none", "Своих провайдеров у агентов нет — все работают на общем.");
     return `<div class="card set-shared" data-shared>
-    <div class="set-shared-head"><b>Общий провайдер для агентов</b><span class="muted">на нём работают ${users} из ${s.agents.length}</span></div>
-    <label class="set-row"><span>Провайдер</span><select name="provider" class="prov-sel${ready ? " ready" : ""}">${providerOptions(s, provs, def.provider)}</select></label>
-    <div class="set-row"><span>Модель<small>${c && c.model ? `если пусто — модель провайдера: ${esc(c.model)}` : "если пусто — модель провайдера по умолчанию"}</small></span>${M.pickerHtml("model", def.model, c ? c.models : undefined, (c && c.model) || "модель провайдера")}</div>
-    <div class="set-foot"><span class="muted">${own ? `Свой провайдер или модель — у ${own} ${own % 10 === 1 && own % 100 !== 11 ? "агента" : "агентов"}.` : "Своих провайдеров у агентов нет — все работают на общем."}</span>${own ? `<button class="btn" type="button" data-act="clearown">Всех — на общий</button>` : ""}</div>
+    <div class="set-shared-head"><b>${esc(I18n.t("set.agents.shared_title", "Общий провайдер для агентов"))}</b><span class="muted">${esc(I18n.t("set.agents.shared_users", "на нём работают {on} из {total}", { on: users, total: s.agents.length }))}</span></div>
+    <label class="set-row"><span>${esc(I18n.t("set.agents.provider", "Провайдер"))}</span><select name="provider" class="prov-sel${ready ? " ready" : ""}">${providerOptions(s, provs, def.provider)}</select></label>
+    <div class="set-row"><span>${esc(I18n.t("set.agents.model", "Модель"))}<small>${esc(modelHint)}</small></span>${M.pickerHtml("model", def.model, c ? c.models : undefined, (c && c.model) || I18n.t("set.agents.model_ph", "модель провайдера"))}</div>
+    <div class="set-foot"><span class="muted">${esc(foot)}</span>${own ? `<button class="btn" type="button" data-act="clearown">${esc(I18n.t("set.agents.clear_own", "Всех — на общий"))}</button>` : ""}</div>
   </div>`;
 }
 // Блок «Распознавание анализов по фото»: провайдер и модель, которые понимают изображения
@@ -941,12 +979,28 @@ function recognizerBlock(s, provs) {
     const rt = recognizerRuntime(s);
     const ready = !!(rt.preset && rt.conf && isReady(rt.preset, rt.conf));
     const m = rt.conf && (rt.conf.models || []).find(x => x.id === rt.model);
-    const warn = m && !m.caps.includes("vision") ? `<small class="err">У модели «${esc(rt.model)}» нет пометки «понимает фото» — выберите другую.</small>` : "";
+    const warn = m && !m.caps.includes("vision")
+        ? `<small class="err">${esc(I18n.t("set.agents.rec.warn", "У модели «{model}» нет пометки «понимает фото» — выберите другую.", { model: rt.model }))}</small>`
+        : "";
+    const status = ready
+        ? `${esc(provName(rt.preset))}${rt.model ? " · " + esc(rt.model) : ""}`
+        : `<span class="err">${esc(I18n.t("set.agents.rec.unset", "не настроено"))}</span>`;
+    let modelSmall;
+    if (rt.conf && (rt.shared ? def.model : rt.conf.model)) {
+        const which = rt.shared && def.model
+            ? I18n.t("set.agents.rec.fallback_shared", "общая")
+            : I18n.t("set.agents.rec.fallback_prov", "модель провайдера");
+        const val = rt.shared && def.model ? def.model : rt.conf.model;
+        modelSmall = I18n.t("set.agents.rec.fallback", "если пусто — {which}: {model}", { which, model: val });
+    }
+    else {
+        modelSmall = I18n.t("set.agents.rec.vision_hint", "с поддержкой изображений");
+    }
     return `<div class="card set-shared set-rec" data-recognizer>
-    <div class="set-shared-head"><b>Распознавание анализов по фото</b><span class="muted">${ready ? `${esc(rt.preset.name)}${rt.model ? " · " + esc(rt.model) : ""}` : `<span class="err">не настроено</span>`}</span></div>
-    <p class="muted set-hint">Этим провайдером кабинет читает фото и PDF бланков на вкладке «Анализы». Нужна модель, которая понимает изображения.</p>
-    <label class="set-row"><span>Провайдер</span><select name="provider" class="prov-sel${ready ? " ready" : ""}">${providerOptions(s, provs, r.provider, dp ? `Общий — ${dp.name}` : "Общий — не выбран")}</select></label>
-    <div class="set-row"><span>Модель<small>${rt.conf && (rt.shared ? def.model : rt.conf.model) ? `если пусто — ${rt.shared && def.model ? "общая" : "модель провайдера"}: ${esc(rt.shared && def.model ? def.model : rt.conf.model)}` : "с поддержкой изображений"}</small></span><span>${M.pickerHtml("model", r.model, rt.conf ? rt.conf.models : undefined, rt.model || "модель с поддержкой изображений")}${warn}</span></div>
+    <div class="set-shared-head"><b>${esc(I18n.t("set.agents.rec.title", "Распознавание анализов по фото"))}</b><span class="muted">${status}</span></div>
+    <p class="muted set-hint">${esc(I18n.t("set.agents.rec.hint", "Этим провайдером кабинет читает фото и PDF бланков на вкладке «Анализы». Нужна модель, которая понимает изображения."))}</p>
+    <label class="set-row"><span>${esc(I18n.t("set.agents.provider", "Провайдер"))}</span><select name="provider" class="prov-sel${ready ? " ready" : ""}">${providerOptions(s, provs, r.provider, sharedProvLabel(dp))}</select></label>
+    <div class="set-row"><span>${esc(I18n.t("set.agents.model", "Модель"))}<small>${esc(modelSmall)}</small></span><span>${M.pickerHtml("model", r.model, rt.conf ? rt.conf.models : undefined, rt.model || I18n.t("set.agents.rec.model_ph", "модель с поддержкой изображений"))}${warn}</span></div>
     <div class="set-foot"><span class="set-saved ok"></span></div>
   </div>`;
 }
@@ -957,59 +1011,78 @@ function agentGroups(s, provs, steps) {
     const docs = s.agents.filter(a => a.section);
     const rest = s.agents.filter(a => !a.section && !intakeIds.has(a.id));
     const list = (xs) => `<div class="set-list">${xs.map(a => agentBlock(a, provs, s, steps)).join("")}</div>`;
-    return (intake.length ? `<h3 class="set-group">Помощники по анкете <span class="muted">${intake.length}</span></h3>${list(intake)}` : "")
-        + (rest.length ? `<h3 class="set-group">Общие <span class="muted">${rest.length}</span></h3>${list(rest)}` : "")
-        + (docs.length ? `<h3 class="set-group">Врачи по разделам диагнозов <span class="muted">${docs.length}</span></h3>${list(docs)}` : "");
+    return (intake.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.intake", "Помощники по анкете"))} <span class="muted">${intake.length}</span></h3>${list(intake)}` : "")
+        + (rest.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.common", "Общие"))} <span class="muted">${rest.length}</span></h3>${list(rest)}` : "")
+        + (docs.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.docs", "Врачи по разделам диагнозов"))} <span class="muted">${docs.length}</span></h3>${list(docs)}` : "");
 }
 // Выбор провайдера у агента: настроенные — отдельной группой сверху, с галочкой и состоянием связи
-function providerOptions(s, provs, selected, empty = "— не выбран —") {
+function providerOptions(s, provs, selected, empty) {
+    const emptyLbl = empty != null ? empty : I18n.t("set.agents.prov_empty", "— не выбран —");
     const opt = (p) => {
         const c = providerConf(s, p);
         const ready = isReady(p, c);
-        const conn = !ready ? "" : !c.check ? " — связь не проверена" : c.check.ok ? " — связь есть" : " — нет связи";
-        return `<option value="${esc(p.id)}"${p.id === selected ? " selected" : ""}${ready ? ' class="opt-ready"' : ""}>${ready ? "✓ " : ""}${esc(p.name)}${conn}</option>`;
+        const conn = !ready ? "" : !c.check
+            ? " — " + I18n.t("set.prov.conn.unchecked", "связь не проверена")
+            : c.check.ok
+                ? " — " + I18n.t("set.prov.conn.ok", "связь есть")
+                : " — " + I18n.t("set.prov.conn.bad", "нет связи");
+        return `<option value="${esc(p.id)}"${p.id === selected ? " selected" : ""}${ready ? ' class="opt-ready"' : ""}>${ready ? "✓ " : ""}${esc(provName(p))}${esc(conn)}</option>`;
     };
     const ready = provs.filter(p => isReady(p, providerConf(s, p)));
     const rest = provs.filter(p => !ready.includes(p));
-    return `<option value="">${esc(empty)}</option>`
-        + (ready.length ? `<optgroup label="Настроены">${ready.map(opt).join("")}</optgroup>` : "")
-        + `<optgroup label="${ready.length ? "Не настроены" : "Ни один провайдер ещё не настроен"}">${rest.map(opt).join("")}</optgroup>`;
+    return `<option value="">${esc(emptyLbl)}</option>`
+        + (ready.length ? `<optgroup label="${esc(I18n.t("set.agents.prov_ready", "Настроены"))}">${ready.map(opt).join("")}</optgroup>` : "")
+        + `<optgroup label="${esc(ready.length ? I18n.t("set.agents.prov_unready", "Не настроены") : I18n.t("set.agents.prov_none", "Ни один провайдер ещё не настроен"))}">${rest.map(opt).join("")}</optgroup>`;
 }
 // Подсказка под полем «Своя модель»: какая модель будет использована, если поле пустое
 function agentModelHint(s, provs, pid) {
     const def = s.agentDefaults || { provider: "", model: "" };
     const shared = !pid;
     const p = provs.find(x => x.id === (pid || def.provider));
+    const ph = I18n.t("set.agents.model_ph", "модель провайдера");
     if (!p)
-        return { hint: shared ? "необязательно — сначала выберите общий провайдер вверху" : "необязательно — сначала выберите провайдера", placeholder: "модель провайдера", ready: false };
+        return {
+            hint: shared
+                ? I18n.t("set.agents.hint_pick_shared", "необязательно — сначала выберите общий провайдер вверху")
+                : I18n.t("set.agents.hint_pick_prov", "необязательно — сначала выберите провайдера"),
+            placeholder: ph, ready: false,
+        };
     const c = providerConf(s, p);
     const fallback = (shared ? def.model : "") || c.model;
     return {
-        hint: fallback ? `необязательно — если пусто, берётся ${shared && def.model ? "общая модель" : "модель провайдера"}: ${fallback}` : "необязательно — у провайдера модель по умолчанию не указана",
-        placeholder: fallback || "модель провайдера", ready: isReady(p, c),
+        hint: fallback
+            ? I18n.t("set.agents.hint_fallback", "необязательно — если пусто, берётся {which}: {model}", {
+                which: shared && def.model
+                    ? I18n.t("set.agents.rec.fallback_shared", "общая модель")
+                    : I18n.t("set.agents.rec.fallback_prov", "модель провайдера"),
+                model: fallback,
+            })
+            : I18n.t("set.agents.hint_no_def", "необязательно — у провайдера модель по умолчанию не указана"),
+        placeholder: fallback || ph, ready: isReady(p, c),
     };
 }
 function agentBlock(a, provs, s, steps) {
     const def = s.agentDefaults || { provider: "", model: "" };
     const dp = provs.find(x => x.id === def.provider);
-    const opts = providerOptions(s, provs, a.provider, dp ? `Общий — ${dp.name}` : "Общий — не выбран");
+    const opts = providerOptions(s, provs, a.provider, sharedProvLabel(dp));
     const mh = agentModelHint(s, provs, a.provider);
     const mp = provs.find(x => x.id === (a.provider || def.provider));
+    const enabledLbl = I18n.t("set.prov.enabled", "Включён");
     const body = `<div class="set-form" data-agent="${esc(a.id)}">
-    <div class="set-row"><span>Включён</span><span>${switchHtml("enabled", a.enabled, "Включён")}</span></div>
-    <label class="set-row"><span>Название</span><input type="text" name="name" value="${esc(a.name)}"></label>
-    <label class="set-row"><span>Провайдер</span><select name="provider" class="prov-sel${mh.ready ? " ready" : ""}">${opts}</select></label>
-    <div class="set-row"><span>Модель</span>${M.pickerHtml("model", a.model, mp ? providerConf(s, mp).models : undefined, mh.placeholder)}</div>
-    <label class="set-row"><span>Температура <span class="muted">(0 — строго, 1 — свободнее)</span></span><input type="number" name="temperature" min="0" max="2" step="0.1" value="${esc(a.temperature)}"></label>
-    <div class="set-row"><span>Читает этапы анкеты</span><span class="set-checks">${steps.map(st => `<label><input type="checkbox" name="step" value="${esc(st.id)}"${a.steps.includes(st.id) ? " checked" : ""}> ${esc(st.title)}</label>`).join("")}</span></div>
+    <div class="set-row"><span>${esc(enabledLbl)}</span><span>${switchHtml("enabled", a.enabled, enabledLbl)}</span></div>
+    <label class="set-row"><span>${esc(I18n.t("set.agents.name", "Название"))}</span><input type="text" name="name" value="${esc(a.name)}"></label>
+    <label class="set-row"><span>${esc(I18n.t("set.agents.provider", "Провайдер"))}</span><select name="provider" class="prov-sel${mh.ready ? " ready" : ""}">${opts}</select></label>
+    <div class="set-row"><span>${esc(I18n.t("set.agents.model", "Модель"))}</span>${M.pickerHtml("model", a.model, mp ? providerConf(s, mp).models : undefined, mh.placeholder)}</div>
+    <label class="set-row"><span>${esc(I18n.t("set.agents.temp", "Температура"))} <span class="muted">${esc(I18n.t("set.agents.temp_hint", "(0 — строго, 1 — свободнее)"))}</span></span><input type="number" name="temperature" min="0" max="2" step="0.1" value="${esc(a.temperature)}"></label>
+    <div class="set-row"><span>${esc(I18n.t("set.agents.steps", "Читает этапы анкеты"))}</span><span class="set-checks">${steps.map(st => `<label><input type="checkbox" name="step" value="${esc(st.id)}"${a.steps.includes(st.id) ? " checked" : ""}> ${esc(st.title)}</label>`).join("")}</span></div>
     <div class="set-row wide set-agent-text-row"><span class="grp set-agent-texts">
-      <button type="button" class="btn" data-edit="prompt">Инструкция агенту</button>
-      ${a.id === "endocrinologist" ? `<button type="button" class="btn" data-edit="examMap">Карта обследования</button>` : ""}
-      <button type="button" class="btn" data-edit="protocols">Протоколы</button>
+      <button type="button" class="btn" data-edit="prompt">${esc(I18n.t("set.agents.prompt", "Инструкция агенту"))}</button>
+      ${a.id === "endocrinologist" ? `<button type="button" class="btn" data-edit="examMap">${esc(I18n.t("set.agents.exam_map", "Карта обследования"))}</button>` : ""}
+      <button type="button" class="btn" data-edit="protocols">${esc(I18n.t("set.agents.protocols", "Протоколы"))}</button>
     </span></div>
-    <div class="set-foot"><span class="set-saved ok"></span><button class="btn danger" type="button" data-act="del">Удалить агента</button></div>
+    <div class="set-foot"><span class="set-saved ok"></span><button class="btn danger" type="button" data-act="del">${esc(I18n.t("set.agents.del", "Удалить агента"))}</button></div>
   </div>`;
-    return fold("agent-" + a.id, a.name, agentStatus(a, provs, s), body);
+    return fold("agent-" + a.id, agentDisplayName(a), agentStatus(a, provs, s), body);
 }
 /** Редактор длинного текста агента (инструкция / карта / протоколы) во всплывающем окне. */
 function openAgentTextEditor(opts) {
@@ -1023,12 +1096,12 @@ function openAgentTextEditor(opts) {
     const ov = document.createElement("div");
     ov.className = "cv-overlay";
     ov.innerHTML = `<div class="cv-dialog agent-text-dlg" role="dialog" aria-modal="true" aria-labelledby="agent-text-title">
-    <div class="cv-head"><b id="agent-text-title">${esc(opts.title)} · ${esc(a0.name)}</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <div class="cv-head"><b id="agent-text-title">${esc(opts.title)} · ${esc(agentDisplayName(a0))}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("cmp.close", "закрыть"))}">✕</button></div>
     <textarea class="agent-text-ta" spellcheck="true">${esc(initial)}</textarea>
     <div class="grp">
-      <button type="button" class="btn primary" data-save>Сохранить</button>
-      <button type="button" class="btn" data-close>Отмена</button>
+      <button type="button" class="btn primary" data-save>${esc(I18n.t("common.save", "Сохранить"))}</button>
+      <button type="button" class="btn" data-close>${esc(I18n.t("common.cancel", "Отмена"))}</button>
     </div>
   </div>`;
     document.body.appendChild(ov);
@@ -1067,8 +1140,10 @@ function openAgentTextEditor(opts) {
 // ---------- хранение ----------
 function whereText() {
     const st = Store.state;
-    const w = st.where === "folder" ? `Настройки хранятся в папке «${st.folderName}» на этом компьютере.` : "Настройки хранятся в этом браузере.";
-    return w + (st.encrypted ? " Ключи зашифрованы паролем." : "");
+    const w = st.where === "folder"
+        ? I18n.t("set.where.folder", "Настройки хранятся в папке «{name}» на этом компьютере.", { name: st.folderName })
+        : I18n.t("set.where.browser", "Настройки хранятся в этом браузере.");
+    return w + (st.encrypted ? " " + I18n.t("set.where.encrypted", "Ключи зашифрованы паролем.") : "");
 }
 // Плашка над провайдерами и агентами (и во вкладке распознавания): нужен пароль или доступ к папке
 export function gateHtml() {
@@ -1266,7 +1341,7 @@ function drawLang(main) {
         const ownCount = Object.keys(load().i18n?.[loc] || {}).length;
         const chips = I18n.LOCALE_IDS.map(id => `<a class="dx-chip${id === loc ? " on" : ""}" href="#/settings/lang/${id}">${esc(I18n.LOCALE_LABEL[id])}</a>`).join("");
         const text = langDictText(eff);
-        main.innerHTML = `<div class="set-head"><h2>Язык</h2><span class="muted">правки — только в этом браузере / файле настроек; в репозиторий из кабинета не пишутся</span></div>
+        main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.lang", "Язык"))}</h2><span class="muted">${esc(I18n.t("set.head.lang_note"))}</span></div>
       <p class="muted">Словарь подписей для выписки и (позже) интерфейса — один JSON на язык. Скопируйте целиком в переводчик или ИИ, вставьте обратно и сохраните. Ключи не переименовывайте. Переключатель языка интерфейса — отдельным шагом.</p>
       <div class="dx-chips" role="tablist" aria-label="Словарь">${chips}</div>
       <div class="card i18n-card">
@@ -1336,7 +1411,7 @@ function drawLang(main) {
 }
 function drawMisc(main) {
     const paint = () => {
-        main.innerHTML = `<div class="set-head"><h2>Прочее</h2></div>
+        main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.misc", "Прочее"))}</h2></div>
     <div class="card store-card">
       <h2>Счётчики сайта</h2>
       <p class="muted">Яндекс.Метрику, Google Analytics и другой код шапки вставляйте в <code>docs/assets/site-inject.html</code> в репозитории (или на хостинге), затем выгружайте сайт. Из кабинета это не пишется — на статическом хосте нет защиты от правок гостей.</p>
@@ -1400,7 +1475,7 @@ function drawStorage(main, redraw) {
       <p class="muted">Чтобы перенести настройки на другой компьютер, в другой браузер или в будущее приложение.${st.encrypted ? " Ключи в файле останутся зашифрованными — понадобится тот же пароль." : ""}</p>
       <div class="grp"><button type="button" class="btn" data-st="export">Сохранить настройки в файл</button><label class="btn">Загрузить из файла<input type="file" data-st-import accept=".json,application/json" hidden></label></div>
     </div>`;
-    main.innerHTML = `<div class="set-head"><h2>Хранение настроек</h2><span class="muted">${esc(whereText())}</span></div>
+    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.storage", "Хранение настроек"))}</h2><span class="muted">${esc(whereText())}</span></div>
     ${st.error ? `<div class="note err">${esc(st.error)}</div>` : ""}
     ${folderCard}${encCard}${fileCard}`;
     bindGate(main, redraw);
@@ -1492,7 +1567,9 @@ function weightsOwnCounts() {
     const st = load();
     const nn = Object.keys(st.norms || {}).filter(k => NORMS[k]).length;
     const nc = Object.keys(st.curves || {}).filter(k => NORMS[k]).length;
-    return nn || nc ? `изменено норм: ${nn}, кривых: ${nc}` : "всё исходное";
+    return nn || nc
+        ? I18n.t("set.weights.changed", "изменено норм: {nn}, кривых: {nc}", { nn, nc })
+        : I18n.t("set.weights.all_default", "всё исходное");
 }
 function bindWeightsFiles(main) {
     const download = (name, text) => {
@@ -1507,14 +1584,14 @@ function bindWeightsFiles(main) {
     const today = () => new Date().toISOString().slice(0, 10);
     q(main, "#wdlbase").onclick = () => {
         if (!normsRaw) {
-            alert(normsError || "Исходные нормы не загружены.");
+            alert(normsError || I18n.t("set.weights.err.no_base", "Исходные нормы не загружены."));
             return;
         }
         download("norms.json", normsRaw);
     };
     q(main, "#wdlcur").onclick = () => {
         if (!normsRaw) {
-            alert(normsError || "Исходные нормы не загружены.");
+            alert(normsError || I18n.t("set.weights.err.no_base", "Исходные нормы не загружены."));
             return;
         }
         const j = JSON.parse(normsRaw), st = load();
@@ -1541,11 +1618,11 @@ function bindWeightsFiles(main) {
             j = JSON.parse(await file.text());
         }
         catch (e) {
-            alert("Файл не читается как JSON.");
+            alert(I18n.t("set.weights.err.bad_json", "Файл не читается как JSON."));
             return;
         }
         if (!j || j.format !== "electrodoctor-norms" || !j.items) {
-            alert("Это не файл норм Электродоктора (нужен format: \"electrodoctor-norms\").");
+            alert(I18n.t("set.weights.err.bad_format", "Это не файл норм Электродоктора (нужен format: \"electrodoctor-norms\")."));
             return;
         }
         const st = load();
@@ -1575,7 +1652,10 @@ function bindWeightsFiles(main) {
                 }
             }
         }
-        if (!confirm(`Применить файл «${file.name}» как свои нормы и кривые?\nОтличается от исходного: норм — ${nN}, кривых — ${nC}.${skip ? `\nНеизвестных показателей пропущено: ${skip}.` : ""}`))
+        const skipLine = skip
+            ? "\n" + I18n.t("set.weights.import_skip", "Неизвестных показателей пропущено: {n}.", { n: skip })
+            : "";
+        if (!confirm(I18n.t("set.weights.import_confirm", "Применить файл «{name}» как свои нормы и кривые?\nОтличается от исходного: норм — {nn}, кривых — {nc}.{skip}", { name: file.name, nn: nN, nc: nC, skip: skipLine })))
             return;
         st.norms = norms;
         st.curves = cs;
@@ -1583,7 +1663,7 @@ function bindWeightsFiles(main) {
         drawWeights(main);
     };
     q(main, "#wresetall").onclick = () => {
-        if (!confirm("Вернуть исходные нормы и кривые критичности для всех показателей? Нормы, изменённые у отдельных клиентов, останутся."))
+        if (!confirm(I18n.t("set.weights.reset_confirm", "Вернуть исходные нормы и кривые критичности для всех показателей? Нормы, изменённые у отдельных клиентов, останутся.")))
             return;
         const st = load();
         st.norms = {};
@@ -1599,10 +1679,10 @@ function bindWeightsTable(main, fields, onChanged, skipSearch = false) {
             return `<span class="muted">${esc(weightKindLabel(code))}</span>`;
         }
         const nv = defaultNorm(code), c = curveFor(code), mine = typeof (load().norms || {})[code] === "number";
-        const nb = `<b class="${mine ? "own" : ""}" title="${mine ? "норма изменена; встроенная " + fmtNum(NORMS[code].v) : "встроенная норма"}">${fmtNum(nv)}</b>`;
+        const nb = `<b class="${mine ? "own" : ""}" title="${esc(mine ? I18n.t("set.weights.norm_own_tip", "норма изменена; встроенная {v}", { v: fmtNum(NORMS[code].v) }) : I18n.t("set.weights.norm_base_tip", "встроенная норма"))}">${fmtNum(nv)}</b>`;
         if (nv === 0)
-            return `${nb}<small>кривая не применяется — норма 0</small>`;
-        return `${nb}<small>безопасно ${esc(safeText(c, nv, unit).range)}</small>`;
+            return `${nb}<small>${esc(I18n.t("set.weights.curve_off", "кривая не применяется — норма 0"))}</small>`;
+        return `${nb}<small>${esc(I18n.t("set.weights.safe", "безопасно {range}", { range: safeText(c, nv, unit).range }))}</small>`;
     };
     const setNorm = (code, v) => {
         if (!NORMS[code])
@@ -1631,7 +1711,7 @@ function bindWeightsTable(main, fields, onChanged, skipSearch = false) {
             cb.classList.toggle("own", changed);
             const tag = tr.querySelector(".w-own");
             if (changed && !tag)
-                cb.insertAdjacentHTML("afterend", '<span class="w-own" title="норма или кривая изменены">своя</span>');
+                cb.insertAdjacentHTML("afterend", `<span class="w-own" title="${esc(I18n.t("set.weights.own_tip", "норма или кривая изменены"))}">${esc(I18n.t("set.weights.own", "своя"))}</span>`);
             if (!changed && tag)
                 tag.remove();
             onChanged && onChanged();
@@ -1686,19 +1766,23 @@ function bindWeightsTable(main, fields, onChanged, skipSearch = false) {
 }
 function weightKindLabel(code) {
     const k = valueKindOf(code);
-    return k === "presence" ? "наличие" : k === "text" ? "текст" : "норма";
+    return k === "presence"
+        ? I18n.t("set.weights.kind.presence", "наличие")
+        : k === "text"
+            ? I18n.t("set.weights.kind.text", "текст")
+            : I18n.t("set.weights.kind.norm", "норма");
 }
 function weightRowHtml(f) {
     const own = load().norms || {}, curves = load().curves || {};
     const kind = valueKindOf(f.code);
     const n = NORMS[f.code], mine = typeof own[f.code] === "number", myCurve = !!curves[f.code];
     const art = weightArtUrl(f.code);
-    const artLink = art ? `<a class="dx-art" href="${esc(art)}" target="_blank" rel="noopener" title="статья об анализе" aria-label="статья">↗</a>` : "";
+    const artLink = art ? `<a class="dx-art" href="${esc(art)}" target="_blank" rel="noopener" title="${esc(I18n.t("set.weights.article", "статья об анализе"))}" aria-label="${esc(I18n.t("set.weights.article_short", "статья"))}">↗</a>` : "";
     const unit = f.unit ? `<span class="lab-unit">${esc(f.unit)}</span>` : "";
     const dxN = Dx.diagnosesUsingLab(f.code).length;
     const refsBtn = dxN
-        ? `<button type="button" class="lab-refs" data-refs="${esc(f.code)}" title="в скольких диагнозах используется">${dxN}</button>`
-        : `<span class="lab-refs zero" title="нет в признаках диагнозов">0</span>`;
+        ? `<button type="button" class="lab-refs" data-refs="${esc(f.code)}" title="${esc(I18n.t("set.weights.refs_tip", "в скольких диагнозах используется"))}">${dxN}</button>`
+        : `<span class="lab-refs zero" title="${esc(I18n.t("set.weights.refs0", "нет в признаках диагнозов"))}">0</span>`;
     const search = ((Labs.LABS[f.code]?.aliases || []).join(" ") + " " + f.label + " " + f.code).toLowerCase();
     let mid;
     if (kind !== "norm" || !n) {
@@ -1706,17 +1790,21 @@ function weightRowHtml(f) {
     }
     else {
         const nv = defaultNorm(f.code), c = curveFor(f.code);
-        const nb = `<b class="${mine ? "own" : ""}" title="${mine ? "норма изменена; встроенная " + fmtNum(NORMS[f.code].v) : "встроенная норма"}">${fmtNum(nv)}</b>`;
-        mid = nv === 0 ? `${nb}<small>кривая не применяется — норма 0</small>`
-            : `${nb}<small>безопасно ${esc(safeText(c, nv, f.unit || "").range)}</small>`;
+        const nb = `<b class="${mine ? "own" : ""}" title="${esc(mine ? I18n.t("set.weights.norm_own_tip", "норма изменена; встроенная {v}", { v: fmtNum(NORMS[f.code].v) }) : I18n.t("set.weights.norm_base_tip", "встроенная норма"))}">${fmtNum(nv)}</b>`;
+        mid = nv === 0
+            ? `${nb}<small>${esc(I18n.t("set.weights.curve_off", "кривая не применяется — норма 0"))}</small>`
+            : `${nb}<small>${esc(I18n.t("set.weights.safe", "безопасно {range}", { range: safeText(c, nv, f.unit || "").range }))}</small>`;
     }
     const tip = n
-        ? `норма и безопасный диапазон; интервал ${esc(n.range)}`
-        : `тип: ${esc(weightKindLabel(f.code))}`;
+        ? I18n.t("set.weights.norm_tip", "норма и безопасный диапазон; интервал {range}", { range: n.range })
+        : I18n.t("set.weights.type_tip", "тип: {kind}", { kind: weightKindLabel(f.code) });
+    const ownMark = myCurve || mine
+        ? `<span class="w-own" title="${esc(I18n.t("set.weights.own_tip", "норма или кривая изменены"))}">${esc(I18n.t("set.weights.own", "своя"))}</span>`
+        : "";
     return `<tr data-w="${esc(f.code)}" data-g="${esc(f.group)}" data-k="${esc(search)}">
     <td><span class="lab-name"><b>${esc(f.label)}</b>${artLink}${unit}${refsBtn}</span><small>${esc(f.code)}${n && n.note ? " · " + esc(n.note) : ""}</small></td>
-    <td class="w-safe" title="${tip}" data-safe>${mid}</td>
-    <td><span class="w-curvecell"><button type="button" class="btn w-curve${myCurve || mine ? " own" : ""}" data-curve>Настроить</button>${myCurve || mine ? '<span class="w-own" title="норма или кривая изменены">своя</span>' : ""}</span></td>
+    <td class="w-safe" title="${esc(tip)}" data-safe>${mid}</td>
+    <td><span class="w-curvecell"><button type="button" class="btn w-curve${myCurve || mine ? " own" : ""}" data-curve>${esc(I18n.t("set.weights.edit", "Настроить"))}</button>${ownMark}</span></td>
   </tr>`;
 }
 function openDxRefsPopup(code, label) {
@@ -1730,12 +1818,12 @@ function openDxRefsPopup(code, label) {
                 : Dx.articleUrl(d.file);
             return `<li><a href="${esc(href)}" target="_blank" rel="noopener">${esc(d.title)}</a></li>`;
         }).join("")}</ul>`
-        : `<p class="muted">Этот анализ пока не входит в признаки ни одного диагноза.</p>`;
+        : `<p class="muted">${esc(I18n.t("set.weights.refs_empty", "Этот анализ пока не входит в признаки ни одного диагноза."))}</p>`;
     ov.innerHTML = `<div class="cv-dialog w-dxrefs-dlg" role="dialog" aria-modal="true" aria-labelledby="w-dxrefs-title">
-    <div class="cv-head"><b id="w-dxrefs-title">${esc(label)} · в диагнозах (${list.length})</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <div class="cv-head"><b id="w-dxrefs-title">${esc(label)} · ${esc(I18n.t("set.weights.refs_title", "в диагнозах ({n})", { n: list.length }))}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("cmp.close", "закрыть"))}">✕</button></div>
     ${body}
-    <div class="grp" style="margin-top:12px"><button type="button" class="btn" data-close>Закрыть</button></div>
+    <div class="grp" style="margin-top:12px"><button type="button" class="btn" data-close>${esc(I18n.t("common.close", "Закрыть"))}</button></div>
   </div>`;
     document.body.appendChild(ov);
     lockScroll();
@@ -1761,37 +1849,40 @@ function drawWeightsSection(main, sec, focusCode = "") {
     const groups = [...counts.keys()].sort((a, b) => (counts.get(b) - counts.get(a))
         || groupLabel(a, sec).localeCompare(groupLabel(b, sec), "ru"));
     const chip = (g, label, n, on = false) => `<button type="button" class="dx-chip${on ? " on" : ""}" data-g="${esc(g)}">${esc(label)} <span class="dx-chip-n">${n}</span></button>`;
+    const emptyMsg = fields.length
+        ? I18n.t("set.weights.none_found", "Ничего не найдено")
+        : I18n.t("set.weights.sec_empty", "В этом разделе пока нет анализов.");
     main.innerHTML = `<div class="dx-secbar">
-      <a href="#/settings/weights">← Все разделы</a>
+      <a href="#/settings/weights">${esc(I18n.t("set.weights.back", "← Все разделы"))}</a>
       ${SetLabs.secIcon(sec, 32)}
-      <h2>${esc(sec.title)}</h2>
+      <h2>${esc(weightSecTitle(sec))}</h2>
       <span class="muted" id="wcount">${fields.length} ${pluralPok(fields.length)}</span>
-      <button type="button" class="btn primary" id="lab-new">+ Добавить анализ</button>
-      <input type="search" id="wq" placeholder="Поиск по названию, коду, синониму" aria-label="поиск показателя">
+      <button type="button" class="btn primary" id="lab-new">${esc(I18n.t("set.weights.add", "+ Добавить анализ"))}</button>
+      <input type="search" id="wq" placeholder="${esc(I18n.t("set.weights.search_ph", "Поиск по названию, коду, синониму"))}" aria-label="${esc(I18n.t("set.weights.search_aria", "поиск показателя"))}">
     </div>
-    <div class="lab-chips" role="group" aria-label="Группы">
-      ${chip("", "Все", fields.length, true)}
+    <div class="lab-chips" role="group" aria-label="${esc(I18n.t("set.weights.groups", "Группы"))}">
+      ${chip("", I18n.t("set.weights.all", "Все"), fields.length, true)}
       ${groups.map(g => chip(g, groupLabel(g, sec), counts.get(g) || 0)).join("")}
     </div>
     <div class="lab-newform card" id="labnewform" hidden>
       <div class="lab-newgrid">
-        <label>Название <input name="name" required placeholder="например, Витамин B12"></label>
-        <label>Код <input name="code" required placeholder="B12" pattern="[A-Za-z][A-Za-z0-9_]*" title="латиница, цифры, подчёркивание"></label>
-        <label>Единица <input name="unit" placeholder="пмоль/л"></label>
-        <label>Тип <select name="type"><option value="number">норма (число)</option><option value="qual">наличие</option><option value="text">текст</option></select></label>
-        <label>Группа <select name="group">${groups.map(g => `<option value="${esc(g)}">${esc(groupLabel(g, sec))} (${counts.get(g) || 0})</option>`).join("")}
-          <option value="${esc(sec.prefix + " — прочее")}">прочее</option></select></label>
+        <label>${esc(I18n.t("set.weights.fld.name", "Название"))} <input name="name" required placeholder="${esc(I18n.t("set.weights.fld.name_ph", "например, Витамин B12"))}"></label>
+        <label>${esc(I18n.t("set.weights.fld.code", "Код"))} <input name="code" required placeholder="B12" pattern="[A-Za-z][A-Za-z0-9_]*" title="${esc(I18n.t("set.weights.fld.code_tip", "латиница, цифры, подчёркивание"))}"></label>
+        <label>${esc(I18n.t("set.weights.fld.unit", "Единица"))} <input name="unit" placeholder="${esc(I18n.t("set.weights.fld.unit_ph", "пмоль/л"))}"></label>
+        <label>${esc(I18n.t("set.weights.fld.type", "Тип"))} <select name="type"><option value="number">${esc(I18n.t("set.weights.kind.norm_num", "норма (число)"))}</option><option value="qual">${esc(I18n.t("set.weights.kind.presence", "наличие"))}</option><option value="text">${esc(I18n.t("set.weights.kind.text", "текст"))}</option></select></label>
+        <label>${esc(I18n.t("set.weights.fld.group", "Группа"))} <select name="group">${groups.map(g => `<option value="${esc(g)}">${esc(groupLabel(g, sec))} (${counts.get(g) || 0})</option>`).join("")}
+          <option value="${esc(sec.prefix + " — прочее")}">${esc(I18n.t("set.weights.other_group", "прочее"))}</option></select></label>
       </div>
-      <p class="muted">Анализ попадёт в справочник и станет доступен в кабинете и признаках диагнозов.</p>
-      <div class="grp"><button type="button" class="btn primary" data-lab-save>Сохранить</button><button type="button" class="btn" data-lab-cancel>Отмена</button><span class="err" data-lab-err></span></div>
+      <p class="muted">${esc(I18n.t("set.weights.add_note", "Анализ попадёт в справочник и станет доступен в кабинете и признаках диагнозов."))}</p>
+      <div class="grp"><button type="button" class="btn primary" data-lab-save>${esc(I18n.t("common.save", "Сохранить"))}</button><button type="button" class="btn" data-lab-cancel>${esc(I18n.t("common.cancel", "Отмена"))}</button><span class="err" data-lab-err></span></div>
     </div>
-    <p class="muted set-hint">Тип показателя — «Настроить». Цифра у названия — в скольких диагнозах анализ в признаках (клик — список со ссылками на статьи).</p>
+    <p class="muted set-hint">${esc(I18n.t("set.weights.sec_hint", "Тип показателя — «Настроить». Цифра у названия — в скольких диагнозах анализ в признаках (клик — список со ссылками на статьи)."))}</p>
     ${normsError ? `<div class="note err">${esc(normsError)}</div>` : ""}
     <div class="card tblwrap w-card"><table class="w-table">
-      <thead><tr><th>Показатель</th><th>Норма / тип</th><th></th></tr></thead>
+      <thead><tr><th>${esc(I18n.t("set.weights.col.marker", "Показатель"))}</th><th>${esc(I18n.t("set.weights.col.norm", "Норма / тип"))}</th><th></th></tr></thead>
       <tbody>${fields.map(weightRowHtml).join("")}</tbody>
     </table>
-    <p class="muted empty" id="wempty"${fields.length ? " hidden" : ""}>${fields.length ? "Ничего не найдено" : "В этом разделе пока нет анализов."}</p></div>`;
+    <p class="muted empty" id="wempty"${fields.length ? " hidden" : ""}>${esc(emptyMsg)}</p></div>`;
     const form = main.querySelector("#labnewform");
     let group = "";
     const applyFilter = () => {
@@ -1806,11 +1897,16 @@ function drawWeightsSection(main, sec, focusCode = "") {
         const empty = main.querySelector("#wempty");
         if (empty) {
             empty.hidden = n > 0;
-            empty.textContent = fields.length ? "Ничего не найдено" : "В этом разделе пока нет анализов.";
+            empty.textContent = fields.length
+                ? I18n.t("set.weights.none_found", "Ничего не найдено")
+                : I18n.t("set.weights.sec_empty", "В этом разделе пока нет анализов.");
         }
         const wc = main.querySelector("#wcount");
-        if (wc)
-            wc.textContent = `${n} ${pluralPok(n)}${n !== fields.length ? " из " + fields.length : ""}`;
+        if (wc) {
+            wc.textContent = n !== fields.length
+                ? I18n.t("set.weights.count_of", "{n} {word} из {total}", { n, word: pluralPok(n), total: fields.length })
+                : `${n} ${pluralPok(n)}`;
+        }
     };
     main.querySelectorAll(".lab-chips .dx-chip").forEach(b => b.addEventListener("click", () => {
         group = b.dataset.g || "";
@@ -1839,16 +1935,16 @@ function drawWeightsSection(main, sec, focusCode = "") {
         const type = form.querySelector("[name=type]").value;
         const g = form.querySelector("[name=group]").value || `${sec.prefix} — прочее`;
         if (!name) {
-            err.textContent = "Укажите название.";
+            err.textContent = I18n.t("set.weights.err.name", "Укажите название.");
             return;
         }
         if (!code || !/^[A-Z][A-Z0-9_]*$/.test(code)) {
-            err.textContent = "Код: латиница, можно цифры и _ , начинается с буквы.";
+            err.textContent = I18n.t("set.weights.err.code", "Код: латиница, можно цифры и _ , начинается с буквы.");
             return;
         }
         Labs.applyOwn(load().labs);
         if (Labs.has(code)) {
-            err.textContent = `Код ${code} уже есть в справочнике.`;
+            err.textContent = I18n.t("set.weights.err.code_exists", "Код {code} уже есть в справочнике.", { code });
             return;
         }
         const lab = { name, aliases: [], type, unit, group: g, inForm: false, refs: 0 };
@@ -1890,13 +1986,13 @@ function drawWeightsSection(main, sec, focusCode = "") {
 let weightsDxReady = false;
 function drawWeights(main) {
     if (!Object.keys(Labs.LABS).length) {
-        main.innerHTML = `<p class="muted">Загружаю каталог анализов…</p>`;
+        main.innerHTML = `<p class="muted">${esc(I18n.t("set.weights.loading_labs", "Загружаю каталог анализов…"))}</p>`;
         Labs.loadLabs().then(() => { Labs.applyOwn(load().labs); drawWeights(main); });
         return;
     }
     Labs.applyOwn(load().labs);
     if (!weightsDxReady) {
-        main.innerHTML = `<p class="muted">Загружаю признаки диагнозов…</p>`;
+        main.innerHTML = `<p class="muted">${esc(I18n.t("set.weights.loading_signs", "Загружаю признаки диагнозов…"))}</p>`;
         Promise.all([Sg.loadSigns(), Dx.loadDiagnoses()]).then(() => { weightsDxReady = true; drawWeights(main); });
         return;
     }
@@ -1911,16 +2007,16 @@ function drawWeights(main) {
     const all = weightFields();
     const counts = SetLabs.SECS.map(s => ({ s, n: weightFieldsIn(s).length }));
     main.innerHTML = `
-    <div class="set-head"><h2>Нормы и веса</h2><span class="muted" id="wcount">${weightsOwnCounts()}</span></div>
-    <p class="muted set-hint">Каталог анализов по материалу. Внутри раздела — подгруппы, добавление анализа, тип (норма / наличие / текст) и нормы. Новый код также доступен в кабинете.</p>
+    <div class="set-head"><h2>${esc(I18n.t("set.head.weights", "Нормы и веса"))}</h2><span class="muted" id="wcount">${esc(weightsOwnCounts())}</span></div>
+    <p class="muted set-hint">${esc(I18n.t("set.weights.hint", "Каталог анализов по материалу. Внутри раздела — подгруппы, добавление анализа, тип (норма / наличие / текст) и нормы. Новый код также доступен в кабинете."))}</p>
     ${normsError ? `<div class="note err">${esc(normsError)}</div>` : ""}
-    <div class="w-bar"><span class="muted">${all.length} ${pluralPok(all.length)} в каталоге</span>
+    <div class="w-bar"><span class="muted">${esc(I18n.t("set.weights.in_catalog", "{n} {word} в каталоге", { n: all.length, word: pluralPok(all.length) }))}</span>
       <span class="grp w-files">
-        <button type="button" class="btn" id="wdlbase" title="файл docs/data/norms.json как есть">Скачать исходные</button>
-        <button type="button" class="btn" id="wdlcur" title="тот же формат, но с вашими нормами и кривыми">Скачать текущие</button>
-        <label class="btn" title="применить нормы и кривые из файла как свои">Загрузить из файла<input type="file" id="wimport" accept=".json,application/json" hidden></label>
-        <button type="button" class="btn" id="wresetall">Вернуть всё исходное</button>
+        <button type="button" class="btn" id="wdlbase" title="${esc(I18n.t("set.weights.dl_base_tip", "файл docs/data/norms.json как есть"))}">${esc(I18n.t("set.weights.dl_base", "Скачать исходные"))}</button>
+        <button type="button" class="btn" id="wdlcur" title="${esc(I18n.t("set.weights.dl_cur_tip", "тот же формат, но с вашими нормами и кривыми"))}">${esc(I18n.t("set.weights.dl_cur", "Скачать текущие"))}</button>
+        <label class="btn" title="${esc(I18n.t("set.weights.import_tip", "применить нормы и кривые из файла как свои"))}">${esc(I18n.t("set.weights.import", "Загрузить из файла"))}<input type="file" id="wimport" accept=".json,application/json" hidden></label>
+        <button type="button" class="btn" id="wresetall">${esc(I18n.t("set.weights.reset", "Вернуть всё исходное"))}</button>
       </span></div>
-    <div class="dx-grid">${counts.map(({ s, n }) => `<a class="dx-card" href="#/settings/weights/${esc(s.id)}">${SetLabs.secIcon(s)}<span class="dx-name">${esc(s.title)}</span><span class="dx-desc">${esc(s.desc)}</span><span class="dx-count">${n} ${pluralPok(n)}</span></a>`).join("")}</div>`;
+    <div class="dx-grid">${counts.map(({ s, n }) => `<a class="dx-card" href="#/settings/weights/${esc(s.id)}">${SetLabs.secIcon(s)}<span class="dx-name">${esc(weightSecTitle(s))}</span><span class="dx-desc">${esc(weightSecDesc(s))}</span><span class="dx-count">${n} ${pluralPok(n)}</span></a>`).join("")}</div>`;
     bindWeightsFiles(main);
 }
