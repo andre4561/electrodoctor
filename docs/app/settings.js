@@ -1150,13 +1150,13 @@ export function gateHtml() {
     const st = Store.state;
     if (st.where === "folder" && !st.loaded)
         return `<div class="note gate">
-      <b>Нет доступа к папке настроек «${esc(st.folderName)}».</b> Браузер спрашивает разрешение заново после перезапуска.
-      <div class="grp"><button type="button" class="btn primary" data-gate="grant">Разрешить доступ к папке</button></div>
+      <b>${esc(I18n.t("set.gate.folder_title", "Нет доступа к папке настроек «{name}».", { name: st.folderName }))}</b> ${esc(I18n.t("set.gate.folder_hint", "Браузер спрашивает разрешение заново после перезапуска."))}
+      <div class="grp"><button type="button" class="btn primary" data-gate="grant">${esc(I18n.t("set.gate.grant", "Разрешить доступ к папке"))}</button></div>
       ${st.error ? `<div class="err">${esc(st.error)}</div>` : ""}</div>`;
     if (st.locked)
         return `<form class="note gate" data-gate-form>
-      <b>Ключи API зашифрованы.</b> Введите пароль, чтобы ими пользоваться в этой вкладке.
-      <div class="grp"><input type="password" name="pw" autocomplete="current-password" placeholder="пароль" aria-label="пароль"><button type="submit" class="btn primary">Открыть</button></div>
+      <b>${esc(I18n.t("set.gate.locked_title", "Ключи API зашифрованы."))}</b> ${esc(I18n.t("set.gate.locked_hint", "Введите пароль, чтобы ими пользоваться в этой вкладке."))}
+      <div class="grp"><input type="password" name="pw" autocomplete="current-password" placeholder="${esc(I18n.t("set.gate.pw_ph", "пароль"))}" aria-label="${esc(I18n.t("set.gate.pw_ph", "пароль"))}"><button type="submit" class="btn primary">${esc(I18n.t("set.gate.unlock", "Открыть"))}</button></div>
       <div class="err" data-gate-err></div></form>`;
     return st.error ? `<div class="note gate err">${esc(st.error)}</div>` : "";
 }
@@ -1170,27 +1170,29 @@ export function bindGate(root, after) {
             ev.preventDefault();
             const pw = f.querySelector("[name=pw]").value;
             const err = f.querySelector("[data-gate-err]");
-            err.textContent = "Проверяю…";
+            err.textContent = I18n.t("set.gate.checking", "Проверяю…");
             Store.unlock(pw).then(after).catch(e => { err.textContent = (e instanceof Error && e.message) || String(e); });
         };
 }
 function articlesCssStatusText() {
-    return load().articlesCss ? "Свой CSS в этом браузере." : "Исходный CSS из репозитория.";
+    return load().articlesCss
+        ? I18n.t("set.misc.css_own", "Свой CSS в этом браузере.")
+        : I18n.t("set.misc.css_base", "Исходный CSS из репозитория.");
 }
 function openArticlesCssEditor(onDone) {
     const own = load().articlesCss || "";
     const ov = document.createElement("div");
     ov.className = "cv-overlay";
     ov.innerHTML = `<div class="cv-dialog articles-css-dlg" role="dialog" aria-modal="true" aria-labelledby="articles-css-title">
-    <div class="cv-head"><b id="articles-css-title">Стили статей</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
-    <p class="muted small">Правки только в этом браузере. Для всех посетителей меняйте <code>docs/assets/articles.css</code> в репозитории и выгружайте сайт. Кабинет этими стилями не трогаем.</p>
-    <textarea class="articles-css" spellcheck="false" disabled>Загрузка…</textarea>
+    <div class="cv-head"><b id="articles-css-title">${esc(I18n.t("set.misc.css", "Стили статей"))}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("common.close", "Закрыть"))}">✕</button></div>
+    <p class="muted small">${esc(I18n.t("set.misc.css_dlg_lead", "Правки только в этом браузере. Для всех посетителей меняйте docs/assets/articles.css в репозитории и выгружайте сайт. Кабинет этими стилями не трогаем."))}</p>
+    <textarea class="articles-css" spellcheck="false" disabled>${esc(I18n.t("set.misc.css_loading", "Загрузка…"))}</textarea>
     <p class="muted small" data-css-hint></p>
     <div class="grp">
-      <button type="button" class="btn primary" data-css="save" disabled>Сохранить</button>
-      <button type="button" class="btn" data-css="reset" disabled>Сбросить к исходному</button>
-      <button type="button" class="btn" data-close>Отмена</button>
+      <button type="button" class="btn primary" data-css="save" disabled>${esc(I18n.t("common.save", "Сохранить"))}</button>
+      <button type="button" class="btn" data-css="reset" disabled>${esc(I18n.t("set.misc.css_reset", "Сбросить к исходному"))}</button>
+      <button type="button" class="btn" data-close>${esc(I18n.t("common.cancel", "Отмена"))}</button>
       <span class="muted" data-css-flash></span>
     </div>
   </div>`;
@@ -1210,13 +1212,13 @@ function openArticlesCssEditor(onDone) {
         const def = defaultCss ? norm(defaultCss) : "";
         const savedN = saved ? norm(saved) : "";
         if (def && cur === def && !saved)
-            hint.textContent = "Исходный CSS.";
+            hint.textContent = I18n.t("set.misc.css_hint_base", "Исходный CSS.");
         else if (savedN && cur === savedN)
-            hint.textContent = "Свой CSS (сохранён в этом браузере).";
+            hint.textContent = I18n.t("set.misc.css_hint_own", "Свой CSS (сохранён в этом браузере).");
         else if (def && cur === def && saved)
-            hint.textContent = "В поле исходник; в браузере ещё свой — «Сбросить» или «Сохранить».";
+            hint.textContent = I18n.t("set.misc.css_hint_mixed", "В поле исходник; в браузере ещё свой — «Сбросить» или «Сохранить».");
         else
-            hint.textContent = "Изменён — нажмите «Сохранить», чтобы применить в этом браузере.";
+            hint.textContent = I18n.t("set.misc.css_hint_dirty", "Изменён — нажмите «Сохранить», чтобы применить в этом браузере.");
     };
     const close = () => {
         document.removeEventListener("keydown", onKey);
@@ -1226,7 +1228,7 @@ function openArticlesCssEditor(onDone) {
     const onKey = (e) => {
         if (e.key !== "Escape")
             return;
-        if (dirty && !confirm("Закрыть без сохранения?"))
+        if (dirty && !confirm(I18n.t("set.misc.css_close_confirm", "Закрыть без сохранения?")))
             return;
         close();
     };
@@ -1234,13 +1236,13 @@ function openArticlesCssEditor(onDone) {
     ov.addEventListener("click", e => {
         if (e.target !== ov)
             return;
-        if (dirty && !confirm("Закрыть без сохранения?"))
+        if (dirty && !confirm(I18n.t("set.misc.css_close_confirm", "Закрыть без сохранения?")))
             return;
         close();
     });
     ov.querySelectorAll("[data-close]").forEach(b => {
         b.onclick = () => {
-            if (dirty && !confirm("Закрыть без сохранения?"))
+            if (dirty && !confirm(I18n.t("set.misc.css_close_confirm", "Закрыть без сохранения?")))
                 return;
             close();
         };
@@ -1258,7 +1260,7 @@ function openArticlesCssEditor(onDone) {
         ta.disabled = false;
         saveBtn.disabled = false;
         resetBtn.disabled = !own;
-        hint.innerHTML = `<span class="err">${esc((e && e.message) || "не удалось загрузить исходный CSS")}</span>`;
+        hint.innerHTML = `<span class="err">${esc((e && e.message) || I18n.t("set.misc.css_load_err", "не удалось загрузить исходный CSS"))}</span>`;
         ta.focus();
     });
     ta.oninput = () => { dirty = true; refreshHint(); };
@@ -1342,17 +1344,19 @@ function drawLang(main) {
         const chips = I18n.LOCALE_IDS.map(id => `<a class="dx-chip${id === loc ? " on" : ""}" href="#/settings/lang/${id}">${esc(I18n.LOCALE_LABEL[id])}</a>`).join("");
         const text = langDictText(eff);
         main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.lang", "Язык"))}</h2><span class="muted">${esc(I18n.t("set.head.lang_note"))}</span></div>
-      <p class="muted">Словарь подписей для выписки и (позже) интерфейса — один JSON на язык. Скопируйте целиком в переводчик или ИИ, вставьте обратно и сохраните. Ключи не переименовывайте. Переключатель языка интерфейса — отдельным шагом.</p>
-      <div class="dx-chips" role="tablist" aria-label="Словарь">${chips}</div>
+      <p class="muted">${esc(I18n.t("set.lang.lead", "Словарь подписей для выписки и (позже) интерфейса — один JSON на язык. Скопируйте целиком в переводчик или ИИ, вставьте обратно и сохраните. Ключи не переименовывайте. Переключатель языка интерфейса — отдельным шагом."))}</p>
+      <div class="dx-chips" role="tablist" aria-label="${esc(I18n.t("set.lang.dicts", "Словарь"))}">${chips}</div>
       <div class="card i18n-card">
         <div class="grp">
-          <button type="button" class="btn primary" data-i18n-save>Сохранить</button>
-          <button type="button" class="btn" data-i18n-reload>Вернуть сохранённое</button>
-          <button type="button" class="btn" data-i18n-reset${ownCount ? "" : " disabled"}>Сбросить к встроенному${ownCount ? ` (${ownCount})` : ""}</button>
+          <button type="button" class="btn primary" data-i18n-save>${esc(I18n.t("set.lang.save", "Сохранить"))}</button>
+          <button type="button" class="btn" data-i18n-reload>${esc(I18n.t("set.lang.reload", "Вернуть сохранённое"))}</button>
+          <button type="button" class="btn" data-i18n-reset${ownCount ? "" : " disabled"}>${ownCount
+            ? esc(I18n.t("set.lang.reset_n", "Сбросить к встроенному ({n})", { n: ownCount }))
+            : esc(I18n.t("set.lang.reset", "Сбросить к встроенному"))}</button>
           <span class="muted" data-i18n-flash></span>
         </div>
         <p class="err" data-i18n-err hidden></p>
-        <textarea class="i18n-ta" data-i18n-ta spellcheck="true" aria-label="словарь ${esc(I18n.LOCALE_LABEL[loc])}">${esc(text)}</textarea>
+        <textarea class="i18n-ta" data-i18n-ta spellcheck="true" aria-label="${esc(I18n.t("set.lang.dicts", "Словарь"))} ${esc(I18n.LOCALE_LABEL[loc])}">${esc(text)}</textarea>
       </div>`;
         const ta = q(main, "[data-i18n-ta]");
         const errEl = q(main, "[data-i18n-err]");
@@ -1397,7 +1401,7 @@ function drawLang(main) {
             resetBtn.onclick = () => {
                 if (!ownCount)
                     return;
-                if (!confirm(`Сбросить словарь «${I18n.LOCALE_LABEL[loc]}» к встроенному?`))
+                if (!confirm(I18n.t("set.lang.reset_confirm", "Сбросить словарь «{name}» к встроенному?", { name: I18n.LOCALE_LABEL[loc] })))
                     return;
                 const st = load();
                 if (st.i18n)
@@ -1413,29 +1417,29 @@ function drawMisc(main) {
     const paint = () => {
         main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.misc", "Прочее"))}</h2></div>
     <div class="card store-card">
-      <h2>Счётчики сайта</h2>
-      <p class="muted">Яндекс.Метрику, Google Analytics и другой код шапки вставляйте в <code>docs/assets/site-inject.html</code> в репозитории (или на хостинге), затем выгружайте сайт. Из кабинета это не пишется — на статическом хосте нет защиты от правок гостей.</p>
+      <h2>${esc(I18n.t("set.misc.counters", "Счётчики сайта"))}</h2>
+      <p class="muted">${esc(I18n.t("set.misc.counters_lead", "Яндекс.Метрику, Google Analytics и другой код шапки вставляйте в docs/assets/site-inject.html в репозитории (или на хостинге), затем выгружайте сайт. Из кабинета это не пишется — на статическом хосте нет защиты от правок гостей."))}</p>
     </div>
     <div class="card store-card">
-      <h2>Стили статей</h2>
-      <p class="muted">CSS страниц статей и шапки. Правки здесь — только в этом браузере; для всех посетителей меняйте <code>docs/assets/articles.css</code> в репозитории.</p>
+      <h2>${esc(I18n.t("set.misc.css", "Стили статей"))}</h2>
+      <p class="muted">${esc(I18n.t("set.misc.css_lead", "CSS страниц статей и шапки. Правки здесь — только в этом браузере; для всех посетителей меняйте docs/assets/articles.css в репозитории."))}</p>
       <p class="muted small" data-css-status>${esc(articlesCssStatusText())}</p>
       <div class="grp">
-        <button type="button" class="btn primary" data-css="edit">Редактировать</button>
-        <button type="button" class="btn" data-css="reset-card"${load().articlesCss ? "" : " disabled"}>Сбросить к исходному</button>
+        <button type="button" class="btn primary" data-css="edit">${esc(I18n.t("set.misc.css_edit", "Редактировать"))}</button>
+        <button type="button" class="btn" data-css="reset-card"${load().articlesCss ? "" : " disabled"}>${esc(I18n.t("set.misc.css_reset", "Сбросить к исходному"))}</button>
         <span class="muted" data-css-flash></span>
       </div>
     </div>
     <div class="card store-card">
-      <h2>Аудит проекта</h2>
-      <p class="muted">Проверка кода и данных без правок: инструкция для ИИ — файл <code>AUDIT.md</code> в корне репозитория. Заключения складывайте в <code>audit/reports/</code> по шаблону <code>audit/REPORT_TEMPLATE.md</code>, потом по ним чините в IDE.</p>
+      <h2>${esc(I18n.t("set.misc.audit", "Аудит проекта"))}</h2>
+      <p class="muted">${esc(I18n.t("set.misc.audit_lead", "Проверка кода и данных без правок: инструкция для ИИ — файл AUDIT.md в корне репозитория. Заключения складывайте в audit/reports/ по шаблону audit/REPORT_TEMPLATE.md, потом по ним чините в IDE."))}</p>
     </div>`;
         q(main, '[data-css="edit"]').onclick = () => openArticlesCssEditor(paint);
         const resetCard = q(main, '[data-css="reset-card"]');
         resetCard.onclick = () => {
             if (!load().articlesCss)
                 return;
-            if (!confirm("Сбросить свой CSS статей в этом браузере к исходному из репозитория?"))
+            if (!confirm(I18n.t("set.misc.css_reset_confirm", "Сбросить свой CSS статей в этом браузере к исходному из репозитория?")))
                 return;
             const st = load();
             st.articlesCss = "";
@@ -1448,32 +1452,37 @@ function drawMisc(main) {
 }
 function drawStorage(main, redraw) {
     const st = Store.state;
+    const nowFolder = I18n.t("set.store.now_folder", "в папке «{name}», файл {file}", { name: st.folderName, file: Store.FILE })
+        + (st.loaded ? "" : ' — <span class="err">' + esc(I18n.t("set.store.no_access", "нет доступа")) + "</span>");
     const folderCard = `<div class="card store-card">
-      <h2>Где хранить настройки</h2>
-      <p class="muted">Провайдеры, ключи API, агенты — всё, что есть в настройках, хранится одним файлом у вас. На сервер ничего не уходит.</p>
-      <p><b>Сейчас:</b> ${st.where === "folder" ? `в папке «${esc(st.folderName)}», файл <code>${Store.FILE}</code>${st.loaded ? "" : ' — <span class="err">нет доступа</span>'}` : "в этом браузере"}.</p>
+      <h2>${esc(I18n.t("set.store.where_title", "Где хранить настройки"))}</h2>
+      <p class="muted">${esc(I18n.t("set.store.where_lead", "Провайдеры, ключи API, агенты — всё, что есть в настройках, хранится одним файлом у вас. На сервер ничего не уходит."))}</p>
+      <p><b>${esc(I18n.t("set.store.now", "Сейчас:"))}</b> ${st.where === "folder" ? nowFolder : esc(I18n.t("set.store.now_browser", "в этом браузере"))}.</p>
       ${Store.folderSupported ? `<div class="grp">
-        <button type="button" class="btn primary" data-st="folder">${st.where === "folder" ? "Выбрать другую папку" : "Хранить в папке на компьютере"}</button>
-        ${st.where === "folder" && !st.loaded ? `<button type="button" class="btn" data-gate="grant">Разрешить доступ к папке</button>` : ""}
-        ${st.where === "folder" ? `<button type="button" class="btn" data-st="browser">Хранить в браузере</button>` : ""}
+        <button type="button" class="btn primary" data-st="folder">${esc(st.where === "folder"
+        ? I18n.t("set.store.pick_other", "Выбрать другую папку")
+        : I18n.t("set.store.pick", "Хранить в папке на компьютере"))}</button>
+        ${st.where === "folder" && !st.loaded ? `<button type="button" class="btn" data-gate="grant">${esc(I18n.t("set.gate.grant", "Разрешить доступ к папке"))}</button>` : ""}
+        ${st.where === "folder" ? `<button type="button" class="btn" data-st="browser">${esc(I18n.t("set.store.to_browser", "Хранить в браузере"))}</button>` : ""}
       </div>
-      <p class="muted small">В папке настройки переживут очистку браузера, и их легко перенести на другой компьютер. После перезапуска браузер может один раз спросить разрешение на доступ к папке. Выберите отдельную папку — не ту, где лежат клиенты.</p>`
-        : `<p class="muted">Этот браузер не умеет работать с папками на компьютере — нужен Chrome, Edge, Яндекс.Браузер или Opera. Настройки можно переносить файлом (ниже).</p>`}
+      <p class="muted small">${esc(I18n.t("set.store.folder_hint", "В папке настройки переживут очистку браузера, и их легко перенести на другой компьютер. После перезапуска браузер может один раз спросить разрешение на доступ к папке. Выберите отдельную папку — не ту, где лежат клиенты."))}</p>`
+        : `<p class="muted">${esc(I18n.t("set.store.no_fs", "Этот браузер не умеет работать с папками на компьютере — нужен Chrome, Edge, Яндекс.Браузер или Opera. Настройки можно переносить файлом (ниже)."))}</p>`}
     </div>`;
+    const encLabel = I18n.t("set.store.enc_label", "Шифровать ключи API");
     const encCard = `<div class="card store-card">
-      <h2>Шифрование ключей паролем</h2>
-      <div class="set-row"><span>Шифровать ключи API<small>если кто-то получит доступ к компьютеру или папке, ключи без пароля бесполезны</small></span><span>${switchHtml("enc", st.encrypted, "Шифровать ключи API")}</span></div>
+      <h2>${esc(I18n.t("set.store.enc_title", "Шифрование ключей паролем"))}</h2>
+      <div class="set-row"><span>${esc(encLabel)}<small>${esc(I18n.t("set.store.enc_hint", "если кто-то получит доступ к компьютеру или папке, ключи без пароля бесполезны"))}</small></span><span>${switchHtml("enc", st.encrypted, encLabel)}</span></div>
       <form class="enc-form" data-enc-on hidden>
-        <p class="muted small">Пароль нигде не сохраняется. После перезагрузки страницы кабинет попросит его снова. <b>Если пароль забыть, ключи придётся ввести заново.</b></p>
-        <div class="grp"><input type="password" name="p1" autocomplete="new-password" placeholder="новый пароль" aria-label="новый пароль"><input type="password" name="p2" autocomplete="new-password" placeholder="ещё раз" aria-label="повтор пароля"><button type="submit" class="btn primary">Зашифровать</button><button type="button" class="btn" data-enc-cancel>Отмена</button></div>
+        <p class="muted small">${esc(I18n.t("set.store.enc_note", "Пароль нигде не сохраняется. После перезагрузки страницы кабинет попросит его снова. Если пароль забыть, ключи придётся ввести заново."))}</p>
+        <div class="grp"><input type="password" name="p1" autocomplete="new-password" placeholder="${esc(I18n.t("set.store.enc_p1", "новый пароль"))}" aria-label="${esc(I18n.t("set.store.enc_p1", "новый пароль"))}"><input type="password" name="p2" autocomplete="new-password" placeholder="${esc(I18n.t("set.store.enc_p2", "ещё раз"))}" aria-label="${esc(I18n.t("set.store.enc_p2", "ещё раз"))}"><button type="submit" class="btn primary">${esc(I18n.t("set.store.enc_go", "Зашифровать"))}</button><button type="button" class="btn" data-enc-cancel>${esc(I18n.t("common.cancel", "Отмена"))}</button></div>
       </form>
-      ${st.locked ? `<p class="muted small">Сейчас ключи закрыты — введите пароль на вкладке «Провайдеры» или здесь:</p>${gateHtml()}` : ""}
+      ${st.locked ? `<p class="muted small">${esc(I18n.t("set.store.enc_locked", "Сейчас ключи закрыты — введите пароль на вкладке «Провайдеры» или здесь:"))}</p>${gateHtml()}` : ""}
       <div class="err" data-enc-err></div>
     </div>`;
     const fileCard = `<div class="card store-card">
-      <h2>Перенос настроек файлом</h2>
-      <p class="muted">Чтобы перенести настройки на другой компьютер, в другой браузер или в будущее приложение.${st.encrypted ? " Ключи в файле останутся зашифрованными — понадобится тот же пароль." : ""}</p>
-      <div class="grp"><button type="button" class="btn" data-st="export">Сохранить настройки в файл</button><label class="btn">Загрузить из файла<input type="file" data-st-import accept=".json,application/json" hidden></label></div>
+      <h2>${esc(I18n.t("set.store.file_title", "Перенос настроек файлом"))}</h2>
+      <p class="muted">${esc(I18n.t("set.store.file_lead", "Чтобы перенести настройки на другой компьютер, в другой браузер или в будущее приложение.") + (st.encrypted ? I18n.t("set.store.file_enc", " Ключи в файле останутся зашифрованными — понадобится тот же пароль.") : ""))}</p>
+      <div class="grp"><button type="button" class="btn" data-st="export">${esc(I18n.t("set.store.export", "Сохранить настройки в файл"))}</button><label class="btn">${esc(I18n.t("set.store.import", "Загрузить из файла"))}<input type="file" data-st-import accept=".json,application/json" hidden></label></div>
     </div>`;
     main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.storage", "Хранение настроек"))}</h2><span class="muted">${esc(whereText())}</span></div>
     ${st.error ? `<div class="note err">${esc(st.error)}</div>` : ""}
@@ -1483,11 +1492,11 @@ function drawStorage(main, redraw) {
         return; alert((e instanceof Error && e.message) || String(e)); };
     const fb = main.querySelector('[data-st="folder"]');
     if (fb)
-        fb.onclick = () => Store.chooseFolder(name => confirm(`В папке «${name}» уже есть файл настроек ${Store.FILE}.\n\nOK — взять настройки из этого файла.\nОтмена — заменить его текущими настройками.`)).then(redraw).catch(fail);
+        fb.onclick = () => Store.chooseFolder(name => confirm(I18n.t("set.store.confirm_folder", "В папке «{name}» уже есть файл настроек {file}.\n\nOK — взять настройки из этого файла.\nОтмена — заменить его текущими настройками.", { name, file: Store.FILE }))).then(redraw).catch(fail);
     const bb = main.querySelector('[data-st="browser"]');
     if (bb)
         bb.onclick = () => {
-            if (!confirm("Перенести настройки обратно в браузер? Файл в папке останется, но кабинет перестанет его обновлять."))
+            if (!confirm(I18n.t("set.store.confirm_browser", "Перенести настройки обратно в браузер? Файл в папке останется, но кабинет перестанет его обновлять.")))
                 return;
             Store.toBrowser().then(redraw).catch(fail);
         };
@@ -1504,10 +1513,10 @@ function drawStorage(main, redraw) {
         if (!sw.checked && st.encrypted) {
             if (st.locked) {
                 sw.checked = true;
-                encErr.textContent = "Сначала введите пароль — иначе ключи не расшифровать.";
+                encErr.textContent = I18n.t("set.store.need_unlock", "Сначала введите пароль — иначе ключи не расшифровать.");
                 return;
             }
-            if (!confirm("Выключить шифрование? Ключи будут храниться открытым текстом.")) {
+            if (!confirm(I18n.t("set.store.confirm_plain", "Выключить шифрование? Ключи будут храниться открытым текстом."))) {
                 sw.checked = true;
                 return;
             }
@@ -1519,19 +1528,19 @@ function drawStorage(main, redraw) {
         ev.preventDefault();
         const p1 = onForm.querySelector("[name=p1]").value, p2 = onForm.querySelector("[name=p2]").value;
         if (p1.length < 6) {
-            encErr.textContent = "Пароль — не короче 6 символов.";
+            encErr.textContent = I18n.t("set.store.pw_short", "Пароль — не короче 6 символов.");
             return;
         }
         if (p1 !== p2) {
-            encErr.textContent = "Пароли не совпадают.";
+            encErr.textContent = I18n.t("set.store.pw_mismatch", "Пароли не совпадают.");
             return;
         }
-        encErr.textContent = "Шифрую…";
+        encErr.textContent = I18n.t("set.store.encrypting", "Шифрую…");
         Store.enableEncryption(p1).then(redraw).catch(fail);
     };
     main.querySelector('[data-st="export"]').onclick = async () => {
         if (!st.encrypted && Object.values(load().providers).some(c => c && c.apiKey)
-            && !confirm("Ключи API попадут в файл открытым текстом. Храните файл в надёжном месте (или сначала включите шифрование). Сохранить?"))
+            && !confirm(I18n.t("set.store.export_warn", "Ключи API попадут в файл открытым текстом. Храните файл в надёжном месте (или сначала включите шифрование). Сохранить?")))
             return;
         const text = await Store.exportText();
         const a = document.createElement("a");
@@ -1548,7 +1557,7 @@ function drawStorage(main, redraw) {
         imp.value = "";
         if (!f)
             return;
-        if (!confirm("Заменить текущие настройки настройками из файла «" + f.name + "»?"))
+        if (!confirm(I18n.t("set.store.import_confirm", "Заменить текущие настройки настройками из файла «{name}»?", { name: f.name })))
             return;
         try {
             await Store.importText(await f.text());

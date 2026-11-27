@@ -24,18 +24,35 @@ function putOwn(id, patch) {
     syncOwn();
 }
 function plural(n) {
+    if (I18n.getLocale() === "en")
+        return I18n.t(n === 1 ? "set.exam.item.one" : "set.exam.item.many", n === 1 ? "item" : "items");
     if (n % 10 === 1 && n % 100 !== 11)
-        return "пункт";
+        return I18n.t("set.exam.item.one", "пункт");
     if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
-        return "пункта";
-    return "пунктов";
+        return I18n.t("set.exam.item.few", "пункта");
+    return I18n.t("set.exam.item.many", "пунктов");
 }
 function linesPlural(n) {
+    if (I18n.getLocale() === "en")
+        return I18n.t(n === 1 ? "set.exam.sign.one" : "set.exam.sign.many", n === 1 ? "sign" : "signs");
     if (n % 10 === 1 && n % 100 !== 11)
-        return "признак";
+        return I18n.t("set.exam.sign.one", "признак");
     if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14))
-        return "признака";
-    return "признаков";
+        return I18n.t("set.exam.sign.few", "признака");
+    return I18n.t("set.exam.sign.many", "признаков");
+}
+function groupTitle(g) {
+    return I18n.t("set.exam.g." + g.id, g.title);
+}
+function groupDesc(g) {
+    return I18n.t("set.exam.g." + g.id + ".desc", g.desc);
+}
+function replyLabelUi(reply) {
+    return reply === "number"
+        ? I18n.t("set.exam.reply.number_short", "поле")
+        : reply === "text"
+            ? I18n.t("set.exam.reply.text_short", "текст")
+            : I18n.t("set.exam.reply.scale_short", "шкала");
 }
 function descBtnClass(desc) {
     return "btn exam-desc-btn" + (desc.trim() ? " has-tip" : " empty");
@@ -47,12 +64,11 @@ function syncDescTip(btn, desc) {
         btn.setAttribute("data-tip", t);
     else
         btn.removeAttribute("data-tip");
-    btn.title = t ? "" : "описание";
+    btn.title = t ? "" : I18n.t("set.exam.desc_btn", "описание");
 }
 function replyBtn(line) {
     const reply = Exams.replyOf(line);
-    const label = Exams.replyLabel(line);
-    return `<button type="button" class="btn exam-reply-btn" data-exam-act="edit-reply" data-reply="${esc(reply)}" title="тип значения в карточке">${esc(label)}</button>`;
+    return `<button type="button" class="btn exam-reply-btn" data-exam-act="edit-reply" data-reply="${esc(reply)}" title="${esc(I18n.t("set.exam.reply_tip", "тип значения в карточке"))}">${esc(replyLabelUi(reply))}</button>`;
 }
 /** Текст для просмотра: своё desc, иначе из статьи / from–to. */
 function lineEditorText(line, examId) {
@@ -66,15 +82,15 @@ function lineEditorText(line, examId) {
 function lineCard(line, examId) {
     const desc = lineEditorText(line, examId);
     const tip = desc.trim() ? ` data-tip="${esc(desc)}"` : "";
-    const title = desc.trim() ? "" : ` title="посмотреть описание"`;
+    const title = desc.trim() ? "" : ` title="${esc(I18n.t("set.exam.desc_tip", "посмотреть описание"))}"`;
     const reply = Exams.replyOf(line);
     return `<div class="exam-line-card" data-line="${esc(line.id)}">
     <div class="exam-line-top">
-      <label class="exam-field exam-line-label"><span>Признак</span>
-        <input type="text" name="llabel" value="${esc(line.label)}" placeholder="название признака" maxlength="200"></label>
-      <button type="button" class="${descBtnClass(desc)}" data-exam-act="edit-desc"${tip}${title}>описание</button>
+      <label class="exam-field exam-line-label"><span>${esc(I18n.t("set.exam.sign_label", "Признак"))}</span>
+        <input type="text" name="llabel" value="${esc(line.label)}" placeholder="${esc(I18n.t("set.exam.sign_ph", "название признака"))}" maxlength="200"></label>
+      <button type="button" class="${descBtnClass(desc)}" data-exam-act="edit-desc"${tip}${title}>${esc(I18n.t("set.exam.desc_btn", "описание"))}</button>
       ${replyBtn(line)}
-      <button type="button" class="btn danger" data-exam-act="rm-line" title="удалить признак" aria-label="удалить признак">×</button>
+      <button type="button" class="btn danger" data-exam-act="rm-line" title="${esc(I18n.t("set.exam.rm_sign", "удалить признак"))}" aria-label="${esc(I18n.t("set.exam.rm_sign", "удалить признак"))}">×</button>
     </div>
     <textarea name="ldesc" hidden>${esc(desc)}</textarea>
     <input type="hidden" name="lreply" value="${esc(reply)}">
@@ -86,13 +102,13 @@ function nestFold(nest, examId) {
     return `<details class="exam-nest" data-nest="${esc(nest.id)}" open>
     <summary class="exam-nest-sum">
       <span class="exam-nest-mark" aria-hidden="true"></span>
-      <input type="text" name="nname" class="exam-nest-name" value="${esc(nest.name)}" maxlength="120" placeholder="название группы">
+      <input type="text" name="nname" class="exam-nest-name" value="${esc(nest.name)}" maxlength="120" placeholder="${esc(I18n.t("set.exam.nest_ph", "название группы"))}">
       <span class="muted exam-nest-count">${n} ${linesPlural(n)}</span>
-      <button type="button" class="btn danger" data-exam-act="rm-nest" title="удалить группу" aria-label="удалить группу">×</button>
+      <button type="button" class="btn danger" data-exam-act="rm-nest" title="${esc(I18n.t("set.exam.rm_nest", "удалить группу"))}" aria-label="${esc(I18n.t("set.exam.rm_nest", "удалить группу"))}">×</button>
     </summary>
     <div class="exam-nest-body">
       <div class="exam-line-list" data-nest-lines>${nest.lines.map(l => lineCard(l, examId)).join("")}</div>
-      <button type="button" class="btn" data-exam-act="add-line-nest" style="margin-top:8px">+ признак</button>
+      <button type="button" class="btn" data-exam-act="add-line-nest" style="margin-top:8px">${esc(I18n.t("set.exam.add_sign", "+ признак"))}</button>
     </div>
   </details>`;
 }
@@ -101,31 +117,31 @@ function entryHtml(e, examId) {
 }
 function itemFold(it, open) {
     const n = Exams.flatSigns(it).length;
-    const status = n ? `${n} ${linesPlural(n)}` : "нет признаков";
+    const status = n ? `${n} ${linesPlural(n)}` : I18n.t("set.exam.no_signs", "нет признаков");
     const entries = it.entries || [];
     return `<details class="fold exam-item"${open ? " open" : ""} data-exam="${esc(it.id)}">
     <summary><span class="fold-title">${esc(it.name)}</span>
-      <span class="fold-status">${esc(status)}${it.own ? " · своё" : ""}</span>
+      <span class="fold-status">${esc(status)}${it.own ? " · " + I18n.t("set.exam.own", "своё") : ""}</span>
       <span class="fold-chev" aria-hidden="true"></span></summary>
     <div class="fold-body exam-body">
-      <label class="exam-field"><span>Название</span>
+      <label class="exam-field"><span>${esc(I18n.t("set.exam.name", "Название"))}</span>
         <input type="text" name="name" value="${esc(it.name)}" maxlength="120"></label>
       <div class="exam-lines-wrap">
-        <div class="exam-lines-head"><b>Признаки и группы</b>
-          <span class="muted">«описание»; тип — «шкала» / «поле» / «текст»; группа — вложенный список</span></div>
+        <div class="exam-lines-head"><b>${esc(I18n.t("set.exam.signs_head", "Признаки и группы"))}</b>
+          <span class="muted">${esc(I18n.t("set.exam.signs_hint", "«описание»; тип — «шкала» / «поле» / «текст»; группа — вложенный список"))}</span></div>
         <div class="exam-entry-list" data-entries>${entries.map(e => entryHtml(e, it.id)).join("")}</div>
         <div class="exam-add-row">
-          <button type="button" class="btn" data-exam-act="add-line">+ признак</button>
-          <button type="button" class="btn" data-exam-act="add-nest">+ группа</button>
+          <button type="button" class="btn" data-exam-act="add-line">${esc(I18n.t("set.exam.add_sign", "+ признак"))}</button>
+          <button type="button" class="btn" data-exam-act="add-nest">${esc(I18n.t("set.exam.add_nest", "+ группа"))}</button>
         </div>
       </div>
       <div class="exam-actions">
-        <button type="button" class="btn primary" data-exam-act="save">Сохранить</button>
+        <button type="button" class="btn primary" data-exam-act="save">${esc(I18n.t("common.save", "Сохранить"))}</button>
         <span class="muted exam-msg" aria-live="polite"></span>
         ${it.id.startsWith("own_")
-        ? `<button type="button" class="btn danger" data-exam-act="rm" title="удалить пункт">Удалить пункт</button>`
+        ? `<button type="button" class="btn danger" data-exam-act="rm" title="${esc(I18n.t("set.exam.rm_item_tip", "удалить пункт"))}">${esc(I18n.t("set.exam.rm_item", "Удалить пункт"))}</button>`
         : it.own
-            ? `<button type="button" class="btn" data-exam-act="reset" title="вернуть встроенный набор">Сбросить правки</button>`
+            ? `<button type="button" class="btn" data-exam-act="reset" title="${esc(I18n.t("set.exam.reset_tip", "вернуть встроенный набор"))}">${esc(I18n.t("set.exam.reset", "Сбросить правки"))}</button>`
             : ""}
       </div>
     </div>
@@ -182,27 +198,27 @@ function syncReplyBtn(card, reply) {
     const btn = card.querySelector("[data-exam-act=edit-reply]");
     if (btn) {
         btn.dataset.reply = reply;
-        btn.textContent = Exams.replyLabel({ id: "", label: "", reply });
+        btn.textContent = replyLabelUi(reply);
     }
 }
 /** Окно: шкала / поле / текст (радио, без галочек). */
 function openReplyEditor(card, persist) {
-    const label = card.querySelector("[name=llabel]")?.value.trim() || "Признак";
+    const label = card.querySelector("[name=llabel]")?.value.trim() || I18n.t("set.exam.sign_label", "Признак");
     const raw = card.querySelector("[name=lreply]")?.value || "scale";
     const cur = raw === "number" || raw === "text" ? raw : "scale";
     const ov = document.createElement("div");
     ov.className = "cv-overlay";
     ov.innerHTML = `<div class="cv-dialog exam-reply-dlg" role="dialog" aria-modal="true" aria-labelledby="exam-reply-title">
     <div class="cv-head"><b id="exam-reply-title">${esc(label)}</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
-    <div class="exam-reply-opts" role="radiogroup" aria-label="Тип значения">
-      <label class="exam-reply-opt"><input type="radio" name="exam-reply" value="scale"${cur === "scale" ? " checked" : ""}> Шкала</label>
-      <label class="exam-reply-opt"><input type="radio" name="exam-reply" value="number"${cur === "number" ? " checked" : ""}> Поле</label>
-      <label class="exam-reply-opt"><input type="radio" name="exam-reply" value="text"${cur === "text" ? " checked" : ""}> Текст</label>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("set.exam.close_aria", "закрыть"))}">✕</button></div>
+    <div class="exam-reply-opts" role="radiogroup" aria-label="${esc(I18n.t("set.exam.reply_aria", "Тип значения"))}">
+      <label class="exam-reply-opt"><input type="radio" name="exam-reply" value="scale"${cur === "scale" ? " checked" : ""}> ${esc(I18n.t("set.exam.reply.scale", "Шкала"))}</label>
+      <label class="exam-reply-opt"><input type="radio" name="exam-reply" value="number"${cur === "number" ? " checked" : ""}> ${esc(I18n.t("set.exam.reply.number", "Поле"))}</label>
+      <label class="exam-reply-opt"><input type="radio" name="exam-reply" value="text"${cur === "text" ? " checked" : ""}> ${esc(I18n.t("set.exam.reply.text", "Текст"))}</label>
     </div>
     <div class="exam-actions exam-reply-actions">
-      <button type="button" class="btn primary" data-save>Сохранить</button>
-      <button type="button" class="btn" data-close>Отмена</button>
+      <button type="button" class="btn primary" data-save>${esc(I18n.t("common.save", "Сохранить"))}</button>
+      <button type="button" class="btn" data-close>${esc(I18n.t("common.cancel", "Отмена"))}</button>
     </div>
   </div>`;
     document.body.appendChild(ov);
@@ -230,25 +246,25 @@ function openReplyEditor(card, persist) {
 /** Просмотр описания: из кабинета статьи в репозиторий не пишутся. */
 function openDescViewer(card) {
     const store = card.querySelector("[name=ldesc]");
-    const label = card.querySelector("[name=llabel]")?.value.trim() || "Признак";
+    const label = card.querySelector("[name=llabel]")?.value.trim() || I18n.t("set.exam.sign_label", "Признак");
     const article = card.querySelector("[name=larticle]")?.value.trim() || "";
     const text = store.value.trim();
     const artHref = article ? Exams.articleHref({ id: "", label, article }) : undefined;
     const body = text
         ? `<pre class="exam-desc-view">${esc(text)}</pre>`
-        : `<p class="muted">Описания пока нет.</p>`;
+        : `<p class="muted">${esc(I18n.t("set.exam.desc_empty", "Описания пока нет."))}</p>`;
     const artLink = artHref
-        ? `<p class="exam-help-art"><a href="${esc(artHref)}" target="_blank" rel="noopener">Статья на сайте ↗</a></p>`
+        ? `<p class="exam-help-art"><a href="${esc(artHref)}" target="_blank" rel="noopener">${esc(I18n.t("set.exam.desc_article", "Статья на сайте ↗"))}</a></p>`
         : "";
     const ov = document.createElement("div");
     ov.className = "cv-overlay";
     ov.innerHTML = `<div class="cv-dialog exam-desc-dlg" role="dialog" aria-modal="true" aria-labelledby="exam-desc-title">
-    <div class="cv-head"><b id="exam-desc-title">Описание: ${esc(label)}</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <div class="cv-head"><b id="exam-desc-title">${esc(I18n.t("set.exam.desc_title", "Описание: {label}", { label }))}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("set.exam.close_aria", "закрыть"))}">✕</button></div>
     ${body}${artLink}
-    <p class="muted exam-desc-hint">Чтобы изменить описание, скачайте проект себе на компьютер и правьте статью Markdown локально (папка <code>docs/articles/exams/</code>) — из кабинета в файлы сайта это не записывается.</p>
+    <p class="muted exam-desc-hint">${esc(I18n.t("set.exam.desc_hint", "Чтобы изменить описание, скачайте проект себе на компьютер и правьте статью Markdown локально (папка docs/articles/exams/) — из кабинета в файлы сайта это не записывается."))}</p>
     <div class="exam-actions" style="margin-top:12px">
-      <button type="button" class="btn" data-close>Закрыть</button>
+      <button type="button" class="btn" data-close>${esc(I18n.t("common.close", "Закрыть"))}</button>
     </div>
   </div>`;
     document.body.appendChild(ov);
@@ -289,7 +305,7 @@ function bindNestActs(nestEl, persist) {
     nestEl.querySelector("[data-exam-act=rm-nest]").onclick = ev => {
         ev.preventDefault();
         ev.stopPropagation();
-        if (!confirm("Удалить группу и все её признаки?"))
+        if (!confirm(I18n.t("set.exam.rm_nest_confirm", "Удалить группу и все её признаки?")))
             return;
         nestEl.remove();
     };
@@ -312,21 +328,23 @@ function bindNestActs(nestEl, persist) {
 function drawGroup(main, group, focusId) {
     syncOwn();
     const list = Exams.inGroup(group.id);
+    const gTitle = groupTitle(group);
+    const gDesc = groupDesc(group);
     main.innerHTML = `<div class="set-head">
-      <h2><a class="muted" href="#/settings/exam">Осмотр</a> · ${esc(group.title)}</h2>
+      <h2><a class="muted" href="#/settings/exam">${esc(I18n.t("set.head.exam", "Осмотр"))}</a> · ${esc(gTitle)}</h2>
       <span class="muted">${list.length} ${plural(list.length)}</span></div>
-    <p class="muted dx-lead">${esc(group.desc)}. Признаки, вложенные группы; описание — текст или статья Markdown.</p>
+    <p class="muted dx-lead">${esc(I18n.t("set.exam.group_lead", "{desc}. Признаки, вложенные группы; описание — текст или статья Markdown.", { desc: gDesc }))}</p>
     <div class="dx-acc exam-list">${list.map(it => itemFold(it, focusId === it.id)).join("")
-        || `<p class="muted">В этой группе пока пусто.</p>`}</div>
+        || `<p class="muted">${esc(I18n.t("set.exam.empty", "В этой группе пока пусто."))}</p>`}</div>
     <div class="card exam-add">
-      <b>+ Добавить осмотр в «${esc(group.title)}»</b>
-      <label class="exam-field"><span>Название</span><input type="text" name="newname" maxlength="120" placeholder="например: Симптом Пастернацкого"></label>
+      <b>${esc(I18n.t("set.exam.add_title", "+ Добавить осмотр в «{name}»", { name: gTitle }))}</b>
+      <label class="exam-field"><span>${esc(I18n.t("set.exam.name", "Название"))}</span><input type="text" name="newname" maxlength="120" placeholder="${esc(I18n.t("set.exam.name_ph", "например: Симптом Пастернацкого"))}"></label>
       <div class="exam-actions">
-        <button type="button" class="btn primary" data-exam-act="add">Добавить</button>
+        <button type="button" class="btn primary" data-exam-act="add">${esc(I18n.t("set.exam.add", "Добавить"))}</button>
         <span class="muted exam-add-msg" aria-live="polite"></span>
       </div>
     </div>
-    <p class="muted"><a href="#/settings/exam">← Все группы</a></p>`;
+    <p class="muted"><a href="#/settings/exam">${esc(I18n.t("set.exam.back", "← Все группы"))}</a></p>`;
     main.querySelectorAll("[data-exam]").forEach(fold => {
         const id = fold.dataset.exam;
         const body = fold.querySelector(".exam-body");
@@ -341,7 +359,7 @@ function drawGroup(main, group, focusId) {
             const st = fold.querySelector(".fold-status");
             const n = Exams.flatSigns({ id, name, group: group.id, entries }).length;
             if (st)
-                st.textContent = (n ? `${n} ${linesPlural(n)}` : "нет признаков") + " · своё";
+                st.textContent = (n ? `${n} ${linesPlural(n)}` : I18n.t("set.exam.no_signs", "нет признаков")) + " · " + I18n.t("set.exam.own", "своё");
         };
         bindLineActs(body, persistItem);
         body.querySelectorAll("[data-nest]").forEach(n => bindNestActs(n, persistItem));
@@ -353,7 +371,7 @@ function drawGroup(main, group, focusId) {
             bindLineActs(card, persistItem);
         };
         body.querySelector("[data-exam-act=add-nest]").onclick = () => {
-            const nest = { kind: "group", id: Exams.newNestId(), name: "Новая группа", lines: [] };
+            const nest = { kind: "group", id: Exams.newNestId(), name: I18n.t("set.exam.new_nest", "Новая группа"), lines: [] };
             listEl.insertAdjacentHTML("beforeend", nestFold(nest, id));
             const el = listEl.querySelector(`[data-nest="${nest.id}"]`);
             bindNestActs(el, persistItem);
@@ -362,17 +380,17 @@ function drawGroup(main, group, focusId) {
         body.querySelector("[data-exam-act=save]").onclick = () => {
             const name = body.querySelector("[name=name]").value.trim();
             if (!name) {
-                msg.textContent = "нужно название";
+                msg.textContent = I18n.t("set.exam.need_name", "нужно название");
                 return;
             }
             persistItem();
-            msg.textContent = "Сохранено";
+            msg.textContent = I18n.t("set.exam.saved", "Сохранено");
             setTimeout(() => { msg.textContent = ""; }, 1500);
         };
         const rm = body.querySelector("[data-exam-act=rm]");
         if (rm)
             rm.onclick = () => {
-                if (!confirm("Удалить пункт «" + (Exams.get(id)?.name || id) + "»?"))
+                if (!confirm(I18n.t("set.exam.rm_confirm", "Удалить пункт «{name}»?", { name: Exams.get(id)?.name || id })))
                     return;
                 putOwn(id, null);
                 drawGroup(main, group);
@@ -389,7 +407,7 @@ function drawGroup(main, group, focusId) {
         const name = addBox.querySelector("[name=newname]").value.trim();
         const amsg = addBox.querySelector(".exam-add-msg");
         if (!name) {
-            amsg.textContent = "укажите название";
+            amsg.textContent = I18n.t("set.exam.need_name_add", "укажите название");
             return;
         }
         const nid = Exams.newOwnId();
@@ -405,10 +423,10 @@ export function draw(main) {
     if (group)
         return drawGroup(main, group);
     const total = Exams.all().length;
-    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.exam", "Осмотр"))}</h2><span class="muted">${total} ${plural(total)} в ${Exams.GROUPS.length} группах</span></div>
-    <p class="muted dx-lead">Справочник пунктов осмотра по системам. У пункта — признаки и вложенные группы (например ШКГ).</p>
+    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.exam", "Осмотр"))}</h2><span class="muted">${esc(I18n.t("set.exam.count", "{n} {word} в {groups} группах", { n: total, word: plural(total), groups: Exams.GROUPS.length }))}</span></div>
+    <p class="muted dx-lead">${esc(I18n.t("set.exam.lead", "Справочник пунктов осмотра по системам. У пункта — признаки и вложенные группы (например ШКГ)."))}</p>
     <div class="dx-grid">${Exams.GROUPS.map(g => {
         const n = Exams.inGroup(g.id).length;
-        return `<a class="dx-card" href="#/settings/exam/${esc(g.id)}"><span class="dx-name">${esc(g.title)}</span><span class="dx-desc">${esc(g.desc)}</span><span class="dx-count">${n} ${plural(n)}</span></a>`;
+        return `<a class="dx-card" href="#/settings/exam/${esc(g.id)}"><span class="dx-name">${esc(groupTitle(g))}</span><span class="dx-desc">${esc(groupDesc(g))}</span><span class="dx-count">${n} ${plural(n)}</span></a>`;
     }).join("")}</div>`;
 }

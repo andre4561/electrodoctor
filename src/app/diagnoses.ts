@@ -53,9 +53,22 @@ const ICONS: Record<string, string> = {
 const icon = (id: string, size = 40) => `<svg class="dx-ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" ${S}>${ICONS[id] || ICONS.other}</svg>`;
 const esc = (s: unknown) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" } as Record<string, string>)[c]);
 export function plural(n: number): string {
-  if (n % 10 === 1 && n % 100 !== 11) return "диагноз";
-  if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) return "диагноза";
-  return "диагнозов";
+  if (I18n.getLocale() === "en") return I18n.t(n === 1 ? "set.dx.diag.one" : "set.dx.diag.many", n === 1 ? "diagnosis" : "diagnoses");
+  if (n % 10 === 1 && n % 100 !== 11) return I18n.t("set.dx.diag.one", "диагноз");
+  if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) return I18n.t("set.dx.diag.few", "диагноза");
+  return I18n.t("set.dx.diag.many", "диагнозов");
+}
+function secWord(n: number): string {
+  if (I18n.getLocale() === "en") return I18n.t(n === 1 ? "set.dx.sec.one" : "set.dx.sec.many", n === 1 ? "section" : "sections");
+  return n % 10 === 1 && n % 100 !== 11
+    ? I18n.t("set.dx.sec.one", "разделе")
+    : I18n.t("set.dx.sec.many", "разделах");
+}
+function secLabel(id: string, fallback: string): string {
+  return I18n.t("set.dx.sec." + id, fallback);
+}
+function secDesc(id: string, fallback: string): string {
+  return I18n.t("set.dx.sec." + id + ".desc", fallback);
 }
 export const articleUrl = (name: string) => "../articles/diagnoses/" + encodeURIComponent(name) + ".html";
 
@@ -78,7 +91,7 @@ function putSections(name: string, secs: string[] | null): void {
 }
 function sectionsHtml(name: string, item: DxItem): string {
   const secs = sectionsOf(name, item);
-  if (!secs.length) return `<span class="muted">без специальности</span>`;
+  if (!secs.length) return `<span class="muted">${esc(I18n.t("set.dx.no_sec", "без специальности"))}</span>`;
   return secs.map(s => `<a href="#/settings/diagnoses/${esc(s)}">${esc(sectionTitle(s))}</a>`).join(", ");
 }
 
@@ -98,7 +111,7 @@ export function diagnosesUsingLab(code: string): { file: string; title: string; 
 // Настройки → Диагнозы: карточки разделов; #/settings/diagnoses/<раздел> — список;
 // #/settings/diagnoses/<раздел>/<имя файла статьи> — сразу раскрытый диагноз с признаками
 export function draw(main: HTMLElement): void {
-  if ((!data && !loadError) || !signsReady) { main.innerHTML = `<p class="muted">Загружаю разделы…</p>`; Promise.all([loadDiagnoses(), Sg.loadSigns()]).then(() => { signsReady = true; draw(main); }); return; }
+  if ((!data && !loadError) || !signsReady) { main.innerHTML = `<p class="muted">${esc(I18n.t("set.dx.loading", "Загружаю разделы…"))}</p>`; Promise.all([loadDiagnoses(), Sg.loadSigns()]).then(() => { signsReady = true; draw(main); }); return; }
   if (!data) { main.innerHTML = `<div class="card"><p class="err">${esc(loadError)}</p></div>`; return; }
   const parts = location.hash.replace(/^#\/?/, "").split("/");
   const sub = decodeURIComponent(parts[2] || "");
@@ -109,17 +122,17 @@ export function draw(main: HTMLElement): void {
   const cnt = (id: string) => names.filter(n => sectionsOf(n, data!.items[n]).includes(id)).length;
   const withSigns = (id: string) => names.filter(n => sectionsOf(n, data!.items[n]).includes(id) && signCount(n) > 0).length;
   const m = method();
-  main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.diagnoses", "Диагнозы"))}</h2><span class="muted">${names.length} ${plural(names.length)} в ${data.sections.length} ${data.sections.length % 10 === 1 && data.sections.length % 100 !== 11 ? "разделе" : "разделах"}</span></div>
-    <p class="muted dx-lead">Разделы — по специальностям врачей. Диагноз может быть сразу в нескольких разделах.</p>
+  main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.diagnoses", "Диагнозы"))}</h2><span class="muted">${esc(I18n.t("set.dx.count", "{n} {word} в {sections} {secWord}", { n: names.length, word: plural(names.length), sections: data.sections.length, secWord: secWord(data.sections.length) }))}</span></div>
+    <p class="muted dx-lead">${esc(I18n.t("set.dx.lead", "Разделы — по специальностям врачей. Диагноз может быть сразу в нескольких разделах."))}</p>
     <div class="card dx-method">
-      <b>Сила отклонения в расчёте вероятности</b>
-      <label><input type="radio" name="sm" value="crit"${m === "crit" ? " checked" : ""}> по критичности — кривая показателя (0–100)</label>
-      <label><input type="radio" name="sm" value="dev"${m === "dev" ? " checked" : ""}> по проценту отклонения от нормы — меньше ${Sg.DEV_NORMAL}% считается нормой, ${Sg.DEV_FULL}% и больше даёт полную силу</label>
-      <p class="muted">⚠ Выбор временный: при калибровке сравнить оба способа на живых примерах (заметка в TODO.md). Критичность описывает опасность и в безопасной зоне даёт 0 — лёгкие отклонения тогда не влияют на вероятность.</p>
+      <b>${esc(I18n.t("set.dx.method", "Сила отклонения в расчёте вероятности"))}</b>
+      <label><input type="radio" name="sm" value="crit"${m === "crit" ? " checked" : ""}> ${esc(I18n.t("set.dx.method_crit", "по критичности — кривая показателя (0–100)"))}</label>
+      <label><input type="radio" name="sm" value="dev"${m === "dev" ? " checked" : ""}> ${esc(I18n.t("set.dx.method_dev", "по проценту отклонения от нормы — меньше {n}% считается нормой, {f}% и больше даёт полную силу", { n: Sg.DEV_NORMAL, f: Sg.DEV_FULL }))}</label>
+      <p class="muted">${esc(I18n.t("set.dx.method_note", "⚠ Выбор временный: при калибровке сравнить оба способа на живых примерах (заметка в TODO.md). Критичность описывает опасность и в безопасной зоне даёт 0 — лёгкие отклонения тогда не влияют на вероятность."))}</p>
     </div>
     <div class="dx-grid">${data.sections.map(s => {
       const n = cnt(s.id), w = withSigns(s.id);
-      return `<a class="dx-card" href="#/settings/diagnoses/${esc(s.id)}">${icon(s.id)}<span class="dx-name">${esc(s.title)}</span><span class="dx-desc">${esc(s.desc)}</span><span class="dx-count">${n} ${plural(n)}</span><span class="dx-filled${w ? "" : " none"}">с признаками: ${w}</span></a>`;
+      return `<a class="dx-card" href="#/settings/diagnoses/${esc(s.id)}">${icon(s.id)}<span class="dx-name">${esc(secLabel(s.id, s.title))}</span><span class="dx-desc">${esc(secDesc(s.id, s.desc))}</span><span class="dx-count">${n} ${plural(n)}</span><span class="dx-filled${w ? "" : " none"}">${esc(I18n.t("set.dx.with_signs", "с признаками: {n}", { n: w }))}</span></a>`;
     }).join("")}</div>`;
   main.querySelectorAll<HTMLInputElement>("[name=sm]").forEach(r => r.addEventListener("change", () => {
     const st = Settings.load(); st.signMethod = r.value === "dev" ? "dev" : "crit"; Settings.save(st);
@@ -134,7 +147,10 @@ export async function ready(): Promise<string> {
 }
 export const labName = (code: string) => LAB_NAME[code] || (Labs.LABS[code] && Labs.LABS[code].name) || code;
 export const labUnit = (code: string) => LAB_UNIT[code] || (Labs.LABS[code] && Labs.LABS[code].unit) || "";
-export const sectionTitle = (id: string) => ((data && data.sections.find(s => s.id === id)) || { title: id }).title;
+export const sectionTitle = (id: string) => {
+  const t = ((data && data.sections.find(s => s.id === id)) || { title: id }).title;
+  return secLabel(id, t);
+};
 export const flagTitle = (id: string) => ((data && data.flags.find(f => f.id === id)) || { title: id }).title;
 export const currentMethod = (): Sg.Method => method();
 export interface Ranked { name: string; item: DxItem; signs: Sg.Signs; score: Sg.DxScore; prior: number }
@@ -179,44 +195,44 @@ const LAB_GROUPS = (() => {
 })();
 const LAB_NAME: Record<string, string> = {}, LAB_UNIT: Record<string, string> = {};
 for (const g of LAB_GROUPS) for (const f of g.fields) { LAB_NAME[f.code] = f.label; LAB_UNIT[f.code] = f.unit || ""; }
-const DIRS: [Sg.Dir, string][] = [["up", "↑ выше нормы"], ["down", "↓ ниже нормы"], ["any", "↕ любое отклонение"]];
+const DIRS = (): [Sg.Dir, string][] => [["up", I18n.t("set.dx.dir.up", "↑ выше нормы")], ["down", I18n.t("set.dx.dir.down", "↓ ниже нормы")], ["any", I18n.t("set.dx.dir.any", "↕ любое отклонение")]];
 function labRow(sg?: Sg.LabSign): string {
   const code = sg ? sg.code : "";
   const known = !code || LAB_NAME[code];
   const meta = sg ? ` data-why="${esc(sg.why || "")}" data-kind="${esc(sg.kind || "")}" data-src="${esc(sg.src || "")}"` : "";
-  const note = sg && (sg.why || sg.kind === "risk" || sg.src === "knowledge") ? `<small class="dx-why">${sg.kind === "risk" ? `<span class="dx-tag">фактор риска</span> ` : ""}${sg.src === "knowledge" ? `<span class="dx-tag">не из статьи</span> ` : ""}${esc(sg.why || "")}</small>` : "";
-  return `<tr data-sign${meta}><td><select name="code" aria-label="Показатель"><option value="">— выберите анализ —</option>${known ? "" : `<option value="${esc(code)}" selected>${esc(code)} (нет в анкете)</option>`}${LAB_GROUPS.map(g =>
+  const note = sg && (sg.why || sg.kind === "risk" || sg.src === "knowledge") ? `<small class="dx-why">${sg.kind === "risk" ? `<span class="dx-tag">${esc(I18n.t("set.dx.tag.risk", "фактор риска"))}</span> ` : ""}${sg.src === "knowledge" ? `<span class="dx-tag">${esc(I18n.t("set.dx.tag.knowledge", "не из статьи"))}</span> ` : ""}${esc(sg.why || "")}</small>` : "";
+  return `<tr data-sign${meta}><td><select name="code" aria-label="${esc(I18n.t("set.dx.aria.code", "Показатель"))}"><option value="">${esc(I18n.t("set.dx.pick_lab", "— выберите анализ —"))}</option>${known ? "" : `<option value="${esc(code)}" selected>${esc(code)} ${esc(I18n.t("set.dx.not_in_form", "(нет в анкете)"))}</option>`}${LAB_GROUPS.map(g =>
       `<optgroup label="${esc(g.title)}">${g.fields.map(f => `<option value="${esc(f.code)}"${f.code === code ? " selected" : ""}>${esc(f.label)}</option>`).join("")}</optgroup>`).join("")}</select>${note}</td>
-    <td><select name="dir" aria-label="Направление">${DIRS.map(([v, l]) => `<option value="${v}"${(sg ? sg.dir : "up") === v ? " selected" : ""}>${l}</option>`).join("")}</select></td>
-    <td><input type="number" name="w" min="0" max="10" step="1" value="${sg ? esc(sg.w) : 5}" aria-label="Важность 0–10"></td>
-    <td><select name="normal" aria-label="Если в норме"><option value="none"${!sg || sg.normal !== "lower" ? " selected" : ""}>не влияет</option><option value="lower"${sg && sg.normal === "lower" ? " selected" : ""}>снижает вероятность</option></select></td>
-    <td><button type="button" class="btn danger" data-dx-act="rm" title="убрать признак" aria-label="убрать признак">×</button></td></tr>`;
+    <td><select name="dir" aria-label="${esc(I18n.t("set.dx.aria.dir", "Направление"))}">${DIRS().map(([v, l]) => `<option value="${v}"${(sg ? sg.dir : "up") === v ? " selected" : ""}>${l}</option>`).join("")}</select></td>
+    <td><input type="number" name="w" min="0" max="10" step="1" value="${sg ? esc(sg.w) : 5}" aria-label="${esc(I18n.t("set.dx.aria.w", "Важность 0–10"))}"></td>
+    <td><select name="normal" aria-label="${esc(I18n.t("set.dx.aria.normal", "Если в норме"))}"><option value="none"${!sg || sg.normal !== "lower" ? " selected" : ""}>${esc(I18n.t("set.dx.normal.none", "не влияет"))}</option><option value="lower"${sg && sg.normal === "lower" ? " selected" : ""}>${esc(I18n.t("set.dx.normal.lower", "снижает вероятность"))}</option></select></td>
+    <td><button type="button" class="btn danger" data-dx-act="rm" title="${esc(I18n.t("set.dx.rm_sign", "убрать признак"))}" aria-label="${esc(I18n.t("set.dx.rm_sign", "убрать признак"))}">×</button></td></tr>`;
 }
 const textList = (xs: Sg.TextSign[] | undefined, empty: string) => xs && xs.length
-  ? `<ul class="dx-text">${xs.map(x => `<li>${esc(x.name)}${x.w != null ? ` <small class="muted">важность ${esc(x.w)}</small>` : ""}${x.note ? ` <small class="muted">— ${esc(x.note)}</small>` : ""}</li>`).join("")}</ul>`
+  ? `<ul class="dx-text">${xs.map(x => `<li>${esc(x.name)}${x.w != null ? ` <small class="muted">${esc(I18n.t("set.dx.w_label", "важность {w}", { w: x.w }))}</small>` : ""}${x.note ? ` <small class="muted">— ${esc(x.note)}</small>` : ""}</li>`).join("")}</ul>`
   : `<p class="muted dx-later">${empty}</p>`;
 function dxBody(name: string): string {
   const s = signsFor(name) || { labs: [] }, own = !!ownSigns()[name];
   return `<div class="dx-form" data-dxform="${esc(name)}">
     <div class="dx-meta">
-      <label>Распространённость <input type="number" name="prior" min="0.01" max="99" step="0.1" value="${esc(s.prior ?? "")}" placeholder="${Sg.DEFAULT_PRIOR}"> %</label>
-      <button type="button" class="btn" data-dx-act="doctors">Привязать врачей</button>
+      <label>${esc(I18n.t("set.dx.prior", "Распространённость"))} <input type="number" name="prior" min="0.01" max="99" step="0.1" value="${esc(s.prior ?? "")}" placeholder="${Sg.DEFAULT_PRIOR}"> %</label>
+      <button type="button" class="btn" data-dx-act="doctors">${esc(I18n.t("set.dx.doctors", "Привязать врачей"))}</button>
     </div>
-    <h4>Анализы <small class="muted">важность 0–10: насколько отклонение указывает на этот диагноз</small></h4>
-    <div class="tblwrap"><table class="dx-signs"><thead><tr><th>Показатель</th><th>Направление</th><th>Важность</th><th>Если в норме</th><th></th></tr></thead>
+    <h4>${esc(I18n.t("set.dx.labs_h", "Анализы"))} <small class="muted">${esc(I18n.t("set.dx.labs_hint", "важность 0–10: насколько отклонение указывает на этот диагноз"))}</small></h4>
+    <div class="tblwrap"><table class="dx-signs"><thead><tr><th>${esc(I18n.t("set.dx.th.code", "Показатель"))}</th><th>${esc(I18n.t("set.dx.th.dir", "Направление"))}</th><th>${esc(I18n.t("set.dx.th.w", "Важность"))}</th><th>${esc(I18n.t("set.dx.th.normal", "Если в норме"))}</th><th></th></tr></thead>
       <tbody>${(s.labs || []).map(labRow).join("")}</tbody></table></div>
-    <button type="button" class="btn" data-dx-act="add">+ анализ</button>
-    ${s.nolist && s.nolist.length ? `<p class="dx-nolist"><b>Нужны анализы, которых нет в анкете:</b> ${s.nolist.map(x => `<span title="${esc(x.why || "")}">${esc(x.name)}${x.w != null ? ` (${esc(x.w)})` : ""}</span>`).join(", ")}</p>` : ""}
-    <h4>Осмотр и жалобы</h4>${textList(s.exam, "Появится следующим шагом: давление, пульс, отёки, жалобы — с той же важностью 0–10.")}
-    <h4>Инструментальные исследования <small class="muted">ЭКГ, УЗИ, МРТ, рентген…</small></h4>${textList(s.instr, "Пока без значений: в карточке клиента ещё нет полей для таких исследований.")}
-    <div class="dx-foot"><span class="set-saved ok" data-dxsaved></span>${own ? `<button type="button" class="btn" data-dx-act="reset">${Sg.FILE_SIGNS[name] ? "Вернуть исходные признаки" : "Очистить признаки"}</button>` : ""}</div>
+    <button type="button" class="btn" data-dx-act="add">${esc(I18n.t("set.dx.add_lab", "+ анализ"))}</button>
+    ${s.nolist && s.nolist.length ? `<p class="dx-nolist"><b>${esc(I18n.t("set.dx.nolist", "Нужны анализы, которых нет в анкете:"))}</b> ${s.nolist.map(x => `<span title="${esc(x.why || "")}">${esc(x.name)}${x.w != null ? ` (${esc(x.w)})` : ""}</span>`).join(", ")}</p>` : ""}
+    <h4>${esc(I18n.t("set.dx.exam_h", "Осмотр и жалобы"))}</h4>${textList(s.exam, I18n.t("set.dx.exam_empty", "Появится следующим шагом: давление, пульс, отёки, жалобы — с той же важностью 0–10."))}
+    <h4>${esc(I18n.t("set.dx.instr_h", "Инструментальные исследования"))} <small class="muted">${esc(I18n.t("set.dx.instr_hint", "ЭКГ, УЗИ, МРТ, рентген…"))}</small></h4>${textList(s.instr, I18n.t("set.dx.instr_empty", "Пока без значений: в карточке клиента ещё нет полей для таких исследований."))}
+    <div class="dx-foot"><span class="set-saved ok" data-dxsaved></span>${own ? `<button type="button" class="btn" data-dx-act="reset">${Sg.FILE_SIGNS[name] ? I18n.t("set.dx.reset_file", "Вернуть исходные признаки") : I18n.t("set.dx.reset_clear", "Очистить признаки")}</button>` : ""}</div>
   </div>`;
 }
 function dxStatus(name: string): string {
   const s = signsFor(name), own = !!ownSigns()[name];
   const n = signCount(name);
-  const tags = own ? `<span class="dx-tag own">своё</span>` : "";
-  return (n ? `признаков: ${n}` : `<span class="muted">признаков нет</span>`) + tags;
+  const tags = own ? `<span class="dx-tag own">${esc(I18n.t("set.exam.own", "своё"))}</span>` : "";
+  return (n ? esc(I18n.t("set.dx.status_n", "признаков: {n}", { n })) : `<span class="muted">${esc(I18n.t("set.dx.status_none", "признаков нет"))}</span>`) + tags;
 }
 function collect(form: HTMLElement, name: string): Sg.Signs {
   const base = signsFor(name) || { labs: [] };
@@ -259,23 +275,23 @@ function openDoctorsDialog(name: string, onSaved: (secs: string[]) => void): voi
     box.innerHTML = picked.length
       ? picked.map(id => {
           const title = sectionTitle(id);
-          return `<div class="dx-doc-row" data-id="${esc(id)}"><span>${esc(title)}</span><button type="button" class="btn danger" data-rm="${esc(id)}" title="убрать">×</button></div>`;
+          return `<div class="dx-doc-row" data-id="${esc(id)}"><span>${esc(title)}</span><button type="button" class="btn danger" data-rm="${esc(id)}" title="${esc(I18n.t("common.remove", "убрать"))}">×</button></div>`;
         }).join("")
-      : `<p class="muted">Пока ни одного раздела — добавьте врача ниже.</p>`;
+      : `<p class="muted">${esc(I18n.t("set.dx.doc_empty", "Пока ни одного раздела — добавьте врача ниже."))}</p>`;
   };
   const addOpts = () => catalog
     .filter(s => !picked.includes(s.id))
-    .map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("");
+    .map(s => `<option value="${esc(s.id)}">${esc(secLabel(s.id, s.title))}</option>`).join("");
   ov.innerHTML = `<div class="cv-dialog dx-doc-dlg" role="dialog" aria-modal="true" aria-labelledby="dx-doc-title">
-    <div class="cv-head"><b id="dx-doc-title">Врачи: ${esc(item ? item.title : name)}</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
-    <p class="muted">Разделы специальностей этого диагноза. От них берутся врачи в Настройки → Агенты.</p>
+    <div class="cv-head"><b id="dx-doc-title">${esc(I18n.t("set.dx.doc_title", "Врачи: {name}", { name: item ? item.title : name }))}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("set.exam.close_aria", "закрыть"))}">✕</button></div>
+    <p class="muted">${esc(I18n.t("set.dx.doc_lead", "Разделы специальностей этого диагноза. От них берутся врачи в Настройки → Агенты."))}</p>
     <div id="dx-doc-list" class="dx-doc-list"></div>
     <div class="dx-doc-add">
-      <select id="dx-doc-pick" aria-label="Добавить специальность"><option value="">+ добавить…</option>${addOpts()}</select>
+      <select id="dx-doc-pick" aria-label="${esc(I18n.t("set.dx.doctors", "Привязать врачей"))}"><option value="">${esc(I18n.t("set.dx.doc_add", "+ добавить…"))}</option>${addOpts()}</select>
     </div>
     <p class="err" id="dx-doc-err" hidden></p>
-    <div class="dx-doc-actions"><button type="button" class="btn primary" id="dx-doc-save">Сохранить</button><button type="button" class="btn" data-close>Отмена</button></div>
+    <div class="dx-doc-actions"><button type="button" class="btn primary" id="dx-doc-save">${esc(I18n.t("common.save", "Сохранить"))}</button><button type="button" class="btn" data-close>${esc(I18n.t("common.cancel", "Отмена"))}</button></div>
   </div>`;
   document.body.appendChild(ov);
   lockScroll();
@@ -291,19 +307,19 @@ function openDoctorsDialog(name: string, onSaved: (secs: string[]) => void): voi
     picked = picked.filter(id => id !== rm.dataset.rm);
     drawList();
     const sel = ov.querySelector<HTMLSelectElement>("#dx-doc-pick")!;
-    sel.innerHTML = `<option value="">+ добавить…</option>${addOpts()}`;
+    sel.innerHTML = `<option value="">${esc(I18n.t("set.dx.doc_add", "+ добавить…"))}</option>${addOpts()}`;
   });
   ov.querySelector<HTMLSelectElement>("#dx-doc-pick")!.addEventListener("change", e => {
     const id = (e.target as HTMLSelectElement).value;
     if (!id) return;
     if (!picked.includes(id)) picked.push(id);
     (e.target as HTMLSelectElement).value = "";
-    (e.target as HTMLSelectElement).innerHTML = `<option value="">+ добавить…</option>${addOpts()}`;
+    (e.target as HTMLSelectElement).innerHTML = `<option value="">${esc(I18n.t("set.dx.doc_add", "+ добавить…"))}</option>${addOpts()}`;
     drawList();
   });
   ov.querySelector("#dx-doc-save")!.addEventListener("click", () => {
     const err = ov.querySelector<HTMLElement>("#dx-doc-err")!;
-    if (!picked.length) { err.hidden = false; err.textContent = "Нужен хотя бы один раздел."; return; }
+    if (!picked.length) { err.hidden = false; err.textContent = I18n.t("set.dx.doc_need", "Нужен хотя бы один раздел."); return; }
     putSections(name, picked);
     onSaved(picked.slice());
     close();
@@ -314,21 +330,21 @@ function drawSection(main: HTMLElement, d: DxData, sec: DxSection, focusDx?: str
   const raw = Object.entries(d.items).filter(([name, it]) => sectionsOf(name, it).includes(sec.id));
   const list = sortSecList(raw);
   main.innerHTML = `<div class="dx-secbar">
-      <a href="#/settings/diagnoses">← Все разделы</a>
+      <a href="#/settings/diagnoses">${esc(I18n.t("set.dx.back", "← Все разделы"))}</a>
       ${icon(sec.id, 32)}
-      <h2>${esc(sec.title)}</h2>
+      <h2>${esc(secLabel(sec.id, sec.title))}</h2>
       <span class="muted" id="dxcount">${list.length} ${plural(list.length)}</span>
-      <span class="seg dx-sec-sort" role="group" aria-label="Сортировка">
-        <button type="button" data-sec-sort="alpha"${secSort === "alpha" ? ' class="on"' : ""} title="по алфавиту">А–Я</button>
-        <button type="button" data-sec-sort="prior"${secSort === "prior" ? ' class="on"' : ""} title="по распространённости (как часто встречается)">По %</button>
+      <span class="seg dx-sec-sort" role="group" aria-label="${esc(I18n.t("set.dx.sort_aria", "Сортировка"))}">
+        <button type="button" data-sec-sort="alpha"${secSort === "alpha" ? ' class="on"' : ""} title="${esc(I18n.t("set.dx.sort_alpha", "по алфавиту"))}">${I18n.getLocale() === "en" ? "A–Z" : "А–Я"}</button>
+        <button type="button" data-sec-sort="prior"${secSort === "prior" ? ' class="on"' : ""} title="${esc(I18n.t("set.dx.sort_prior", "по распространённости (как часто встречается)"))}">${I18n.getLocale() === "en" ? "By %" : "По %"}</button>
       </span>
-      <input type="search" id="dxq" placeholder="Поиск по названию" aria-label="Поиск по названию">
+      <input type="search" id="dxq" placeholder="${esc(I18n.t("set.dx.search_ph", "Поиск по названию"))}" aria-label="${esc(I18n.t("set.dx.search_ph", "Поиск по названию"))}">
     </div>
     <div class="dx-acc">${list.map(([name, it]) => {
       return `<details class="fold dx-item" data-dx="${esc(name)}" data-k="${esc(it.title.toLowerCase())}" data-prior="${priorOf(name)}" data-title="${esc(it.title)}">
-        <summary><span class="dx-title"><span class="fold-title">${esc(it.title)}</span><a class="dx-art" href="${articleUrl(name)}" target="_blank" rel="noopener" title="статья о диагнозе — откроется в новой вкладке" aria-label="статья">↗</a><small class="muted dx-also">${sectionsHtml(name, it)}</small></span><span class="fold-status" data-dxstatus>${dxStatus(name)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
+        <summary><span class="dx-title"><span class="fold-title">${esc(it.title)}</span><a class="dx-art" href="${articleUrl(name)}" target="_blank" rel="noopener" title="${esc(I18n.t("set.dx.art_tip", "статья о диагнозе — откроется в новой вкладке"))}" aria-label="↗">↗</a><small class="muted dx-also">${sectionsHtml(name, it)}</small></span><span class="fold-status" data-dxstatus>${dxStatus(name)}</span><span class="fold-chev" aria-hidden="true"></span></summary>
         <div class="fold-body" data-dxbody></div></details>`;
-    }).join("")}</div><p class="muted empty" id="dxempty" hidden>Ничего не найдено</p>`;
+    }).join("")}</div><p class="muted empty" id="dxempty" hidden>${esc(I18n.t("set.dx.empty", "Ничего не найдено"))}</p>`;
   // Содержимое строки собирается при раскрытии — страница остаётся лёгкой даже на 150 диагнозов
   const acc = main.querySelector<HTMLElement>(".dx-acc")!;
   acc.addEventListener("toggle", ev => {
@@ -342,8 +358,8 @@ function drawSection(main: HTMLElement, d: DxData, sec: DxSection, focusDx?: str
     const d = form.closest("details")!;
     d.querySelector("[data-dxstatus]")!.innerHTML = dxStatus(name);
     const foot = form.querySelector<HTMLElement>(".dx-foot");
-    if (foot && !foot.querySelector("[data-dx-act=reset]")) foot.insertAdjacentHTML("beforeend", `<button type="button" class="btn" data-dx-act="reset">${Sg.FILE_SIGNS[name] ? "Вернуть исходные признаки" : "Очистить признаки"}</button>`);
-    const sv = form.querySelector<HTMLElement>("[data-dxsaved]"); if (sv) { sv.textContent = "Сохранено"; setTimeout(() => { sv.textContent = ""; }, 1500); }
+    if (foot && !foot.querySelector("[data-dx-act=reset]")) foot.insertAdjacentHTML("beforeend", `<button type="button" class="btn" data-dx-act="reset">${Sg.FILE_SIGNS[name] ? I18n.t("set.dx.reset_file", "Вернуть исходные признаки") : I18n.t("set.dx.reset_clear", "Очистить признаки")}</button>`);
+    const sv = form.querySelector<HTMLElement>("[data-dxsaved]"); if (sv) { sv.textContent = I18n.t("set.dx.saved", "Сохранено"); setTimeout(() => { sv.textContent = ""; }, 1500); }
   };
   acc.addEventListener("change", ev => {
     const el = ev.target as HTMLElement;
@@ -372,7 +388,7 @@ function drawSection(main: HTMLElement, d: DxData, sec: DxSection, focusDx?: str
       form.querySelector<HTMLSelectElement>("tr[data-sign]:last-child [name=code]")!.focus();
     } else if (b.dataset.dxAct === "rm") { b.closest("tr")!.remove(); store(form); }
     else if (b.dataset.dxAct === "reset") {
-      if (!confirm("Убрать свои правки признаков у этого диагноза?")) return;
+      if (!confirm(I18n.t("set.dx.reset_confirm", "Убрать свои правки признаков у этого диагноза?"))) return;
       putOwn(name, null);
       const body = form.parentElement!; body.innerHTML = dxBody(name);
       body.closest("details")!.querySelector("[data-dxstatus]")!.innerHTML = dxStatus(name);

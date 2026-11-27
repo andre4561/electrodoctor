@@ -45,7 +45,10 @@
   }
 
   function title(theme) {
-    return theme === "dark" ? "Светлая тема" : "Тёмная тема";
+    var dark = theme === "dark";
+    var key = dark ? "theme.light" : "theme.dark";
+    var fb = dark ? "Светлая тема" : "Тёмная тема";
+    return window.EDLocale ? window.EDLocale.t(key, fb) : fb;
   }
 
   function buttonHtml(cls) {

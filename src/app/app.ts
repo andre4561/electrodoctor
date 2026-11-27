@@ -134,7 +134,7 @@ function compute(c: Client): void {
   if (h > 0 && w > 0) c.values.BMI = Math.round(w / ((h / 100) ** 2) * 10) / 10;
   else delete c.values.BMI;
 }
-const displayName = (c: Client) => String(c.values.NAME || "").trim() || "Без имени";
+const displayName = (c: Client) => String(c.values.NAME || "").trim() || I18n.t("client.no_name", "Без имени");
 const fmtDate = (iso?: string) => iso ? new Date(iso).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
 
 // ---------- маршруты ----------
@@ -348,7 +348,7 @@ function openOverlayDialog(title: string, bodyHtml: string, dlgClass = ""): void
   ov.className = "cv-overlay";
   ov.innerHTML = `<div class="cv-dialog${dlgClass ? " " + dlgClass : ""}" role="dialog" aria-modal="true" aria-labelledby="ov-dlg-title">
     <div class="cv-head"><b id="ov-dlg-title">${esc(title)}</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("common.close", "Закрыть"))}">✕</button></div>
     ${bodyHtml}
   </div>`;
   document.body.appendChild(ov);
@@ -365,8 +365,8 @@ function openOverlayDialog(title: string, bodyHtml: string, dlgClass = ""): void
   x.focus();
 }
 function openDxNote(): void {
-  openOverlayDialog("О расчёте",
-    `<p class="dxt-note">Это подсказка расчёта по анализам, а не диагноз. Сверху — самые вероятные. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href="#/settings/diagnoses">Настройки → Диагнозы</a>.</p>`,
+  openOverlayDialog(I18n.t("dx.about_title", "О расчёте"),
+    `<p class="dxt-note">${I18n.t("dx.note.body", "Это подсказка расчёта по анализам, а не диагноз. Сверху — самые вероятные. Учитываются только анализы; осмотр, жалобы и исследования пока не входят в расчёт. Признаки диагнозов — черновик ИИ, их можно поправить в <a href=\"#/settings/diagnoses\">Настройки → Диагнозы</a>.")}</p>`,
     "dxt-note-dlg");
 }
 /** Короткий текст для подсказки при наведении (~2 строки). Полный — по клику. */
@@ -388,11 +388,11 @@ function openExamSignHelp(code: string): void {
   const text = Exams.resolvedDesc(it!.id, line).trim();
   const art = Exams.articleHref(line);
   const artLink = art
-    ? `<p class="exam-help-art"><a href="${esc(art)}" target="_blank" rel="noopener">Статья об осмотре ↗</a></p>`
+    ? `<p class="exam-help-art"><a href="${esc(art)}" target="_blank" rel="noopener">${esc(I18n.t("exam.help.article", "Статья об осмотре ↗"))}</a></p>`
     : "";
   const body = text
     ? `<p class="exam-help-body">${esc(text)}</p>${artLink}`
-    : `<p class="muted">Описания пока нет — добавьте в <a href="#/settings/exam">Настройки → Осмотр</a> или подтяните файл Markdown.</p>${artLink}`;
+    : `<p class="muted">${I18n.t("exam.help.no_desc", "Описания пока нет — добавьте в <a href=\"#/settings/exam\">Настройки → Осмотр</a> или подтяните файл Markdown.")}</p>${artLink}`;
   openOverlayDialog(line.label, body, "exam-help-dlg");
 }
 
@@ -402,7 +402,7 @@ function examSignLinkHtml(code: string, label: string): string {
   const tip = examTipPreview(line && p ? Exams.resolvedDesc(p.examId, line) : "");
   const tipAttr = tip ? ` data-tip="${esc(tip)}"` : "";
   const cls = "exam-sign-link" + (tip ? " has-tip" : "");
-  const title = tip ? "" : ` title="как оценивать"`;
+  const title = tip ? "" : ` title="${esc(I18n.t("exam.sign.how_title", "как оценивать"))}"`;
   return `<button type="button" class="${cls}" data-exam-help="${esc(code)}"${tipAttr}${title}><span class="exam-sign-txt">${esc(label)}</span></button>`;
 }
 function bindDxNote(box: HTMLElement): void {
@@ -414,14 +414,14 @@ let dxSort: DxSort = "p";
 const sortDx = (list: Dx.Ranked[]) => [...list].sort(dxSort === "lift"
   ? (a, b) => (b.score.p - b.prior) - (a.score.p - a.prior) || b.score.p - a.score.p
   : (a, b) => b.score.p - a.score.p || (b.score.p - b.prior) - (a.score.p - a.prior));
-const dxSortUi = () => `<span class="seg dxt-sort" role="group" aria-label="Сортировка">
-  <button type="button" data-dx-sort="p"${dxSort === "p" ? ' class="on"' : ""} title="по убыванию вероятности">По %</button>
-  <button type="button" data-dx-sort="lift"${dxSort === "lift" ? ' class="on"' : ""} title="насколько анализы подняли вероятность над распространённостью">По приросту</button>
+const dxSortUi = () => `<span class="seg dxt-sort" role="group" aria-label="${esc(I18n.t("dx.sort.aria", "Сортировка"))}">
+  <button type="button" data-dx-sort="p"${dxSort === "p" ? ' class="on"' : ""} title="${esc(I18n.t("dx.sort.by_pct_title", "по убыванию вероятности"))}">${esc(I18n.t("dx.sort.by_pct", "По %"))}</button>
+  <button type="button" data-dx-sort="lift"${dxSort === "lift" ? ' class="on"' : ""} title="${esc(I18n.t("dx.sort.by_lift_title", "насколько анализы подняли вероятность над распространённостью"))}">${esc(I18n.t("dx.sort.by_lift", "По приросту"))}</button>
 </span>`;
 
 function switchDxLab(c: Client, setId: string): void {
   if (setId === (c.labSel || "")) return;
-  if (labDirty(c) && !confirm("Анализы не сохранены. Переключить дату без сохранения? Несохранённые изменения пропадут.")) return;
+  if (labDirty(c) && !confirm(I18n.t("labs.confirm_switch_date", "Анализы не сохранены. Переключить дату без сохранения? Несохранённые изменения пропадут."))) return;
   const s = (c.labs || []).find(x => x.id === setId); if (!s) return;
   loadBuf(c, s.values);
   c.labSel = s.id;
@@ -432,13 +432,15 @@ function switchDxLab(c: Client, setId: string): void {
 function dxSrcHtml(c: Client): string {
   const sets = sortedSets(c), sel = selSet(c);
   const filled = labFieldsOf(c).filter(f => (f.type === "number" || f.type === "select") && isFilled(f, c.values[f.code])).length;
-  if (!sets.length) return filled ? `<span class="muted dxt-src">по новому, ещё не сохранённому бланку анализов</span>` : "";
-  const label = sel ? labDateLabel(c, sel) : "новому бланку";
-  const tip = sel ? `анализы от ${ruDate(sel.date)}${sel.time ? " " + sel.time : ""}` : "открытый бланк";
-  return `<span class="muted dxt-src">по анализам от
+  if (!sets.length) return filled ? `<span class="muted dxt-src">${esc(I18n.t("dx.src.unsaved_blank", "по новому, ещё не сохранённому бланку анализов"))}</span>` : "";
+  const label = sel ? labDateLabel(c, sel) : I18n.t("dx.src.new_blank", "новому бланку");
+  const tip = sel
+    ? I18n.t("dx.src.tip_labs", "анализы от {date}{time}", { date: ruDate(sel.date), time: sel.time ? " " + sel.time : "" })
+    : I18n.t("dx.src.tip_open", "открытый бланк");
+  return `<span class="muted dxt-src">${esc(I18n.t("dx.src.prefix", "по анализам от"))}
     <button type="button" class="dxt-date" id="dxdatebtn" aria-haspopup="listbox" aria-expanded="false" title="${esc(tip)}">${esc(label)} ▾</button>
     <span class="dxt-date-menu" id="dxdatemenu" hidden role="listbox">${sets.map(s =>
-      `<button type="button" role="option" data-dx-lab="${esc(s.id)}"${s.id === c.labSel ? ' class="on" aria-selected="true"' : ""} title="${Object.keys(s.values).length} показателей">${esc(labDateLabel(c, s))}${s.time ? " " + esc(s.time) : ""}</button>`
+      `<button type="button" role="option" data-dx-lab="${esc(s.id)}"${s.id === c.labSel ? ' class="on" aria-selected="true"' : ""} title="${esc(I18n.t("dx.chip.metrics", "{n} показателей", { n: Object.keys(s.values).length }))}">${esc(labDateLabel(c, s))}${s.time ? " " + esc(s.time) : ""}</button>`
     ).join("")}</span></span>`;
 }
 function bindDxSrc(box: HTMLElement, c: Client): void {
@@ -467,34 +469,36 @@ function drawDxTab(c: Client, err: string): void {
   const values = c.values as Record<string, unknown>;
   const filled = labFieldsOf(c).filter(f => (f.type === "number" || f.type === "select") && isFilled(f, c.values[f.code])).length;
   const src = dxSrcHtml(c);
-  const head = (withSort: boolean) => `<div class="dxt-head"><div class="dxt-title"><h2>Вероятные диагнозы</h2><button type="button" class="dxt-info" aria-label="О расчёте" title="О расчёте">!</button>${withSort ? dxSortUi() : ""}</div>${src}</div>`;
-  if (!filled) { box.innerHTML = head(false) + `<div class="empty">Анализов пока нет. Заполните или загрузите их на вкладке <a href="#/client/${esc(c.id)}/labs">«Анализы»</a>.</div>`; bindDxNote(box); bindDxSrc(box, c); return; }
+  const head = (withSort: boolean) => `<div class="dxt-head"><div class="dxt-title"><h2>${esc(I18n.t("dx.title", "Вероятные диагнозы"))}</h2><button type="button" class="dxt-info" aria-label="${esc(I18n.t("dx.about_aria", "О расчёте"))}" title="${esc(I18n.t("dx.about_aria", "О расчёте"))}">!</button>${withSort ? dxSortUi() : ""}</div>${src}</div>`;
+  if (!filled) { box.innerHTML = head(false) + `<div class="empty">${I18n.t("dx.empty_no_labs", "Анализов пока нет. Заполните или загрузите их на вкладке <a href=\"#/client/{id}/labs\">«Анализы»</a>.", { id: esc(c.id) })}</div>`; bindDxNote(box); bindDxSrc(box, c); return; }
   const all = Dx.rank(values, c);
   const list = sortDx(all.filter(r => r.score.p >= DX_SHOW_MIN && r.score.p - r.prior >= DX_LIFT_MIN && r.score.contribs.some(x => x.c > 0)));
-  if (!list.length) { box.innerHTML = head(false) + `<div class="empty">По этим анализам вероятность ни одного диагноза заметно не выросла.</div>`; bindDxNote(box); bindDxSrc(box, c); return; }
+  if (!list.length) { box.innerHTML = head(false) + `<div class="empty">${esc(I18n.t("dx.empty_no_lift", "По этим анализам вероятность ни одного диагноза заметно не выросла."))}</div>`; bindDxNote(box); bindDxSrc(box, c); return; }
   const secs = [...new Set(list.flatMap(r => r.item.sections))];
   const row = (r: Dx.Ranked) => {
     const up = r.score.contribs.filter(x => x.c > 0).sort((a, b) => b.c - a.c), down = r.score.contribs.filter(x => x.c < 0).sort((a, b) => a.c - b.c);
     const chip = (x: { code: string; c: number }) => {
       const v = c.values[x.code], u = typeof v === "number" ? Dx.labUnit(x.code) : "", d = Norms.deviation(x.code, v, c);
-      return `<span class="dxt-chip ${x.c > 0 ? "pro" : "con"}" title="вклад в расчёт: ${x.c > 0 ? "+" : "−"}${Math.abs(x.c).toFixed(1).replace(".", ",")}">${esc(Dx.labName(x.code))} <b>${esc(String(v).replace(".", ","))}</b>${u ? " " + esc(u) : ""}${d.cls !== "empty" ? ` <small>${esc(d.text)}</small>` : ""}</span>`;
+      const sign = x.c > 0 ? "+" : "−";
+      const contrib = Math.abs(x.c).toFixed(1).replace(".", ",");
+      return `<span class="dxt-chip ${x.c > 0 ? "pro" : "con"}" title="${esc(I18n.t("dx.chip.contrib", "вклад в расчёт: {sign}{value}", { sign, value: contrib }))}">${esc(Dx.labName(x.code))} <b>${esc(String(v).replace(".", ","))}</b>${u ? " " + esc(u) : ""}${d.cls !== "empty" ? ` <small>${esc(d.text)}</small>` : ""}</span>`;
     };
     const weight = (code: string) => (Sg.labSigns(r.signs).find(l => l.code === code) || { w: 0 }).w;
     const miss = [...new Set(r.score.missing)].filter(code => weight(code) >= 5).sort((a, b) => weight(b) - weight(a));
     const look = [...(r.signs.exam || []), ...(r.signs.instr || [])].filter(x => (x.w ?? 0) >= 7).sort((a, b) => (b.w ?? 0) - (a.w ?? 0)).slice(0, 5);
     return `<details class="fold dxt-item" data-secs="${esc(r.item.sections.join(" "))}" data-p="${r.score.p}" data-lift="${r.score.p - r.prior}">
-      <summary><span class="dxt-p ${pctCls(r.score.p)}">${pct(r.score.p)}%</span><span class="dx-title"><span class="fold-title">${esc(r.item.title)}</span><a class="dx-art" href="${Dx.articleUrl(r.name)}" target="_blank" rel="noopener" title="статья о диагнозе — в новой вкладке" aria-label="статья">↗</a>${(r.item.flags || []).map(f => `<span class="dx-flag f-${esc(f)}">${esc(Dx.flagTitle(f))}</span>`).join("")}<small class="muted dx-also">${r.item.sections.map(s => esc(Dx.sectionTitle(s))).join(", ")}</small></span><button type="button" class="btn dxt-talk" data-dx-talk="${esc(r.name)}" title="Поговорить с врачом по этому диагнозу">Поговорить</button><span class="fold-chev" aria-hidden="true"></span></summary>
+      <summary><span class="dxt-p ${pctCls(r.score.p)}">${pct(r.score.p)}%</span><span class="dx-title"><span class="fold-title">${esc(r.item.title)}</span><a class="dx-art" href="${Dx.articleUrl(r.name)}" target="_blank" rel="noopener" title="${esc(I18n.t("dx.article_title", "статья о диагнозе — в новой вкладке"))}" aria-label="${esc(I18n.t("dx.article_aria", "статья"))}">↗</a>${(r.item.flags || []).map(f => `<span class="dx-flag f-${esc(f)}">${esc(Dx.flagTitle(f))}</span>`).join("")}<small class="muted dx-also">${r.item.sections.map(s => esc(Dx.sectionTitle(s))).join(", ")}</small></span><button type="button" class="btn dxt-talk" data-dx-talk="${esc(r.name)}" title="${esc(I18n.t("dx.talk_title", "Поговорить с врачом по этому диагнозу"))}">${esc(I18n.t("dx.talk", "Поговорить"))}</button><span class="fold-chev" aria-hidden="true"></span></summary>
       <div class="fold-body dxt-body">
-        <p><span class="dxt-lbl">За</span>${up.map(chip).join("")}</p>
-        ${down.length ? `<p><span class="dxt-lbl">Против</span>${down.map(chip).join("")}</p>` : ""}
-        ${miss.length ? `<p><span class="dxt-lbl">Досдать</span>${miss.map(code => `<button type="button" class="dxt-chip miss" data-dx-add="${esc(code)}" title="добавить в бланк анализов и перейти к нему">${esc(Dx.labName(code))}</button>`).join("")}</p>` : ""}
-        ${look.length ? `<p><span class="dxt-lbl">Проверить</span><span class="dxt-look">${look.map(x => esc(x.name)).join(" · ")}</span></p>` : ""}
-        <p class="muted dxt-meta">без анализов ${pct(r.prior)}% → по анализам ${pct(r.score.p)}% · признаков-анализов ${Sg.labSigns(r.signs).length} · <a href="#/settings/diagnoses/${esc(r.item.sections[0] || "")}/${encodeURIComponent(r.name)}">признаки в настройках</a></p>
+        <p><span class="dxt-lbl">${esc(I18n.t("dx.lbl.for", "За"))}</span>${up.map(chip).join("")}</p>
+        ${down.length ? `<p><span class="dxt-lbl">${esc(I18n.t("dx.lbl.against", "Против"))}</span>${down.map(chip).join("")}</p>` : ""}
+        ${miss.length ? `<p><span class="dxt-lbl">${esc(I18n.t("dx.lbl.order", "Досдать"))}</span>${miss.map(code => `<button type="button" class="dxt-chip miss" data-dx-add="${esc(code)}" title="${esc(I18n.t("dx.lbl.order_title", "добавить в бланк анализов и перейти к нему"))}">${esc(Dx.labName(code))}</button>`).join("")}</p>` : ""}
+        ${look.length ? `<p><span class="dxt-lbl">${esc(I18n.t("dx.lbl.check", "Проверить"))}</span><span class="dxt-look">${look.map(x => esc(x.name)).join(" · ")}</span></p>` : ""}
+        <p class="muted dxt-meta">${I18n.t("dx.meta", "без анализов {prior}% → по анализам {p}% · признаков-анализов {n} · <a href=\"#/settings/diagnoses/{sec}/{name}\">признаки в настройках</a>", { prior: pct(r.prior), p: pct(r.score.p), n: Sg.labSigns(r.signs).length, sec: esc(r.item.sections[0] || ""), name: encodeURIComponent(r.name) })}</p>
       </div></details>`;
   };
-  box.innerHTML = head(true) + `<div class="dx-chips dxt-filter" role="group" aria-label="Раздел"><button type="button" class="dx-chip on" data-sec="">Все ${list.length}</button>${secs.map(s => `<button type="button" class="dx-chip" data-sec="${esc(s)}">${esc(Dx.sectionTitle(s))} ${list.filter(r => r.item.sections.includes(s)).length}</button>`).join("")}</div>
+  box.innerHTML = head(true) + `<div class="dx-chips dxt-filter" role="group" aria-label="${esc(I18n.t("dx.filter.aria", "Раздел"))}"><button type="button" class="dx-chip on" data-sec="">${esc(I18n.t("dx.filter.all", "Все {n}", { n: list.length }))}</button>${secs.map(s => `<button type="button" class="dx-chip" data-sec="${esc(s)}">${esc(Dx.sectionTitle(s))} ${list.filter(r => r.item.sections.includes(s)).length}</button>`).join("")}</div>
     <div class="dx-acc" id="dxtlist">${list.map(row).join("")}</div>
-    <p class="muted dxt-more" id="dxtmore" hidden><button type="button" class="btn" id="dxtmorebtn">Показать все</button></p>`;
+    <p class="muted dxt-more" id="dxtmore" hidden><button type="button" class="btn" id="dxtmorebtn">${esc(I18n.t("dx.show_all", "Показать все"))}</button></p>`;
   let sec = "", showAll = false;
   const apply = () => {
     let n = 0, shown = 0;
@@ -505,7 +509,7 @@ function drawDxTab(c: Client, err: string): void {
       if (!el.hidden) shown++;
     });
     const more = box.querySelector<HTMLElement>("#dxtmore")!; more.hidden = shown >= n;
-    box.querySelector<HTMLElement>("#dxtmorebtn")!.textContent = `Показать все ${n}`;
+    box.querySelector<HTMLElement>("#dxtmorebtn")!.textContent = I18n.t("dx.show_all_n", "Показать все {n}", { n });
   };
   const reorder = () => {
     const listEl = box.querySelector("#dxtlist")!;
@@ -536,9 +540,9 @@ function drawDxTab(c: Client, err: string): void {
       const up = r.score.contribs.filter(x => x.c > 0).sort((a, b) => b.c - a.c);
       const down = r.score.contribs.filter(x => x.c < 0).sort((a, b) => a.c - b.c);
       const brief = [
-        `${pct(r.score.p)}% (без анализов ${pct(r.prior)}%)`,
-        up.length ? "за: " + up.slice(0, 8).map(x => Dx.labName(x.code)).join(", ") : "",
-        down.length ? "против: " + down.slice(0, 5).map(x => Dx.labName(x.code)).join(", ") : "",
+        I18n.t("dx.brief.pct", "{p}% (без анализов {prior}%)", { p: pct(r.score.p), prior: pct(r.prior) }),
+        up.length ? I18n.t("dx.brief.for", "за:") + " " + up.slice(0, 8).map(x => Dx.labName(x.code)).join(", ") : "",
+        down.length ? I18n.t("dx.brief.against", "против:") + " " + down.slice(0, 5).map(x => Dx.labName(x.code)).join(", ") : "",
       ].filter(Boolean).join("; ");
       Talk.openDxTalkDialog(c, { file: r.name, title: r.item.title, sections: r.item.sections, brief });
     });
@@ -562,8 +566,8 @@ function drawDxTab(c: Client, err: string): void {
 const LAB_STEP = STEPS.find(s => s.id === "labs");
 const LAB_FIELDS = LAB_STEP ? fieldsOf(LAB_STEP).filter(f => f.type !== "aiimport" && f.type !== "files") : [];
 const todayIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
-const ruDate = (iso: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : iso || "без даты"; };
-const ruDateShort = (iso: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1].slice(2)}` : iso || "без даты"; };
+const ruDate = (iso: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : iso || I18n.t("common.date.none", "без даты"); };
+const ruDateShort = (iso: string) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1].slice(2)}` : iso || I18n.t("common.date.none", "без даты"); };
 const setKey = (s: { date: string; time?: string }) => (s.date || "") + " " + (s.time || "");
 const sortedSets = (c: Client) => [...(c.labs || [])].sort((a, b) => setKey(a).localeCompare(setKey(b)) || a.savedAt.localeCompare(b.savedAt));
 // Подпись сдачи на чипе: ДД.ММ.ГГ, при нескольких сдачах в один день — ДД.ММ.ГГ-2, -3…
@@ -637,11 +641,14 @@ function labDatesHtml(c: Client): string {
   const chips = sets.map(s => {
     const n = Object.keys(s.values).length, cls = worstCls(c, s.values);
     const label = labDateLabel(c, s);
-    return `<button type="button" class="ld-chip ${cls}${s.id === c.labSel ? " on" : ""}" data-ld="${esc(s.id)}" title="анализы от ${esc(ruDate(s.date))}${s.time ? " " + esc(s.time) : ""} · показателей: ${n}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
+    const chipTitle = I18n.t("labs.chip.title", "анализы от {date}{time} · показателей: {n}", { date: ruDate(s.date), time: s.time ? " " + s.time : "", n });
+    return `<button type="button" class="ld-chip ${cls}${s.id === c.labSel ? " on" : ""}" data-ld="${esc(s.id)}" title="${esc(chipTitle)}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
   }).join("");
-  const cap = sel ? `Анализы от <b>${esc(labDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые анализы</b> — загрузите через ИИ или выберите из справочника, затем сохраните внизу`;
-  return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-ld="" title="новый бланк анализов">+ Новые</button>
-    <div class="ld-scroll" id="ldscroll">${chips || `<span class="muted ld-none">сохранённых анализов пока нет</span>`}</div></div>
+  const cap = sel
+    ? `${esc(I18n.t("labs.cap.from", "Анализы от"))} <b>${esc(labDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>`
+    : `<b>${esc(I18n.t("labs.cap.new", "Новые анализы"))}</b> — ${esc(I18n.t("labs.cap.new_hint", "загрузите через ИИ или выберите из справочника, затем сохраните внизу"))}`;
+  return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-ld="" title="${esc(I18n.t("labs.new_title", "новый бланк анализов"))}">${esc(I18n.t("labs.new_btn", "+ Новые"))}</button>
+    <div class="ld-scroll" id="ldscroll">${chips || `<span class="muted ld-none">${esc(I18n.t("labs.none_saved", "сохранённых анализов пока нет"))}</span>`}</div></div>
     <p class="ld-cap">${cap} <span class="ld-state" id="ldstate"></span></p>`;
 }
 /** Показатели вне безопасной зоны — те же, что в плашке «Требуют внимания», по убыванию критичности. */
@@ -668,27 +675,27 @@ function labSheetHtml(c: Client): string {
   const fields = labFieldsSorted(c);
   const attnCls = new Map(labAttnRows(c).map(r => [r.f.code, r.cls]));
   const head = fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
-    ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
+    ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">${esc(I18n.t("labs.col.value", "Значение"))}</span><span class="unit">${esc(I18n.t("labs.col.unit", "ед. изм."))}</span><span class="lab-cols"><span class="norm-h">${esc(I18n.t("labs.col.norm", "Норма"))}</span><span class="dev-h">${esc(I18n.t("labs.col.dev", "Отклонение"))}</span><span class="crit-h">${esc(I18n.t("labs.col.crit", "Критичность"))}</span><span class="marks-h" title="${esc(I18n.t("labs.col.marks_title", "откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента"))}">${esc(I18n.t("labs.col.marks", "Метка"))}</span></span></div></div>` : "";
   const rows = fields.map(f => {
     const cls = attnCls.get(f.code);
     const rowCls = cls ? `lab-extra-row lab-attn ${cls}` : "lab-extra-row";
-    return `<div class="${rowCls}" data-lab-code="${esc(f.code)}">${fieldHtml(f, c.values[f.code], c)}<button type="button" class="btn lab-rm" data-rm-lab="${esc(f.code)}" title="убрать" aria-label="убрать">×</button></div>`;
+    return `<div class="${rowCls}" data-lab-code="${esc(f.code)}">${fieldHtml(f, c.values[f.code], c)}<button type="button" class="btn lab-rm" data-rm-lab="${esc(f.code)}" title="${esc(I18n.t("common.remove", "убрать"))}" aria-label="${esc(I18n.t("common.remove", "убрать"))}">×</button></div>`;
   }).join("");
   const attn = labAttnHtml(c);
   return `${ai}${attn ? `<div class="attn" id="attn">${attn}</div>` : `<div class="attn" id="attn" hidden></div>`}
     <div class="sec lab-extra" id="labextra">
-      <h3>Показатели <small class="muted">${fields.length ? fields.length + " · " : ""}справочник — ${Object.keys(Labs.LABS).length} · новый код — в <a href="#/settings/weights">Настройки → Нормы и веса</a></small></h3>
-      ${rows ? head + `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">Пока пусто. Загрузите бланк через ИИ выше или выберите анализ из справочника — строка появится здесь.</p>`}
-      <div class="lab-add"><input type="search" id="labadd" placeholder="Добавить из справочника: гемоглобин, ТПО, HLA-B27…" aria-label="Добавить анализ из справочника" autocomplete="off"><div class="lab-add-res" id="labaddres"></div>
-        <button type="button" class="btn" id="labpick">Выбрать анализ…</button>
+      <h3>${esc(I18n.t("labs.indicators", "Показатели"))} <small class="muted">${fields.length ? fields.length + " · " : ""}${esc(I18n.t("labs.indicators_catalog", "справочник — {n}", { n: Object.keys(Labs.LABS).length }))} · ${esc(I18n.t("labs.indicators_new_code", "новый код — в"))} <a href="#/settings/weights">${esc(I18n.t("labs.indicators_settings", "Настройки → Нормы и веса"))}</a></small></h3>
+      ${rows ? head + `<div class="lab-extra-list">${rows}</div>` : `<p class="muted">${esc(I18n.t("labs.sheet_empty", "Пока пусто. Загрузите бланк через ИИ выше или выберите анализ из справочника — строка появится здесь."))}</p>`}
+      <div class="lab-add"><input type="search" id="labadd" placeholder="${esc(I18n.t("labs.add_ph", "Добавить из справочника: гемоглобин, ТПО, HLA-B27…"))}" aria-label="${esc(I18n.t("labs.add_aria", "Добавить анализ из справочника"))}" autocomplete="off"><div class="lab-add-res" id="labaddres"></div>
+        <button type="button" class="btn" id="labpick">${esc(I18n.t("labs.pick", "Выбрать анализ…"))}</button>
       </div>
     </div>`;
 }
 function labAttnHtml(c: Client): string {
   const rows = labAttnRows(c);
   if (!rows.length) return "";
-  return `<span class="attn-title">Требуют внимания:</span> ${rows.map(({ f, k, cls }) =>
-    `<button type="button" class="attn-item ${cls}" data-go="${esc(f.code)}" title="критичность ${k} — показать">${esc(f.label)}</button>`).join('<span class="attn-sep">, </span>')}`;
+  return `<span class="attn-title">${esc(I18n.t("labs.attn_title", "Требуют внимания:"))}</span> ${rows.map(({ f, k, cls }) =>
+    `<button type="button" class="attn-item ${cls}" data-go="${esc(f.code)}" title="${esc(I18n.t("labs.attn_item_title", "критичность {k} — показать", { k }))}">${esc(f.label)}</button>`).join('<span class="attn-sep">, </span>')}`;
 }
 /** Обновить плашку и порядок/подсветку строк списка (после смены значения). */
 function refreshLabAttnList(c: Client): void {
@@ -779,11 +786,14 @@ function paramDatesHtml(c: Client): string {
   const chips = sets.map(s => {
     const n = Object.keys(s.values).length;
     const label = paramDateLabel(c, s);
-    return `<button type="button" class="ld-chip${s.id === c.paramSel ? " on" : ""}" data-pd="${esc(s.id)}" title="замеры от ${esc(ruDate(s.date))}${s.time ? " " + esc(s.time) : ""} · показателей: ${n}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
+    const chipTitle = I18n.t("params.chip.title", "замеры от {date}{time} · показателей: {n}", { date: ruDate(s.date), time: s.time ? " " + s.time : "", n });
+    return `<button type="button" class="ld-chip${s.id === c.paramSel ? " on" : ""}" data-pd="${esc(s.id)}" title="${esc(chipTitle)}"><span class="ld-txt">${esc(label)}${s.time ? `<small>${esc(s.time)}</small>` : ""}</span></button>`;
   }).join("");
-  const cap = sel ? `Замеры от <b>${esc(paramDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>` : `<b>Новые замеры</b> — вес, давление и остальное по дате; рост и генетика без дат`;
-  return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-pd="" title="новый бланк замеров">+ Новые</button>
-    <div class="ld-scroll" id="pdscroll">${chips || `<span class="muted ld-none">сохранённых замеров пока нет</span>`}</div></div>
+  const cap = sel
+    ? `${esc(I18n.t("params.cap.from", "Замеры от"))} <b>${esc(paramDateLabel(c, sel))}${sel.time ? " " + esc(sel.time) : ""}</b>`
+    : `<b>${esc(I18n.t("params.cap.new", "Новые замеры"))}</b> — ${esc(I18n.t("params.cap.new_hint", "вес, давление и остальное по дате; рост и генетика без дат"))}`;
+  return `<div class="lab-dates"><button type="button" class="ld-new${sel ? "" : " on"}" data-pd="" title="${esc(I18n.t("params.new_title", "новый бланк замеров"))}">${esc(I18n.t("params.new_btn", "+ Новые"))}</button>
+    <div class="ld-scroll" id="pdscroll">${chips || `<span class="muted ld-none">${esc(I18n.t("params.none_saved", "сохранённых замеров пока нет"))}</span>`}</div></div>
     <p class="ld-cap">${cap} <span class="ld-state" id="pdstate"></span></p>`;
 }
 function paramSaveHtml(c: Client): string {
@@ -809,6 +819,7 @@ const STUDY_KINDS: [string, string][] = [
   ["endo", "Эндоскопия"],
   ["other", "Другое"],
 ];
+const studyKindLabel = (k: string, fb: string) => I18n.t("studies.kind." + (k || "none"), fb);
 const sortedStudies = (c: Client) => [...(c.studies || [])].sort((a, b) =>
   (b.date || "").localeCompare(a.date || "") || b.savedAt.localeCompare(a.savedAt));
 
@@ -818,26 +829,26 @@ function studiesAiHtml(): string {
   const gate = Settings.blocked() ? Settings.gateHtml() : "";
   const m = rec && (rec.conf.models || []).find(x => x.id === rec.model);
   const auto = gate ? `<div data-sai-gate>${gate}</div>` : rec ? `
-      ${m && !m.caps.includes("vision") ? `<p class="err">У этой модели нет пометки «понимает фото» — выберите другую в Настройки → Агенты → «Распознавание анализов по фото».</p>` : ""}
+      ${m && !m.caps.includes("vision") ? `<p class="err">${esc(I18n.t("studies.ai.no_vision", "У этой модели нет пометки «понимает фото» — выберите другую в Настройки → Агенты → «Распознавание анализов по фото»."))}</p>` : ""}
       <div class="dropzone" data-sai-drop>
-        <div class="dz-row"><label class="btn primary dz-pick">Выбрать фото заключений<input type="file" data-sai-pick multiple accept="image/*,application/pdf" hidden></label>
-        <span class="muted">или перетащите сюда, или вставьте картинку (Ctrl+V)</span></div>
+        <div class="dz-row"><label class="btn primary dz-pick">${esc(I18n.t("studies.ai.pick_photos", "Выбрать фото заключений"))}<input type="file" data-sai-pick multiple accept="image/*,application/pdf" hidden></label>
+        <span class="muted">${esc(I18n.t("studies.ai.drop_hint", "или перетащите сюда, или вставьте картинку (Ctrl+V)"))}</span></div>
         <div class="ai-thumbs" data-sai-thumbs></div>
       </div>
-      <div class="grp"><button type="button" class="btn primary" data-sai-act="send" disabled>Распознать</button><button type="button" class="btn" data-sai-act="abort" hidden>Отменить</button><span class="muted ai-wait" data-sai-wait></span></div>
-      <details class="ai-raw" data-sai-raw hidden><summary>Ответ ИИ целиком</summary><pre data-sai-rawtext></pre></details>`
-    : `<p class="ai-lead">Распознавание не настроено. Подключите провайдера в <a href="#/settings/providers">Настройки → Провайдеры</a> и выберите его в <a href="#/settings/agents">Настройки → Агенты → «Распознавание анализов по фото»</a>. Без провайдера — вкладка «Вручную».</p>`;
+      <div class="grp"><button type="button" class="btn primary" data-sai-act="send" disabled>${esc(I18n.t("studies.ai.recognize", "Распознать"))}</button><button type="button" class="btn" data-sai-act="abort" hidden>${esc(I18n.t("studies.ai.abort", "Отменить"))}</button><span class="muted ai-wait" data-sai-wait></span></div>
+      <details class="ai-raw" data-sai-raw hidden><summary>${esc(I18n.t("studies.ai.raw_summary", "Ответ ИИ целиком"))}</summary><pre data-sai-rawtext></pre></details>`
+    : `<p class="ai-lead">${I18n.t("studies.ai.not_configured_lead", "Распознавание не настроено. Подключите провайдера в <a href=\"#/settings/providers\">Настройки → Провайдеры</a> и выберите его в <a href=\"#/settings/agents\">Настройки → Агенты → «Распознавание анализов по фото»</a>. Без провайдера — вкладка «Вручную».")}</p>`;
   return `<div class="ai study-ai" data-sai>
     <div class="ai-tabs" role="tablist">
-      <button type="button" role="tab" data-sai-tab="auto" aria-selected="${tab === "auto"}" class="${tab === "auto" ? "on" : ""}">Распознать</button>
-      <button type="button" role="tab" data-sai-tab="manual" aria-selected="${tab === "manual"}" class="${tab === "manual" ? "on" : ""}">Вручную через любой ИИ</button>
+      <button type="button" role="tab" data-sai-tab="auto" aria-selected="${tab === "auto"}" class="${tab === "auto" ? "on" : ""}">${esc(I18n.t("studies.ai.tab_auto", "Распознать"))}</button>
+      <button type="button" role="tab" data-sai-tab="manual" aria-selected="${tab === "manual"}" class="${tab === "manual" ? "on" : ""}">${esc(I18n.t("studies.ai.tab_manual", "Вручную через любой ИИ"))}</button>
     </div>
     <div class="ai-pane" data-sai-pane="auto"${tab === "auto" ? "" : " hidden"}>${auto}</div>
     <div class="ai-pane" data-sai-pane="manual"${tab === "manual" ? "" : " hidden"}>
-      <p class="ai-lead">Скопируйте промпт, отправьте вместе с фото в любой ИИ, вставьте ответ сюда.</p>
-      <div class="grp"><button type="button" class="btn primary" data-sai-act="copy">Скопировать промпт</button><button type="button" class="btn" data-sai-act="download">Скачать .txt</button></div>
-      <textarea data-sai-text rows="4" spellcheck="false" placeholder='{ "format": "electrodoctor-studies", "version": 1, "studies": [ … ] }' aria-label="Ответ ИИ"></textarea>
-      <div class="grp"><button type="button" class="btn primary" data-sai-act="parse">Разобрать ответ</button><label class="btn">Загрузить .json<input type="file" data-sai-file accept=".json,.txt,application/json,text/plain" hidden></label></div>
+      <p class="ai-lead">${esc(I18n.t("studies.ai.manual_lead", "Скопируйте промпт, отправьте вместе с фото в любой ИИ, вставьте ответ сюда."))}</p>
+      <div class="grp"><button type="button" class="btn primary" data-sai-act="copy">${esc(I18n.t("studies.ai.copy_prompt", "Скопировать промпт"))}</button><button type="button" class="btn" data-sai-act="download">${esc(I18n.t("studies.ai.download_txt", "Скачать .txt"))}</button></div>
+      <textarea data-sai-text rows="4" spellcheck="false" placeholder='{ "format": "electrodoctor-studies", "version": 1, "studies": [ … ] }' aria-label="${esc(I18n.t("studies.ai.response_aria", "Ответ ИИ"))}"></textarea>
+      <div class="grp"><button type="button" class="btn primary" data-sai-act="parse">${esc(I18n.t("studies.ai.parse", "Разобрать ответ"))}</button><label class="btn">${esc(I18n.t("studies.ai.upload_json", "Загрузить .json"))}<input type="file" data-sai-file accept=".json,.txt,application/json,text/plain" hidden></label></div>
     </div>
     <div class="ai-msg" data-sai-msg aria-live="polite"></div>
     <div data-sai-preview></div>
@@ -845,21 +856,24 @@ function studiesAiHtml(): string {
 }
 
 function studiesAiPreviewHtml(drafts: AIStudy.StudyDraft[]): string {
-  const kindOf = (k: string) => (AIStudy.KINDS.find(x => x[0] === k) || ["", "тип не указан"])[1];
+  const kindOf = (k: string) => {
+    const pair = AIStudy.KINDS.find(x => x[0] === k) || STUDY_KINDS.find(x => x[0] === k) || ["", "тип не указан"];
+    return studyKindLabel(pair[0], pair[1]);
+  };
   const n = drafts.filter(d => d.apply).length;
   return `<div class="ai-preview">
-    <h3>Найдено исследований: ${drafts.length}</h3>
-    <p class="muted">Проверьте текст со своим бланком. Отмеченное добавится на вкладку «Исследования».</p>
+    <h3>${esc(I18n.t("studies.found_title", "Найдено исследований: {n}", { n: drafts.length }))}</h3>
+    <p class="muted">${esc(I18n.t("studies.preview_hint", "Проверьте текст со своим бланком. Отмеченное добавится на вкладку «Исследования»."))}</p>
     <div class="study-ai-list">${drafts.map((d, i) => `
       <label class="study-ai-item st-${d.uncertain ? "uncertain" : "ok"}">
         <input type="checkbox" data-sai-row="${i}"${d.apply ? " checked" : ""}>
-        <span class="study-ai-meta"><b>${esc(d.title || "Исследование")}</b>
-          <small class="muted">${esc([d.date || "без даты", kindOf(d.kind)].filter(Boolean).join(" · "))}</small>
+        <span class="study-ai-meta"><b>${esc(d.title || I18n.t("studies.default_title", "Исследование"))}</b>
+          <small class="muted">${esc([d.date || I18n.t("common.date.none", "без даты"), kindOf(d.kind)].filter(Boolean).join(" · "))}</small>
           ${d.note ? `<small class="err">${esc(d.note)}</small>` : ""}
         </span>
-        <pre class="study-ai-body">${esc(d.text || "(текст пуст)")}</pre>
+        <pre class="study-ai-body">${esc(d.text || I18n.t("studies.text_empty", "(текст пуст)"))}</pre>
       </label>`).join("")}</div>
-    <div class="grp"><button type="button" class="btn primary" data-sai-act="apply"${n ? "" : " disabled"}>Добавить отмеченные (${n})</button></div>
+    <div class="grp"><button type="button" class="btn primary" data-sai-act="apply"${n ? "" : " disabled"}>${esc(I18n.t("studies.apply_selected", "Добавить отмеченные ({n})", { n }))}</button></div>
   </div>`;
 }
 
@@ -868,33 +882,33 @@ function studiesHtml(c: Client): string {
   const list = sortedStudies(c);
   const cards = list.map(s => {
     const opts = STUDY_KINDS.map(([v, t]) =>
-      `<option value="${esc(v)}"${(s.kind || "") === v ? " selected" : ""}>${esc(t)}</option>`).join("");
+      `<option value="${esc(v)}"${(s.kind || "") === v ? " selected" : ""}>${esc(studyKindLabel(v, t))}</option>`).join("");
     return `<article class="study-card" data-study="${esc(s.id)}">
       <div class="study-row">
-        <label>Дата <input type="date" data-sf="date" value="${esc(s.date || "")}"></label>
-        <label>Тип <select data-sf="kind">${opts}</select></label>
+        <label>${esc(I18n.t("studies.date", "Дата"))} <input type="date" data-sf="date" value="${esc(s.date || "")}"></label>
+        <label>${esc(I18n.t("studies.type", "Тип"))} <select data-sf="kind">${opts}</select></label>
         <button type="button" class="btn danger" data-study-del="${esc(s.id)}" title="${esc(I18n.t("studies.delete", "Удалить"))}">${esc(I18n.t("studies.delete", "Удалить"))}</button>
       </div>
-      <label class="study-title">Название <input type="text" data-sf="title" value="${esc(s.title || "")}" placeholder="например: УЗИ щитовидной железы"></label>
-      <label class="study-text">Заключение <textarea data-sf="text" rows="6" placeholder="Текст с бланка или своё описание…">${esc(s.text || "")}</textarea></label>
+      <label class="study-title">${esc(I18n.t("studies.title", "Название"))} <input type="text" data-sf="title" value="${esc(s.title || "")}" placeholder="${esc(I18n.t("studies.title_ph", "например: УЗИ щитовидной железы"))}"></label>
+      <label class="study-text">${esc(I18n.t("studies.text", "Заключение"))} <textarea data-sf="text" rows="6" placeholder="${esc(I18n.t("studies.text_ph", "Текст с бланка или своё описание…"))}">${esc(s.text || "")}</textarea></label>
     </article>`;
   }).join("");
   const rec = recognizer();
   const recStatus = Settings.blocked()
-    ? `<span class="fold-status err">нужен доступ к настройкам</span>`
+    ? `<span class="fold-status err">${esc(I18n.t("studies.status.need_settings", "нужен доступ к настройкам"))}</span>`
     : rec
-      ? `<span class="fold-status muted">Распознаёт: <b>${esc(rec.preset.name)}${rec.model ? " · " + esc(rec.model) : ""}</b> · <a href="#/settings/agents">настройки</a></span>`
-      : `<span class="fold-status err">распознавание не настроено</span>`;
+      ? `<span class="fold-status muted">${esc(I18n.t("studies.status.recognizer", "Распознаёт:"))} <b>${esc(rec.preset.name)}${rec.model ? " · " + esc(rec.model) : ""}</b> · <a href="#/settings/agents">${esc(I18n.t("studies.status.settings_link", "настройки"))}</a></span>`
+      : `<span class="fold-status err">${esc(I18n.t("studies.status.not_configured", "распознавание не настроено"))}</span>`;
   return `<div class="studies" id="studies">
     <details class="fold study-ai-fold" data-fold="studies.ai">
       <summary><span class="fold-title">${esc(I18n.t("studies.ai_fold", "Загрузить через ИИ"))}</span>${recStatus}<span class="fold-chev" aria-hidden="true"></span></summary>
       <div class="fold-body">${studiesAiHtml()}</div>
     </details>
     <div class="studies-head">
-      <p class="muted">УЗИ, МРТ, КТ, рентген, ЭКГ и любые другие заключения — дата, тип по желанию, название и текст. Жёстких групп нет: тип только подсказка.</p>
-      <button type="button" class="btn primary" id="study-add">+ Добавить исследование</button>
+      <p class="muted">${esc(I18n.t("studies.lead", "УЗИ, МРТ, КТ, рентген, ЭКГ и любые другие заключения — дата, тип по желанию, название и текст. Жёстких групп нет: тип только подсказка."))}</p>
+      <button type="button" class="btn primary" id="study-add">${esc(I18n.t("studies.add", "+ Добавить исследование"))}</button>
     </div>
-    ${cards || `<div class="empty">Исследований пока нет. Добавьте вручную или распознайте бланк через ИИ.</div>`}
+    ${cards || `<div class="empty">${esc(I18n.t("studies.empty", "Исследований пока нет. Добавьте вручную или распознайте бланк через ИИ."))}</div>`}
   </div>`;
 }
 
@@ -997,7 +1011,7 @@ function renderClient(id: string, stepId: string): void {
     const st = document.getElementById("ldstate");
     if (st) {
       st.className = "ld-state" + (dirty ? " dirty" : "");
-      st.textContent = dirty ? (selSet(c) ? "· есть несохранённые изменения" : has ? "· не сохранены" : "") : selSet(c) ? "· сохранено" : "";
+      st.textContent = dirty ? (selSet(c) ? I18n.t("labs.state.dirty_saved", "· есть несохранённые изменения") : has ? I18n.t("labs.state.dirty_new", "· не сохранены") : "") : selSet(c) ? I18n.t("labs.state.saved", "· сохранено") : "";
     }
     const saveBtn = document.querySelector<HTMLButtonElement>("#labsave [data-ls=save]");
     if (saveBtn) saveBtn.classList.toggle("primary", dirty);
@@ -1007,7 +1021,7 @@ function renderClient(id: string, stepId: string): void {
     const st = document.getElementById("pdstate");
     if (st) {
       st.className = "ld-state" + (dirty ? " dirty" : "");
-      st.textContent = dirty ? (selParamSet(c) ? "· есть несохранённые изменения" : has ? "· не сохранены" : "") : selParamSet(c) ? "· сохранено" : "";
+      st.textContent = dirty ? (selParamSet(c) ? I18n.t("params.state.dirty_saved", "· есть несохранённые изменения") : has ? I18n.t("params.state.dirty_new", "· не сохранены") : "") : selParamSet(c) ? I18n.t("params.state.saved", "· сохранено") : "";
     }
     const saveBtn = document.querySelector<HTMLButtonElement>("#paramsave [data-ps=save]");
     if (saveBtn) saveBtn.classList.toggle("primary", dirty);
@@ -1089,7 +1103,7 @@ function renderClient(id: string, stepId: string): void {
       const del = (ev.target as HTMLElement).closest<HTMLElement>("[data-study-del]");
       if (!del) return;
       const id = del.getAttribute("data-study-del") || "";
-      if (!confirm("Удалить это исследование?")) return;
+      if (!confirm(I18n.t("studies.confirm_delete", "Удалить это исследование?"))) return;
       c.studies = (c.studies || []).filter(x => x.id !== id);
       clearTimeout(timer); save(); redraw();
     });
@@ -1135,7 +1149,7 @@ function renderClient(id: string, stepId: string): void {
       try {
         const parsed = AIStudy.parse(src);
         show(parsed.studies);
-        say(`Найдено исследований: ${parsed.studies.length}. Отметьте нужные и добавьте.`, true);
+        say(I18n.t("studies.msg.found", "Найдено исследований: {n}. Отметьте нужные и добавьте.", { n: parsed.studies.length }), true);
       } catch (e) {
         drafts = []; preview.innerHTML = "";
         say((e instanceof Error && e.message) || String(e));
@@ -1155,8 +1169,8 @@ function renderClient(id: string, stepId: string): void {
       const t = (ev.target as HTMLElement).closest<HTMLElement>("[data-sai-act]"); if (!t) return;
       const act = t.dataset.saiAct;
       if (act === "copy") {
-        try { await navigator.clipboard.writeText(AIStudy.buildPrompt()); say("Промпт скопирован.", true); }
-        catch { say("Не удалось скопировать — скачайте .txt."); }
+        try { await navigator.clipboard.writeText(AIStudy.buildPrompt()); say(I18n.t("studies.msg.copy_ok", "Промпт скопирован."), true); }
+        catch { say(I18n.t("studies.msg.copy_fail", "Не удалось скопировать — скачайте .txt.")); }
         return;
       }
       if (act === "download") {
@@ -1166,15 +1180,15 @@ function renderClient(id: string, stepId: string): void {
         return;
       }
       if (act === "parse") {
-        if (!text || !text.value.trim()) { say("Вставьте ответ ИИ."); return; }
+        if (!text || !text.value.trim()) { say(I18n.t("studies.msg.paste_response", "Вставьте ответ ИИ.")); return; }
         run(text.value); return;
       }
       if (act === "apply") {
         const chosen = drafts.filter(d => d.apply);
-        if (!chosen.length) { say("Ничего не отмечено."); return; }
+        if (!chosen.length) { say(I18n.t("studies.msg.none_checked", "Ничего не отмечено.")); return; }
         if (!c.studies) c.studies = [];
         c.studies.unshift(...AIStudy.toStudies(chosen));
-        say(`Добавлено исследований: ${chosen.length}.`, true);
+        say(I18n.t("studies.msg.added", "Добавлено исследований: {n}.", { n: chosen.length }), true);
         onAdded();
         return;
       }
@@ -1185,7 +1199,7 @@ function renderClient(id: string, stepId: string): void {
       drafts[i].apply = inp.checked;
       const n = drafts.filter(d => d.apply).length;
       const b = preview.querySelector<HTMLButtonElement>('[data-sai-act="apply"]');
-      if (b) { b.textContent = `Добавить отмеченные (${n})`; b.disabled = !n; }
+      if (b) { b.textContent = I18n.t("studies.apply_selected", "Добавить отмеченные ({n})", { n }); b.disabled = !n; }
     });
     const fileInput = ai.querySelector<HTMLInputElement>("[data-sai-file]");
     if (fileInput) fileInput.addEventListener("change", async () => {
@@ -1206,7 +1220,7 @@ function renderClient(id: string, stepId: string): void {
     const picked: { file: File; url: string }[] = [];
     let ctrl: AbortController | null = null;
     const drawThumbs = () => {
-      thumbs.innerHTML = picked.map((p, i) => `<figure class="ai-thumb">${p.file.type === "application/pdf" ? `<span class="ai-pdf">PDF</span>` : `<img src="${p.url}" alt="">`}<figcaption title="${esc(p.file.name)}">${esc(p.file.name || "картинка")}</figcaption><button type="button" class="btn danger" data-sai-rm="${i}" aria-label="убрать">×</button></figure>`).join("");
+      thumbs.innerHTML = picked.map((p, i) => `<figure class="ai-thumb">${p.file.type === "application/pdf" ? `<span class="ai-pdf">PDF</span>` : `<img src="${p.url}" alt="">`}<figcaption title="${esc(p.file.name)}">${esc(p.file.name || I18n.t("studies.thumb.image", "картинка"))}</figcaption><button type="button" class="btn danger" data-sai-rm="${i}" aria-label="${esc(I18n.t("common.remove", "убрать"))}">×</button></figure>`).join("");
       sendBtn.disabled = !picked.length || !!ctrl;
     };
     const addPicked = (list: FileList | File[]) => {
@@ -1219,7 +1233,7 @@ function renderClient(id: string, stepId: string): void {
         picked.push({ file: f, url: pdf ? "" : URL.createObjectURL(f) });
       }
       drawThumbs();
-      if (bad.length) say("Не добавлено: " + bad.join(", ") + "."); else say("");
+      if (bad.length) say(I18n.t("studies.msg.not_added", "Не добавлено: {list}.", { list: bad.join(", ") })); else say("");
     };
     pick.addEventListener("change", () => { if (pick.files) addPicked(pick.files); pick.value = ""; });
     drop.addEventListener("dragover", ev => { ev.preventDefault(); drop.classList.add("drag"); });
@@ -1240,10 +1254,10 @@ function renderClient(id: string, stepId: string): void {
     abortBtn.addEventListener("click", () => { if (ctrl) ctrl.abort(); });
     sendBtn.addEventListener("click", async () => {
       const prov = recognizer();
-      if (!prov) { say("Распознавание не настроено — Настройки → Агенты."); return; }
+      if (!prov) { say(I18n.t("studies.msg.not_configured", "Распознавание не настроено — Настройки → Агенты.")); return; }
       ctrl = new AbortController();
       sendBtn.disabled = true; abortBtn.hidden = false; preview.innerHTML = ""; raw.hidden = true;
-      say(""); wait.textContent = `Отправляю в ${prov.preset.name}… обычно 10–60 секунд.`;
+      say(""); wait.textContent = I18n.t("studies.msg.sending", "Отправляю в {name}… обычно 10–60 секунд.", { name: prov.preset.name });
       try {
         const files = await Promise.all(picked.map(p => Call.prepare(p.file)));
         const answer = await Call.recognize({
@@ -1300,7 +1314,7 @@ function renderClient(id: string, stepId: string): void {
       const list = document.getElementById("cmplist");
       if (list) list.innerHTML = Cmp.complaintsListHtml(c);
       const title = document.getElementById("title");
-      if (title) title.textContent = (!getClient(id) && !c.values.NAME) ? "Новый клиент" : displayName(c);
+      if (title) title.textContent = (!getClient(id) && !c.values.NAME) ? I18n.t("client.new", "Новый клиент") : displayName(c);
     }
     if (stepId === "params") paramState();
   }
@@ -1326,8 +1340,8 @@ function renderClient(id: string, stepId: string): void {
     const draw = () => {
       const found = Labs.search(q.value, exclude);
       res.innerHTML = q.value.trim().length < 2 ? "" : found.length
-        ? found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""}${l.type === "qual" ? ` <small class="muted">положительно / отрицательно</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
-        : `<p class="muted">В справочнике ничего не нашлось. Новый анализ добавляют в <a href="#/settings/weights">Настройки → Нормы и веса</a>.</p>`;
+        ? found.map(code => { const l = Labs.LABS[code]; return `<button type="button" class="lab-res" data-add="${esc(code)}"><b>${esc(l.name)}</b>${l.unit ? ` <small>${esc(l.unit)}</small>` : ""}${l.type === "qual" ? ` <small class="muted">${esc(I18n.t("labs.search_qual", "положительно / отрицательно"))}</small>` : ""}${l.aliases.length ? `<small class="muted lab-al">${esc(l.aliases.slice(0, 4).join(", "))}</small>` : ""}</button>`; }).join("")
+        : `<p class="muted">${I18n.t("labs.search_none", "В справочнике ничего не нашлось. Новый анализ добавляют в <a href=\"#/settings/weights\">Настройки → Нормы и веса</a>.")}</p>`;
     };
     q.addEventListener("input", draw);
     q.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); const b = res.querySelector<HTMLElement>("[data-add]"); if (b) b.click(); } });
@@ -1341,7 +1355,7 @@ function renderClient(id: string, stepId: string): void {
       else if (rm) {
         const code = rm.dataset.rmLab!;
         const name = (Labs.LABS[code] && Labs.LABS[code].name) || LAB_FIELDS.find(f => f.code === code)?.label || code;
-        if (c.values[code] !== undefined && !confirm(`Убрать «${name}»? Значение в открытых анализах сотрётся.`)) return;
+        if (c.values[code] !== undefined && !confirm(I18n.t("labs.confirm_remove", "Убрать «{name}»? Значение в открытых анализах сотрётся.", { name }))) return;
         delete c.values[code]; labAdded[c.id]?.delete(code); clearTimeout(timer); save(); renderClient(id, step.id);
       }
     });
@@ -1363,7 +1377,7 @@ function renderClient(id: string, stepId: string): void {
     const sc = document.getElementById("ldscroll"); if (sc) sc.scrollLeft = sc.scrollWidth;   // свежие — справа
     const go = (setId: string) => {
       if (setId === (c.labSel || "") ) return;
-      if (labDirty(c) && !confirm("Анализы не сохранены. Перейти без сохранения? Несохранённые изменения пропадут.")) return;
+      if (labDirty(c) && !confirm(I18n.t("labs.confirm_nav_unsaved", "Анализы не сохранены. Перейти без сохранения? Несохранённые изменения пропадут."))) return;
       const s = (c.labs || []).find(x => x.id === setId);
       loadBuf(c, s ? s.values : {});
       c.labSel = s ? s.id : "";
@@ -1381,7 +1395,7 @@ function renderClient(id: string, stepId: string): void {
     };
     const write = (mode: "new" | "merge" | "update", target?: LabSet) => {
       const buf = bufValues(c), m = c.labMeta!, now = new Date().toISOString();
-      if (mode === "update" && target) { target.values = buf; target.date = m.date; target.time = m.time; target.savedAt = now; return finish(target, "Изменения сохранены."); }
+      if (mode === "update" && target) { target.values = buf; target.date = m.date; target.time = m.time; target.savedAt = now; return finish(target, I18n.t("labs.msg.updated", "Изменения сохранены.")); }
       if (mode === "merge" && target) {
         const vals = { ...target.values };
         for (const [k, v] of Object.entries(buf)) {
@@ -1392,11 +1406,11 @@ function renderClient(id: string, stepId: string): void {
           } else vals[k] = v;
         }
         target.values = vals; target.savedAt = now;
-        return finish(target, `Добавлено к анализам от ${ruDate(target.date)}.`);
+        return finish(target, I18n.t("labs.msg.merged", "Добавлено к анализам от {date}.", { date: ruDate(target.date) }));
       }
       const s: LabSet = { id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: m.date, ...(m.time ? { time: m.time } : {}), values: buf, savedAt: now };
       (c.labs = c.labs || []).push(s);
-      finish(s, `Анализы от ${ruDate(s.date)} сохранены.`);
+      finish(s, I18n.t("labs.msg.saved", "Анализы от {date} сохранены.", { date: ruDate(s.date) }));
     };
     bar.addEventListener("click", ev => {
       const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-ls]"); if (!b) return;
@@ -1404,22 +1418,22 @@ function renderClient(id: string, stepId: string): void {
       if (act === "cancel") { ask.hidden = true; return; }
       if (act === "merge" || act === "separate") { ask.hidden = true; return write(act === "merge" ? "merge" : "new", (c.labs || []).find(x => x.id === b.dataset.target)); }
       if (act === "del") {
-        const s = selSet(c); if (!s || !confirm(`Удалить анализы от ${ruDate(s.date)}? Это нельзя отменить.`)) return;
+        const s = selSet(c); if (!s || !confirm(I18n.t("labs.confirm_delete", "Удалить анализы от {date}? Это нельзя отменить.", { date: ruDate(s.date) }))) return;
         c.labs = (c.labs || []).filter(x => x.id !== s.id);
         const last = sortedSets(c).pop();
         loadBuf(c, last ? last.values : {}); c.labSel = last ? last.id : ""; c.labMeta = last ? { date: last.date, time: last.time } : { date: todayIso() };
-        clearTimeout(timer); save(); labFlash = `Анализы от ${ruDate(s.date)} удалены.`; renderClient(id, step.id); return;
+        clearTimeout(timer); save(); labFlash = I18n.t("labs.msg.deleted", "Анализы от {date} удалены.", { date: ruDate(s.date) }); renderClient(id, step.id); return;
       }
       if (act !== "save") return;
-      if (!getClient(id) && !isFilled(null, c.values.NAME)) { msg.className = "ls-msg err"; msg.textContent = "Сначала укажите имя клиента на вкладке «Общее»."; return; }
-      if (!dIn.value) { msg.className = "ls-msg err"; msg.textContent = "Укажите дату сдачи анализов."; dIn.focus(); return; }
+      if (!getClient(id) && !isFilled(null, c.values.NAME)) { msg.className = "ls-msg err"; msg.textContent = I18n.t("labs.msg.need_name", "Сначала укажите имя клиента на вкладке «Общее»."); return; }
+      if (!dIn.value) { msg.className = "ls-msg err"; msg.textContent = I18n.t("labs.msg.need_date", "Укажите дату сдачи анализов."); dIn.focus(); return; }
       meta();
-      if (!Object.keys(bufValues(c)).length) { msg.className = "ls-msg err"; msg.textContent = "Бланк пустой — сохранять нечего."; return; }
+      if (!Object.keys(bufValues(c)).length) { msg.className = "ls-msg err"; msg.textContent = I18n.t("labs.msg.empty", "Бланк пустой — сохранять нечего."); return; }
       const sel = selSet(c);
       if (sel) return write("update", sel);
       const same = (c.labs || []).find(x => x.date === dIn.value);
       if (same) {
-        ask.innerHTML = `На ${esc(ruDate(same.date))} уже есть анализы. <button type="button" class="btn primary" data-ls="merge" data-target="${esc(same.id)}">Добавить к ним</button><button type="button" class="btn" data-ls="separate">Сохранить отдельно</button><button type="button" class="btn" data-ls="cancel">Отмена</button>`;
+        ask.innerHTML = `${esc(I18n.t("labs.merge.ask", "На {date} уже есть анализы.", { date: ruDate(same.date) }))} <button type="button" class="btn primary" data-ls="merge" data-target="${esc(same.id)}">${esc(I18n.t("labs.merge.add", "Добавить к ним"))}</button><button type="button" class="btn" data-ls="separate">${esc(I18n.t("labs.merge.separate", "Сохранить отдельно"))}</button><button type="button" class="btn" data-ls="cancel">${esc(I18n.t("common.cancel", "Отмена"))}</button>`;
         ask.hidden = false; return;
       }
       write("new");
@@ -1431,7 +1445,7 @@ function renderClient(id: string, stepId: string): void {
     const sc = document.getElementById("pdscroll"); if (sc) sc.scrollLeft = sc.scrollWidth;
     const go = (setId: string) => {
       if (setId === (c.paramSel || "")) return;
-      if (paramDirty(c) && !confirm("Замеры не сохранены. Перейти без сохранения? Несохранённые изменения пропадут.")) return;
+      if (paramDirty(c) && !confirm(I18n.t("params.confirm_nav_unsaved", "Замеры не сохранены. Перейти без сохранения? Несохранённые изменения пропадут."))) return;
       const s = (c.params || []).find(x => x.id === setId);
       loadParamBuf(c, s ? s.values : {});
       c.paramSel = s ? s.id : "";
@@ -1449,14 +1463,14 @@ function renderClient(id: string, stepId: string): void {
     };
     const write = (mode: "new" | "merge" | "update", target?: ParamSet) => {
       const buf = paramBufValues(c), m = c.paramMeta!, now = new Date().toISOString();
-      if (mode === "update" && target) { target.values = buf; target.date = m.date; target.time = m.time; target.savedAt = now; return finish(target, "Изменения сохранены."); }
+      if (mode === "update" && target) { target.values = buf; target.date = m.date; target.time = m.time; target.savedAt = now; return finish(target, I18n.t("params.msg.updated", "Изменения сохранены.")); }
       if (mode === "merge" && target) {
         target.values = { ...target.values, ...buf }; target.savedAt = now;
-        return finish(target, `Добавлено к замерам от ${ruDate(target.date)}.`);
+        return finish(target, I18n.t("params.msg.merged", "Добавлено к замерам от {date}.", { date: ruDate(target.date) }));
       }
       const s: ParamSet = { id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: m.date, ...(m.time ? { time: m.time } : {}), values: buf, savedAt: now };
       (c.params = c.params || []).push(s);
-      finish(s, `Замеры от ${ruDate(s.date)} сохранены.`);
+      finish(s, I18n.t("params.msg.saved", "Замеры от {date} сохранены.", { date: ruDate(s.date) }));
     };
     bar.addEventListener("click", ev => {
       const b = (ev.target as HTMLElement).closest<HTMLElement>("[data-ps]"); if (!b) return;
@@ -1464,22 +1478,22 @@ function renderClient(id: string, stepId: string): void {
       if (act === "cancel") { ask.hidden = true; return; }
       if (act === "merge" || act === "separate") { ask.hidden = true; return write(act === "merge" ? "merge" : "new", (c.params || []).find(x => x.id === b.dataset.target)); }
       if (act === "del") {
-        const s = selParamSet(c); if (!s || !confirm(`Удалить замеры от ${ruDate(s.date)}? Это нельзя отменить.`)) return;
+        const s = selParamSet(c); if (!s || !confirm(I18n.t("params.confirm_delete", "Удалить замеры от {date}? Это нельзя отменить.", { date: ruDate(s.date) }))) return;
         c.params = (c.params || []).filter(x => x.id !== s.id);
         const last = sortedParamSets(c).pop();
         loadParamBuf(c, last ? last.values : {}); c.paramSel = last ? last.id : ""; c.paramMeta = last ? { date: last.date, time: last.time } : { date: todayIso() };
-        clearTimeout(timer); save(); paramFlash = `Замеры от ${ruDate(s.date)} удалены.`; renderClient(id, step.id); return;
+        clearTimeout(timer); save(); paramFlash = I18n.t("params.msg.deleted", "Замеры от {date} удалены.", { date: ruDate(s.date) }); renderClient(id, step.id); return;
       }
       if (act !== "save") return;
-      if (!getClient(id) && !isFilled(null, c.values.NAME)) { msg.className = "ls-msg err"; msg.textContent = "Сначала укажите имя клиента на вкладке «Общее»."; return; }
-      if (!dIn.value) { msg.className = "ls-msg err"; msg.textContent = "Укажите дату замеров."; dIn.focus(); return; }
+      if (!getClient(id) && !isFilled(null, c.values.NAME)) { msg.className = "ls-msg err"; msg.textContent = I18n.t("params.msg.need_name", "Сначала укажите имя клиента на вкладке «Общее»."); return; }
+      if (!dIn.value) { msg.className = "ls-msg err"; msg.textContent = I18n.t("params.msg.need_date", "Укажите дату замеров."); dIn.focus(); return; }
       meta();
-      if (!Object.keys(paramBufValues(c)).length) { msg.className = "ls-msg err"; msg.textContent = "Нечего сохранять — заполните вес, давление или другие показатели."; return; }
+      if (!Object.keys(paramBufValues(c)).length) { msg.className = "ls-msg err"; msg.textContent = I18n.t("params.msg.empty", "Нечего сохранять — заполните вес, давление или другие показатели."); return; }
       const sel = selParamSet(c);
       if (sel) return write("update", sel);
       const same = (c.params || []).find(x => x.date === dIn.value);
       if (same) {
-        ask.innerHTML = `На ${esc(ruDate(same.date))} уже есть замеры. <button type="button" class="btn primary" data-ps="merge" data-target="${esc(same.id)}">Добавить к ним</button><button type="button" class="btn" data-ps="separate">Сохранить отдельно</button><button type="button" class="btn" data-ps="cancel">Отмена</button>`;
+        ask.innerHTML = `${esc(I18n.t("params.merge.ask", "На {date} уже есть замеры.", { date: ruDate(same.date) }))} <button type="button" class="btn primary" data-ps="merge" data-target="${esc(same.id)}">${esc(I18n.t("params.merge.add", "Добавить к ним"))}</button><button type="button" class="btn" data-ps="separate">${esc(I18n.t("params.merge.separate", "Сохранить отдельно"))}</button><button type="button" class="btn" data-ps="cancel">${esc(I18n.t("common.cancel", "Отмена"))}</button>`;
         ask.hidden = false; return;
       }
       write("new");
@@ -1811,33 +1825,38 @@ function aiImportHtml(): string {
   const tab = lsGet(AI_TAB_KEY) === "manual" ? "manual" : "auto";
   const gate = Settings.blocked() ? Settings.gateHtml() : "";
   const m = rec && (rec.conf.models || []).find(x => x.id === rec.model);
+  const changeLink = `<a href="#/settings/agents">${esc(I18n.t("labs.ai.change", "изменить в настройках"))}</a>`;
+  const who = rec ? `<b>${esc(rec.preset.name)}${rec.model ? " · " + esc(rec.model) : ""}</b>` : "";
+  const notCfg = I18n.getLocale() === "en"
+    ? `Recognition is not set up. Connect a provider in <a href="#/settings/providers">Settings → Providers</a> and pick it in <a href="#/settings/agents">Settings → Agents → “Lab photo recognition”</a> — once, for all clients. Without a provider you can still recognize manually via any AI (second tab).`
+    : `Распознавание не настроено. Подключите провайдера в <a href="#/settings/providers">Настройки → Провайдеры</a> и выберите его в <a href="#/settings/agents">Настройки → Агенты → «Распознавание анализов по фото»</a> — один раз, для всех клиентов. Без провайдера можно распознать вручную через любой ИИ (вторая вкладка).`;
   const auto = gate ? `<div data-ai-gate>${gate}</div>` : rec ? `
-      <p class="ai-lead">Распознаёт: <b>${esc(rec.preset.name)}${rec.model ? " · " + esc(rec.model) : ""}</b> — <a href="#/settings/agents">изменить в настройках</a>. Фото уходят только этому провайдеру — напрямую из браузера.</p>
-      ${m && !m.caps.includes("vision") ? `<p class="err">У этой модели нет пометки «понимает фото» — распознавание может не сработать. Выберите другую в Настройки → Агенты → «Распознавание анализов по фото».</p>` : ""}
+      <p class="ai-lead">${I18n.t("labs.ai.recognizes", "Распознаёт: {who} — {link}. Фото уходят только этому провайдеру — напрямую из браузера.", { who, link: changeLink })}</p>
+      ${m && !m.caps.includes("vision") ? `<p class="err">${esc(I18n.t("labs.ai.no_vision", "У этой модели нет пометки «понимает фото» — распознавание может не сработать. Выберите другую в Настройки → Агенты → «Распознавание анализов по фото»."))}</p>` : ""}
       <div class="dropzone" data-ai-drop>
-        <div class="dz-row"><label class="btn primary dz-pick">Выбрать фото анализов<input type="file" data-ai-pick multiple accept="image/*,application/pdf" hidden></label>
-        <span class="muted">или перетащите сюда, или вставьте картинку (Ctrl+V)</span></div>
+        <div class="dz-row"><label class="btn primary dz-pick">${esc(I18n.t("labs.ai.pick", "Выбрать фото анализов"))}<input type="file" data-ai-pick multiple accept="image/*,application/pdf" hidden></label>
+        <span class="muted">${esc(I18n.t("labs.ai.drop", "или перетащите сюда, или вставьте картинку (Ctrl+V)"))}</span></div>
         <div class="ai-thumbs" data-ai-thumbs></div>
       </div>
-      <p class="ai-privacy muted">Перед отправкой по возможности закройте на фото ФИО, дату рождения и номер полиса — для распознавания они не нужны.</p>
-      <div class="grp"><button type="button" class="btn primary" data-ai-act="send" disabled>Распознать</button><button type="button" class="btn" data-ai-act="abort" hidden>Отменить</button><span class="muted ai-wait" data-ai-wait></span></div>
-      <details class="ai-raw" data-ai-raw hidden><summary>Ответ ИИ целиком</summary><pre data-ai-rawtext></pre></details>`
-    : `<p class="ai-lead">Распознавание не настроено. Подключите провайдера в <a href="#/settings/providers">Настройки → Провайдеры</a> и выберите его в <a href="#/settings/agents">Настройки → Агенты → «Распознавание анализов по фото»</a> — один раз, для всех клиентов. Без провайдера можно распознать вручную через любой ИИ (вторая вкладка).</p>`;
+      <p class="ai-privacy muted">${esc(I18n.t("labs.ai.privacy", "Перед отправкой по возможности закройте на фото ФИО, дату рождения и номер полиса — для распознавания они не нужны."))}</p>
+      <div class="grp"><button type="button" class="btn primary" data-ai-act="send" disabled>${esc(I18n.t("labs.ai.send", "Распознать"))}</button><button type="button" class="btn" data-ai-act="abort" hidden>${esc(I18n.t("labs.ai.abort", "Отменить"))}</button><span class="muted ai-wait" data-ai-wait></span></div>
+      <details class="ai-raw" data-ai-raw hidden><summary>${esc(I18n.t("labs.ai.raw", "Ответ ИИ целиком"))}</summary><pre data-ai-rawtext></pre></details>`
+    : `<p class="ai-lead">${notCfg}</p>`;
   return `<div class="ai" data-ai>
     <div class="ai-tabs" role="tablist">
-      <button type="button" role="tab" data-ai-tab="auto" aria-selected="${tab === "auto"}" class="${tab === "auto" ? "on" : ""}">Распознать</button>
-      <button type="button" role="tab" data-ai-tab="manual" aria-selected="${tab === "manual"}" class="${tab === "manual" ? "on" : ""}">Вручную через любой ИИ</button>
+      <button type="button" role="tab" data-ai-tab="auto" aria-selected="${tab === "auto"}" class="${tab === "auto" ? "on" : ""}">${esc(I18n.t("labs.ai.tab_auto", "Распознать"))}</button>
+      <button type="button" role="tab" data-ai-tab="manual" aria-selected="${tab === "manual"}" class="${tab === "manual" ? "on" : ""}">${esc(I18n.t("labs.ai.tab_manual", "Вручную через любой ИИ"))}</button>
     </div>
     <div class="ai-pane" data-ai-pane="auto"${tab === "auto" ? "" : " hidden"}>${auto}</div>
     <div class="ai-pane" data-ai-pane="manual"${tab === "manual" ? "" : " hidden"}>
-    <p class="ai-lead">Распознавание делает любой ИИ, который вы выберете: ChatGPT, DeepSeek, Claude, Gemini… Фото уходят только туда, куда вы их отправите сами.</p>
+    <p class="ai-lead">${esc(I18n.t("labs.ai.manual_lead", "Распознавание делает любой ИИ, который вы выберете: ChatGPT, DeepSeek, Claude, Gemini… Фото уходят только туда, куда вы их отправите сами."))}</p>
     <ol class="ai-steps">
-      <li><div>Скопируйте промпт — в нём список всех полей анкеты и формат ответа.</div>
-        <div class="grp"><button type="button" class="btn primary" data-ai-act="copy">Скопировать промпт</button><button type="button" class="btn" data-ai-act="download">Скачать .txt</button></div></li>
-      <li><div>Откройте ИИ, вставьте промпт и приложите фото или PDF анализов.</div></li>
-      <li><div>Вставьте ответ ИИ сюда или загрузите сохранённый .json.</div>
-        <textarea data-ai-text rows="4" spellcheck="false" placeholder='{ "format": "electrodoctor-labs", "version": 1, "results": [ … ] }' aria-label="Ответ ИИ"></textarea>
-        <div class="grp"><button type="button" class="btn primary" data-ai-act="parse">Разобрать ответ</button><label class="btn">Загрузить .json<input type="file" data-ai-file accept=".json,.txt,application/json,text/plain" hidden></label></div></li>
+      <li><div>${esc(I18n.t("labs.ai.step1", "Скопируйте промпт — в нём список всех полей анкеты и формат ответа."))}</div>
+        <div class="grp"><button type="button" class="btn primary" data-ai-act="copy">${esc(I18n.t("labs.ai.copy", "Скопировать промпт"))}</button><button type="button" class="btn" data-ai-act="download">${esc(I18n.t("labs.ai.download", "Скачать .txt"))}</button></div></li>
+      <li><div>${esc(I18n.t("labs.ai.step2", "Откройте ИИ, вставьте промпт и приложите фото или PDF анализов."))}</div></li>
+      <li><div>${esc(I18n.t("labs.ai.step3", "Вставьте ответ ИИ сюда или загрузите сохранённый .json."))}</div>
+        <textarea data-ai-text rows="4" spellcheck="false" placeholder='{ "format": "electrodoctor-labs", "version": 1, "results": [ … ] }' aria-label="${esc(I18n.t("labs.ai.reply_aria", "Ответ ИИ"))}"></textarea>
+        <div class="grp"><button type="button" class="btn primary" data-ai-act="parse">${esc(I18n.t("labs.ai.parse", "Разобрать ответ"))}</button><label class="btn">${esc(I18n.t("labs.ai.load_json", "Загрузить .json"))}<input type="file" data-ai-file accept=".json,.txt,application/json,text/plain" hidden></label></div></li>
     </ol>
     </div>
     <div class="ai-msg" data-ai-msg aria-live="polite"></div>
@@ -1848,16 +1867,19 @@ function aiPreviewHtml(p: AI.Parsed, rows: AI.Row[], c: Client): string {
   const unitOf = (r: AI.Row) => r.field ? (r.field.unit || "") : (r.result.unit || "");
   const now = (r: AI.Row) => r.field && isFilled(r.field, c.values[r.field.code]) ? String(c.values[r.field.code]) : "";
   const n = rows.filter(r => r.apply).length;
+  const found = I18n.t("labs.ai.found", "Найдено показателей: {n}", { n: rows.length })
+    + (p.date ? ` · ${I18n.t("labs.ai.date", "дата: {d}", { d: p.date })}` : "")
+    + (p.lab ? ` · ${esc(p.lab)}` : "");
   return `<div class="ai-preview">
-    <h3>Найдено показателей: ${rows.length}${p.date ? ` · дата: ${esc(p.date)}` : ""}${p.lab ? ` · ${esc(p.lab)}` : ""}</h3>
-    <p class="muted">Проверьте значения со своим бланком. Отмеченное перенесётся в анкету; то, чему нет своего поля, — в таблицу «Другие показатели».</p>
-    <div class="tblwrap"><table class="ai-table"><thead><tr><th></th><th>Показатель</th><th class="num">Значение</th><th class="num">Сейчас</th><th>Примечание</th></tr></thead><tbody>${rows.map((r, i) => `
-      <tr class="st-${r.status}"><td><input type="checkbox" data-ai-row="${i}"${r.apply ? " checked" : ""} aria-label="перенести"></td>
-      <td>${esc(r.field ? r.field.label : (r.result.name || r.result.code || "—"))}${r.result.ref ? `<small class="muted">норма ${esc(r.result.ref)}</small>` : ""}</td>
+    <h3>${found}</h3>
+    <p class="muted">${esc(I18n.t("labs.ai.check", "Проверьте значения со своим бланком. Отмеченное перенесётся в анкету; то, чему нет своего поля, — в таблицу «Другие показатели»."))}</p>
+    <div class="tblwrap"><table class="ai-table"><thead><tr><th></th><th>${esc(I18n.t("labs.ai.th.marker", "Показатель"))}</th><th class="num">${esc(I18n.t("labs.ai.th.value", "Значение"))}</th><th class="num">${esc(I18n.t("labs.ai.th.now", "Сейчас"))}</th><th>${esc(I18n.t("labs.ai.th.note", "Примечание"))}</th></tr></thead><tbody>${rows.map((r, i) => `
+      <tr class="st-${r.status}"><td><input type="checkbox" data-ai-row="${i}"${r.apply ? " checked" : ""} aria-label="${esc(I18n.t("labs.ai.apply_row", "перенести"))}"></td>
+      <td>${esc(r.field ? r.field.label : (r.result.name || r.result.code || "—"))}${r.result.ref ? `<small class="muted">${esc(I18n.t("labs.ai.ref", "норма {r}", { r: r.result.ref }))}</small>` : ""}</td>
       <td class="num">${esc(r.value)} <span class="muted">${esc(r.status === "unit" ? r.result.unit : unitOf(r))}</span></td>
       <td class="num muted">${esc(now(r))}</td>
       <td class="ai-note">${esc(r.note)}</td></tr>`).join("")}</tbody></table></div>
-    <div class="grp"><button type="button" class="btn primary" data-ai-act="apply">Перенести отмеченные (${n})</button><button type="button" class="btn" data-ai-act="cancel">Отмена</button></div>
+    <div class="grp"><button type="button" class="btn primary" data-ai-act="apply">${esc(I18n.t("labs.ai.apply", "Перенести отмеченные ({n})", { n }))}</button><button type="button" class="btn" data-ai-act="cancel">${esc(I18n.t("common.cancel", "Отмена"))}</button></div>
   </div>`;
 }
 
@@ -1907,7 +1929,7 @@ function fieldsLayoutHtml(fields: Field[], c: Client): string {
 function sectionHtml(step: Step, sec: Section, c: Client): string {
   // над колонкой норм — заголовок «Норма» (если в разделе есть показатели с нормой)
   const head = sec.fields.some(f => f.type === "number" && Norms.hasNorm(f.code))
-    ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">Значение</span><span class="unit">ед. изм.</span><span class="lab-cols"><span class="norm-h">Норма</span><span class="dev-h">Отклонение</span><span class="crit-h">Критичность</span><span class="marks-h" title="откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента">Метка</span></span></div></div>` : "";
+    ? `<div class="field fhead" aria-hidden="true"><span></span><div class="ctl"><span class="fh-val">${esc(I18n.t("labs.col.value", "Значение"))}</span><span class="unit">${esc(I18n.t("labs.col.unit", "ед. изм."))}</span><span class="lab-cols"><span class="norm-h">${esc(I18n.t("labs.col.norm", "Норма"))}</span><span class="dev-h">${esc(I18n.t("labs.col.dev", "Отклонение"))}</span><span class="crit-h">${esc(I18n.t("labs.col.crit", "Критичность"))}</span><span class="marks-h" title="${esc(I18n.t("labs.col.marks_title", "откуда норма: серый — настройки, фиолетовый — правило по параметрам клиента, голубой — своё у клиента"))}">${esc(I18n.t("labs.col.marks", "Метка"))}</span></span></div></div>` : "";
   const note = sec.note ? `<p class="sec-note">${esc(I18n.t("sec." + step.id + "." + (sec.id || SEC_SLUG[sec.title] || "note") + ".note", sec.note))}</p>` : "";
   if (step.id === "general" && sec.title === "Жалобы") {
     const plain = fieldsLayoutHtml(sec.fields.filter(f => !Cmp.isComplaintCode(f.code)), c);
@@ -2279,7 +2301,7 @@ function openExportDialog(c: Client): void {
   ov.className = "cv-overlay";
   ov.innerHTML = `<div class="cv-dialog exp-dlg" role="dialog" aria-modal="true" aria-labelledby="exp-title">
     <div class="cv-head"><b id="exp-title">Выгрузить</b>
-      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("common.close", "Закрыть"))}">✕</button></div>
     <div class="exp-row"><span class="exp-lbl">Формат</span>
       <span class="seg" role="group" aria-label="Формат">
         <button type="button" class="on" data-fmt="csv">CSV</button>

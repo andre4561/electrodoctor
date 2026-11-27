@@ -12,6 +12,12 @@
   var DICTS = {
     ru: {
       "nav.brand": "Электродоктор",
+      "theme.dark": "Тёмная тема",
+      "theme.light": "Светлая тема",
+      "totop": "Наверх",
+      "app.footer": "Исследовательский проект, не медицинское изделие. Данные клиентов хранятся только на этом компьютере — в браузере или в выбранной папке — и никуда не отправляются — кроме фото анализов, которые вы сами отправите выбранному ИИ.",
+      "app.loading": "Загрузка…",
+      "app.title": "Электродоктор — кабинет",
       "nav.home": "Главная",
       "nav.clients": "Клиенты",
       "nav.settings": "Настройки",
@@ -57,6 +63,12 @@
     },
     en: {
       "nav.brand": "Electrodoctor",
+      "theme.dark": "Dark theme",
+      "theme.light": "Light theme",
+      "totop": "Back to top",
+      "app.footer": "Research project, not a medical device. Client data stays only on this computer — in the browser or a folder you choose — and is not sent anywhere, except lab photos you yourself send to the AI you picked.",
+      "app.loading": "Loading…",
+      "app.title": "Electrodoctor — cabinet",
       "nav.home": "Home",
       "nav.clients": "Clients",
       "nav.settings": "Settings",
@@ -173,6 +185,13 @@
     document.documentElement.setAttribute("data-locale", loc);
     refreshButtons();
     refreshI18n();
+    if (window.EDTheme && window.EDTheme.refreshButtons) window.EDTheme.refreshButtons();
+    var toTop = document.getElementById("ed-totop");
+    if (toTop) {
+      var tip = t("totop", "Наверх");
+      toTop.title = tip;
+      toTop.setAttribute("aria-label", tip);
+    }
   }
 
   /** Имя файла помощи для языка (длинный текст — отдельные страницы, не locale-словарь). */

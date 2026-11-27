@@ -23,8 +23,9 @@
   var b = document.createElement("button");
   b.id = "ed-totop";
   b.type = "button";
-  b.title = "Наверх";
-  b.setAttribute("aria-label", "Наверх");
+  var tip = window.EDLocale ? window.EDLocale.t("totop", "Наверх") : "Наверх";
+  b.title = tip;
+  b.setAttribute("aria-label", tip);
   b.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
   b.addEventListener("click", function () {
     var smooth = !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
