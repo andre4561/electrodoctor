@@ -7,6 +7,7 @@ import * as FS from "./folder.js";
 import { fold, lockScroll, unlockScroll } from "./ui.js";
 import * as Files from "./files.js";
 import * as AI from "./aiimport.js";
+import * as AIStudy from "./aistudy.js";
 import * as Settings from "./settings.js";
 import * as Call from "./aicall.js";
 import * as Norms from "./norms.js";
@@ -131,6 +132,10 @@ function progress(c, step) {
         const fs = labFieldsOf(c).filter(f => f.type !== "files" && f.type !== "aiimport");
         const filled = fs.filter(f => isFilled(f, c.values[f.code])).length;
         return { filled, total: fs.length };
+    }
+    if (step.id === "studies") {
+        const n = (c.studies || []).filter(s => (s.title || s.text || "").trim()).length;
+        return { filled: n, total: n };
     }
     const fs = fieldsOf(step).filter(counts);
     const filled = fs.filter(f => isFilled(f, c.values[f.code])).length;
@@ -906,6 +911,101 @@ function paramSaveHtml(c) {
     <div class="ls-ask" id="psask" hidden></div>
   </div>`;
 }
+/** Мягкие типы исследований — без жёсткой таксономии; название и текст свободные. */
+const STUDY_KINDS = [
+    ["", "тип не указан"],
+    ["us", "УЗИ"],
+    ["mri", "МРТ"],
+    ["ct", "КТ"],
+    ["xray", "Рентген"],
+    ["ecg", "ЭКГ"],
+    ["endo", "Эндоскопия"],
+    ["other", "Другое"],
+];
+const sortedStudies = (c) => [...(c.studies || [])].sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.savedAt.localeCompare(a.savedAt));
+function studiesAiHtml() {
+    const rec = recognizer();
+    const tab = lsGet(STUDY_AI_TAB_KEY) === "manual" ? "manual" : "auto";
+    const gate = Settings.blocked() ? Settings.gateHtml() : "";
+    const m = rec && (rec.conf.models || []).find(x => x.id === rec.model);
+    const auto = gate ? `<div data-sai-gate>${gate}</div>` : rec ? `
+      ${m && !m.caps.includes("vision") ? `<p class="err">У этой модели нет пометки «понимает фото» — выберите другую в Настройки → Агенты → «Распознавание анализов по фото».</p>` : ""}
+      <div class="dropzone" data-sai-drop>
+        <div class="dz-row"><label class="btn primary dz-pick">Выбрать фото заключений<input type="file" data-sai-pick multiple accept="image/*,application/pdf" hidden></label>
+        <span class="muted">или перетащите сюда, или вставьте картинку (Ctrl+V)</span></div>
+        <div class="ai-thumbs" data-sai-thumbs></div>
+      </div>
+      <div class="grp"><button type="button" class="btn primary" data-sai-act="send" disabled>Распознать</button><button type="button" class="btn" data-sai-act="abort" hidden>Отменить</button><span class="muted ai-wait" data-sai-wait></span></div>
+      <details class="ai-raw" data-sai-raw hidden><summary>Ответ ИИ целиком</summary><pre data-sai-rawtext></pre></details>`
+        : `<p class="ai-lead">Распознавание не настроено. Подключите провайдера в <a href="#/settings/providers">Настройки → Провайдеры</a> и выберите его в <a href="#/settings/agents">Настройки → Агенты → «Распознавание анализов по фото»</a>. Без провайдера — вкладка «Вручную».</p>`;
+    return `<div class="ai study-ai" data-sai>
+    <div class="ai-tabs" role="tablist">
+      <button type="button" role="tab" data-sai-tab="auto" aria-selected="${tab === "auto"}" class="${tab === "auto" ? "on" : ""}">Распознать</button>
+      <button type="button" role="tab" data-sai-tab="manual" aria-selected="${tab === "manual"}" class="${tab === "manual" ? "on" : ""}">Вручную через любой ИИ</button>
+    </div>
+    <div class="ai-pane" data-sai-pane="auto"${tab === "auto" ? "" : " hidden"}>${auto}</div>
+    <div class="ai-pane" data-sai-pane="manual"${tab === "manual" ? "" : " hidden"}>
+      <p class="ai-lead">Скопируйте промпт, отправьте вместе с фото в любой ИИ, вставьте ответ сюда.</p>
+      <div class="grp"><button type="button" class="btn primary" data-sai-act="copy">Скопировать промпт</button><button type="button" class="btn" data-sai-act="download">Скачать .txt</button></div>
+      <textarea data-sai-text rows="4" spellcheck="false" placeholder='{ "format": "electrodoctor-studies", "version": 1, "studies": [ … ] }' aria-label="Ответ ИИ"></textarea>
+      <div class="grp"><button type="button" class="btn primary" data-sai-act="parse">Разобрать ответ</button><label class="btn">Загрузить .json<input type="file" data-sai-file accept=".json,.txt,application/json,text/plain" hidden></label></div>
+    </div>
+    <div class="ai-msg" data-sai-msg aria-live="polite"></div>
+    <div data-sai-preview></div>
+  </div>`;
+}
+function studiesAiPreviewHtml(drafts) {
+    const kindOf = (k) => (AIStudy.KINDS.find(x => x[0] === k) || ["", "тип не указан"])[1];
+    const n = drafts.filter(d => d.apply).length;
+    return `<div class="ai-preview">
+    <h3>Найдено исследований: ${drafts.length}</h3>
+    <p class="muted">Проверьте текст со своим бланком. Отмеченное добавится на вкладку «Исследования».</p>
+    <div class="study-ai-list">${drafts.map((d, i) => `
+      <label class="study-ai-item st-${d.uncertain ? "uncertain" : "ok"}">
+        <input type="checkbox" data-sai-row="${i}"${d.apply ? " checked" : ""}>
+        <span class="study-ai-meta"><b>${esc(d.title || "Исследование")}</b>
+          <small class="muted">${esc([d.date || "без даты", kindOf(d.kind)].filter(Boolean).join(" · "))}</small>
+          ${d.note ? `<small class="err">${esc(d.note)}</small>` : ""}
+        </span>
+        <pre class="study-ai-body">${esc(d.text || "(текст пуст)")}</pre>
+      </label>`).join("")}</div>
+    <div class="grp"><button type="button" class="btn primary" data-sai-act="apply"${n ? "" : " disabled"}>Добавить отмеченные (${n})</button></div>
+  </div>`;
+}
+function studiesHtml(c) {
+    if (!c.studies)
+        c.studies = [];
+    const list = sortedStudies(c);
+    const cards = list.map(s => {
+        const opts = STUDY_KINDS.map(([v, t]) => `<option value="${esc(v)}"${(s.kind || "") === v ? " selected" : ""}>${esc(t)}</option>`).join("");
+        return `<article class="study-card" data-study="${esc(s.id)}">
+      <div class="study-row">
+        <label>Дата <input type="date" data-sf="date" value="${esc(s.date || "")}"></label>
+        <label>Тип <select data-sf="kind">${opts}</select></label>
+        <button type="button" class="btn danger" data-study-del="${esc(s.id)}" title="удалить">Удалить</button>
+      </div>
+      <label class="study-title">Название <input type="text" data-sf="title" value="${esc(s.title || "")}" placeholder="например: УЗИ щитовидной железы"></label>
+      <label class="study-text">Заключение <textarea data-sf="text" rows="6" placeholder="Текст с бланка или своё описание…">${esc(s.text || "")}</textarea></label>
+    </article>`;
+    }).join("");
+    const rec = recognizer();
+    const recStatus = Settings.blocked()
+        ? `<span class="fold-status err">нужен доступ к настройкам</span>`
+        : rec
+            ? `<span class="fold-status muted">Распознаёт: <b>${esc(rec.preset.name)}${rec.model ? " · " + esc(rec.model) : ""}</b> · <a href="#/settings/agents">настройки</a></span>`
+            : `<span class="fold-status err">распознавание не настроено</span>`;
+    return `<div class="studies" id="studies">
+    <details class="fold study-ai-fold" data-fold="studies.ai">
+      <summary><span class="fold-title">Загрузить через ИИ</span>${recStatus}<span class="fold-chev" aria-hidden="true"></span></summary>
+      <div class="fold-body">${studiesAiHtml()}</div>
+    </details>
+    <div class="studies-head">
+      <p class="muted">УЗИ, МРТ, КТ, рентген, ЭКГ и любые другие заключения — дата, тип по желанию, название и текст. Жёстких групп нет: тип только подсказка.</p>
+      <button type="button" class="btn primary" id="study-add">+ Добавить исследование</button>
+    </div>
+    ${cards || `<div class="empty">Исследований пока нет. Добавьте вручную или распознайте бланк через ИИ.</div>`}
+  </div>`;
+}
 function renderClient(id, stepId) {
     renderNav();
     const c = getClient(id) || drafts[id];
@@ -928,6 +1028,7 @@ function renderClient(id, stepId) {
     }
     const labs = step.id === "labs";
     const params = step.id === "params";
+    const studies = step.id === "studies";
     view.innerHTML = `
     <div class="head">
       <a class="head-back" href="#/clients">← Клиенты</a>
@@ -947,9 +1048,10 @@ function renderClient(id, stepId) {
     ${labs ? `<div class="card lab-top" id="labtop">${labDatesHtml(c)}</div>` : ""}
     ${params ? `<div class="card lab-top" id="paramtop">${paramDatesHtml(c)}</div>` : ""}
     <div class="card" id="form">${labs ? labSheetHtml(c) + labSaveHtml(c)
-        : step.sections.length ? step.sections.map(sec => sectionHtml(step, sec, c)).join("")
-            : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">Считаю вероятности диагнозов…</p></div>`
-                : step.id === "other" ? `<div class="other-tab">
+        : studies ? studiesHtml(c)
+            : step.sections.length ? step.sections.map(sec => sectionHtml(step, sec, c)).join("")
+                : step.id === "diagnoses" ? `<div id="dxtab"><p class="muted">Считаю вероятности диагнозов…</p></div>`
+                    : step.id === "other" ? `<div class="other-tab">
           <h2>Прочее</h2>
           <p class="muted">Действия с карточкой клиента, которые не относятся к анкете и расчёту.</p>
           <div class="other-danger">
@@ -957,7 +1059,7 @@ function renderClient(id, stepId) {
             <p class="muted">Удалит карточку и все её данные на этом компьютере. Отменить нельзя.</p>
           </div>
         </div>`
-                    : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
+                        : `<div class="empty">Этап «${esc(step.title)}»: поля пока не заданы.<br><small>Их можно добавить в файле src/app/fields.ts.</small></div>`}
       ${params ? paramSaveHtml(c) : ""}
     </div>
     <div class="nav2">
@@ -1105,12 +1207,316 @@ function renderClient(id, stepId) {
         bindParams();
         bindTalk("params");
     }
+    if (studies)
+        bindStudies();
     if (step.id === "general") {
         bindComplaints();
         bindTalk("general");
     }
     if (step.id === "diagnoses")
         Dx.ready().then(err => drawDxTab(c, err));
+    function bindStudies() {
+        const box = document.getElementById("studies");
+        if (!box)
+            return;
+        if (!c.studies)
+            c.studies = [];
+        const redraw = () => {
+            box.outerHTML = studiesHtml(c);
+            bindStudies();
+            document.querySelectorAll(".step").forEach((el, i) => {
+                const p = progress(c, STEPS[i]);
+                el.classList.toggle("full", !!p.total && p.filled === p.total && i !== si);
+            });
+        };
+        const touch = () => { clearTimeout(timer); timer = setTimeout(save, 250); };
+        box.querySelector("#study-add")?.addEventListener("click", () => {
+            const s = {
+                id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+                date: todayIso(), kind: "", title: "", text: "", savedAt: new Date().toISOString(),
+            };
+            c.studies.unshift(s);
+            clearTimeout(timer);
+            save();
+            redraw();
+        });
+        box.addEventListener("click", ev => {
+            const del = ev.target.closest("[data-study-del]");
+            if (!del)
+                return;
+            const id = del.getAttribute("data-study-del") || "";
+            if (!confirm("Удалить это исследование?"))
+                return;
+            c.studies = (c.studies || []).filter(x => x.id !== id);
+            clearTimeout(timer);
+            save();
+            redraw();
+        });
+        box.addEventListener("input", ev => {
+            const t = ev.target;
+            const card = t.closest("[data-study]");
+            if (!card)
+                return;
+            const s = (c.studies || []).find(x => x.id === card.dataset.study);
+            if (!s)
+                return;
+            const field = t.dataset.sf;
+            if (field === "date")
+                s.date = t.value;
+            else if (field === "kind")
+                s.kind = t.value;
+            else if (field === "title")
+                s.title = t.value;
+            else if (field === "text")
+                s.text = t.value;
+            else
+                return;
+            s.savedAt = new Date().toISOString();
+            touch();
+        });
+        box.addEventListener("change", ev => {
+            const t = ev.target;
+            if (!(t instanceof HTMLSelectElement) && !(t instanceof HTMLInputElement && t.type === "date"))
+                return;
+            const card = t.closest("[data-study]");
+            if (!card)
+                return;
+            const s = (c.studies || []).find(x => x.id === card.dataset.study);
+            if (!s)
+                return;
+            const field = t.dataset.sf;
+            if (field === "date")
+                s.date = t.value;
+            else if (field === "kind")
+                s.kind = t.value;
+            else
+                return;
+            s.savedAt = new Date().toISOString();
+            touch();
+        });
+        bindStudiesAi(box, () => { clearTimeout(timer); save(); redraw(); });
+    }
+    function bindStudiesAi(root, onAdded) {
+        const ai = root.querySelector("[data-sai]");
+        if (!ai)
+            return;
+        const text = ai.querySelector("[data-sai-text]");
+        const msg = ai.querySelector("[data-sai-msg]");
+        const preview = ai.querySelector("[data-sai-preview]");
+        let drafts = [];
+        const say = (t, ok = false) => { msg.className = "ai-msg" + (t ? (ok ? " ok" : " err") : ""); msg.textContent = t; };
+        const show = (list) => {
+            drafts = list;
+            preview.innerHTML = studiesAiPreviewHtml(drafts);
+        };
+        const run = (src) => {
+            try {
+                const parsed = AIStudy.parse(src);
+                show(parsed.studies);
+                say(`Найдено исследований: ${parsed.studies.length}. Отметьте нужные и добавьте.`, true);
+            }
+            catch (e) {
+                drafts = [];
+                preview.innerHTML = "";
+                say((e instanceof Error && e.message) || String(e));
+            }
+        };
+        ai.querySelectorAll("[data-sai-tab]").forEach(b => b.addEventListener("click", () => {
+            const tab = b.dataset.saiTab || "auto";
+            lsSet(STUDY_AI_TAB_KEY, tab);
+            ai.querySelectorAll("[data-sai-tab]").forEach(x => {
+                const on = x === b;
+                x.classList.toggle("on", on);
+                x.setAttribute("aria-selected", String(on));
+            });
+            ai.querySelectorAll("[data-sai-pane]").forEach(p => { p.hidden = p.dataset.saiPane !== tab; });
+        }));
+        const gateBox = ai.querySelector("[data-sai-gate]");
+        if (gateBox)
+            Settings.bindGate(gateBox, () => renderClient(id, "studies"));
+        ai.addEventListener("click", async (ev) => {
+            const t = ev.target.closest("[data-sai-act]");
+            if (!t)
+                return;
+            const act = t.dataset.saiAct;
+            if (act === "copy") {
+                try {
+                    await navigator.clipboard.writeText(AIStudy.buildPrompt());
+                    say("Промпт скопирован.", true);
+                }
+                catch {
+                    say("Не удалось скопировать — скачайте .txt.");
+                }
+                return;
+            }
+            if (act === "download") {
+                const blob = new Blob([AIStudy.buildPrompt()], { type: "text/plain;charset=utf-8" });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "промпт-исследования.txt";
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+                return;
+            }
+            if (act === "parse") {
+                if (!text || !text.value.trim()) {
+                    say("Вставьте ответ ИИ.");
+                    return;
+                }
+                run(text.value);
+                return;
+            }
+            if (act === "apply") {
+                const chosen = drafts.filter(d => d.apply);
+                if (!chosen.length) {
+                    say("Ничего не отмечено.");
+                    return;
+                }
+                if (!c.studies)
+                    c.studies = [];
+                c.studies.unshift(...AIStudy.toStudies(chosen));
+                say(`Добавлено исследований: ${chosen.length}.`, true);
+                onAdded();
+                return;
+            }
+        });
+        preview.addEventListener("change", ev => {
+            const inp = ev.target.closest("input[data-sai-row]");
+            if (!inp)
+                return;
+            const i = Number(inp.dataset.saiRow);
+            if (!drafts[i])
+                return;
+            drafts[i].apply = inp.checked;
+            const n = drafts.filter(d => d.apply).length;
+            const b = preview.querySelector('[data-sai-act="apply"]');
+            if (b) {
+                b.textContent = `Добавить отмеченные (${n})`;
+                b.disabled = !n;
+            }
+        });
+        const fileInput = ai.querySelector("[data-sai-file]");
+        if (fileInput)
+            fileInput.addEventListener("change", async () => {
+                const f = fileInput.files && fileInput.files[0];
+                if (!f)
+                    return;
+                try {
+                    const src = await f.text();
+                    if (text)
+                        text.value = src;
+                    run(src);
+                }
+                catch (e) {
+                    say((e instanceof Error && e.message) || String(e));
+                }
+                fileInput.value = "";
+            });
+        const drop = ai.querySelector("[data-sai-drop]");
+        if (!drop)
+            return;
+        const pick = drop.querySelector("[data-sai-pick]");
+        const thumbs = ai.querySelector("[data-sai-thumbs]");
+        const sendBtn = ai.querySelector('[data-sai-act="send"]');
+        const abortBtn = ai.querySelector('[data-sai-act="abort"]');
+        const wait = ai.querySelector("[data-sai-wait]");
+        const raw = ai.querySelector("[data-sai-raw]");
+        const rawText = ai.querySelector("[data-sai-rawtext]");
+        const picked = [];
+        let ctrl = null;
+        const drawThumbs = () => {
+            thumbs.innerHTML = picked.map((p, i) => `<figure class="ai-thumb">${p.file.type === "application/pdf" ? `<span class="ai-pdf">PDF</span>` : `<img src="${p.url}" alt="">`}<figcaption title="${esc(p.file.name)}">${esc(p.file.name || "картинка")}</figcaption><button type="button" class="btn danger" data-sai-rm="${i}" aria-label="убрать">×</button></figure>`).join("");
+            sendBtn.disabled = !picked.length || !!ctrl;
+        };
+        const addPicked = (list) => {
+            const prov = recognizer();
+            const bad = [];
+            for (const f of [...list]) {
+                const pdf = f.type === "application/pdf";
+                if (!(f.type.startsWith("image/") || pdf) || f.size > 30 * 1024 * 1024) {
+                    bad.push(f.name || "файл");
+                    continue;
+                }
+                if (pdf && prov && !Call.takesPdf(prov.preset)) {
+                    bad.push((f.name || "PDF") + " (этот провайдер не принимает PDF — снимок страницы)");
+                    continue;
+                }
+                picked.push({ file: f, url: pdf ? "" : URL.createObjectURL(f) });
+            }
+            drawThumbs();
+            if (bad.length)
+                say("Не добавлено: " + bad.join(", ") + ".");
+            else
+                say("");
+        };
+        pick.addEventListener("change", () => { if (pick.files)
+            addPicked(pick.files); pick.value = ""; });
+        drop.addEventListener("dragover", ev => { ev.preventDefault(); drop.classList.add("drag"); });
+        drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
+        drop.addEventListener("drop", ev => { ev.preventDefault(); drop.classList.remove("drag"); if (ev.dataTransfer)
+            addPicked(ev.dataTransfer.files); });
+        thumbs.addEventListener("click", ev => {
+            const b = ev.target.closest("[data-sai-rm]");
+            if (!b)
+                return;
+            const [p] = picked.splice(Number(b.dataset.saiRm), 1);
+            if (p && p.url)
+                URL.revokeObjectURL(p.url);
+            drawThumbs();
+        });
+        const onPaste = (ev) => {
+            if (!document.body.contains(drop)) {
+                document.removeEventListener("paste", onPaste);
+                return;
+            }
+            if (drop.closest("[data-sai-pane]").hidden)
+                return;
+            const files = [...(ev.clipboardData?.files || [])];
+            if (files.length) {
+                ev.preventDefault();
+                addPicked(files);
+            }
+        };
+        document.addEventListener("paste", onPaste);
+        abortBtn.addEventListener("click", () => { if (ctrl)
+            ctrl.abort(); });
+        sendBtn.addEventListener("click", async () => {
+            const prov = recognizer();
+            if (!prov) {
+                say("Распознавание не настроено — Настройки → Агенты.");
+                return;
+            }
+            ctrl = new AbortController();
+            sendBtn.disabled = true;
+            abortBtn.hidden = false;
+            preview.innerHTML = "";
+            raw.hidden = true;
+            say("");
+            wait.textContent = `Отправляю в ${prov.preset.name}… обычно 10–60 секунд.`;
+            try {
+                const files = await Promise.all(picked.map(p => Call.prepare(p.file)));
+                const answer = await Call.recognize({
+                    preset: prov.preset, conf: prov.conf, model: prov.model,
+                    prompt: AIStudy.buildPrompt(), files, signal: ctrl.signal,
+                });
+                rawText.textContent = answer;
+                raw.hidden = false;
+                Settings.setCheck(prov.preset.id, true);
+                if (text)
+                    text.value = answer;
+                run(answer);
+            }
+            catch (e) {
+                say((e instanceof Error && e.message) || String(e));
+            }
+            finally {
+                ctrl = null;
+                abortBtn.hidden = true;
+                wait.textContent = "";
+                drawThumbs();
+            }
+        });
+    }
     function bindComplaints() {
         const list = document.getElementById("cmplist");
         if (!list)
@@ -1970,10 +2376,11 @@ let labFlash = ""; // сообщение после сохранения ана�
 let paramFlash = ""; // сообщение после сохранения замеров параметров
 let aiFlash = ""; // сообщение после переноса, показывается на перерисованной странице
 const AI_TAB_KEY = "electrodoctor.ai.tab";
+const STUDY_AI_TAB_KEY = "electrodoctor.study.ai.tab";
 const lsGet = (k) => { try {
     return localStorage.getItem(k) || "";
 }
-catch (e) {
+catch (e) { /* */
     return "";
 } };
 const lsSet = (k, v) => { try {
@@ -2280,7 +2687,7 @@ function rowHtml(f, r) {
 }
 const fileBase = (c) => "client-" + displayName(c).replace(/[^\p{L}\p{N}]+/gu, "_").replace(/^_|_$/g, "").slice(0, 40);
 const csvCell = (v) => { const s = String(v == null ? "" : v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-const SOURCE = { general: "опрос", params: "осмотр", labs: "анализ", psych: "психолог" };
+const SOURCE = { general: "опрос", params: "осмотр", labs: "анализ", studies: "исследование", psych: "психолог" };
 const FIELD_BY_CODE = {};
 const STEP_OF_CODE = {};
 for (const step of STEPS)

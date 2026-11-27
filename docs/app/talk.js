@@ -463,20 +463,37 @@ function assistantPlain(raw) {
     catch { /* обычный текст */ }
     return t;
 }
+/** Только коды из справочника анализов — не поля Общего/Параметров (NAME, SEX, HEIGHT…). */
 function labsSnapshot(c) {
     const lines = [];
     for (const [code, v] of Object.entries(c.values || {})) {
         if (v === undefined || v === null || v === "")
             continue;
-        if (!Labs.has(code) && !/^[A-Z][A-Z0-9_]*$/.test(code))
+        if (!Labs.has(code))
             continue;
         if (typeof v === "object")
             continue;
-        const name = (Labs.LABS[code] && Labs.LABS[code].name) || code;
-        const u = (Labs.LABS[code] && Labs.LABS[code].unit) || "";
-        lines.push(`${code} (${name})=${JSON.stringify(v)}${u ? " " + u : ""}`);
+        const l = Labs.LABS[code];
+        const u = l.unit || "";
+        lines.push(`${code} (${l.name})=${JSON.stringify(v)}${u ? " " + u : ""}`);
     }
     return lines.length ? lines.join("\n") : "(анализов нет)";
+}
+function studiesSnapshot(c) {
+    const list = [...(c.studies || [])]
+        .filter(s => (s.title || s.text || "").trim())
+        .sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.savedAt.localeCompare(a.savedAt));
+    if (!list.length)
+        return "(исследований нет)";
+    const kindName = {
+        us: "УЗИ", mri: "МРТ", ct: "КТ", xray: "Рентген", ecg: "ЭКГ", endo: "Эндоскопия", other: "Другое",
+    };
+    return list.map(s => {
+        const kind = s.kind && kindName[s.kind] ? kindName[s.kind] : "";
+        const head = [s.date || "без даты", kind, s.title || "без названия"].filter(Boolean).join(" · ");
+        const body = (s.text || "").trim();
+        return body ? `### ${head}\n${body}` : `### ${head}`;
+    }).join("\n\n");
 }
 function clientBrief(c, stepIds) {
     const parts = [];
@@ -488,6 +505,10 @@ function clientBrief(c, stepIds) {
             continue;
         if (id === "labs") {
             parts.push(`## Анализы\n${labsSnapshot(c)}`);
+            continue;
+        }
+        if (id === "studies") {
+            parts.push(`## Исследования\n${studiesSnapshot(c)}`);
             continue;
         }
         if (id === "general" || id === "params") {
@@ -619,7 +640,11 @@ export function openDxTalkDialog(c, opts) {
     }
     const buildDxSystem = (a) => {
         const brief = opts.brief ? `\nРасчёт кабинета по этому диагнозу: ${opts.brief}.` : "";
-        return `${a.prompt}
+        const map = (a.examMap || "").trim();
+        const mapBlock = map ? `\n\nКарта обследования (ориентир по специальности; не выдумывай лишних назначений сверх нужного):\n${map}` : "";
+        const proto = (a.protocols || "").trim();
+        const protoBlock = proto ? `\n\nПротоколы (справочный ориентир; не назначай лечение и дозировки человеку — только обсуждай в общих чертах, если спросят):\n${proto}` : "";
+        return `${a.prompt}${mapBlock}${protoBlock}
 
 Сейчас вы обсуждаете с человеком вероятный диагноз «${opts.title}» (статья: ${opts.file}).${brief}
 Это исследовательский расчёт вероятностей, не установленный клинический диагноз — не утверждай его как факт.

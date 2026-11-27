@@ -598,6 +598,27 @@ textarea { width: 100%; min-height: 80px; resize: vertical; }
 .articles-css-dlg > .muted { flex: none; }
 .articles-css-dlg .grp { flex: none; margin-top: 10px; }
 .articles-css { width: 100%; flex: 1 1 auto; min-height: min(50vh, 420px); font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; resize: vertical; }
+.agent-text-dlg { width: min(720px, 100%); display: flex; flex-direction: column; max-height: calc(100vh - 32px); overflow: hidden; }
+.agent-text-dlg .cv-head { flex: none; }
+.agent-text-dlg .grp { flex: none; margin-top: 10px; }
+.agent-text-ta { width: 100%; flex: 1 1 auto; min-height: min(50vh, 420px); font: 14px/1.45 inherit; resize: vertical; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); box-sizing: border-box; }
+.set-agent-text-row { align-items: start; }
+.set-agent-texts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+.study-ai-fold { margin-bottom: 16px; }
+.study-ai-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.study-ai-item { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: start; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); }
+.study-ai-item input { margin-top: 4px; }
+.study-ai-meta { display: flex; flex-direction: column; gap: 2px; }
+.study-ai-body { grid-column: 1 / -1; margin: 0; white-space: pre-wrap; font: 13px/1.45 inherit; max-height: 180px; overflow: auto; color: var(--ink); }
+.studies-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.studies-head .muted { flex: 1 1 240px; margin: 0; }
+.study-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: var(--bg); }
+.study-row { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin-bottom: 10px; }
+.study-row label, .study-title, .study-text { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.study-row input[type=date], .study-row select { min-width: 140px; }
+.study-title input, .study-text textarea { width: 100%; box-sizing: border-box; color: var(--ink); }
+.study-title, .study-text { width: 100%; margin-bottom: 8px; }
+.study-card .btn.danger { margin-left: auto; }
 @media (max-width: 700px) {
   .set { grid-template-columns: 1fr; gap: 12px; }
   .set-side { flex-direction: row; position: static; }

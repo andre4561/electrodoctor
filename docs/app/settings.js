@@ -108,19 +108,100 @@ const LEGACY_PROVIDERS = [
     { id: "ollama", name: "Ollama (на своём компьютере)", kind: "local", baseUrl: "http://localhost:11434/v1", model: "", note: "Ключ не нужен. Модель должна быть скачана в Ollama." },
     { id: "lmstudio", name: "LM Studio (на своём компьютере)", kind: "local", baseUrl: "http://localhost:1234/v1", model: "", note: "Ключ не нужен. Включите сервер в LM Studio." },
 ];
-const STEP_IDS_ALL = ["general", "params", "labs", "psych", "diagnoses"];
-const DOC_STEPS = ["general", "params", "labs", "diagnoses"];
+const STEP_IDS_ALL = ["general", "params", "labs", "studies", "psych", "diagnoses"];
+const DOC_STEPS = ["general", "params", "labs", "studies", "diagnoses"];
 const A = (id, name, steps, prompt, section) => ({ id, name, enabled: true, provider: "", model: "", temperature: 0.3, steps, prompt, ...(section ? { section } : {}) });
 // Врач по разделу диагнозов: одна и та же схема инструкции, своя область
 const D = (id, name, role, section, focus, steps = DOC_STEPS) => A(id, name, steps, `Ты — ${role}. Изучи анкету клиента: жалобы, параметры, анализы. Оцени всё, что относится к твоей специальности: ${focus}. Укажи отклонения и что они могут означать, предположи вероятные состояния из своей области с объяснением, какие данные на это указывают, перечисли, какие анализы и обследования добавить, и отметь, когда нужен очный приём или срочная помощь. Не назначай лечение и дозировки.`, section);
 // Номер стандартного набора: при росте недостающие стандартные агенты добавляются к сохранённым один раз
-export const AGENTS_REV = 3;
+export const AGENTS_REV = 9;
 /** Id агентов-помощников по анкете (чат на вкладках Общее / Параметры). */
 export const TALK_AGENT_IDS = { general: "intake-general", params: "intake-params" };
+/** Промпт эндокринолога (согласованный текст). */
+const ENDO_PROMPT = `Ты — эндокринолог с большим стажем и опытом.
+
+Тебе доступны жалобы, параметры, осмотр и анализы человека. Смотри картину целиком: общее состояние, жалобы, все сданные анализы и их динамику по датам (если дат несколько) — что растёт, что падает, что стабильно. Не своди ответ к чек-листу, суждение строится по всей выписке.
+
+В своей специальности особенно внимателен к щитовидной железе, надпочечникам, углеводному обмену (глюкоза, HbA1c, инсулин / инсулинорезистентность), половым гормонам, витамину D и обмену веществ — но смотри все данные, не только их.
+
+Расчёт вероятности по обсуждаемому диагнозу уже сделал калькулятор кабинета — он приходит в этом же сообщении. Не пересчитывай проценты и не подменяй формулу своим угадыванием диагноза. Опирайся на расчёт как на готовый ориентир и дай своё клиническое суждение: как у человека идут дела, согласуется ли картина с этим диагнозом, какие отклонения и тенденции настораживают или успокаивают, каких исследований не хватает, когда нужен очный приём или срочная помощь.
+
+Не ограничивайся анализами: скажи, какой осмотр или измерение стоит провести или занести в анкету (щитовидная железа, кожа, глаза, отёки, рост/вес/талия, давление и т.п.) и зачем.
+Если чего-то не хватает — предложи досдать или доосмотреть и поясни цель: исключить важное/опасное состояние или уточнить уже вероятный диагноз (форма, стадия, активность). Не полный список «на всякий случай», а минимум под жалобы, уже введённое и расчёт кабинета; по возможности с приоритетом.
+В конце, если данных мало, мягко предложи: «Когда добавите в анкету новые анализы, осмотр или исследования — напишите мне сюда, и я посмотрю обновлённые данные.»`;
+/**
+ * Карта обследования эндокринолога — ориентир по зонам специальности.
+ * Не официальный клинический протокол Минздрава; сводка типичных блоков осмотра и лабораторного минимума
+ * (в духе подходов ATA / Endocrine Society / ADA и обычной эндокринологической практики).
+ */
+const ENDO_EXAM_MAP = `Карта обследования эндокринолога (ориентир для кабинета)
+
+Общее на приёме
+- Рост, вес, ИМТ, окружность талии; динамика веса
+- АД, пульс; при подозрении на феохромоцитому / кризы — дневник АД
+- Кожа: стрии, гиперпигментация, acanthosis nigricans, витилиго, сухость, отёки
+- Щитовидная железа: осмотр и пальпация (размер, узлы, болезненность, шум)
+- Глаза: экзофтальм, отёк век, симптомы офтальмопатии (при тиреотоксикозе / Базедове)
+- Признаки гипо-/гиперкортицизма, акромегалии, гипогонадизма
+- Лимфоузлы шеи при узловом зобе
+
+Углеводный обмен и метаболический синдром
+- Глюкоза натощак; при необходимости — ПГТТ (75 г)
+- HbA1c
+- Инсулин натощак; HOMA-IR (если считают)
+- Липидный профиль (общий холестерин, ЛПВП, ЛПНП, триглицериды)
+- АЛТ, АСТ (жировая болезнь печени / метаболический контекст)
+- При диабете / подозрении: креатинин, рСКФ, альбумин/креатинин в моче (скрининг нефропатии); по показаниям — осмотр глазного дна
+
+Щитовидная железа
+- Базовый минимум: ТТГ; при отклонении — свободный Т4 (± свободный Т3 при тиреотоксикозе)
+- АТ-ТПО, при необходимости АТ к тиреоглобулину; при тиреотоксикозе — АТ к рецептору ТТГ (АТ-рТТГ)
+- УЗИ щитовидной железы при узлах, зобе, аутоиммунном тиреоидите, контроле
+- По показаниям: тиреоглобулин, кальцитонин (подозрение на медуллярный рак / семейный анамнез), тонкоигольная биопсия узла (по критериям ATA / EU-TIRADS)
+- Готовые «карты»: ATA (узлы и рак щитовидной железы), ETA/локальные рекомендации по гипотиреозу и тиреотоксикозу; TIRADS / EU-TIRADS для узлов
+
+Кальций–фосфор–кость и витамин D
+- Кальций общий / ионизированный, фосфор, альбумин
+- 25(OH) витамин D; при гиперкальциемии — ПТГ
+- Щелочная фосфатаза; по показаниям — маркеры костного обмена
+- При остеопорозе / переломах: DXA; исключение вторичных причин (ТТГ, кальций, ПТГ, 25(OH)D, тестостерон у мужчин, скрининг целиакии по показаниям)
+
+Надпочечники
+- При подозрении на гиперкортицизм: кортизол в слюне вечером и/или подавление 1 мг дексаметазона и/или свободный кортизол в суточной моче (по схеме клиники)
+- При недостаточности: утренний кортизол ± АКТГ; при необходимости — стимуляционные пробы (в стационаре / по направлению)
+- Альдостерон / ренин при резистентной АГ, гипокалиемии
+- Метанефрины (плазма / суточная моча) при подозрении на феохромоцитому
+- Визуализация (КТ/МРТ надпочечников) — после лабораторного подтверждения, не «вместо»
+
+Половые гормоны и репродукция
+- Женщины: ЛГ, ФСГ, эстрадиол, прогестерон (с учётом дня цикла), пролактин, АМГ по задаче; свободный тестостерон / ГСПГ при гиперандрогении; 17-OH-прогестерон при подозрении на ВДКН
+- Мужчины: общий (± свободный) тестостерон утром, ЛГ, ФСГ, ГСПГ, пролактин; эстрадиол по показаниям
+- Связь с андрологом / гинекологом при узкой репродуктивной задаче
+
+Гипофиз / нейроэндокринология (по жалобам и находкам)
+- Пролактин; ИФР-1 при подозрении на акромегалию
+- При объёмном процессе / гипопитуитаризме: панель «гипофизарных» осей (ТТГ/св.Т4, утренний кортизол±АКТГ, ЛГ/ФСГ/половые стероиды, ИФР-1, пролактин) + МРТ по показаниям
+
+Прочее, часто нужное эндокринологу
+- Общий анализ крови, ферритин / железо при утомляемости
+- B12, фолат по показаниям
+- Антитела к GAD / IA-2 / ZnT8 — при уточнении типа сахарного диабета
+- С-пептид — при сомнении в остаточной секреции инсулина
+
+Инструментальные исследования (не «анализы», но в карте приёма)
+- УЗИ щитовидной железы, УЗИ органов брюшной полости / эластография печени по метаболическому профилю
+- Денситометрия (DXA)
+- КТ/МРТ надпочечников, МРТ гипофиза — по лабораторным показаниям
+- ЭКГ / холтер / СМАД — при кризах АД, тиреотоксикозе, феохромоцитоме (совместно с кардиологом)
+
+Как пользоваться этой картой в кабинете
+- Не назначай всё сразу: сначала минимум под жалобу и расчёт кабинета, затем досдать целевое
+- Учитывай пол, возраст, беременность, уже сданные даты и динамику
+- Это ориентир практики, не замена очному протоколу учреждения и не юридический стандарт`;
 export const DEFAULT_AGENTS = [
     A("therapist", "Терапевт", STEP_IDS_ALL, "Ты — врач-терапевт. Изучи анкету клиента целиком: жалобы, параметры, анализы. Выдели отклонения, предположи 3–4 вероятных состояния с объяснением, какие показатели на это указывают, и перечисли, какие анализы или осмотры стоит сделать дальше. Не назначай лечение и дозировки."),
-    A("psychologist", "Психолог", ["general", "psych"], "Ты — психолог. По ответам клиента оцени эмоциональное состояние, уровень стресса, сон и поведенческие факторы, которые могут влиять на здоровье. Пиши бережно и без диагнозов психиатрического уровня; отметь, когда стоит обратиться к специалисту очно."),
-    A("nutritionist", "Нутрициолог", ["general", "params", "labs"], "Ты — нутрициолог. По параметрам тела и анализам оцени питание и возможные дефициты (железо, витамины, минералы). Дай общие рекомендации по рациону и образу жизни. Не назначай БАДы и дозировки."),
+    A("psychologist", "Психолог", ["general", "psych", "diagnoses"], "Ты — психолог. По ответам клиента оцени эмоциональное состояние, уровень стресса, сон и поведенческие факторы, которые могут влиять на здоровье. Пиши бережно и без диагнозов психиатрического уровня; отметь, когда стоит обратиться к специалисту очно."),
+    A("nutritionist", "Нутрициолог", ["general", "params", "labs", "studies", "diagnoses"], "Ты — нутрициолог. По параметрам тела и анализам оцени питание и возможные дефициты (железо, витамины, минералы). Дай общие рекомендации по рациону и образу жизни. Не назначай БАДы и дозировки."),
     // помощники чата «Помощник по анкете» на вкладках Общее и Параметры (talk.ts)
     A("intake-general", "Помощник (Общее)", ["general"], `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать жалобы и базовые сведения о человеке для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.
 
@@ -143,9 +224,9 @@ export const DEFAULT_AGENTS = [
     D("cardiologist", "Кардиолог", "кардиолог", "cardio", "давление, пульс, липидный профиль, маркеры воспаления, сердечно-сосудистые риски"),
     D("pulmonologist", "Пульмонолог", "пульмонолог", "pulmo", "дыхание, кашель, одышка, сатурация, воспалительные маркеры"),
     D("gastroenterologist", "Гастроэнтеролог", "гастроэнтеролог", "gastro", "пищеварение, печёночные пробы (АЛТ, АСТ, ГГТ, билирубин), поджелудочная железа, копрограмма, кальпротектин"),
-    D("endocrinologist", "Эндокринолог", "эндокринолог", "endo", "гормоны щитовидной железы и надпочечников, глюкоза, HbA1c, инсулинорезистентность, обмен веществ, витамин D"),
+    { ...A("endocrinologist", "Эндокринолог", DOC_STEPS, ENDO_PROMPT, "endo"), examMap: ENDO_EXAM_MAP },
     D("neurologist", "Невролог", "невролог", "neuro", "головные боли, головокружение, онемение, судороги, сон, память, B12 и другие показатели, влияющие на нервную систему"),
-    D("psychiatrist", "Психиатр", "психиатр-психотерапевт", "psych", "настроение, тревога, сон, стресс, зависимости, признаки, при которых нужна очная консультация", ["general", "params", "labs", "psych", "diagnoses"]),
+    D("psychiatrist", "Психиатр", "психиатр-психотерапевт", "psych", "настроение, тревога, сон, стресс, зависимости, признаки, при которых нужна очная консультация", ["general", "params", "labs", "studies", "psych", "diagnoses"]),
     D("urologist", "Нефролог-уролог", "нефролог и уролог", "nephro", "креатинин, мочевина, мочевая кислота, общий анализ мочи, анализ по Нечипоренко, суточная моча"),
     D("gynecologist", "Гинеколог", "гинеколог и акушер", "gyn", "менструальный цикл, половые гормоны (ЛГ, ФСГ, эстрадиол, прогестерон, пролактин, АМГ), беременность, молочные железы"),
     D("andrologist", "Андролог", "андролог", "andro", "тестостерон, ГСПГ, ПСА, предстательная железа, мужское и сексуальное здоровье"),
@@ -163,6 +244,16 @@ export const DEFAULT_AGENTS = [
     A("coordinator", "Координатор", STEP_IDS_ALL, "Ты — координатор. Собери выводы других агентов в одно заключение для клиента: главное — коротко, отдельно — что сделать в первую очередь и к какому специалисту идти. Если выводы агентов расходятся, укажи это."),
 ];
 const copyAgent = (a) => ({ ...a, steps: [...a.steps] });
+/** Подтянуть стандартный промпт и карту обследования эндокринолога, если ещё старые/пустые. */
+function migrateEndocrinologist(a, def) {
+    if (a.id !== "endocrinologist" || !def)
+        return;
+    const oldFocus = "гормоны щитовидной железы и надпочечников, глюкоза, HbA1c, инсулинорезистентность, обмен веществ, витамин D";
+    if (!a.prompt.trim() || a.prompt.includes(oldFocus) || a.prompt.trim() === ENDO_PROMPT.trim())
+        a.prompt = def.prompt;
+    if (!(a.examMap || "").trim())
+        a.examMap = def.examMap;
+}
 function blank() {
     return { version: 1, providers: {}, agents: DEFAULT_AGENTS.map(copyAgent), norms: {}, curves: {}, agentDefaults: { provider: "", model: "" }, agentsRev: AGENTS_REV };
 }
@@ -187,7 +278,59 @@ export function load() {
             s.agents.splice(coord, 0, ...add);
         else
             s.agents.push(...add);
+        // rev 5: промпт + карта обследования эндокринолога
+        if ((s.agentsRev || 1) < 5) {
+            const endo = s.agents.find(x => x.id === "endocrinologist");
+            if (endo)
+                migrateEndocrinologist(endo, DEFAULT_AGENTS.find(x => x.id === "endocrinologist"));
+        }
+        // rev 6: у всех, кроме помощников анкеты, этап «Диагнозы» (расчёт кабинета)
+        if ((s.agentsRev || 1) < 6) {
+            for (const a of s.agents) {
+                if (a.id === TALK_AGENT_IDS.general || a.id === TALK_AGENT_IDS.params)
+                    continue;
+                if (!a.steps.includes("diagnoses"))
+                    a.steps = [...a.steps, "diagnoses"];
+            }
+        }
+        // rev 7–8: инструкция эндокринолога (согласованный текст; 8 — досдать/осмотр/напишите мне)
+        if ((s.agentsRev || 1) < 8) {
+            const endo = s.agents.find(x => x.id === "endocrinologist");
+            const def = DEFAULT_AGENTS.find(x => x.id === "endocrinologist");
+            if (endo && def) {
+                endo.prompt = def.prompt;
+                if (!(endo.examMap || "").trim() && def.examMap)
+                    endo.examMap = def.examMap;
+            }
+        }
+        // rev 8–9: этап «Исследования» у врачей и общих агентов (кроме помощников анкеты)
+        if ((s.agentsRev || 1) < 9) {
+            for (const a of s.agents) {
+                if (a.id === TALK_AGENT_IDS.general || a.id === TALK_AGENT_IDS.params)
+                    continue;
+                if (!a.steps.includes("studies")) {
+                    const i = a.steps.indexOf("labs");
+                    a.steps = i >= 0
+                        ? [...a.steps.slice(0, i + 1), "studies", ...a.steps.slice(i + 1)]
+                        : [...a.steps, "studies"];
+                }
+            }
+        }
         s.agentsRev = AGENTS_REV;
+        // сразу записать, иначе в Store останется старый промпт
+        Store.setData({
+            providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {},
+            agentDefaults: s.agentDefaults, agentsRev: s.agentsRev, signs: s.signs || {},
+            dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer,
+            labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "",
+        });
+    }
+    // Пустая карта у эндокринолога — подставить стандартную (без затирания правок)
+    {
+        const endo = s.agents.find(x => x.id === "endocrinologist");
+        const def = DEFAULT_AGENTS.find(x => x.id === "endocrinologist");
+        if (endo && def && !(endo.examMap || "").trim() && def.examMap)
+            endo.examMap = def.examMap;
     }
     publishArticlesCss(s.articlesCss || "");
     Exams.applyOwn(s.exams);
@@ -287,7 +430,7 @@ export function render(view, tab, steps) {
     <div class="set">
       <aside class="set-side" aria-label="Разделы настроек">
         <a class="set-tab${t === "providers" ? " on" : ""}" href="#/settings/providers">Провайдеры</a>
-        <a class="set-tab${t === "agents" ? " on" : ""}" href="#/settings/agents">Агенты</a>
+        <a class="set-tab${t === "agents" ? " on" : ""}" href="#/settings/agents">Врачи</a>
         <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">Консилиум</a>
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
         <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">Осмотр</a>
@@ -623,7 +766,7 @@ function drawAgents(main, steps) {
         catch (e) { /* */ }
     }
     main.innerHTML = `
-    <div class="set-head"><h2>Агенты</h2><span class="muted" id="agentcount">${s.agents.filter(a => a.enabled).length} из ${s.agents.length} включены</span></div>
+    <div class="set-head"><h2>Врачи</h2><span class="muted" id="agentcount">${s.agents.filter(a => a.enabled).length} из ${s.agents.length} включены</span></div>
     <p class="muted set-hint">Агент — роль со своей инструкцией. Провайдер и модель задаются один раз ниже — для всех агентов; у отдельного агента их можно заменить своими.</p>
     ${sharedBlock(s, provs)}
     ${recognizerBlock(s, provs)}
@@ -682,14 +825,12 @@ function drawAgents(main, steps) {
             a.provider = q(box, "[name=provider]").value;
             box.querySelector("[data-mp]")?._mpRefresh?.();
             const mh = agentModelHint(st, provs, a.provider);
-            q(box, "[data-modelhint]").textContent = mh.hint;
             q(box, "[name=model]").placeholder = mh.placeholder;
             q(box, "[name=provider]").classList.toggle("ready", mh.ready);
             a.model = q(box, "[name=model]").value.trim();
             const tv = Number(q(box, "[name=temperature]").value);
             a.temperature = isFinite(tv) ? Math.min(2, Math.max(0, tv)) : 0.3;
             a.steps = [...box.querySelectorAll("[name=step]:checked")].map(i => i.value);
-            a.prompt = q(box, "[name=prompt]").value;
             save(st);
             const d = box.closest("details");
             const title = d?.querySelector(".fold-title");
@@ -718,6 +859,22 @@ function drawAgents(main, steps) {
             save(st);
             drawAgents(main, steps);
         };
+        box.querySelectorAll("[data-edit]").forEach(btn => {
+            btn.onclick = () => {
+                const field = btn.dataset.edit;
+                const title = field === "examMap" ? "Карта обследования"
+                    : field === "protocols" ? "Протоколы"
+                        : "Инструкция агенту";
+                openAgentTextEditor({
+                    agentId: id,
+                    field,
+                    title,
+                    onSaved: () => {
+                        savedFlash(box.querySelector(".set-saved"));
+                    },
+                });
+            };
+        });
     });
     q(main, "#addagent").onclick = () => {
         const st = load();
@@ -827,14 +984,71 @@ function agentBlock(a, provs, s, steps) {
     const body = `<div class="set-form" data-agent="${esc(a.id)}">
     <div class="set-row"><span>Включён</span><span>${switchHtml("enabled", a.enabled, "Включён")}</span></div>
     <label class="set-row"><span>Название</span><input type="text" name="name" value="${esc(a.name)}"></label>
-    <label class="set-row"><span>Провайдер<small>«Общий» — тот, что выбран вверху страницы</small></span><select name="provider" class="prov-sel${mh.ready ? " ready" : ""}">${opts}</select></label>
-    <div class="set-row"><span>Своя модель<small data-modelhint>${esc(mh.hint)}</small></span>${M.pickerHtml("model", a.model, mp ? providerConf(s, mp).models : undefined, mh.placeholder)}</div>
-    <label class="set-row"><span>Температура<small>0 — строго и одинаково, 1 — свободнее</small></span><input type="number" name="temperature" min="0" max="2" step="0.1" value="${esc(a.temperature)}"></label>
+    <label class="set-row"><span>Провайдер</span><select name="provider" class="prov-sel${mh.ready ? " ready" : ""}">${opts}</select></label>
+    <div class="set-row"><span>Модель</span>${M.pickerHtml("model", a.model, mp ? providerConf(s, mp).models : undefined, mh.placeholder)}</div>
+    <label class="set-row"><span>Температура <span class="muted">(0 — строго, 1 — свободнее)</span></span><input type="number" name="temperature" min="0" max="2" step="0.1" value="${esc(a.temperature)}"></label>
     <div class="set-row"><span>Читает этапы анкеты</span><span class="set-checks">${steps.map(st => `<label><input type="checkbox" name="step" value="${esc(st.id)}"${a.steps.includes(st.id) ? " checked" : ""}> ${esc(st.title)}</label>`).join("")}</span></div>
-    <label class="set-row wide"><span>Инструкция агенту</span><textarea name="prompt" rows="5">${esc(a.prompt)}</textarea></label>
+    <div class="set-row wide set-agent-text-row"><span class="grp set-agent-texts">
+      <button type="button" class="btn" data-edit="prompt">Инструкция агенту</button>
+      ${a.id === "endocrinologist" ? `<button type="button" class="btn" data-edit="examMap">Карта обследования</button>` : ""}
+      <button type="button" class="btn" data-edit="protocols">Протоколы</button>
+    </span></div>
     <div class="set-foot"><span class="set-saved ok"></span><button class="btn danger" type="button" data-act="del">Удалить агента</button></div>
   </div>`;
     return fold("agent-" + a.id, a.name, agentStatus(a, provs, s), body);
+}
+/** Редактор длинного текста агента (инструкция / карта / протоколы) во всплывающем окне. */
+function openAgentTextEditor(opts) {
+    const st0 = load();
+    const a0 = st0.agents.find(x => x.id === opts.agentId);
+    if (!a0)
+        return;
+    const initial = opts.field === "examMap" ? (a0.examMap || "")
+        : opts.field === "protocols" ? (a0.protocols || "")
+            : a0.prompt;
+    const ov = document.createElement("div");
+    ov.className = "cv-overlay";
+    ov.innerHTML = `<div class="cv-dialog agent-text-dlg" role="dialog" aria-modal="true" aria-labelledby="agent-text-title">
+    <div class="cv-head"><b id="agent-text-title">${esc(opts.title)} · ${esc(a0.name)}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
+    <textarea class="agent-text-ta" spellcheck="true">${esc(initial)}</textarea>
+    <div class="grp">
+      <button type="button" class="btn primary" data-save>Сохранить</button>
+      <button type="button" class="btn" data-close>Отмена</button>
+    </div>
+  </div>`;
+    document.body.appendChild(ov);
+    lockScroll();
+    const ta = q(ov, "textarea.agent-text-ta");
+    const close = () => {
+        document.removeEventListener("keydown", onKey);
+        ov.remove();
+        unlockScroll();
+    };
+    const onKey = (e) => { if (e.key === "Escape")
+        close(); };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", e => { if (e.target === ov)
+        close(); });
+    ov.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", close));
+    q(ov, "[data-save]").onclick = () => {
+        const st = load();
+        const a = st.agents.find(x => x.id === opts.agentId);
+        if (!a) {
+            close();
+            return;
+        }
+        if (opts.field === "examMap")
+            a.examMap = ta.value;
+        else if (opts.field === "protocols")
+            a.protocols = ta.value;
+        else
+            a.prompt = ta.value;
+        save(st);
+        opts.onSaved();
+        close();
+    };
+    setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 0);
 }
 // ---------- хранение ----------
 function whereText() {

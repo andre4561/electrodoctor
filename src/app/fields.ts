@@ -272,6 +272,8 @@ export const STEPS: Step[] = [
       ]}
     ]
   },
+  // UI вкладки — в app.ts (список заключений); секции пустые, как у «Диагнозы»
+  { id: "studies", title: "Исследования", sections: [] },
   {
     id: "psych", title: "Психолог",
     sections: [

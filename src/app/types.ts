@@ -58,10 +58,20 @@ export interface Client {
   params?: ParamSet[];           // замеры тела и жизненные показатели по датам
   paramSel?: string;             // какой снимок открыт на вкладке «Параметры»; "" — новый
   paramMeta?: { date: string; time?: string };
+  studies?: Study[];             // инструментальные и прочие исследования (УЗИ, МРТ, ЭКГ…)
 }
 // Анализы одной сдачи: дата, время и значения полей вкладки «Анализы»
 export interface LabSet { id: string; date: string; time?: string; values: Record<string, Value>; savedAt: string }
 // Снимок параметров (вес, давление и т.п.) на дату; рост и генетика в снимки не входят
 export interface ParamSet { id: string; date: string; time?: string; values: Record<string, Value>; savedAt: string }
+/** Заключение исследования: дата, мягкий тип (УЗИ/МРТ…), название и текст бланка. */
+export interface Study {
+  id: string;
+  date: string;
+  kind?: string;                 // us | mri | ct | xray | ecg | endo | other | ""
+  title: string;                 // «УЗИ щитовидной железы», свободная строка
+  text: string;                  // текст заключения
+  savedAt: string;
+}
 
 export interface Store { version: 1; clients: Record<string, Client> }
