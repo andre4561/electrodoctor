@@ -8,6 +8,7 @@ import * as Call from "./aicall.js";
 import * as Exams from "./exams.js";
 import * as Labs from "./labs.js";
 import { STEPS } from "./fields.js";
+import { t } from "./i18n.js";
 import { lockScroll, unlockScroll } from "./ui.js";
 
 export const FORMAT = "electrodoctor-talk";
@@ -61,6 +62,7 @@ function fieldLine(f: Field): string {
   return `${f.code} — ${f.label}; текст`;
 }
 
+/** Снимок для помощника анкеты: коды полей (нужны для set/clear). */
 function currentSnapshot(c: Client, fields: Field[]): string {
   const lines: string[] = [];
   for (const f of fields) {
@@ -68,7 +70,49 @@ function currentSnapshot(c: Client, fields: Field[]): string {
     if (v === undefined || v === null || v === "") continue;
     lines.push(`${f.code}=${JSON.stringify(v)}`);
   }
-  return lines.length ? lines.join("\n") : "(пусто)";
+  return lines.length ? lines.join("\n") : t("brief.empty", "(пусто)");
+}
+
+/** Значение поля → текст для врача (без JSON-кавычек и сырых кодов где можно). */
+function briefValue(f: Field, v: Value): string {
+  if (f.type === "yesno") {
+    const s = String(v);
+    if (s === "1" || s === "0") return t("value.yesno." + s, s === "1" ? "да" : "нет");
+  }
+  if (f.type === "select" && f.options) {
+    const s = String(v);
+    const opt = f.options.find(o => o[0] === s);
+    if (opt) {
+      if (f.code === "SEX") return t("value.sex." + s, opt[1]);
+      return opt[1];
+    }
+  }
+  if ((f.type === "slider" || f.type === "scale") && (f.scaleFrom || f.scaleTo)) {
+    const hint = t("brief.scale_hint", "{from} → {to}", {
+      from: f.scaleFrom || "0",
+      to: f.scaleTo || String(f.max ?? 100),
+    });
+    return `${v} (${hint})`;
+  }
+  if (typeof v === "number") return String(v);
+  if (typeof v === "string") return v;
+  return JSON.stringify(v);
+}
+
+/**
+ * Снимок для врача в «Поговорить»: подписи полей, не NAME=…
+ * Помощник анкеты по-прежнему получает currentSnapshot с кодами.
+ */
+function humanBriefSnapshot(c: Client, fields: Field[]): string {
+  const lines: string[] = [];
+  for (const f of fields) {
+    const v = c.values[f.code];
+    if (v === undefined || v === null || v === "") continue;
+    if (typeof v === "object") continue;
+    const unit = f.unit ? " " + f.unit : "";
+    lines.push(`${f.label}: ${briefValue(f, v)}${unit}`);
+  }
+  return lines.length ? lines.join("\n") : t("brief.empty", "(пусто)");
 }
 
 function talkHint(stepId: TalkStepId): string {
@@ -471,7 +515,7 @@ function assistantPlain(raw: string): string {
   return t;
 }
 
-/** Только коды из справочника анализов — не поля Общего/Параметров (NAME, SEX, HEIGHT…). */
+/** Анализы для врача: «Гемоглобин: 112 г/л», код в скобках для однозначности. */
 function labsSnapshot(c: Client): string {
   const lines: string[] = [];
   for (const [code, v] of Object.entries(c.values || {})) {
@@ -480,16 +524,17 @@ function labsSnapshot(c: Client): string {
     if (typeof v === "object") continue;
     const l = Labs.LABS[code];
     const u = l.unit || "";
-    lines.push(`${code} (${l.name})=${JSON.stringify(v)}${u ? " " + u : ""}`);
+    const val = typeof v === "string" || typeof v === "number" ? String(v) : JSON.stringify(v);
+    lines.push(`${l.name} (${code}): ${val}${u ? " " + u : ""}`);
   }
-  return lines.length ? lines.join("\n") : "(анализов нет)";
+  return lines.length ? lines.join("\n") : t("brief.no_labs", "(анализов нет)");
 }
 
 function studiesSnapshot(c: Client): string {
   const list = [...(c.studies || [])]
     .filter(s => (s.title || s.text || "").trim())
     .sort((a, b) => (b.date || "").localeCompare(a.date || "") || b.savedAt.localeCompare(a.savedAt));
-  if (!list.length) return "(исследований нет)";
+  if (!list.length) return t("brief.no_studies", "(исследований нет)");
   const kindName: Record<string, string> = {
     us: "УЗИ", mri: "МРТ", ct: "КТ", xray: "Рентген", ecg: "ЭКГ", endo: "Эндоскопия", other: "Другое",
   };
@@ -502,6 +547,7 @@ function studiesSnapshot(c: Client): string {
 }
 
 function clientBrief(c: Client, stepIds: string[]): string {
+  const empty = t("brief.empty", "(пусто)");
   const parts: string[] = [];
   for (const id of stepIds) {
     if (id === "diagnoses") continue;
@@ -516,13 +562,13 @@ function clientBrief(c: Client, stepIds: string[]): string {
       continue;
     }
     if (id === "general" || id === "params") {
-      const snap = currentSnapshot(c, talkFields(STEPS, id));
-      if (snap !== "(пусто)") parts.push(`## ${step.title}\n${snap}`);
+      const snap = humanBriefSnapshot(c, talkFields(STEPS, id));
+      if (snap !== empty) parts.push(`## ${step.title}\n${snap}`);
       continue;
     }
     const fields = step.sections.flatMap(s => s.fields).filter(f => !SKIP_TYPES.has(f.type) && !f.computed);
-    const snap = currentSnapshot(c, fields);
-    if (snap !== "(пусто)") parts.push(`## ${step.title}\n${snap}`);
+    const snap = humanBriefSnapshot(c, fields);
+    if (snap !== empty) parts.push(`## ${step.title}\n${snap}`);
   }
   return parts.join("\n\n") || "(анкета почти пуста)";
 }

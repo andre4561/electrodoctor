@@ -1,4 +1,5 @@
 # Главная страница статей (docs/articles/index.md): карточки разделов.
+# Подписи разделов — keys articles.sec.* в locale.js / locales/*.ts (data-i18n).
 # Запуск: python tools/articles_home.py docs/articles
 import os, sys
 
@@ -30,6 +31,7 @@ ICONS = {
     'exams': '<path d="M8 14v-2a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/><path d="M12 14v-3a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v3"/><path d="M16 14v-2a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4v-3a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1"/><path d="M8 11V8a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2"/>',
 }
 
+# (folder, русский fallback названия, русский fallback описания) — канон в locale
 SECTIONS = [
     ('diagnoses', 'Диагнозы', 'Болезни: причины, диагностика, лечение'),
     ('lab-tests', 'Анализы', 'Показатели крови и других тестов'),
@@ -58,21 +60,23 @@ for folder, name, desc in SECTIONS:
     if not os.path.isdir(os.path.join(base, folder)):
         continue
     n = count(folder); total += n
+    key = f'articles.sec.{folder}'
     cards.append(
         f'<a class="ed-card" href="{folder}/">'
         f'<svg class="ed-ico" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true" {S}>{ICONS[folder]}</svg>'
-        f'<span class="ed-name">{name}</span>'
-        f'<span class="ed-desc">{desc}</span>'
-        f'<span class="ed-count">{n} {plural(n)}</span></a>'
+        f'<span class="ed-name" data-i18n="{key}">{name}</span>'
+        f'<span class="ed-desc" data-i18n="{key}.desc">{desc}</span>'
+        f'<span class="ed-count" data-i18n-count="{n}">{n} {plural(n)}</span></a>'
     )
 
+n_sec = len(cards)
 page = f'''---
 title: Статьи — Электродоктор
 ---
 
-# Статьи
+<h1 data-i18n="articles.title">Статьи</h1>
 
-<p class="ed-lead">{total} {plural(total)} в {len(cards)} разделах. Выберите раздел, чтобы открыть список статей.</p>
+<p class="ed-lead" data-i18n="articles.lead" data-n="{total}" data-sections="{n_sec}">{total} {plural(total)} в {n_sec} разделах. Выберите раздел, чтобы открыть список статей.</p>
 
 <style>
 .ed-lead {{ opacity: .75; }}
@@ -93,6 +97,11 @@ title: Статьи — Электродоктор
 <div class="ed-grid">
 {chr(10).join(cards)}
 </div>
+
+<script>
+document.documentElement.setAttribute("data-i18n-title", "articles.title");
+if (window.EDLocale) EDLocale.refreshI18n();
+</script>
 '''
 open(os.path.join(base, 'index.md'), 'w', encoding='utf-8').write(page)
 print(total, len(cards))

@@ -39,6 +39,7 @@ def render(path):
     return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>{html.escape(title)}</title>
 <script src="/assets/theme.js"></script>
+<script src="/assets/locale.js"></script>
 <link rel="stylesheet" href="/assets/articles.css" id="ed-articles-css-link">
 <script src="/assets/articles-config.js"></script>
 <script src="/assets/articles-style.js" defer></script>

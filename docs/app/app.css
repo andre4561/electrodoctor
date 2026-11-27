@@ -8,11 +8,12 @@ html[data-theme="dark"] {
   --accent: #6aa0ff; --accent-soft: #1d2a40; --ok: #4cc184; --danger: #ff7b70;
   --note-bg: #332a12; --note-ink: #f1d58a;
 }
-.theme-toggle {
+.theme-toggle, .locale-toggle {
   display: inline-flex; align-items: center; justify-content: center;
   width: 38px; padding-left: 0; padding-right: 0; cursor: pointer;
 }
 .theme-toggle svg { display: block; }
+.locale-toggle { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
   font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
@@ -972,7 +973,10 @@ html[data-theme="dark"] .attn-item.k4 { color: #ff7b72; }
 .dx-tools input[type=search] { flex: 1 1 220px; }
 .dx-chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .dx-chip { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+a.dx-chip { text-decoration: none; }
 .dx-chip.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.i18n-card .grp { margin-bottom: 10px; }
+.i18n-ta { width: 100%; min-height: min(55vh, 520px); font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; resize: vertical; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); box-sizing: border-box; }
 .dx-list { list-style: none; margin: 0; padding: 0; columns: 2 280px; column-gap: 28px; }
 .dx-list li { break-inside: avoid; padding: 5px 0; font-size: 14px; line-height: 1.4; }
 .dx-list li small { display: block; font-size: 12px; }

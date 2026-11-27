@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-i18n-title="home.title">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Электродоктор</title>
 <meta name="description" content="Открытая система поддержки диагностики: анализы → прозрачный расчёт → вероятные диагнозы и следующий анализ.">
 <script src="assets/theme.js"></script>
+<script src="assets/locale.js"></script>
 <style>
   :root, html[data-theme="light"] {
     --bg: #f6f7f9; --card: #ffffff; --ink: #1b1f24; --muted: #5d6673; --line: #e2e5ea;
@@ -15,11 +16,12 @@
     --bg: #12151a; --card: #1b2028; --ink: #e8ebef; --muted: #9aa4b2; --line: #2c333d;
     --accent: #6aa0ff; --accent-soft: #1d2a40; --note-bg: #332a12; --note-ink: #f1d58a;
   }
-  .theme-toggle {
+  .theme-toggle, .locale-toggle {
     display: inline-flex; align-items: center; justify-content: center;
     width: 38px; padding-left: 0; padding-right: 0; cursor: pointer;
   }
   .theme-toggle svg { display: block; }
+  .locale-toggle { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
     font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
@@ -53,38 +55,42 @@
 <body>
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="./">Электродоктор</a>
-    <nav aria-label="Разделы сайта">
-      <a class="btn on" href="./" aria-current="page">Главная</a>
-      <a class="btn" href="app/#/clients">Клиенты</a>
-      <a class="btn" href="app/#/settings">Настройки</a>
-      <a class="btn" href="articles/">Информация</a>
-      <a class="btn" href="help.html">Помощь</a>
+    <a class="brand" href="./" data-i18n="nav.brand">Электродоктор</a>
+    <nav data-i18n-aria="nav.sections" aria-label="Разделы сайта">
+      <a class="btn on" href="./" aria-current="page" data-i18n="nav.home">Главная</a>
+      <a class="btn" href="app/#/clients" data-i18n="nav.clients">Клиенты</a>
+      <a class="btn" href="app/#/settings" data-i18n="nav.settings">Настройки</a>
+      <a class="btn" href="articles/" data-i18n="nav.info">Информация</a>
+      <a class="btn" href="help.ru.html" data-i18n="nav.help" data-help-link="">Помощь</a>
+      <button type="button" class="btn locale-toggle" data-locale-toggle title="English" aria-label="English" onclick="if(window.EDLocale){EDLocale.toggle();return false;}">EN</button>
       <button type="button" class="btn theme-toggle" data-theme-toggle title="Тема" aria-label="Тема">◐</button>
     </nav>
   </div>
 </header>
 <div class="wrap">
-  <p class="lead">Открытая система поддержки диагностики: анализы и жалобы на входе — прозрачный расчёт — вероятные диагнозы и следующий самый полезный анализ.</p>
+  <p class="lead" data-i18n="home.lead">Открытая система поддержки диагностики: анализы и жалобы на входе — прозрачный расчёт — вероятные диагнозы и следующий самый полезный анализ.</p>
 
-  <nav class="choices" aria-label="Разделы">
+  <nav class="choices" data-i18n-aria="home.choices" aria-label="Разделы">
     <a class="choice primary" href="app/#/clients">
-      <h2>Приложение</h2>
-      <p>Кабинет: клиенты, анкеты по этапам, анализы и подсказки расчёта. Данные хранятся только у вас — в браузере или в выбранной папке.</p>
-      <span class="go">Открыть приложение</span>
+      <h2 data-i18n="home.app.title">Приложение</h2>
+      <p data-i18n="home.app.body">Кабинет: клиенты, анкеты по этапам, анализы и подсказки расчёта. Данные хранятся только у вас — в браузере или в выбранной папке.</p>
+      <span class="go" data-i18n="home.app.go">Открыть приложение</span>
     </a>
   </nav>
 
-  <div class="note">Исследовательский проект, не медицинское изделие. Не для самодиагностики.</div>
+  <div class="note" data-i18n="home.note">Исследовательский проект, не медицинское изделие. Не для самодиагностики.</div>
 
   <div class="links">
-    <a href="https://github.com/andre4561/electrodoctor">Репозиторий на GitHub</a>
+    <a href="https://github.com/andre4561/electrodoctor" data-i18n="home.github">Репозиторий на GitHub</a>
   </div>
 
-  <footer>Код — GNU AGPL v3, данные — CC BY-SA 4.0.</footer>
+  <footer data-i18n="home.footer">Код — GNU AGPL v3, данные — CC BY-SA 4.0.</footer>
 </div>
 <script src="assets/site-inject.js" defer></script>
 <script src="assets/totop.js" defer></script>
-<script>if (window.EDTheme) EDTheme.refreshButtons();</script>
+<script>
+  if (window.EDTheme) EDTheme.refreshButtons();
+  if (window.EDLocale) { EDLocale.refreshButtons(); EDLocale.refreshI18n(); }
+</script>
 </body>
 </html>

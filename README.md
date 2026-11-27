@@ -2,7 +2,7 @@
 
 Описание проекта и помощь пользователю — одна HTML-страница сайта:
 
-**[docs/help.html](docs/help.html)** · на сайте: [Помощь](https://andre4561.github.io/electrodoctor/help.html)
+**[docs/help.ru.html](docs/help.ru.html)** · [help.en.html](docs/help.en.html) · редирект: [help.html](docs/help.html)
 
 Локально: `python tools/preview.py` → http://localhost:8000/help.html
 

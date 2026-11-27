@@ -20,6 +20,8 @@ import { NORMS, defaultNorm, parseNum, fmtNum } from "./norms.js";
 import { STEPS } from "./fields.js";
 import { openEditor, safeText, sameCurve, defaultCurve, type Curve, type ValueKind } from "./curve.js";
 import { curveFor, baseCurve, normsRaw, normsError } from "./norms.js";
+import * as I18n from "./i18n.js";
+import type { LocaleId } from "./i18n.js";
 export { Store };
 
 type WeightField = { code: string; label: string; unit?: string; group: string };
@@ -127,6 +129,7 @@ export interface Settings {
   labs?: Record<string, any>;       // свои анализы поверх docs/data/labs.json (Нормы и веса)
   exams?: Record<string, any>;      // свои / правки пунктов осмотра (Настройки → Осмотр)
   articlesCss?: string;             // свой CSS статей; пусто — docs/assets/articles.css
+  i18n?: Record<string, Record<string, string>>; // свои строки поверх locales/* (Настройки → Язык)
 }
 
 export const ARTICLES_CSS_LS = "electrodoctor.articles.css";
@@ -333,7 +336,7 @@ export function load(): Settings {
   const d = Store.getData();
   if (!d) return blank();
   const s: Settings = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-    agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, dxSections: d.dxSections || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "" }));
+    agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, dxSections: d.dxSections || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "", i18n: d.i18n || {} }));
   // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
   if ((s.agentsRev || 1) < AGENTS_REV) {
     const have = new Set(s.agents.map(a => a.id));
@@ -381,6 +384,7 @@ export function load(): Settings {
       agentDefaults: s.agentDefaults, agentsRev: s.agentsRev, signs: s.signs || {},
       dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer,
       labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "",
+      i18n: s.i18n || {},
     });
   }
   // Пустая карта у эндокринолога — подставить стандартную (без затирания правок)
@@ -391,13 +395,15 @@ export function load(): Settings {
   }
   publishArticlesCss(s.articlesCss || "");
   Exams.applyOwn(s.exams);
+  I18n.applyOwn(s.i18n);
   return s;
 }
 export function save(s: Settings): void {
   s.articlesCss = (s.articlesCss || "").trim() ? s.articlesCss! : "";
-  Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "" });
+  Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "", i18n: s.i18n || {} });
   publishArticlesCss(s.articlesCss || "");
   Exams.applyOwn(s.exams);
+  I18n.applyOwn(s.i18n);
 }
 // Чем распознаются анализы по фото: свой провайдер распознавания или общий провайдер агентов
 export function recognizerRuntime(s: Settings = load()): { preset?: ProviderPreset; conf?: ProviderConf; model: string; shared: boolean } {
@@ -484,26 +490,31 @@ export function render(view: HTMLElement, tab: string, steps: StepInfo[]): void 
     location.replace(location.hash.replace(/^#\/settings\/labs/, "#/settings/weights"));
     return;
   }
-  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "misc" ? "misc" : "providers";
+  const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "lang" ? "lang" : tab === "misc" ? "misc" : "providers";
   view.innerHTML = `
-    <h1>Настройки</h1>
+    <h1>${esc(I18n.t("set.title", "Настройки"))}</h1>
     <p class="muted set-lead">${esc(whereText())} Ключ API отправляется только своему провайдеру. <a href="#/settings/storage">Где хранить →</a></p>
     <div class="set">
-      <aside class="set-side" aria-label="Разделы настроек">
-        <a class="set-tab${t === "providers" ? " on" : ""}" href="#/settings/providers">Провайдеры</a>
-        <a class="set-tab${t === "agents" ? " on" : ""}" href="#/settings/agents">Врачи</a>
-        <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">Консилиум</a>
-        <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">Нормы и веса</a>
-        <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">Осмотр</a>
-        <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">Диагнозы</a>
-        <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">Хранение</a>
-        <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">Прочее</a>
+      <aside class="set-side" aria-label="${esc(I18n.t("set.side", "Разделы настроек"))}">
+        <a class="set-tab${t === "providers" ? " on" : ""}" href="#/settings/providers">${esc(I18n.t("set.tab.providers", "Провайдеры"))}</a>
+        <a class="set-tab${t === "agents" ? " on" : ""}" href="#/settings/agents">${esc(I18n.t("set.tab.agents", "Врачи"))}</a>
+        <a class="set-tab${t === "council" ? " on" : ""}" href="#/settings/council">${esc(I18n.t("set.tab.council", "Консилиум"))}</a>
+        <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">${esc(I18n.t("set.tab.weights", "Нормы и веса"))}</a>
+        <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">${esc(I18n.t("set.tab.exam", "Осмотр"))}</a>
+        <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">${esc(I18n.t("set.tab.diagnoses", "Диагнозы"))}</a>
+        <a class="set-tab${t === "lang" ? " on" : ""}" href="#/settings/lang">${esc(I18n.t("set.tab.lang", "Язык"))}</a>
+        <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">${esc(I18n.t("set.tab.storage", "Хранение"))}</a>
+        <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">${esc(I18n.t("set.tab.misc", "Прочее"))}</a>
       </aside>
       <section class="set-main" id="setmain"></section>
     </div>`;
   const main = q(view, "#setmain");
   const redraw = () => render(view, t, steps);
   if (t === "storage") { drawStorage(main, redraw); return; }
+  if (t === "lang") {
+    if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
+    drawLang(main); return;
+  }
   if (t === "misc") { drawMisc(main); return; }
   if (t === "exam") {
     if (Store.state.where === "folder" && !Store.state.loaded) { main.innerHTML = gateHtml(); bindGate(main, redraw); return; }
@@ -1151,6 +1162,117 @@ function openArticlesCssEditor(onDone: () => void): void {
     savedFlash(flash);
     onDone();
   };
+}
+
+/** `#/settings/lang` или `#/settings/lang/en` — какой словарь открыт. */
+function langFocusId(): LocaleId {
+  const parts = location.hash.replace(/^#\/?/, "").split("/");
+  if (parts[0] === "settings" && parts[1] === "lang" && parts[2]) {
+    const id = parts[2] as LocaleId;
+    if (I18n.LOCALE_IDS.includes(id)) return id;
+  }
+  return "ru";
+}
+
+/** JSON словаря с ключами по алфавиту — удобно копировать целиком в переводчик. */
+function langDictText(dict: Record<string, string>): string {
+  const sorted: Record<string, string> = {};
+  for (const k of Object.keys(dict).sort((a, b) => a.localeCompare(b))) sorted[k] = dict[k];
+  return JSON.stringify(sorted, null, 2);
+}
+
+/** Разобрать JSON объекта строк; иначе ошибка. */
+function parseLangDict(raw: string): Record<string, string> {
+  const j = JSON.parse(raw);
+  if (!j || typeof j !== "object" || Array.isArray(j)) throw new Error("нужен JSON-объект вида { \"ключ\": \"текст\" }");
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(j as Record<string, unknown>)) {
+    if (typeof v !== "string") throw new Error(`значение «${k}» должно быть строкой`);
+    out[k] = v;
+  }
+  return out;
+}
+
+/** Оверлей = только отличия от встроенного словаря. */
+function langOverlayDiff(builtin: Record<string, string>, next: Record<string, string>): Record<string, string> {
+  const ov: Record<string, string> = {};
+  for (const [k, v] of Object.entries(next)) {
+    if ((builtin[k] ?? "") !== v) ov[k] = v;
+  }
+  // ключ был во встроенном, в новом тексте его нет — считаем удалением (пустая строка в оверлее)
+  for (const k of Object.keys(builtin)) {
+    if (!Object.prototype.hasOwnProperty.call(next, k)) ov[k] = "";
+  }
+  return ov;
+}
+
+/** Настройки → Язык: одно общее JSON-поле словаря (удобно копировать на перевод). Без переключения UI. */
+function drawLang(main: HTMLElement): void {
+  const paint = () => {
+    const loc = langFocusId();
+    const builtin = I18n.builtinDict(loc);
+    const eff = I18n.effectiveDict(loc);
+    const ownCount = Object.keys(load().i18n?.[loc] || {}).length;
+    const chips = I18n.LOCALE_IDS.map(id =>
+      `<a class="dx-chip${id === loc ? " on" : ""}" href="#/settings/lang/${id}">${esc(I18n.LOCALE_LABEL[id])}</a>`
+    ).join("");
+    const text = langDictText(eff);
+    main.innerHTML = `<div class="set-head"><h2>Язык</h2><span class="muted">правки — только в этом браузере / файле настроек; в репозиторий из кабинета не пишутся</span></div>
+      <p class="muted">Словарь подписей для выписки и (позже) интерфейса — один JSON на язык. Скопируйте целиком в переводчик или ИИ, вставьте обратно и сохраните. Ключи не переименовывайте. Переключатель языка интерфейса — отдельным шагом.</p>
+      <div class="dx-chips" role="tablist" aria-label="Словарь">${chips}</div>
+      <div class="card i18n-card">
+        <div class="grp">
+          <button type="button" class="btn primary" data-i18n-save>Сохранить</button>
+          <button type="button" class="btn" data-i18n-reload>Вернуть сохранённое</button>
+          <button type="button" class="btn" data-i18n-reset${ownCount ? "" : " disabled"}>Сбросить к встроенному${ownCount ? ` (${ownCount})` : ""}</button>
+          <span class="muted" data-i18n-flash></span>
+        </div>
+        <p class="err" data-i18n-err hidden></p>
+        <textarea class="i18n-ta" data-i18n-ta spellcheck="true" aria-label="словарь ${esc(I18n.LOCALE_LABEL[loc])}">${esc(text)}</textarea>
+      </div>`;
+
+    const ta = q<HTMLTextAreaElement>(main, "[data-i18n-ta]");
+    const errEl = q(main, "[data-i18n-err]");
+    const flash = q(main, "[data-i18n-flash]");
+    const showErr = (msg: string) => {
+      if (!errEl) return;
+      if (!msg) { errEl.hidden = true; errEl.textContent = ""; return; }
+      errEl.hidden = false;
+      errEl.textContent = msg;
+    };
+
+    q<HTMLButtonElement>(main, "[data-i18n-save]").onclick = () => {
+      try {
+        const next = parseLangDict(ta.value);
+        const ov = langOverlayDiff(builtin, next);
+        const st = load();
+        if (!st.i18n) st.i18n = {};
+        if (Object.keys(ov).length) st.i18n[loc] = ov;
+        else delete st.i18n[loc];
+        save(st);
+        showErr("");
+        paint();
+        savedFlash(q(main, "[data-i18n-flash]"));
+      } catch (e) {
+        showErr((e instanceof Error && e.message) || String(e));
+      }
+    };
+    q<HTMLButtonElement>(main, "[data-i18n-reload]").onclick = () => {
+      ta.value = langDictText(I18n.effectiveDict(loc));
+      showErr("");
+    };
+    const resetBtn = q<HTMLButtonElement>(main, "[data-i18n-reset]");
+    if (resetBtn) resetBtn.onclick = () => {
+      if (!ownCount) return;
+      if (!confirm(`Сбросить словарь «${I18n.LOCALE_LABEL[loc]}» к встроенному?`)) return;
+      const st = load();
+      if (st.i18n) delete st.i18n[loc];
+      save(st);
+      paint();
+      savedFlash(q(main, "[data-i18n-flash]"));
+    };
+  };
+  paint();
 }
 
 function drawMisc(main: HTMLElement): void {

@@ -20,6 +20,7 @@ import { secOfLab } from "./setlabs.js";
 import * as Cmp from "./complaints.js";
 import * as Talk from "./talk.js";
 import * as Exams from "./exams.js";
+import * as I18n from "./i18n.js";
 import { articleUrl } from "./articles.js";
 const KEY = "electrodoctor.clients.v1";
 const $ = (s) => document.querySelector(s);
@@ -187,30 +188,45 @@ function route() {
 function renderNav() {
     const h = location.hash || "";
     const n = (href, label, on) => `<a class="btn${on ? " on" : ""}" href="${href}"${on ? ' aria-current="page"' : ""}>${label}</a>`;
-    const theme = window.EDTheme;
+    const w = window;
+    const brand = document.querySelector(".brand[data-i18n], a.brand");
+    if (brand)
+        brand.textContent = I18n.t("nav.brand", "Электродоктор");
     $("#nav").innerHTML =
-        n("../", "Главная", false) +
-            n("#/clients", "Клиенты", h.startsWith("#/clients") || h.startsWith("#/client/")) +
-            n("#/settings", "Настройки", h.startsWith("#/settings")) +
-            n("../articles/", "Информация", false) +
-            n("../help.html", "Помощь", false) +
-            (theme ? theme.buttonHtml("btn theme-toggle") : `<button type="button" class="btn theme-toggle" data-theme-toggle title="Тема" aria-label="Тема">◐</button>`);
+        n("../", I18n.t("nav.home", "Главная"), false) +
+            n("#/clients", I18n.t("nav.clients", "Клиенты"), h.startsWith("#/clients") || h.startsWith("#/client/")) +
+            n("#/settings", I18n.t("nav.settings", "Настройки"), h.startsWith("#/settings")) +
+            n("../articles/", I18n.t("nav.info", "Информация"), false) +
+            n("../" + (I18n.getLocale() === "en" ? "help.en.html" : "help.ru.html"), I18n.t("nav.help", "Помощь"), false) +
+            (w.EDLocale ? w.EDLocale.buttonHtml("btn locale-toggle") : `<button type="button" class="btn locale-toggle" data-locale-toggle title="English" aria-label="English">EN</button>`) +
+            (w.EDTheme ? w.EDTheme.buttonHtml("btn theme-toggle") : `<button type="button" class="btn theme-toggle" data-theme-toggle title="Тема" aria-label="Тема">◐</button>`);
 }
 // ---------- клиенты ----------
+function clientsWord(n) {
+    const abs = Math.abs(n) % 100;
+    const d = abs % 10;
+    if (abs > 10 && abs < 20)
+        return I18n.t("clients.word.many", "клиентов");
+    if (d === 1)
+        return I18n.t("clients.word.one", "клиент");
+    if (d >= 2 && d <= 4)
+        return I18n.t("clients.word.few", "клиента");
+    return I18n.t("clients.word.many", "клиентов");
+}
 function renderClients() {
     renderNav();
     const all = Object.values(loadAll().clients).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
     view.innerHTML = `
-    <h1>Клиенты</h1>
-    ${storageOk ? "" : '<div class="note">Браузер не даёт сохранять данные (приватный режим?). Записи пропадут после закрытия вкладки — выгрузите их в файл.</div>'}
+    <h1>${esc(I18n.t("clients.title", "Клиенты"))}</h1>
+    ${storageOk ? "" : `<div class="note">${esc(I18n.t("clients.private"))}</div>`}
     <div class="store" id="store"></div>
     <div class="bar">
-      <input class="search" id="q" type="search" placeholder="Поиск по имени" aria-label="Поиск">
+      <input class="search" id="q" type="search" placeholder="${esc(I18n.t("clients.search", "Поиск по имени"))}" aria-label="${esc(I18n.t("clients.search_aria", "Поиск"))}">
       <div class="grp">
-        <button class="btn" id="exp" ${all.length ? "" : "disabled"}>Выгрузить всех</button>
-        <button class="btn" id="imp">Загрузить из файла</button>
+        <button class="btn" id="exp" ${all.length ? "" : "disabled"}>${esc(I18n.t("clients.export", "Выгрузить всех"))}</button>
+        <button class="btn" id="imp">${esc(I18n.t("clients.import", "Загрузить из файла"))}</button>
         <input type="file" id="impfile" accept=".json,application/json" hidden>
-        <a class="btn primary" href="#/client/new">Добавить клиента</a>
+        <a class="btn primary" href="#/client/new">${esc(I18n.t("clients.add", "Добавить клиента"))}</a>
       </div>
     </div>
     <div class="card tblwrap" id="list"></div>`;
@@ -218,14 +234,14 @@ function renderClients() {
         const q = $("#q").value.trim().toLowerCase();
         const rows = all.filter(c => !q || displayName(c).toLowerCase().includes(q));
         if (!all.length) {
-            $("#list").innerHTML = `<div class="empty">Клиентов пока нет.<br><br><a class="btn primary" href="#/client/new">Добавить клиента</a></div>`;
+            $("#list").innerHTML = `<div class="empty">${esc(I18n.t("clients.empty", "Клиентов пока нет."))}<br><br><a class="btn primary" href="#/client/new">${esc(I18n.t("clients.add", "Добавить клиента"))}</a></div>`;
             return;
         }
         if (!rows.length) {
-            $("#list").innerHTML = `<div class="empty">Никого не нашлось.</div>`;
+            $("#list").innerHTML = `<div class="empty">${esc(I18n.t("clients.none", "Никого не нашлось."))}</div>`;
             return;
         }
-        $("#list").innerHTML = `<table><thead><tr><th>Имя</th><th class="hide-sm">Изменён</th></tr></thead><tbody>${rows.map(c => `<tr class="click" data-id="${esc(c.id)}"><td><a href="#/client/${esc(c.id)}/${STEPS[0].id}">${esc(displayName(c))}</a></td><td class="hide-sm muted">${fmtDate(c.updatedAt)}</td></tr>`).join("")}</tbody></table>`;
+        $("#list").innerHTML = `<table><thead><tr><th>${esc(I18n.t("clients.col.name", "Имя"))}</th><th class="hide-sm">${esc(I18n.t("clients.col.updated", "Изменён"))}</th></tr></thead><tbody>${rows.map(c => `<tr class="click" data-id="${esc(c.id)}"><td><a href="#/client/${esc(c.id)}/${STEPS[0].id}">${esc(displayName(c))}</a></td><td class="hide-sm muted">${fmtDate(c.updatedAt)}</td></tr>`).join("")}</tbody></table>`;
         document.querySelectorAll("tr.click").forEach(tr => tr.onclick = ev => {
             if (!ev.target.closest("a"))
                 location.hash = "#/client/" + tr.dataset.id + "/" + STEPS[0].id;
@@ -259,11 +275,11 @@ function renderClients() {
                     n++;
                 }
             saveAll(data);
-            alert("Загружено клиентов: " + n);
+            alert(I18n.t("clients.import_ok", "Загружено клиентов: {n}", { n }));
             renderClients();
         }
         catch (e) {
-            alert("Не получилось прочитать файл. Нужен JSON, выгруженный кнопкой «Выгрузить всех».");
+            alert(I18n.t("clients.import_err"));
         }
     };
 }
@@ -271,8 +287,8 @@ function renderClients() {
 function storePathHtml(st) {
     if (!st.handle)
         return "";
-    return `<label class="store-path-lab">Путь к папке
-    <input type="text" id="folderpath" value="${esc(st.path)}" placeholder="например, D:\\${esc(st.name)} — браузер путь не сообщает, можно вписать сами" spellcheck="false" autocomplete="off">
+    return `<label class="store-path-lab">${esc(I18n.t("clients.store.path", "Путь к папке"))}
+    <input type="text" id="folderpath" value="${esc(st.path)}" placeholder="${esc(I18n.t("clients.store.path_ph", "например, D:\\{name} — браузер путь не сообщает, можно вписать сами", { name: st.name }))}" spellcheck="false" autocomplete="off">
   </label>`;
 }
 function drawStore() {
@@ -283,29 +299,32 @@ function drawStore() {
     const needPick = !!(st.handle && !FS.ready()); // доступ сброшен — снова выбрать ту же папку
     let html = "";
     if (FS.ready()) {
-        html += `<p>Клиенты сохраняются в папку <b>«${esc(st.name)}»</b> на этом компьютере: у каждого клиента своя подпапка с файлами <code>анкета.md</code>, <code>данные.csv</code> и <code>client.json</code>. Копия остаётся и в браузере.</p>
-      ${storePathHtml(st)}`;
+        html += `<p>${esc(I18n.t("clients.store.ready", "", { name: st.name }))}</p>${storePathHtml(st)}`;
     }
     else if (st.handle) {
-        html += `<p>Раньше была выбрана папка <b>«${esc(st.name)}»</b>, но браузер снял доступ. Пока данные только в браузере — снова выберите эту папку. Если очистить кэш или данные сайта в браузере, клиенты пропадут.</p>
-      ${storePathHtml(st)}`;
+        html += `<p>${esc(I18n.t("clients.store.need_pick", "", { name: st.name }))}</p>${storePathHtml(st)}`;
     }
     else if (FS.supported) {
-        html += `<p>Сейчас данные сохраняются внутри этого браузера, на этом компьютере. Найти эти файлы вручную нельзя. Если очистить кэш или данные сайта в браузере — вся информация о клиентах исчезнет. Можно выбрать папку на компьютере: тогда у каждого клиента там будет своя подпапка с файлами, и очистка браузера их не затронет.</p>`;
+        html += `<p>${esc(I18n.t("clients.store.browser"))}</p>`;
     }
     else {
-        html += `<p>Данные сохраняются внутри этого браузера, на этом компьютере. Если очистить кэш или данные сайта в браузере — вся информация о клиентах исчезнет. Время от времени нажимайте «Выгрузить всех».</p>
-      <p class="muted">Сохранять в выбранную папку умеют Chrome, Edge, Яндекс.Браузер и Opera на компьютере. В этом браузере такой возможности нет.</p>`;
+        html += `<p>${esc(I18n.t("clients.store.no_fs"))}</p>
+      <p class="muted">${esc(I18n.t("clients.store.no_fs_hint"))}</p>`;
     }
     if (FS.supported) {
-        html += `<div class="grp"><button class="btn${FS.ready() ? "" : " primary"}" id="pick">Выбрать папку</button><button class="btn" id="unpick"${st.handle ? "" : " disabled"} title="${st.handle ? "" : "уже сохраняется в браузере"}">Сохранять в браузере</button></div>`;
+        const unpickTitle = st.handle ? "" : I18n.t("clients.store.unpick_title", "уже сохраняется в браузере");
+        html += `<div class="grp"><button class="btn${FS.ready() ? "" : " primary"}" id="pick">${esc(I18n.t("clients.store.pick", "Выбрать папку"))}</button><button class="btn" id="unpick"${st.handle ? "" : " disabled"} title="${esc(unpickTitle)}">${esc(I18n.t("clients.store.unpick", "Сохранять в браузере"))}</button></div>`;
     }
     if (folderErr)
-        html += `<p class="err">Не удалось записать в папку: ${esc(folderErr)}</p>`;
+        html += `<p class="err">${esc(I18n.t("clients.store.write_err", "Не удалось записать в папку: {err}", { err: folderErr }))}</p>`;
     const status = FS.ready()
-        ? (st.path ? `в папке «${esc(st.name)}» · ${esc(st.path)}` : `в папке «${esc(st.name)}»`)
-        : needPick ? "нужно снова выбрать папку" : "в этом браузере";
-    box.innerHTML = fold("store", "Где хранятся данные", status, html, {
+        ? (st.path
+            ? esc(I18n.t("clients.store.status_folder_path", "в папке «{name}» · {path}", { name: st.name, path: st.path }))
+            : esc(I18n.t("clients.store.status_folder", "в папке «{name}»", { name: st.name })))
+        : needPick
+            ? esc(I18n.t("clients.store.status_need", "нужно снова выбрать папку"))
+            : esc(I18n.t("clients.store.status_browser", "в этом браузере"));
+    box.innerHTML = fold("store", I18n.t("clients.store.title", "Где хранятся данные"), status, html, {
         open: !!folderErr || needPick,
         warn: !!folderErr || needPick,
     });
@@ -328,12 +347,9 @@ function drawStore() {
                 const inFolder = await FS.readAll();
                 if (inFolder.length) {
                     const n = inFolder.length;
-                    const word = n === 1 ? "клиент" : n < 5 ? "клиента" : "клиентов";
-                    const ok = confirm(`В папке «${FS.state.name}» уже есть ${n} ${word}.\n\n` +
-                        `• клиенты из браузера запишутся в эту папку;\n` +
-                        `• клиенты только из папки появятся в списке;\n` +
-                        `• если один и тот же клиент есть и там и там — останется более свежая версия, другая перезапишется.\n\n` +
-                        `Продолжить?`);
+                    const ok = confirm(I18n.t("clients.store.confirm_sync", "", {
+                        name: FS.state.name, n, word: clientsWord(n),
+                    }));
                     if (!ok) {
                         await FS.restore(prev);
                         drawStore();
@@ -357,7 +373,7 @@ function drawStore() {
         unpick.onclick = async () => {
             if (!st.handle)
                 return;
-            if (!confirm("Перестать сохранять в папку «" + st.name + "»? Файлы в ней останутся на диске, в браузере останется текущая копия — новые правки в папку больше не пишутся."))
+            if (!confirm(I18n.t("clients.store.confirm_unpick", "", { name: st.name })))
                 return;
             await FS.disconnect();
             renderClients();
@@ -3258,3 +3274,10 @@ Promise.all([FS.init().catch(folderError), Settings.Store.init(), Norms.loadNorm
 // настройки дочитались из папки, открылся доступ или введён пароль — перерисовать страницу настроек
 Settings.Store.onChange(() => { if (location.hash.startsWith("#/settings"))
     route(); });
+// кнопка языка в шапке — обновить подпись; полный перевод UI — позже
+window.addEventListener("electrodoctor-locale", () => {
+    I18n.syncFromStorage();
+    renderNav();
+    if (location.hash.startsWith("#/settings") || location.hash.startsWith("#/clients") || !location.hash || location.hash === "#/")
+        route();
+});
