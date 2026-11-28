@@ -18,7 +18,7 @@ import * as Exams from "./exams.js";
 import * as Labs from "./labs.js";
 import * as Sg from "./signs.js";
 import { NORMS, defaultNorm, fmtNum } from "./norms.js";
-import { openEditor, safeText, sameCurve, defaultCurve } from "./curve.js";
+import { openEditor, safeText, sameCurve, defaultCurve, SAFE_MAX } from "./curve.js";
 import { curveFor, baseCurve, normsRaw, normsError } from "./norms.js";
 import * as I18n from "./i18n.js";
 export { Store };
@@ -142,6 +142,49 @@ const A = (id, name, steps, prompt, section) => ({ id, name, enabled: true, prov
 const D = (id, name, role, section, focus, steps = DOC_STEPS) => A(id, name, steps, `Ты — ${role}. Изучи анкету клиента: жалобы, параметры, анализы. Оцени всё, что относится к твоей специальности: ${focus}. Укажи отклонения и что они могут означать, предположи вероятные состояния из своей области с объяснением, какие данные на это указывают, перечисли, какие анализы и обследования добавить, и отметь, когда нужен очный приём или срочная помощь. Не назначай лечение и дозировки.`, section);
 // Номер стандартного набора: при росте недостающие стандартные агенты добавляются к сохранённым один раз
 export const AGENTS_REV = 10;
+/** Версия карты «раздел → врачи»; 1 — перенос из устаревшего agent.section. */
+export const SECTION_AGENTS_REV = 1;
+function defaultSectionAgents() {
+    var _a;
+    const m = {};
+    for (const a of DEFAULT_AGENTS) {
+        if (!a.section)
+            continue;
+        (m[_a = a.section] || (m[_a] = [])).push(a.id);
+    }
+    return m;
+}
+/** Собрать привязки из старого поля agent.section + дефолты для стандартных врачей. */
+function migrateSectionAgents(s) {
+    const m = { ...(s.sectionAgents || {}) };
+    const add = (sec, id) => {
+        if (!sec || !id)
+            return;
+        const list = m[sec] || [];
+        if (!list.includes(id))
+            list.push(id);
+        m[sec] = list;
+    };
+    for (const a of s.agents)
+        if (a.section)
+            add(a.section, a.id);
+    const have = new Set(s.agents.map(a => a.id));
+    for (const a of DEFAULT_AGENTS) {
+        if (a.section && have.has(a.id))
+            add(a.section, a.id);
+    }
+    return m;
+}
+function dataFromSettings(s) {
+    return {
+        providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {},
+        agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV,
+        signs: s.signs || {}, dxSections: s.dxSections || {}, ownDiagnoses: s.ownDiagnoses || {},
+        sectionAgents: s.sectionAgents || {}, sectionAgentsRev: s.sectionAgentsRev,
+        signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {},
+        articlesCss: s.articlesCss || "", i18n: s.i18n || {},
+    };
+}
 /** Id единого помощника по анкете (чат на вкладках Общее и Параметры). */
 export const TALK_AGENT_ID = "intake-general";
 /** @deprecated старые id; оставлены для миграции настроек */
@@ -278,7 +321,11 @@ function migrateEndocrinologist(a, def) {
         a.examMap = def.examMap;
 }
 function blank() {
-    return { version: 1, providers: {}, agents: DEFAULT_AGENTS.map(copyAgent), norms: {}, curves: {}, agentDefaults: { provider: "", model: "" }, agentsRev: AGENTS_REV };
+    return {
+        version: 1, providers: {}, agents: DEFAULT_AGENTS.map(copyAgent), norms: {}, curves: {},
+        agentDefaults: { provider: "", model: "" }, agentsRev: AGENTS_REV,
+        sectionAgents: defaultSectionAgents(), sectionAgentsRev: SECTION_AGENTS_REV,
+    };
 }
 // load() отдаёт копию: её можно менять и передавать в save()
 export function load() {
@@ -286,9 +333,13 @@ export function load() {
     if (!d)
         return blank();
     const s = JSON.parse(JSON.stringify({ version: 1, providers: d.providers || {}, agents: d.agents || [], norms: d.norms || {}, curves: d.curves || {},
-        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, dxSections: d.dxSections || {}, signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "", i18n: d.i18n || {} }));
+        agentDefaults: d.agentDefaults || { provider: "", model: "" }, agentsRev: d.agentsRev || 1, signs: d.signs || {}, dxSections: d.dxSections || {}, ownDiagnoses: d.ownDiagnoses || {},
+        sectionAgents: d.sectionAgents || {}, sectionAgentsRev: d.sectionAgentsRev || 0,
+        signMethod: d.signMethod, recognizer: d.recognizer || { provider: "", model: "" }, labs: d.labs || {}, exams: d.exams || {}, articlesCss: d.articlesCss || "", i18n: d.i18n || {} }));
+    let dirty = false;
     // В набор добавились новые стандартные агенты (врачи по разделам) — дописать недостающих один раз; удалённые потом не возвращаются
     if ((s.agentsRev || 1) < AGENTS_REV) {
+        dirty = true;
         const have = new Set(s.agents.map(a => a.id));
         const coord = s.agents.findIndex(a => a.id === "coordinator");
         const add = DEFAULT_AGENTS.filter(a => !have.has(a.id)).map(copyAgent);
@@ -360,15 +411,15 @@ export function load() {
             s.agents = s.agents.filter(x => x.id !== "intake-params");
         }
         s.agentsRev = AGENTS_REV;
-        // сразу записать, иначе в Store останется старый промпт
-        Store.setData({
-            providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {},
-            agentDefaults: s.agentDefaults, agentsRev: s.agentsRev, signs: s.signs || {},
-            dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer,
-            labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "",
-            i18n: s.i18n || {},
-        });
     }
+    // Карта «раздел → врачи»: один раз из agent.section / дефолтов
+    if ((s.sectionAgentsRev || 0) < SECTION_AGENTS_REV) {
+        dirty = true;
+        s.sectionAgents = migrateSectionAgents(s);
+        s.sectionAgentsRev = SECTION_AGENTS_REV;
+    }
+    if (dirty)
+        Store.setData(dataFromSettings(s));
     // Пустая карта у эндокринолога — подставить стандартную (без затирания правок)
     {
         const endo = s.agents.find(x => x.id === "endocrinologist");
@@ -383,7 +434,7 @@ export function load() {
 }
 export function save(s) {
     s.articlesCss = (s.articlesCss || "").trim() ? s.articlesCss : "";
-    Store.setData({ providers: s.providers, agents: s.agents, norms: s.norms || {}, curves: s.curves || {}, agentDefaults: s.agentDefaults, agentsRev: s.agentsRev || AGENTS_REV, signs: s.signs || {}, dxSections: s.dxSections || {}, signMethod: s.signMethod, recognizer: s.recognizer, labs: s.labs || {}, exams: s.exams || {}, articlesCss: s.articlesCss || "", i18n: s.i18n || {} });
+    Store.setData(dataFromSettings(s));
     publishArticlesCss(s.articlesCss || "");
     Exams.applyOwn(s.exams);
     I18n.applyOwn(s.i18n);
@@ -407,14 +458,41 @@ export function agentRuntime(s, a) {
     return { preset, conf, model, shared };
 }
 /** Врачи из настроек по разделам диагноза (порядок разделов сохраняется, без дублей). */
-export function agentsForSections(sections, s = load()) {
+/** Врачи, привязанные к разделам диагноза (подсказка в «Поговорить»). */
+export function agentsLinkedToSections(sections, s = load()) {
+    const map = s.sectionAgents || {};
     const out = [];
     for (const sec of sections) {
-        const a = s.agents.find(x => x.enabled && x.section === sec);
-        if (a && !out.some(o => o.id === a.id))
-            out.push(a);
+        for (const id of map[sec] || []) {
+            const a = s.agents.find(x => x.enabled && x.id === id);
+            if (a && !out.some(o => o.id === a.id))
+                out.push(a);
+        }
     }
     return out;
+}
+/** Все включённые агенты для чата у диагноза (кроме помощника анкеты). */
+export function talkDoctors(s = load()) {
+    return s.agents.filter(a => a.enabled && a.id !== TALK_AGENT_ID && a.id !== "intake-params");
+}
+export function agentsOfSection(sec, s = load()) {
+    const ids = (s.sectionAgents || {})[sec] || [];
+    return ids.map(id => s.agents.find(a => a.id === id)).filter((a) => !!a);
+}
+export function putSectionAgents(sec, agentIds) {
+    const st = load();
+    const map = { ...(st.sectionAgents || {}) };
+    if (!agentIds.length)
+        delete map[sec];
+    else
+        map[sec] = agentIds.slice();
+    st.sectionAgents = map;
+    st.sectionAgentsRev = Math.max(st.sectionAgentsRev || 0, SECTION_AGENTS_REV);
+    save(st);
+}
+/** @deprecated используйте agentsLinkedToSections / talkDoctors */
+export function agentsForSections(sections, s = load()) {
+    return agentsLinkedToSections(sections, s);
 }
 /** Единый помощник анкеты (чат на вкладках Общее и Параметры). */
 export function talkAgent(s = load()) {
@@ -475,7 +553,7 @@ export function render(view, tab, steps) {
         location.replace(location.hash.replace(/^#\/settings\/labs/, "#/settings/weights"));
         return;
     }
-    const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "council" ? "council" : tab === "lang" ? "lang" : tab === "misc" ? "misc" : "providers";
+    const t = tab === "agents" ? "agents" : tab === "storage" ? "storage" : tab === "weights" ? "weights" : tab === "exam" ? "exam" : tab === "diagnoses" ? "diagnoses" : tab === "formula" ? "formula" : tab === "council" ? "council" : tab === "lang" ? "lang" : tab === "misc" ? "misc" : "providers";
     view.innerHTML = `
     <h1>${esc(I18n.t("set.title", "Настройки"))}</h1>
     <p class="muted set-lead">${esc(whereText())} ${esc(I18n.t("set.lead.key", "Ключ API отправляется только своему провайдеру."))} <a href="#/settings/storage">${esc(I18n.t("set.lead.storage", "Где хранить →"))}</a></p>
@@ -487,6 +565,7 @@ export function render(view, tab, steps) {
         <a class="set-tab${t === "weights" ? " on" : ""}" href="#/settings/weights">${esc(I18n.t("set.tab.weights", "Нормы и веса"))}</a>
         <a class="set-tab${t === "exam" ? " on" : ""}" href="#/settings/exam">${esc(I18n.t("set.tab.exam", "Осмотр"))}</a>
         <a class="set-tab${t === "diagnoses" ? " on" : ""}" href="#/settings/diagnoses">${esc(I18n.t("set.tab.diagnoses", "Диагнозы"))}</a>
+        <a class="set-tab${t === "formula" ? " on" : ""}" href="#/settings/formula">${esc(I18n.t("set.tab.formula", "Формула"))}</a>
         <a class="set-tab${t === "lang" ? " on" : ""}" href="#/settings/lang">${esc(I18n.t("set.tab.lang", "Язык"))}</a>
         <a class="set-tab${t === "storage" ? " on" : ""}" href="#/settings/storage">${esc(I18n.t("set.tab.storage", "Хранение"))}</a>
         <a class="set-tab${t === "misc" ? " on" : ""}" href="#/settings/misc">${esc(I18n.t("set.tab.misc", "Прочее"))}</a>
@@ -497,6 +576,15 @@ export function render(view, tab, steps) {
     const redraw = () => render(view, t, steps);
     if (t === "storage") {
         drawStorage(main, redraw);
+        return;
+    }
+    if (t === "formula") {
+        if (Store.state.where === "folder" && !Store.state.loaded) {
+            main.innerHTML = gateHtml();
+            bindGate(main, redraw);
+            return;
+        }
+        drawFormula(main);
         return;
     }
     if (t === "lang") {
@@ -902,7 +990,7 @@ function drawAgents(main, steps) {
             btn.onclick = () => {
                 const field = btn.dataset.edit;
                 const title = field === "examMap" ? I18n.t("set.agents.exam_map", "Карта обследования")
-                    : field === "protocols" ? I18n.t("set.agents.protocols", "Протоколы")
+                    : field === "protocols" ? I18n.t("set.agents.protocols", "Протоколы осмотра")
                         : I18n.t("set.agents.prompt", "Инструкция агенту");
                 openAgentTextEditor({
                     agentId: id,
@@ -1101,15 +1189,19 @@ function openRecognizerDialog(onClose) {
         });
     }, onClose);
 }
-// Агенты: помощники анкеты, прочие общие роли, врачи по разделам
+// Агенты: помощник анкеты, общие роли, врачи (по карте раздел → агенты)
 function agentGroups(s, provs, steps) {
+    const linked = new Set(Object.values(s.sectionAgents || {}).flat());
+    for (const a of s.agents)
+        if (a.section)
+            linked.add(a.id); // старые сохранения до миграции UI
     const intake = s.agents.filter(a => a.id === TALK_AGENT_ID);
-    const docs = s.agents.filter(a => a.section);
-    const rest = s.agents.filter(a => !a.section && a.id !== TALK_AGENT_ID);
+    const docs = s.agents.filter(a => a.id !== TALK_AGENT_ID && linked.has(a.id));
+    const rest = s.agents.filter(a => a.id !== TALK_AGENT_ID && !linked.has(a.id));
     const list = (xs) => `<div class="set-list">${xs.map(a => agentBlock(a, provs, s, steps)).join("")}</div>`;
     return (intake.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.intake", "Помощники по анкете"))} <span class="muted">${intake.length}</span></h3>${list(intake)}` : "")
         + (rest.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.common", "Общие"))} <span class="muted">${rest.length}</span></h3>${list(rest)}` : "")
-        + (docs.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.docs", "Врачи по разделам диагнозов"))} <span class="muted">${docs.length}</span></h3>${list(docs)}` : "");
+        + (docs.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.docs", "Врачи"))} <span class="muted">${docs.length}</span></h3>${list(docs)}` : "");
 }
 // Выбор провайдера у агента: настроенные — отдельной группой сверху, с галочкой и состоянием связи
 function providerOptions(s, provs, selected, empty) {
@@ -1174,7 +1266,7 @@ function agentBlock(a, provs, s, steps) {
     <div class="set-row wide set-agent-text-row"><span class="grp set-agent-texts">
       <button type="button" class="btn" data-edit="prompt">${esc(I18n.t("set.agents.prompt", "Инструкция агенту"))}</button>
       ${a.id === "endocrinologist" ? `<button type="button" class="btn" data-edit="examMap">${esc(I18n.t("set.agents.exam_map", "Карта обследования"))}</button>` : ""}
-      <button type="button" class="btn" data-edit="protocols">${esc(I18n.t("set.agents.protocols", "Протоколы"))}</button>
+      <button type="button" class="btn" data-edit="protocols">${esc(I18n.t("set.agents.protocols", "Протоколы осмотра"))}</button>
     </span></div>
     <div class="set-foot"><span class="set-saved ok"></span><button class="btn danger" type="button" data-act="del">${esc(I18n.t("set.agents.del", "Удалить агента"))}</button></div>
   </div>`;
@@ -1431,6 +1523,55 @@ function langOverlayDiff(builtin, next) {
     return ov;
 }
 /** Настройки → Язык: одно общее JSON-поле словаря (удобно копировать на перевод). Без переключения UI. */
+/** Настройки → Формула: способ силы отклонения + пояснение расчёта (калибровка). */
+function drawFormula(main) {
+    const m = load().signMethod === "dev" ? "dev" : "crit";
+    const paintDesc = (method) => {
+        const common = `
+      <h3>${esc(I18n.t("set.fx.common_title", "Общая схема"))}</h3>
+      <pre class="fx-math">${esc(I18n.t("set.fx.common_math", `P = 1 / (1 + e^(−балл))
+балл = logit(prior) + Σ вкладов
+вклад = ± w × s × K × spec
+  (в норме и «снижает» → −w × NORMAL_LOWER × K
+   не сдан → не считается)`))}</pre>
+      <p>${esc(I18n.t("set.fx.common_desc", "prior — распространённость диагноза; w — важность признака 0–10; s — сила отклонения 0…1; K = {k}; spec — специфичность анализа (чем чаще анализ у многих диагнозов, тем меньше вес).", { k: Sg.K }))}</p>`;
+        if (method === "dev") {
+            return `${common}
+      <h3>${esc(I18n.t("set.fx.dev_title", "Сила s — по проценту отклонения"))}</h3>
+      <pre class="fx-math">${esc(I18n.t("set.fx.dev_math", `если |отклонение| < {n}% → s = 0 (норма)
+иначе s = min(1, |отклонение| / {f}%)`, { n: Sg.DEV_NORMAL, f: Sg.DEV_FULL }))}</pre>
+      <p>${esc(I18n.t("set.fx.dev_desc", "Одинаковые пороги для всех показателей. Лёгкое отклонение уже даёт ненулевую силу, но «чуть ниже нормы» и «угрожающе» различаются только линейно по проценту — без своей кривой опасности у показателя."))}</p>
+      <h3>${esc(I18n.t("set.fx.ex_title", "Пример"))}</h3>
+      <p>${esc(I18n.t("set.fx.ex_dev", "ЛПВП 1,1 при норме 1,6 — отклонение −31%. s = 31 / {f} ≈ 0,62. Для метаболического синдрома такой сигнал уже участвует в сумме вкладов.", { f: Sg.DEV_FULL }))}</p>`;
+        }
+        return `${common}
+      <h3>${esc(I18n.t("set.fx.crit_title", "Сила s — по критичности"))}</h3>
+      <pre class="fx-math">${esc(I18n.t("set.fx.crit_math", `критичность k = кривая показателя (0…100)
+если k ≤ {safe} → s = 0 (безопасная зона)
+иначе s = k / 100`, { safe: SAFE_MAX }))}</pre>
+      <p>${esc(I18n.t("set.fx.crit_desc", "У каждого показателя своя кривая критичности (Нормы и веса). Она описывает опасность отклонения. В безопасной зоне сила обнуляется — даже высокий вес признака тогда не даёт вклада (это открытый вопрос калибровки)."))}</p>
+      <h3>${esc(I18n.t("set.fx.ex_title", "Пример"))}</h3>
+      <p>${esc(I18n.t("set.fx.ex_crit", "ЛПВП 1,1 при норме 1,6 (−31%). По кривой критичности такое отклонение часто ещё в безопасной зоне → s = 0, и даже при большом весе ЛПВП для метаболического синдрома вклад будет 0."))}</p>`;
+    };
+    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.formula", "Формула"))}</h2><span class="muted">${esc(I18n.t("set.fx.head_note", "калибровка вероятности"))}</span></div>
+    <p class="muted set-hint">${esc(I18n.t("set.fx.lead", "Переключение силы отклонения меняет, насколько сильно тот же анализ поднимает или снижает процент диагноза у клиента (вкладка «Диагнозы»). Признаки и веса не меняются — только расчёт силы s. «По критичности» часто обнуляет лёгкие отклонения; «по % отклонения» учитывает их раньше. Сравните оба способа на одной анкете."))}</p>
+    <div class="fx-layout">
+      <div class="card fx-pick" role="radiogroup" aria-label="${esc(I18n.t("set.fx.method", "Сила отклонения"))}">
+        <b>${esc(I18n.t("set.fx.method", "Сила отклонения"))}</b>
+        <label class="fx-opt"><input type="radio" name="fxm" value="crit"${m === "crit" ? " checked" : ""}><span><strong>${esc(I18n.t("set.fx.opt.crit", "По критичности"))}</strong><small>${esc(I18n.t("set.fx.opt.crit_sub", "кривая показателя 0–100"))}</small></span></label>
+        <label class="fx-opt"><input type="radio" name="fxm" value="dev"${m === "dev" ? " checked" : ""}><span><strong>${esc(I18n.t("set.fx.opt.dev", "По % отклонения"))}</strong><small>${esc(I18n.t("set.fx.opt.dev_sub", "норма менее {n}%, полная сила от {f}%", { n: Sg.DEV_NORMAL, f: Sg.DEV_FULL }))}</small></span></label>
+      </div>
+      <div class="card fx-desc" data-fx-desc>${paintDesc(m)}</div>
+    </div>`;
+    const desc = q(main, "[data-fx-desc]");
+    main.querySelectorAll("[name=fxm]").forEach(r => r.addEventListener("change", () => {
+        const next = r.value === "dev" ? "dev" : "crit";
+        const st = load();
+        st.signMethod = next;
+        save(st);
+        desc.innerHTML = paintDesc(next);
+    }));
+}
 function drawLang(main) {
     const paint = () => {
         const loc = langFocusId();

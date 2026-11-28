@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Электродоктор — чаты с ИИ:
 //   • «Помощник по анкете» (Общее / Параметры) — один агент intake-general; знает вкладку, пишет в обе;
-//   • «Поговорить» у диагноза — промпт врача из Настройки → Агенты по section диагноза.
+//   • «Поговорить» у диагноза — любой включённый врач; привязанных к разделам диагноза подсвечиваем.
 import type { Client, Field, Step, Value } from "./types.js";
 import * as Settings from "./settings.js";
 import * as Call from "./aicall.js";
@@ -608,10 +608,13 @@ export interface DxTalkOpts {
   brief?: string;        // кратко: % и что «за»
 }
 
-/** Чат с врачом раздела: system = prompt агента + контекст диагноза и анкеты. Анкету не правит. */
+/** Чат с врачом: system = prompt агента + контекст диагноза и анкеты. Анкету не правит. */
 export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   const s = Settings.load();
-  const agents = Settings.agentsForSections(opts.sections, s);
+  const linked = new Set(Settings.agentsLinkedToSections(opts.sections, s).map(a => a.id));
+  const linkedFirst = Settings.agentsLinkedToSections(opts.sections, s);
+  const rest = Settings.talkDoctors(s).filter(a => !linked.has(a.id));
+  const agents = [...linkedFirst, ...rest];
   const ov = document.createElement("div");
   ov.className = "cv-overlay";
   const hist: Hist = [];
@@ -621,8 +624,7 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   let agentId = agents[0] ? agents[0].id : "";
 
   const noAgent = `<div class="talk-empty">
-      <p>К разделам этого диагноза не привязан врач в <a href="#/settings/agents" data-go-settings>Настройки → Агенты</a>.</p>
-      <p class="muted">Так бывает у диагнозов без специальности (раздел «Другое»).</p>
+      <p>Нет включённых врачей. Добавьте или включите агента в <a href="#/settings/agents" data-go-settings>Настройки → Агенты</a>.</p>
     </div>`;
 
   const agentReady = (a: Settings.Agent) => {
@@ -631,16 +633,19 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   };
   const anyReady = agents.some(agentReady);
 
-  const agentOpts = agents.map(a =>
-    `<option value="${esc(a.id)}"${a.id === agentId ? " selected" : ""}>${esc(a.name)}</option>`).join("");
+  const agentOpts = agents.map(a => {
+    const on = linked.has(a.id);
+    return `<option value="${esc(a.id)}"${a.id === agentId ? " selected" : ""}${on ? ' class="talk-agent-linked"' : ""}>${esc(a.name)}${on ? " ·" : ""}</option>`;
+  }).join("");
 
   const agentSetHref = (id: string) => `#/settings/agents/${encodeURIComponent(id)}`;
   const logLinks = (id: string) =>
     `<a href="${agentSetHref(id)}" data-go-settings>настройки</a> · <a href="#" data-talk-log>запросы</a>`;
-  const bodyAi = `<div class="talk-bar">
-      ${agents.length > 1
-        ? `<p class="talk-who muted"><label class="talk-prov">Врач <select id="talk-agent">${agentOpts}</select></label> · ${logLinks(agents[0] ? agents[0].id : "")}</p>`
-        : `<p class="talk-who muted">Врач: <b>${esc(agents[0] ? agents[0].name : "")}</b> · ${logLinks(agents[0] ? agents[0].id : "")}</p>`}
+  const whoHtml = agents.length > 1
+    ? `<p class="talk-who muted"><label class="talk-prov">Врач <select id="talk-agent">${agentOpts}</select></label> · ${logLinks(agentId)}</p>
+       ${linked.size ? `<p class="talk-linked-hint muted">Зелёным в списке — врачи разделов этого диагноза</p>` : ""}`
+    : `<p class="talk-who muted">Врач: <b class="${linked.has(agentId) ? "talk-agent-linked" : ""}">${esc(agents[0] ? agents[0].name : "")}</b> · ${logLinks(agentId)}</p>`;
+  const bodyAi = `<div class="talk-bar">${whoHtml}
     </div>
     <div class="talk-log" id="talk-log" aria-live="polite">
       <div class="talk-hint muted">Спросите про диагноз «${esc(opts.title)}» — ответы по инструкции врача из настроек. Лечение и дозировки не назначает.</div>
@@ -653,16 +658,14 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
 
   const bodyNoProv = `<div class="talk-empty">
       <p>У врача не настроен провайдер или модель. Укажите их у агента или общий провайдер агентов.</p>
-      <p><a class="btn primary" href="${agentSetHref(agents[0] ? agents[0].id : "")}" data-go-settings>Настройки → Агенты</a></p>
+      <p><a class="btn primary" href="${agentSetHref(agentId)}" data-go-settings>Настройки → Агенты</a></p>
     </div>`;
 
-  const titleName = agents[0] ? agents[0].name : "врачом";
   ov.innerHTML = `<div class="cv-dialog talk-dlg" role="dialog" aria-modal="true" aria-labelledby="talk-title">
     <div class="cv-head"><b id="talk-title">Поговорить: ${esc(opts.title)}</b>
       <button type="button" class="btn cv-x" data-close aria-label="закрыть">✕</button></div>
     ${!agents.length ? noAgent : !anyReady ? bodyNoProv : bodyAi}
   </div>`;
-  // уточним заголовок именем врача
   const titleEl = ov.querySelector("#talk-title");
   if (titleEl && agents[0]) titleEl.textContent = `${agents[0].name} · ${opts.title}`;
 
@@ -717,8 +720,13 @@ export function openDxTalkDialog(c: Client, opts: DxTalkOpts): void {
   };
 
   if (agentSel) {
+    const paintSel = () => {
+      agentSel.classList.toggle("talk-agent-linked", linked.has(agentSel.value));
+    };
+    paintSel();
     agentSel.onchange = () => {
       agentId = agentSel.value;
+      paintSel();
       hist.length = 0;
       const a = curAgent();
       const setA = ov.querySelector<HTMLAnchorElement>("[data-go-settings]");
