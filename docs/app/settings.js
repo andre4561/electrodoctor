@@ -13,6 +13,7 @@ import * as SetExams from "./setexams.js";
 import { fold, lockScroll, unlockScroll } from "./ui.js";
 import * as M from "./models.js";
 import * as Store from "./setstore.js";
+import * as FS from "./folder.js";
 import * as Exams from "./exams.js";
 import * as Labs from "./labs.js";
 import * as Sg from "./signs.js";
@@ -21,6 +22,27 @@ import { openEditor, safeText, sameCurve, defaultCurve } from "./curve.js";
 import { curveFor, baseCurve, normsRaw, normsError } from "./norms.js";
 import * as I18n from "./i18n.js";
 export { Store };
+let clientFolderHooks = null;
+export function setClientFolderHooks(h) { clientFolderHooks = h; }
+/** Краткий статус папки клиентов для списка `#/clients`. */
+export function clientFolderStatus() {
+    const st = FS.state;
+    const needPick = !!(st.handle && !FS.ready());
+    const err = clientFolderHooks ? clientFolderHooks.folderErr() : "";
+    if (err)
+        return { label: I18n.t("clients.store.write_err", "Не удалось записать в папку: {err}", { err }), needAttention: true };
+    if (FS.ready()) {
+        return {
+            label: st.path
+                ? I18n.t("clients.store.status_folder_path", "в папке «{name}» · {path}", { name: st.name, path: st.path })
+                : I18n.t("clients.store.status_folder", "в папке «{name}»", { name: st.name }),
+            needAttention: false,
+        };
+    }
+    if (needPick)
+        return { label: I18n.t("clients.store.status_need", "нужно снова выбрать папку"), needAttention: true };
+    return { label: I18n.t("clients.store.status_browser", "в этом браузере"), needAttention: false };
+}
 /** Все анализы каталога (по материалу и подгруппам). */
 function weightFields() {
     return Object.entries(Labs.LABS)
@@ -119,9 +141,11 @@ const A = (id, name, steps, prompt, section) => ({ id, name, enabled: true, prov
 // Врач по разделу диагнозов: одна и та же схема инструкции, своя область
 const D = (id, name, role, section, focus, steps = DOC_STEPS) => A(id, name, steps, `Ты — ${role}. Изучи анкету клиента: жалобы, параметры, анализы. Оцени всё, что относится к твоей специальности: ${focus}. Укажи отклонения и что они могут означать, предположи вероятные состояния из своей области с объяснением, какие данные на это указывают, перечисли, какие анализы и обследования добавить, и отметь, когда нужен очный приём или срочная помощь. Не назначай лечение и дозировки.`, section);
 // Номер стандартного набора: при росте недостающие стандартные агенты добавляются к сохранённым один раз
-export const AGENTS_REV = 9;
-/** Id агентов-помощников по анкете (чат на вкладках Общее / Параметры). */
-export const TALK_AGENT_IDS = { general: "intake-general", params: "intake-params" };
+export const AGENTS_REV = 10;
+/** Id единого помощника по анкете (чат на вкладках Общее и Параметры). */
+export const TALK_AGENT_ID = "intake-general";
+/** @deprecated старые id; оставлены для миграции настроек */
+export const TALK_AGENT_IDS = { general: TALK_AGENT_ID, params: "intake-params" };
 /** Промпт эндокринолога (согласованный текст). */
 const ENDO_PROMPT = `Ты — эндокринолог с большим стажем и опытом.
 
@@ -207,24 +231,18 @@ export const DEFAULT_AGENTS = [
     A("therapist", "Терапевт", STEP_IDS_ALL, "Ты — врач-терапевт. Изучи анкету клиента целиком: жалобы, параметры, анализы. Выдели отклонения, предположи 3–4 вероятных состояния с объяснением, какие показатели на это указывают, и перечисли, какие анализы или осмотры стоит сделать дальше. Не назначай лечение и дозировки."),
     A("psychologist", "Психолог", ["general", "psych", "diagnoses"], "Ты — психолог. По ответам клиента оцени эмоциональное состояние, уровень стресса, сон и поведенческие факторы, которые могут влиять на здоровье. Пиши бережно и без диагнозов психиатрического уровня; отметь, когда стоит обратиться к специалисту очно."),
     A("nutritionist", "Нутрициолог", ["general", "params", "labs", "studies", "diagnoses"], "Ты — нутрициолог. По параметрам тела и анализам оцени питание и возможные дефициты (железо, витамины, минералы). Дай общие рекомендации по рациону и образу жизни. Не назначай БАДы и дозировки."),
-    // помощники чата «Помощник по анкете» на вкладках Общее и Параметры (talk.ts)
-    A("intake-general", "Помощник (Общее)", ["general"], `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать жалобы и базовые сведения о человеке для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.
+    // единый помощник чата «Помощник по анкете» на вкладках Общее и Параметры (talk.ts)
+    A("intake-general", "Помощник по анкете", ["general", "params"], `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать анкету: жалобы и базовые сведения, параметры тела, жизненные показатели и данные осмотра. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами. Человек может открыть чат с вкладки «Общее» или «Параметры» — это подскажут ниже; заполнять можно поля обеих вкладок.
 
 Дополнительно к общим правилам формата ответа:
-4. Неизвестное или то, чему нет кода — в COMPLAINTS_OTHER или NOTES текстом; новые коды не выдумывай.
+4. Неизвестное или то, чему нет кода — в COMPLAINTS_OTHER, NOTES или GEN_NOTES текстом; новые коды не выдумывай. Таблицу генетических тестов (GEN_TESTS) не заполняй через этот чат.
 5. Для жалобы «боль в груди»: сначала PAIN_CHEST=1, затем атрибуты (PRESSING, STABBING, IRRAD_LARM, EXERTION, RELIEF_REST) и PAIN_CHEST_NRS 0–100, описание — PAIN_CHEST_NOTE.
 6. Интенсивность боли: если человек сказал «6 из 10» — пиши 60 в шкале 0–100.
-7. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
-8. Не копируй в анкету ФИО из документов, адреса, телефоны — для имени достаточно псевдонима, если человек его дал.`),
-    A("intake-params", "Помощник (Параметры)", ["params"], `Ты помощник кабинета «Электродоктор». Твоя роль — спокойно собрать параметры тела, жизненные показатели и данные осмотра для анкеты. Ты не врач на приёме: не ставь диагноз, не назначай лечение и дозировки, не пугай. Уточняй недостающее простыми словами.
-
-Дополнительно к общим правилам формата ответа:
-4. Неизвестное или то, чему нет кода — в GEN_NOTES текстом; новые коды не выдумывай. Таблицу генетических тестов (GEN_TESTS) не заполняй через этот чат.
-5. Давление: если человек сказал «120 на 80» — BP_SYS=120, BP_DIA=80.
-6. Рост обычно в см (170), вес в кг. Если назвали рост в метрах (1,7) — переведи в см (170).
-7. Пункты осмотра — только коды из списка полей ниже (из справочника Настройки → Осмотр).
-8. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
-9. Не копируй в анкету ФИО из документов, адреса, телефоны.`),
+7. Давление: если человек сказал «120 на 80» — BP_SYS=120, BP_DIA=80.
+8. Рост обычно в см (170), вес в кг. Если назвали рост в метрах (1,7) — переведи в см (170).
+9. Пункты осмотра — только коды из списка полей ниже (из справочника Настройки → Осмотр).
+10. Если новых правок нет — "set": [], "clear": []. Всё равно заполни "say".
+11. Не копируй в анкету ФИО из документов, адреса, телефоны — для имени достаточно псевдонима, если человек его дал.`),
     // врачи — по разделам диагнозов (Настройки → Диагнозы)
     D("cardiologist", "Кардиолог", "кардиолог", "cardio", "давление, пульс, липидный профиль, маркеры воспаления, сердечно-сосудистые риски"),
     D("pulmonologist", "Пульмонолог", "пульмонолог", "pulmo", "дыхание, кашель, одышка, сатурация, воспалительные маркеры"),
@@ -292,7 +310,7 @@ export function load() {
         // rev 6: у всех, кроме помощников анкеты, этап «Диагнозы» (расчёт кабинета)
         if ((s.agentsRev || 1) < 6) {
             for (const a of s.agents) {
-                if (a.id === TALK_AGENT_IDS.general || a.id === TALK_AGENT_IDS.params)
+                if (a.id === TALK_AGENT_ID || a.id === "intake-params")
                     continue;
                 if (!a.steps.includes("diagnoses"))
                     a.steps = [...a.steps, "diagnoses"];
@@ -311,7 +329,7 @@ export function load() {
         // rev 8–9: этап «Исследования» у врачей и общих агентов (кроме помощников анкеты)
         if ((s.agentsRev || 1) < 9) {
             for (const a of s.agents) {
-                if (a.id === TALK_AGENT_IDS.general || a.id === TALK_AGENT_IDS.params)
+                if (a.id === TALK_AGENT_ID || a.id === "intake-params")
                     continue;
                 if (!a.steps.includes("studies")) {
                     const i = a.steps.indexOf("labs");
@@ -320,6 +338,26 @@ export function load() {
                         : [...a.steps, "studies"];
                 }
             }
+        }
+        // rev 10: один помощник анкеты вместо пары Общее/Параметры
+        if ((s.agentsRev || 1) < 10) {
+            const par = s.agents.find(x => x.id === "intake-params");
+            let a = s.agents.find(x => x.id === TALK_AGENT_ID);
+            if (!a && par) {
+                par.id = TALK_AGENT_ID;
+                a = par;
+            }
+            if (a) {
+                a.steps = ["general", "params"];
+                if (a.name === "Помощник (Общее)" || a.name === "Помощник (Параметры)" || a.name === "Helper (General)" || a.name === "Helper (Params)") {
+                    a.name = "Помощник по анкете";
+                }
+                const def = DEFAULT_AGENTS.find(x => x.id === TALK_AGENT_ID);
+                if (def && (!(a.prompt || "").trim() || a.prompt.includes("Твоя роль — спокойно собрать жалобы") || a.prompt.includes("Твоя роль — спокойно собрать параметры тела"))) {
+                    a.prompt = def.prompt;
+                }
+            }
+            s.agents = s.agents.filter(x => x.id !== "intake-params");
         }
         s.agentsRev = AGENTS_REV;
         // сразу записать, иначе в Store останется старый промпт
@@ -378,10 +416,9 @@ export function agentsForSections(sections, s = load()) {
     }
     return out;
 }
-/** Агент-помощник вкладки Общее или Параметры (чат заполнения анкеты). */
-export function talkAgent(stepId, s = load()) {
-    const id = TALK_AGENT_IDS[stepId];
-    return s.agents.find(a => a.id === id) || DEFAULT_AGENTS.find(a => a.id === id);
+/** Единый помощник анкеты (чат на вкладках Общее и Параметры). */
+export function talkAgent(s = load()) {
+    return s.agents.find(a => a.id === TALK_AGENT_ID) || DEFAULT_AGENTS.find(a => a.id === TALK_AGENT_ID);
 }
 // Ключи пока недоступны: зашифрованы и пароль не введён, или нет доступа к папке настроек
 export const blocked = () => Store.state.locked || (Store.state.where === "folder" && !Store.state.loaded);
@@ -806,52 +843,15 @@ function drawAgents(main, steps) {
     }
     main.innerHTML = `
     <div class="set-head"><h2>${esc(I18n.t("set.head.agents", "Врачи"))}</h2><span class="muted" id="agentcount">${esc(I18n.t("set.agents.enabled", "{on} из {total} включены", { on: s.agents.filter(a => a.enabled).length, total: s.agents.length }))}</span></div>
-    <p class="muted set-hint">${esc(I18n.t("set.agents.hint", "Агент — роль со своей инструкцией. Провайдер и модель задаются один раз ниже — для всех агентов; у отдельного агента их можно заменить своими."))}</p>
-    ${sharedBlock(s, provs)}
-    ${recognizerBlock(s, provs)}
-    ${agentGroups(s, provs, steps)}
-    <div class="grp set-add"><button class="btn" id="addagent">${esc(I18n.t("set.agents.add", "Добавить агента"))}</button><button class="btn" id="resetagents">${esc(I18n.t("set.agents.reset", "Вернуть стандартных"))}</button></div>`;
-    // Общий провайдер и модель для всех агентов
-    const sh = main.querySelector("[data-shared]");
-    const storeShared = () => {
-        const st = load();
-        st.agentDefaults = { provider: q(sh, "[name=provider]").value, model: q(sh, "[name=model]").value.trim() };
-        save(st);
-        drawAgents(main, steps); // у всех агентов меняются подписи «общий — …»
-    };
-    sh.querySelectorAll("input, select").forEach(i => i.addEventListener("change", storeShared));
-    M.bindPicker(sh.querySelector("[data-mp]"), () => {
-        const pid = q(sh, "[name=provider]").value;
-        const pr = allProviders(load()).find(x => x.id === pid);
-        return pr ? providerConf(load(), pr).models : undefined;
-    });
-    const clr = sh.querySelector("button[data-act=clearown]");
-    if (clr)
-        clr.onclick = () => {
-            const st = load();
-            const own = st.agents.filter(a => a.provider || a.model).length;
-            if (!own || !confirm(I18n.t("set.agents.clear_own_confirm", "Убрать свои провайдеры и модели у агентов ({n}) — все будут работать на общем?", { n: own })))
-                return;
-            for (const a of st.agents) {
-                a.provider = "";
-                a.model = "";
-            }
-            save(st);
-            drawAgents(main, steps);
-        };
-    // Распознавание анализов по фото
-    const rb = main.querySelector("[data-recognizer]");
-    rb.querySelectorAll("input, select").forEach(i => i.addEventListener("change", () => {
-        const st = load();
-        st.recognizer = { provider: q(rb, "[name=provider]").value, model: q(rb, "[name=model]").value.trim() };
-        save(st);
-        const sel = i.matches("[name=provider]");
-        if (sel)
-            drawAgents(main, steps);
-        else
-            savedFlash(rb.querySelector(".set-saved"));
-    }));
-    M.bindPicker(rb.querySelector("[data-mp]"), () => { const r = recognizerRuntime(load()); return r.conf ? r.conf.models : undefined; });
+    <div class="grp set-add">
+      <button class="btn" type="button" id="openshared">${esc(I18n.t("set.agents.shared_btn", "Общий провайдер"))}</button>
+      <button class="btn" type="button" id="openrec">${esc(I18n.t("set.agents.rec.btn", "Распознавание анализов"))}</button>
+      <button class="btn" id="addagent">${esc(I18n.t("set.agents.add", "Добавить агента"))}</button>
+      <button class="btn" id="resetagents">${esc(I18n.t("set.agents.reset", "Вернуть стандартных"))}</button>
+    </div>
+    ${agentGroups(s, provs, steps)}`;
+    q(main, "#openshared").onclick = () => openSharedProviderDialog(() => drawAgents(main, steps));
+    q(main, "#openrec").onclick = () => openRecognizerDialog(() => drawAgents(main, steps));
     main.querySelectorAll("[data-agent]").forEach(box => {
         const id = box.dataset.agent;
         const store = () => {
@@ -952,28 +952,28 @@ function agentStatus(a, provs, s) {
         ? `${esc(tag)}${esc(nm)}${r.model ? " · " + esc(r.model) : ""}`
         : `<span class="err">${esc(tag)}${esc(nm)} ${esc(I18n.t("set.agents.err.not_ready", "не настроен"))}</span>`;
 }
-// Блок «Общий провайдер» над списком агентов
-function sharedBlock(s, provs) {
+/** Содержимое окна «Общий провайдер». */
+function sharedDialogForm(s, provs) {
     const def = s.agentDefaults || { provider: "", model: "" };
     const p = provs.find(x => x.id === def.provider), c = p ? providerConf(s, p) : undefined;
     const ready = !!(p && c && isReady(p, c));
-    const users = s.agents.filter(a => !a.provider).length;
     const own = s.agents.filter(a => a.provider || a.model).length;
+    const users = s.agents.filter(a => !a.provider).length;
     const modelHint = c && c.model
         ? I18n.t("set.agents.model_fallback", "если пусто — модель провайдера: {model}", { model: c.model })
         : I18n.t("set.agents.model_fallback_def", "если пусто — модель провайдера по умолчанию");
     const foot = own
         ? I18n.t("set.agents.own_some", "Свой провайдер или модель — у {n} агентов.", { n: own })
         : I18n.t("set.agents.own_none", "Своих провайдеров у агентов нет — все работают на общем.");
-    return `<div class="card set-shared" data-shared>
-    <div class="set-shared-head"><b>${esc(I18n.t("set.agents.shared_title", "Общий провайдер для агентов"))}</b><span class="muted">${esc(I18n.t("set.agents.shared_users", "на нём работают {on} из {total}", { on: users, total: s.agents.length }))}</span></div>
+    return `<div class="set-form" data-shared>
+    <p class="muted set-hint">${esc(I18n.t("set.agents.shared_users", "на нём работают {on} из {total}", { on: users, total: s.agents.length }))}</p>
     <label class="set-row"><span>${esc(I18n.t("set.agents.provider", "Провайдер"))}</span><select name="provider" class="prov-sel${ready ? " ready" : ""}">${providerOptions(s, provs, def.provider)}</select></label>
     <div class="set-row"><span>${esc(I18n.t("set.agents.model", "Модель"))}<small>${esc(modelHint)}</small></span>${M.pickerHtml("model", def.model, c ? c.models : undefined, (c && c.model) || I18n.t("set.agents.model_ph", "модель провайдера"))}</div>
-    <div class="set-foot"><span class="muted">${esc(foot)}</span>${own ? `<button class="btn" type="button" data-act="clearown">${esc(I18n.t("set.agents.clear_own", "Всех — на общий"))}</button>` : ""}</div>
+    <div class="set-foot"><span class="muted">${esc(foot)}</span>${own ? `<button class="btn" type="button" data-act="clearown">${esc(I18n.t("set.agents.clear_own", "Всех — на общий"))}</button>` : ""}<span class="set-saved ok"></span></div>
   </div>`;
 }
-// Блок «Распознавание анализов по фото»: провайдер и модель, которые понимают изображения
-function recognizerBlock(s, provs) {
+/** Содержимое окна «Распознавание анализов». */
+function recognizerDialogForm(s, provs) {
     const r = s.recognizer || { provider: "", model: "" }, def = s.agentDefaults || { provider: "", model: "" };
     const dp = provs.find(x => x.id === def.provider);
     const rt = recognizerRuntime(s);
@@ -982,9 +982,6 @@ function recognizerBlock(s, provs) {
     const warn = m && !m.caps.includes("vision")
         ? `<small class="err">${esc(I18n.t("set.agents.rec.warn", "У модели «{model}» нет пометки «понимает фото» — выберите другую.", { model: rt.model }))}</small>`
         : "";
-    const status = ready
-        ? `${esc(provName(rt.preset))}${rt.model ? " · " + esc(rt.model) : ""}`
-        : `<span class="err">${esc(I18n.t("set.agents.rec.unset", "не настроено"))}</span>`;
     let modelSmall;
     if (rt.conf && (rt.shared ? def.model : rt.conf.model)) {
         const which = rt.shared && def.model
@@ -996,20 +993,119 @@ function recognizerBlock(s, provs) {
     else {
         modelSmall = I18n.t("set.agents.rec.vision_hint", "с поддержкой изображений");
     }
-    return `<div class="card set-shared set-rec" data-recognizer>
-    <div class="set-shared-head"><b>${esc(I18n.t("set.agents.rec.title", "Распознавание анализов по фото"))}</b><span class="muted">${status}</span></div>
+    return `<div class="set-form" data-recognizer>
     <p class="muted set-hint">${esc(I18n.t("set.agents.rec.hint", "Этим провайдером кабинет читает фото и PDF бланков на вкладке «Анализы». Нужна модель, которая понимает изображения."))}</p>
     <label class="set-row"><span>${esc(I18n.t("set.agents.provider", "Провайдер"))}</span><select name="provider" class="prov-sel${ready ? " ready" : ""}">${providerOptions(s, provs, r.provider, sharedProvLabel(dp))}</select></label>
     <div class="set-row"><span>${esc(I18n.t("set.agents.model", "Модель"))}<small>${esc(modelSmall)}</small></span><span>${M.pickerHtml("model", r.model, rt.conf ? rt.conf.models : undefined, rt.model || I18n.t("set.agents.rec.model_ph", "модель с поддержкой изображений"))}${warn}</span></div>
     <div class="set-foot"><span class="set-saved ok"></span></div>
   </div>`;
 }
+function openSettingsOverlay(title, render, onClose) {
+    const ov = document.createElement("div");
+    ov.className = "cv-overlay";
+    ov.innerHTML = `<div class="cv-dialog set-agent-dlg" role="dialog" aria-modal="true" aria-labelledby="set-agent-dlg-title">
+    <div class="cv-head"><b id="set-agent-dlg-title">${esc(title)}</b>
+      <button type="button" class="btn cv-x" data-close aria-label="${esc(I18n.t("cmp.close", "закрыть"))}">✕</button></div>
+    <div data-dlgbody></div>
+  </div>`;
+    document.body.appendChild(ov);
+    lockScroll();
+    const dlg = q(ov, ".cv-dialog");
+    const body = q(ov, "[data-dlgbody]");
+    const close = () => {
+        document.removeEventListener("keydown", onKey);
+        ov.remove();
+        unlockScroll();
+        onClose();
+    };
+    const onKey = (e) => { if (e.key === "Escape")
+        close(); };
+    document.addEventListener("keydown", onKey);
+    ov.addEventListener("click", e => { if (e.target === ov)
+        close(); });
+    ov.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", close));
+    const paint = () => {
+        render(body);
+    };
+    dlg._repaint = paint;
+    paint();
+}
+function openSharedProviderDialog(onClose) {
+    openSettingsOverlay(I18n.t("set.agents.shared_title", "Общий провайдер для агентов"), body => {
+        const s = load();
+        const provs = allProviders(s);
+        body.innerHTML = sharedDialogForm(s, provs);
+        const sh = q(body, "[data-shared]");
+        const store = (redraw) => {
+            const st = load();
+            st.agentDefaults = {
+                provider: q(sh, "[name=provider]").value,
+                model: q(sh, "[name=model]").value.trim(),
+            };
+            save(st);
+            if (redraw) {
+                const dlg = body.closest(".cv-dialog");
+                dlg?._repaint?.();
+            }
+            else
+                savedFlash(sh.querySelector(".set-saved"));
+        };
+        sh.querySelectorAll("input, select").forEach(i => i.addEventListener("change", () => {
+            store(i.matches("[name=provider]"));
+        }));
+        M.bindPicker(sh.querySelector("[data-mp]"), () => {
+            const pid = q(sh, "[name=provider]").value;
+            const pr = allProviders(load()).find(x => x.id === pid);
+            return pr ? providerConf(load(), pr).models : undefined;
+        });
+        const clr = sh.querySelector("button[data-act=clearown]");
+        if (clr)
+            clr.onclick = () => {
+                const st = load();
+                const own = st.agents.filter(a => a.provider || a.model).length;
+                if (!own || !confirm(I18n.t("set.agents.clear_own_confirm", "Убрать свои провайдеры и модели у агентов ({n}) — все будут работать на общем?", { n: own })))
+                    return;
+                for (const a of st.agents) {
+                    a.provider = "";
+                    a.model = "";
+                }
+                save(st);
+                const dlg = body.closest(".cv-dialog");
+                dlg?._repaint?.();
+            };
+    }, onClose);
+}
+function openRecognizerDialog(onClose) {
+    openSettingsOverlay(I18n.t("set.agents.rec.title", "Распознавание анализов по фото"), body => {
+        const s = load();
+        const provs = allProviders(s);
+        body.innerHTML = recognizerDialogForm(s, provs);
+        const rb = q(body, "[data-recognizer]");
+        rb.querySelectorAll("input, select").forEach(i => i.addEventListener("change", () => {
+            const st = load();
+            st.recognizer = {
+                provider: q(rb, "[name=provider]").value,
+                model: q(rb, "[name=model]").value.trim(),
+            };
+            save(st);
+            if (i.matches("[name=provider]")) {
+                const dlg = body.closest(".cv-dialog");
+                dlg?._repaint?.();
+            }
+            else
+                savedFlash(rb.querySelector(".set-saved"));
+        }));
+        M.bindPicker(rb.querySelector("[data-mp]"), () => {
+            const r = recognizerRuntime(load());
+            return r.conf ? r.conf.models : undefined;
+        });
+    }, onClose);
+}
 // Агенты: помощники анкеты, прочие общие роли, врачи по разделам
 function agentGroups(s, provs, steps) {
-    const intakeIds = new Set(Object.values(TALK_AGENT_IDS));
-    const intake = s.agents.filter(a => intakeIds.has(a.id));
+    const intake = s.agents.filter(a => a.id === TALK_AGENT_ID);
     const docs = s.agents.filter(a => a.section);
-    const rest = s.agents.filter(a => !a.section && !intakeIds.has(a.id));
+    const rest = s.agents.filter(a => !a.section && a.id !== TALK_AGENT_ID);
     const list = (xs) => `<div class="set-list">${xs.map(a => agentBlock(a, provs, s, steps)).join("")}</div>`;
     return (intake.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.intake", "Помощники по анкете"))} <span class="muted">${intake.length}</span></h3>${list(intake)}` : "")
         + (rest.length ? `<h3 class="set-group">${esc(I18n.t("set.agents.group.common", "Общие"))} <span class="muted">${rest.length}</span></h3>${list(rest)}` : "")
@@ -1450,6 +1546,105 @@ function drawMisc(main) {
     };
     paint();
 }
+function clientsFolderPathHtml() {
+    const st = FS.state;
+    if (!st.handle)
+        return "";
+    return `<label class="store-path-lab">${esc(I18n.t("clients.store.path", "Путь к папке"))}
+    <input type="text" name="clientpath" value="${esc(st.path)}" placeholder="${esc(I18n.t("clients.store.path_ph", "например, D:\\{name} — браузер путь не сообщает, можно вписать сами", { name: st.name }))}" spellcheck="false" autocomplete="off">
+  </label>`;
+}
+function clientsFolderCardHtml() {
+    const st = FS.state;
+    const hooks = clientFolderHooks;
+    const err = hooks ? hooks.folderErr() : "";
+    let body = "";
+    if (FS.ready()) {
+        body += `<p>${esc(I18n.t("clients.store.ready", "", { name: st.name }))}</p>${clientsFolderPathHtml()}`;
+    }
+    else if (st.handle) {
+        body += `<p>${esc(I18n.t("clients.store.need_pick", "", { name: st.name }))}</p>${clientsFolderPathHtml()}`;
+    }
+    else if (FS.supported) {
+        body += `<p>${esc(I18n.t("clients.store.browser"))}</p>`;
+    }
+    else {
+        body += `<p>${esc(I18n.t("clients.store.no_fs"))}</p>
+      <p class="muted">${esc(I18n.t("clients.store.no_fs_hint"))}</p>`;
+    }
+    if (FS.supported) {
+        const unpickTitle = st.handle ? "" : I18n.t("clients.store.unpick_title", "уже сохраняется в браузере");
+        body += `<div class="grp">
+      <button type="button" class="btn${FS.ready() ? "" : " primary"}" data-cf="pick">${esc(I18n.t("clients.store.pick", "Выбрать папку"))}</button>
+      <button type="button" class="btn" data-cf="unpick"${st.handle ? "" : " disabled"} title="${esc(unpickTitle)}">${esc(I18n.t("clients.store.unpick", "Сохранять в браузере"))}</button>
+    </div>`;
+    }
+    if (err)
+        body += `<p class="err">${esc(I18n.t("clients.store.write_err", "Не удалось записать в папку: {err}", { err }))}</p>`;
+    const now = clientFolderStatus().label;
+    return `<div class="card store-card" data-clients-folder>
+      <h2>${esc(I18n.t("set.store.clients_title", "Где хранить клиентов"))}</h2>
+      <p class="muted">${esc(I18n.t("set.store.clients_lead", "Анкеты клиентов — отдельно от файла настроек. Можно держать только в браузере или ещё копировать в папку на компьютере (у каждого клиента своя подпапка)."))}</p>
+      <p><b>${esc(I18n.t("set.store.now", "Сейчас:"))}</b> ${esc(now)}.</p>
+      ${body}
+      <p class="muted small">${esc(I18n.t("set.store.clients_hint", "Выберите другую папку, не ту, где лежит файл настроек. После перезапуска браузер может снова спросить доступ к папке клиентов."))}</p>
+    </div>`;
+}
+function bindClientsFolder(main, redraw) {
+    const hooks = clientFolderHooks;
+    if (!hooks)
+        return;
+    const pathInp = main.querySelector("[name=clientpath]");
+    if (pathInp) {
+        const savePath = () => { void FS.setPath(pathInp.value).then(() => redraw()); };
+        pathInp.onchange = savePath;
+        pathInp.onkeydown = e => { if (e.key === "Enter") {
+            e.preventDefault();
+            pathInp.blur();
+        } };
+    }
+    const pick = main.querySelector('[data-cf="pick"]');
+    const unpick = main.querySelector('[data-cf="unpick"]');
+    if (pick)
+        pick.onclick = async () => {
+            const prev = { handle: FS.state.handle, name: FS.state.name, path: FS.state.path, granted: FS.state.granted };
+            try {
+                await FS.choose();
+                const inFolder = await FS.readAll();
+                if (inFolder.length) {
+                    const n = inFolder.length;
+                    const ok = confirm(I18n.t("clients.store.confirm_sync", "", {
+                        name: FS.state.name, n, word: hooks.clientsWord(n),
+                    }));
+                    if (!ok) {
+                        await FS.restore(prev);
+                        redraw();
+                        return;
+                    }
+                }
+                hooks.resetClientFolders();
+                hooks.clearFolderErr();
+                await hooks.syncFolder();
+                redraw();
+            }
+            catch (e) {
+                if (e instanceof Error && e.name === "AbortError")
+                    return;
+                hooks.setFolderError(e);
+                redraw();
+            }
+        };
+    if (unpick)
+        unpick.onclick = async () => {
+            if (!FS.state.handle)
+                return;
+            if (!confirm(I18n.t("clients.store.confirm_unpick", "", { name: FS.state.name })))
+                return;
+            await FS.disconnect();
+            hooks.clearFolderErr();
+            redraw();
+        };
+}
 function drawStorage(main, redraw) {
     const st = Store.state;
     const nowFolder = I18n.t("set.store.now_folder", "в папке «{name}», файл {file}", { name: st.folderName, file: Store.FILE })
@@ -1482,12 +1677,14 @@ function drawStorage(main, redraw) {
     const fileCard = `<div class="card store-card">
       <h2>${esc(I18n.t("set.store.file_title", "Перенос настроек файлом"))}</h2>
       <p class="muted">${esc(I18n.t("set.store.file_lead", "Чтобы перенести настройки на другой компьютер, в другой браузер или в будущее приложение.") + (st.encrypted ? I18n.t("set.store.file_enc", " Ключи в файле останутся зашифрованными — понадобится тот же пароль.") : ""))}</p>
+      <p class="muted small">${esc(I18n.t("set.store.file_what", "В файл попадают: провайдеры и ключи API, агенты (врачи и помощник), общий провайдер и распознавание анализов, свои нормы и кривые, признаки диагнозов и привязки разделов, каталог анализов и осмотр, правки языка и CSS статей. Клиенты и анкеты — нет, они хранятся отдельно."))}</p>
       <div class="grp"><button type="button" class="btn" data-st="export">${esc(I18n.t("set.store.export", "Сохранить настройки в файл"))}</button><label class="btn">${esc(I18n.t("set.store.import", "Загрузить из файла"))}<input type="file" data-st-import accept=".json,application/json" hidden></label></div>
     </div>`;
-    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.storage", "Хранение настроек"))}</h2><span class="muted">${esc(whereText())}</span></div>
+    main.innerHTML = `<div class="set-head"><h2>${esc(I18n.t("set.head.storage", "Хранение"))}</h2><span class="muted">${esc(whereText())}</span></div>
     ${st.error ? `<div class="note err">${esc(st.error)}</div>` : ""}
-    ${folderCard}${encCard}${fileCard}`;
+    ${folderCard}${clientsFolderCardHtml()}${encCard}${fileCard}`;
     bindGate(main, redraw);
+    bindClientsFolder(main, redraw);
     const fail = (e) => { if (e instanceof DOMException && e.name === "AbortError")
         return; alert((e instanceof Error && e.message) || String(e)); };
     const fb = main.querySelector('[data-st="folder"]');

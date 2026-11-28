@@ -9,18 +9,36 @@ export const FORMAT = "electrodoctor-talk";
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const str = (v) => (v == null ? "" : String(v)).trim();
 const SKIP_TYPES = new Set(["table", "files", "aiimport"]);
-/** Поля вкладки, которые ИИ может менять (без таблиц/файлов). */
-export function talkFields(steps = STEPS, stepId = "general") {
+/** Поля одной вкладки (без таблиц/файлов); осмотр на params — из справочника. */
+function talkFieldsForStep(steps, stepId) {
     const g = steps.find(s => s.id === stepId);
     if (!g)
         return [];
-    // Осмотр на вкладке params — из справочника Настройки → Осмотр
     if (stepId === "params") {
         Exams.applyOwn(Settings.load().exams);
         const staticF = g.sections.filter(s => s.title !== "Осмотр").flatMap(s => s.fields);
         return [...staticF, ...Exams.allFields()].filter(f => !SKIP_TYPES.has(f.type) && !f.computed);
     }
     return g.sections.flatMap(s => s.fields).filter(f => !SKIP_TYPES.has(f.type));
+}
+/**
+ * Поля для помощника / выписки.
+ * С stepId — только эта вкладка; без stepId — Общее + Параметры (чат помощника пишет в обе).
+ */
+export function talkFields(steps = STEPS, stepId) {
+    if (stepId)
+        return talkFieldsForStep(steps, stepId);
+    const seen = new Set();
+    const out = [];
+    for (const id of ["general", "params"]) {
+        for (const f of talkFieldsForStep(steps, id)) {
+            if (seen.has(f.code))
+                continue;
+            seen.add(f.code);
+            out.push(f);
+        }
+    }
+    return out;
 }
 export function readyProviders(s = Settings.load()) {
     return Settings.allProviders(s)
@@ -101,14 +119,21 @@ function humanBriefSnapshot(c, fields) {
 }
 function talkHint(stepId) {
     return stepId === "params"
-        ? "Назовите рост, вес, давление, пульс или что видели на осмотре — помощник уточнит и заполнит параметры в анкете."
-        : "Опишите, что беспокоит — помощник уточнит и заполнит жалобы в анкете.";
+        ? "Назовите рост, вес, давление, пульс, жалобы или что видели на осмотре — помощник уточнит и заполнит анкету (Общее и Параметры)."
+        : "Опишите, что беспокоит, или назовите параметры (рост, вес, давление) — помощник уточнит и заполнит анкету (Общее и Параметры).";
 }
-/** Промпт агента из Настройки → Агенты + жёсткий JSON-формат и список полей вкладки. */
+function stepTitle(stepId) {
+    return stepId === "params" ? "Параметры" : "Общее";
+}
+/** Промпт агента из Настройки → Агенты + JSON-формат, вкладка открытия и поля Общее+Параметры. */
 export function buildSystem(c, steps = STEPS, stepId = "general", agent) {
-    const a = agent || Settings.talkAgent(stepId);
-    const fields = talkFields(steps, stepId);
+    const a = agent || Settings.talkAgent();
+    const general = talkFieldsForStep(steps, "general");
+    const params = talkFieldsForStep(steps, "params");
+    const fields = talkFields(steps);
     return `${a.prompt}
+
+Сейчас человек открыл чат со вкладки «${stepTitle(stepId)}». Учитывай это в уточняющих вопросах, но заполнять можно поля обеих вкладок.
 
 Отвечай ТОЛЬКО одним JSON-объектом — без markdown, без текста до и после.
 
@@ -126,8 +151,11 @@ export function buildSystem(c, steps = STEPS, stepId = "general", agent) {
 2. "set" — только коды из списка ниже, если человек явно сообщил факт. value по типу поля.
 3. "clear" — коды, которые нужно убрать (человек отрёкся или ошибка). Можно [] .
 
-Допустимые поля:
-${fields.map(fieldLine).join("\n")}
+Допустимые поля вкладки «Общее»:
+${general.map(fieldLine).join("\n")}
+
+Допустимые поля вкладки «Параметры»:
+${params.map(fieldLine).join("\n")}
 
 Сейчас в анкете уже записано:
 ${currentSnapshot(c, fields)}
@@ -234,8 +262,8 @@ function displayValue(f, v) {
     return String(v);
 }
 /** Применить set/clear к клиенту; неизвестные коды пропускаются. */
-export function apply(c, reply, steps = STEPS, stepId = "general") {
-    const byCode = new Map(talkFields(steps, stepId).map(f => [f.code, f]));
+export function apply(c, reply, steps = STEPS, _stepId = "general") {
+    const byCode = new Map(talkFields(steps).map(f => [f.code, f]));
     const changes = [];
     for (const code of reply.clear) {
         const f = byCode.get(code);
@@ -346,7 +374,7 @@ function bindTalkLogLink(root, entries, title) {
 export function openTalkDialog(c, opts) {
     const stepId = opts.stepId || "general";
     const s = Settings.load();
-    const agent = Settings.talkAgent(stepId, s);
+    const agent = Settings.talkAgent(s);
     const rt = Settings.agentRuntime(s, agent);
     const agentOk = !!(agent.enabled && rt.preset && rt.conf && Settings.isReady(rt.preset, rt.conf)
         && rt.model.trim() && !Call.unsupportedReason(rt.preset));
@@ -357,7 +385,7 @@ export function openTalkDialog(c, opts) {
     let busy = false;
     let ctrl = null;
     const bodyAi = `<div class="talk-bar">
-      <p class="talk-who muted">Агент: <b>${esc(agent.name)}</b> · <a href="#/settings/agents/${encodeURIComponent(agent.id)}" data-go-settings>настройки</a> · <a href="#" data-talk-log>запросы</a></p>
+      <p class="talk-who muted">Агент: <b>${esc(agent.name)}</b> · вкладка «${esc(stepTitle(stepId))}» · <a href="#/settings/agents/${encodeURIComponent(agent.id)}" data-go-settings>настройки</a> · <a href="#" data-talk-log>запросы</a></p>
     </div>
     <div class="talk-log" id="talk-log" aria-live="polite">
       <div class="talk-hint muted">${esc(talkHint(stepId))}</div>
@@ -439,7 +467,7 @@ export function openTalkDialog(c, opts) {
         ctrl = new AbortController();
         let loggedOut = false;
         try {
-            const live = Settings.talkAgent(stepId);
+            const live = Settings.talkAgent();
             const run = Settings.agentRuntime(Settings.load(), live);
             if (!run.preset || !run.conf)
                 throw new Error("У агента не выбран провайдер.");

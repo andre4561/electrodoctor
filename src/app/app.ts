@@ -208,10 +208,12 @@ function clientsWord(n: number): string {
 function renderClients(): void {
   renderNav();
   const all = Object.values(loadAll().clients).sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+  const store = Settings.clientFolderStatus();
   view.innerHTML = `
     <h1>${esc(I18n.t("clients.title", "Клиенты"))}</h1>
     ${storageOk ? "" : `<div class="note">${esc(I18n.t("clients.private"))}</div>`}
-    <div class="store" id="store"></div>
+    <p class="muted clients-store-line${store.needAttention ? " err" : ""}">${esc(I18n.t("clients.store.summary", "Хранение данных: {where}", { where: store.label }))}
+      · <a href="#/settings/storage">${esc(I18n.t("clients.store.settings_link", "настроить в Настройки → Хранение"))}</a></p>
     <div class="bar">
       <input class="search" id="q" type="search" placeholder="${esc(I18n.t("clients.search", "Поиск по имени"))}" aria-label="${esc(I18n.t("clients.search_aria", "Поиск"))}">
       <div class="grp">
@@ -239,10 +241,9 @@ function renderClients(): void {
   };
   $("#q").oninput = draw;
   draw();
-  drawStore();
   if (FS.ready()) syncFolder()
-    .then(n => { if (n && location.hash === "#/clients") renderClients(); else drawStore(); })
-    .catch(e => { folderError(e); drawStore(); });
+    .then(n => { if (n && location.hash === "#/clients") renderClients(); })
+    .catch(e => { folderError(e); if (location.hash === "#/clients") renderClients(); });
   $("#exp").onclick = () => download("electrodoctor-clients.json", JSON.stringify(loadAll(), null, 2), "application/json");
   $("#imp").onclick = () => $("#impfile").click();
   $<HTMLInputElement>("#impfile").onchange = async ev => {
@@ -257,81 +258,6 @@ function renderClients(): void {
       alert(I18n.t("clients.import_ok", "Загружено клиентов: {n}", { n }));
       renderClients();
     } catch (e) { alert(I18n.t("clients.import_err")); }
-  };
-}
-
-/** Путь к папке: браузер его не отдаёт, храним то, что человек вписал. Без отдельных кнопок — сохранение по blur/Enter. */
-function storePathHtml(st: typeof FS.state): string {
-  if (!st.handle) return "";
-  return `<label class="store-path-lab">${esc(I18n.t("clients.store.path", "Путь к папке"))}
-    <input type="text" id="folderpath" value="${esc(st.path)}" placeholder="${esc(I18n.t("clients.store.path_ph", "например, D:\\{name} — браузер путь не сообщает, можно вписать сами", { name: st.name }))}" spellcheck="false" autocomplete="off">
-  </label>`;
-}
-
-function drawStore(): void {
-  const box = $("#store"); if (!box) return;
-  const st = FS.state;
-  const needPick = !!(st.handle && !FS.ready()); // доступ сброшен — снова выбрать ту же папку
-  let html = "";
-  if (FS.ready()) {
-    html += `<p>${esc(I18n.t("clients.store.ready", "", { name: st.name }))}</p>${storePathHtml(st)}`;
-  } else if (st.handle) {
-    html += `<p>${esc(I18n.t("clients.store.need_pick", "", { name: st.name }))}</p>${storePathHtml(st)}`;
-  } else if (FS.supported) {
-    html += `<p>${esc(I18n.t("clients.store.browser"))}</p>`;
-  } else {
-    html += `<p>${esc(I18n.t("clients.store.no_fs"))}</p>
-      <p class="muted">${esc(I18n.t("clients.store.no_fs_hint"))}</p>`;
-  }
-  if (FS.supported) {
-    const unpickTitle = st.handle ? "" : I18n.t("clients.store.unpick_title", "уже сохраняется в браузере");
-    html += `<div class="grp"><button class="btn${FS.ready() ? "" : " primary"}" id="pick">${esc(I18n.t("clients.store.pick", "Выбрать папку"))}</button><button class="btn" id="unpick"${st.handle ? "" : " disabled"} title="${esc(unpickTitle)}">${esc(I18n.t("clients.store.unpick", "Сохранять в браузере"))}</button></div>`;
-  }
-  if (folderErr) html += `<p class="err">${esc(I18n.t("clients.store.write_err", "Не удалось записать в папку: {err}", { err: folderErr }))}</p>`;
-  const status = FS.ready()
-    ? (st.path
-      ? esc(I18n.t("clients.store.status_folder_path", "в папке «{name}» · {path}", { name: st.name, path: st.path }))
-      : esc(I18n.t("clients.store.status_folder", "в папке «{name}»", { name: st.name })))
-    : needPick
-      ? esc(I18n.t("clients.store.status_need", "нужно снова выбрать папку"))
-      : esc(I18n.t("clients.store.status_browser", "в этом браузере"));
-  box.innerHTML = fold("store", I18n.t("clients.store.title", "Где хранятся данные"), status, html, {
-    open: !!folderErr || needPick,
-    warn: !!folderErr || needPick,
-  });
-  const after = () => syncFolder().then(() => renderClients()).catch(e => { folderError(e); drawStore(); });
-  const pathInp = document.querySelector<HTMLInputElement>("#folderpath");
-  if (pathInp) {
-    const savePath = () => { void FS.setPath(pathInp.value).then(() => drawStore()); };
-    pathInp.onchange = savePath;
-    pathInp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); pathInp.blur(); } };
-  }
-  const pick = $("#pick"), unpick = $("#unpick");
-  if (pick) pick.onclick = async () => {
-    const prev = { handle: FS.state.handle, name: FS.state.name, path: FS.state.path, granted: FS.state.granted };
-    try {
-      await FS.choose();
-      const inFolder = await FS.readAll();
-      if (inFolder.length) {
-        const n = inFolder.length;
-        const ok = confirm(I18n.t("clients.store.confirm_sync", "", {
-          name: FS.state.name, n, word: clientsWord(n),
-        }));
-        if (!ok) { await FS.restore(prev); drawStore(); return; }
-      }
-      const data = loadAll();                       // в новой папке подпапки создаются заново
-      for (const c of Object.values(data.clients)) delete c.folder;
-      saveAll(data);
-      after();
-    } catch (e) {
-      if (e instanceof Error && e.name === "AbortError") return;
-      folderError(e); drawStore();
-    }
-  };
-  if (unpick) unpick.onclick = async () => {
-    if (!st.handle) return;
-    if (!confirm(I18n.t("clients.store.confirm_unpick", "", { name: st.name }))) return;
-    await FS.disconnect(); renderClients();
   };
 }
 
@@ -1288,7 +1214,7 @@ function renderClient(id: string, stepId: string): void {
   }
   /** Подтянуть видимые поля (и чипы жалоб на «Общем») после правок из чата с доктором. */
   function syncTalkFields(stepId: Talk.TalkStepId): void {
-    for (const f of Talk.talkFields(STEPS, stepId)) {
+    for (const f of Talk.talkFields(STEPS)) {
       const v = c.values[f.code];
       const s = v === undefined || v === null || v === "" ? "" : String(v);
       const el = form.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(`[data-code="${f.code}"]`);
@@ -2576,6 +2502,19 @@ function download(name: string, text: string, type: string): void {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
+
+Settings.setClientFolderHooks({
+  folderErr: () => folderErr,
+  setFolderError: folderError,
+  clearFolderErr: () => { folderErr = ""; },
+  syncFolder,
+  resetClientFolders: () => {
+    const data = loadAll();
+    for (const c of Object.values(data.clients)) delete c.folder;
+    saveAll(data);
+  },
+  clientsWord,
+});
 
 window.addEventListener("hashchange", route);
 Promise.all([FS.init().catch(folderError), Settings.Store.init(), Norms.loadNorms(), Labs.loadLabs(), Exams.loadDescs()])

@@ -25,7 +25,8 @@ ZIP = ROOT / "tools" / "out" / "electrodoctor-site.zip"
 TGZ = ROOT / "tools" / "out" / "electrodoctor-site.tar.gz"
 
 SKIP_DIRS = {"_layouts", "_includes", ".git"}
-SKIP_FILES = {"_config.yml"}
+# site-inject.html — счётчики на хосте правят вручную; в архив не кладём, чтобы не затереть.
+SKIP_FILES = {"_config.yml", "site-inject.html"}
 SKIP_SUFFIXES = {".zip"}  # не тащить архивы внутрь выкладки
 FM = re.compile(r"^---\r?\n(.*?)\r?\n---\r?\n", re.S)
 
@@ -53,6 +54,7 @@ def render_md(path: Path) -> bytes:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <script src="/assets/theme.js"></script>
+<script src="/assets/locale.js"></script>
 <link rel="stylesheet" href="/assets/articles.css" id="ed-articles-css-link">
 <script src="/assets/articles-config.js"></script>
 <script src="/assets/articles-style.js" defer></script>
